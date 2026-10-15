@@ -3,8 +3,13 @@ from __future__ import annotations
 
 import itertools
 
+import strategies_calendar as cal
+import strategies_combo as cb
 import strategies_meanrev as mr
+import strategies_pattern as pt
+import strategies_regime as rg
 import strategies_trend as tr
+import strategies_tv as tv
 
 
 def grid(filt=None, **axes):
@@ -16,9 +21,18 @@ def grid(filt=None, **axes):
 _MA = grid(fast=[10, 20, 50], slow=[100, 150, 200])
 
 
-def _s(id_, name, family, source, desc, fn, g):
+def _s(id_, name, family, source, desc, fn, g, batch=0, ctx=False):
+    # hunt rule: new strategies get at most 12 combos (original batch-0 grids left untouched)
+    assert batch == 0 or len(g) <= 12, f"{id_}: grid of {len(g)} combos exceeds the 12-combo cap"
     return {"id": id_, "name": name, "family": family, "source": source,
-            "description": desc, "fn": fn, "grid": g}
+            "description": desc, "fn": fn, "grid": g, "batch": batch, "ctx": ctx}
+
+
+def positions(st, df, ctx, params):
+    """Run a strategy. Strategies flagged ctx=True also get the aligned context frame."""
+    if st["ctx"]:
+        return st["fn"](df, ctx=ctx, **params)
+    return st["fn"](df, **params)
 
 
 STRATEGIES = [
@@ -60,4 +74,151 @@ STRATEGIES = [
        mr.nday_low_dip, grid(n=[5, 10], h=[3, 5, 10])),
     _s("dual_ma_long_short", "Dual MA Long/Short", "trend", "Classic MA crossover, short side",
        "sma_cross that goes short (-1) instead of flat.", tr.dual_ma_long_short, _MA),
+
+    # ---------------- hunt batch 1: calendar (calendar facts only)
+    _s("pre_fomc", "Pre-FOMC Drift", "calendar", "Lucca & Moench (2015), The Pre-FOMC Announcement Drift",
+       "Hold the sessions around scheduled Fed statement days (published calendar).", cal.pre_fomc,
+       [{"a": a, "b": b} for a, b in [(-2, 0), (-2, 1), (-1, 0), (-1, 1), (0, 0), (0, 1)]], batch=1),
+    _s("pre_holiday", "Pre-Holiday", "calendar", "Ariel (1990); Lakonishok & Smidt (1988)",
+       "Hold the last k sessions before an NYSE holiday (optionally the session after).", cal.pre_holiday,
+       grid(k=[1, 2, 3], after=[0, 1]), batch=1),
+    _s("opex_week", "Options-Expiration Week", "calendar", "Stivers & Sun (2013); trader folklore",
+       "Hold during monthly opex week, the week after, or the two sessions into opex Friday.", cal.opex_week,
+       grid(which=["opex", "after", "late"]), batch=1),
+    _s("mid_month", "Mid-Month Window", "calendar", "Ariel (1987) half-month effect, inverted",
+       "Hold sessions whose day-of-month is between d1 and d2.", cal.mid_month,
+       grid(d1=[8, 10, 12], d2=[15, 18]), batch=1),
+    _s("halloween", "Halloween (Sell in May)", "calendar", "Bouman & Jacobsen (2002)",
+       "Hold from Oct/Nov through Apr/May, flat in summer.", cal.halloween,
+       grid(start=[10, 11], end=[4, 5]), batch=1),
+    _s("santa_rally", "Santa Claus Rally", "calendar", "Yale Hirsch, Stock Trader's Almanac",
+       "Hold the last sessions of December and first sessions of January.", cal.santa_rally,
+       grid(n_dec=[3, 5, 7], n_jan=[0, 2]), batch=1),
+    _s("weekday", "Day-of-Week Filter", "calendar", "French (1980) weekend effect",
+       "Hold only sessions starting on one weekday, or skip that weekday.", cal.weekday,
+       grid(day=[0, 1, 2, 3, 4], mode=["only", "skip"]), batch=1),
+    _s("quarter_end", "Quarter End / Start", "calendar", "Window dressing (Lakonishok et al. 1991); quarter-start inflows",
+       "Hold the last or first n sessions of each quarter.", cal.quarter_end,
+       grid(n=[3, 5, 10], side=["end", "start"]), batch=1),
+    _s("calendar_composite", "Calendar Composite", "calendar", "Combination of turn-of-month, pre-holiday and pre-FOMC",
+       "Hold whenever any of the chosen calendar effects is active, optionally Nov-Apr only.", cal.calendar_composite,
+       grid(parts=[("tom", "holiday"), ("tom", "fomc"), ("holiday", "fomc"), ("tom", "holiday", "fomc")],
+            halloween_gate=[False, True]), batch=1),
+    # ---------------- hunt batch 2: regime filters (cross-asset context, forward-filled only)
+    _s("vix_term", "VIX Term Structure", "volatility", "Simon & Campasano (2014); VIX/VIX3M contango as a calm-regime signal",
+       "Long while VIX / VIX3M is below a threshold.", rg.vix_term, grid(thr=[0.9, 0.95, 1.0]), batch=2, ctx=True),
+    _s("vix_vs_avg", "VIX Below Its Average", "volatility", "Volatility-regime filter (common practitioner rule)",
+       "Long while VIX is below k times its n-day average.", rg.vix_vs_avg, grid(n=[20, 50, 100], k=[1.0, 1.1]),
+       batch=2, ctx=True),
+    _s("vix_spike", "VIX Spike Reversion", "volatility", "Connors, 'VIX stretches' (Short Term Trading Strategies That Work)",
+       "Buy for h sessions after VIX closes x above its 20-day average.", rg.vix_spike,
+       grid(x=[0.2, 0.3, 0.5], h=[5, 10]), batch=2, ctx=True),
+    _s("rv_regime", "Realized-Vol Regime", "volatility", "Moreira & Muir (2017); low-vol regime persistence",
+       "Long while short-term realized vol is below its 1-year quantile.", rg.rv_regime,
+       grid(n=[10, 20, 60], q=[0.5, 0.7, 0.8]), batch=2),
+    _s("credit_trend", "Credit Trend (HYG/IEF)", "regime", "Credit spreads lead equities (practitioner; Gilchrist & Zakrajsek 2012)",
+       "Long while high-yield bonds outperform Treasuries on trend.", rg.credit_trend,
+       grid(n=[20, 50, 100, 200]), batch=2, ctx=True),
+    _s("yield_curve", "Yield Curve", "regime", "Estrella & Mishkin (1998) term spread",
+       "Long while the 10y-3m spread is positive / steepening.", rg.yield_curve,
+       grid(thr=[0.0, 0.5, 1.0], mode=["level", "steepening"]), batch=2, ctx=True),
+    _s("bond_momentum", "Bond Trend Filter", "regime", "Yield/credit trend as a macro filter (practitioner)",
+       "Long while 10y yields fall below trend, or investment-grade bonds trend up.", rg.bond_momentum,
+       grid(n=[20, 50, 100], src=["^TNX", "LQD"]), batch=2, ctx=True),
+    _s("dollar_trend", "Dollar Trend", "regime", "Dollar as a global risk barometer (practitioner)",
+       "Long while the US dollar index ETF is below / above its n-day average.", rg.dollar_trend,
+       grid(n=[50, 100, 200], side=["weak", "strong"]), batch=2, ctx=True),
+    _s("faber_monthly", "Faber 10-Month Timing", "regime", "Faber (2007), A Quantitative Approach to Tactical Asset Allocation",
+       "At month-end, hold next month if price is above its N-month average.", rg.faber_monthly,
+       grid(months=[8, 10, 12]), batch=2),
+    _s("antonacci_abs", "Absolute Momentum", "regime", "Antonacci (2014), Dual Momentum Investing",
+       "At month-end, hold next month if the trailing return beats T-bills.", rg.antonacci_abs,
+       grid(months=[6, 9, 12]), batch=2, ctx=True),
+    # ---------------- hunt batch 3: TradingView indicators
+    _s("supertrend", "Supertrend", "trend", "Olivier Seban; TradingView built-in",
+       "Long while price is above the ratcheting ATR band.", tv.supertrend,
+       grid(n=[7, 10, 14], mult=[2.0, 3.0]), batch=3),
+    _s("heikin_ashi", "Heikin-Ashi Trend", "trend", "Heikin-Ashi candles; TradingView built-in",
+       "Enter after k green Heikin-Ashi candles, exit on the first red.", tv.heikin_ashi, grid(k=[1, 2, 3]), batch=3),
+    _s("ttm_squeeze", "TTM Squeeze", "breakout", "John Carter, Mastering the Trade",
+       "Enter when the Bollinger-inside-Keltner squeeze fires with positive momentum.", tv.ttm_squeeze,
+       grid(kc=[1.0, 1.5, 2.0], exit_=["neg", "down"]), batch=3),
+    _s("ichimoku", "Ichimoku Cloud", "trend", "Goichi Hosoda; TradingView built-in",
+       "Long while price is above the cloud and tenkan > kijun.", tv.ichimoku,
+       [{"t": 9, "k": 26, "s": 52}, {"t": 7, "k": 22, "s": 44}, {"t": 10, "k": 30, "s": 60}, {"t": 20, "k": 60, "s": 120}],
+       batch=3),
+    _s("psar", "Parabolic SAR", "trend", "J. Welles Wilder (1978)",
+       "Long while the SAR is below price.", tv.psar, grid(step=[0.01, 0.02], mx=[0.1, 0.2]), batch=3),
+    _s("adx_di", "ADX / DMI", "trend", "J. Welles Wilder (1978)",
+       "Long while +DI > -DI and ADX shows a trend.", tv.adx_di, grid(n=[14, 20], thr=[15, 20, 25]), batch=3),
+    _s("stochastic", "Stochastic Oversold", "mean_reversion", "George Lane; TradingView built-in",
+       "Buy slow %K below x in an uptrend, exit above 80.", tv.stochastic, grid(n=[5, 14], x=[10, 20]), batch=3),
+    _s("williams_r", "Williams %R", "mean_reversion", "Larry Williams; TradingView built-in",
+       "Buy %R below -90, exit above -20.", tv.williams_r, grid(n=[2, 5, 10], trend=[True, False]), batch=3),
+    _s("cci", "CCI", "mean_reversion", "Donald Lambert (1980)",
+       "Buy CCI below -100 (reversion) or above +100 (trend).", tv.cci,
+       grid(n=[14, 20], mode=["revert", "trend"]), batch=3),
+    _s("aroon", "Aroon", "trend", "Tushar Chande (1995)",
+       "Long while Aroon-Up leads and is >= 70.", tv.aroon, grid(n=[14, 25, 50]), batch=3),
+    _s("hull", "Hull Moving Average", "trend", "Alan Hull (2005)",
+       "Long while the HMA rises, or price is above it.", tv.hull,
+       grid(n=[20, 50, 100], rule=["slope", "price"]), batch=3),
+    _s("kama", "Kaufman Adaptive MA", "trend", "Perry Kaufman, Trading Systems and Methods",
+       "Long while price is above KAMA, or KAMA rises.", tv.kama,
+       grid(n=[10, 20, 30], rule=["price", "slope"]), batch=3),
+    _s("triple_ma", "Triple Moving Average", "trend", "Classic MA stack (TradingView community scripts)",
+       "Long while fast > medium > slow SMA.", tv.triple_ma,
+       [{"f": f, "m": m, "s": sl} for f, m, sl in [(4, 9, 18), (5, 20, 50), (10, 50, 200), (20, 50, 100)]], batch=3),
+    _s("chandelier", "Breakout + Chandelier Exit", "breakout", "Chuck LeBeau chandelier exit",
+       "Enter on an n-day high, exit below the 22-day high minus k ATRs.", tv.chandelier,
+       grid(n=[20, 50], k=[2.0, 3.0]), batch=3),
+    # ---------------- hunt batch 4: price patterns
+    _s("down_days", "Consecutive Down Days", "pattern", "Connors & Alvarez, High Probability ETF Trading",
+       "Buy after n lower closes, sell on the first up close.", pt.down_days, grid(n=[2, 3, 4], trend=[True, False]), batch=4),
+    _s("double_seven", "Double 7s", "pattern", "Connors & Alvarez, Short Term Trading Strategies That Work",
+       "Above SMA200, buy an n-day closing low and sell an n-day closing high.", pt.double_seven, grid(n=[5, 7, 10]), batch=4),
+    _s("cum_rsi", "Cumulative RSI", "pattern", "Connors & Alvarez, High Probability ETF Trading",
+       "Buy when RSI(2) summed over w days is below x in an uptrend.", pt.cum_rsi,
+       grid(w=[2, 3], x=[35, 45, 55]), batch=4),
+    _s("nr7", "Narrow Range (NR7)", "pattern", "Toby Crabel, Day Trading with Short Term Price Patterns",
+       "After the narrowest bar in n days closing strong in an uptrend, hold h sessions.", pt.nr7,
+       grid(n=[4, 7], h=[1, 3, 5]), batch=4),
+    _s("inside_day", "Inside Day", "pattern", "Classic candlestick pattern (Crabel; Bulkowski)",
+       "After an inside day, hold h sessions.", pt.inside_day, grid(h=[1, 3, 5], trend=[True, False]), batch=4),
+    _s("week_reversal", "Weekly Reversal", "pattern", "Lehmann (1990) short-term reversal",
+       "After a week that fell more than x, hold the next week.", pt.week_reversal,
+       grid(x=[0.0, 0.02, 0.04]), batch=4),
+    _s("high_52w", "52-Week-High Proximity", "pattern", "George & Hwang (2004)",
+       "Long while close is within x of its 52-week high.", pt.high_52w, grid(x=[0.02, 0.05, 0.10]), batch=4),
+    _s("zscore", "Z-Score Reversion", "pattern", "Statistical mean reversion (quant blogs)",
+       "Buy a close more than thr std below its n-day mean, exit at the mean.", pt.zscore,
+       grid(n=[10, 20, 50], thr=[1.5, 2.0]), batch=4),
+    _s("ma_envelope", "MA Envelope", "pattern", "Moving-average envelope bands",
+       "Buy a close x below its n-day average, exit at the average.", pt.ma_envelope,
+       grid(n=[10, 20], x=[0.02, 0.03, 0.05]), batch=4),
+    _s("gap_recovery", "Gap-Down Buy", "pattern", "Gap fill / gap reversion (trader folklore)",
+       "After an unrecovered gap down of more than g, hold h sessions.", pt.gap_recovery,
+       grid(g=[0.005, 0.01, 0.02], h=[1, 3]), batch=4),
+    _s("vol_breakout", "Volatility Breakout", "pattern", "Larry Williams, Long-Term Secrets to Short-Term Trading (close-confirmed)",
+       "If today closed above open + k x yesterday's range, hold h sessions.", pt.vol_breakout,
+       grid(k=[0.5, 0.75, 1.0], h=[1, 3]), batch=4),
+    # ---------------- hunt batch 5: combinations, CHOSEN AFTER SEEING RESULTS of batches 0-4
+    _s("combo_dip_vote", "Dip-Buy Consensus [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: IBS + Williams %R + RSI(2) + down days",
+       "Buy when at least m of 4 oversold signals agree; exit on a bounce.", cb.dip_vote,
+       grid(m=[2, 3, 4], trend=[True, False]), batch=5),
+    _s("combo_dip_calm", "Dip-Buy in Calm Markets [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: IBS + VIX term structure",
+       "IBS dip-buy only while VIX / VIX3M is below a threshold.", cb.dip_calm,
+       grid(a=[0.1, 0.2, 0.3], thr=[0.95, 1.0]), batch=5, ctx=True),
+    _s("combo_dip_lowvol", "Dip-Buy in Low Vol [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: IBS + realized-vol regime",
+       "IBS dip-buy only while realized vol is below its 1-year quantile.", cb.dip_lowvol,
+       grid(a=[0.1, 0.2, 0.3], q=[0.5, 0.7]), batch=5),
+    _s("combo_dip_or_calendar", "Dip-Buy or Calendar Window [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: IBS + turn of month + pre-holiday",
+       "In the market during IBS dip trades or calendar windows.", cb.dip_or_calendar,
+       grid(a=[0.1, 0.2, 0.3], cal_parts=["tom", "tom_holiday"]), batch=5),
+    _s("combo_trend_cloud", "Trend + Cloud Agreement [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: SMA trend filter + Ichimoku (BTC near-misses)",
+       "Long while close is above SMA(n) and above the Ichimoku cloud.", cb.trend_cloud,
+       [{"n": n, "cloud": c} for n in (50, 100, 200) for c in ((9, 26, 52), (20, 60, 120))], batch=5),
+    _s("combo_trend_dip", "Dip Entry, Trend Exit [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: RSI(2) dip entry + SMA trend exit",
+       "Enter on an RSI(2) dip in an uptrend, exit only when the trend breaks.", cb.trend_dip,
+       grid(n=[100, 200], x=[5, 10, 20]), batch=5),
 ]

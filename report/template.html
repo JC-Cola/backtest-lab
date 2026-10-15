@@ -275,7 +275,7 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
     const n = name(r.strategy), where = mkt(r.asset), k = kind(r);
     const vs = r.oos.cagr > r.buy_hold_oos.cagr ? "more" : "less";
     if (k === "always") return `${n} is in the market almost all the time, so it can't be compared with random traders. It made ${pct(r.oos.cagr)} a year on ${where}, ${vs} than just holding (${pct(r.buy_hold_oos.cagr)}).`;
-    const share = pct(beatShare(r), 0);
+    const share = pct(beatShare(r), 1);
     const base = `${n} beat ${share} of random traders on ${where} and made ${pct(r.oos.cagr)} a year, ${vs} than just holding (${pct(r.buy_hold_oos.cagr)}). `;
     if (k === "edge") return base + `It held up after allowing for every strategy tried, and on markets it was never searched on.`;
     if (k === "close") return base + (r.verdict === "PASS" ? `It passed here but failed on fresh markets, so it was probably luck.` : `That looks good alone, but across ${cf.length} tests a few results this good happen by chance.`);
