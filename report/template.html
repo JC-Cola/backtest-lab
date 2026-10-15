@@ -1,0 +1,385 @@
+<title>Beat the Coin Flip</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Public+Sans:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: the answer first, then a leaderboard of the closest calls, one inspected strategy, and the full grid. */
+:root {
+  --bg: #f3f5f8; --panel: #ffffff; --ink: #141c29; --muted: #5a6577; --line: #dbe1e9;
+  --accent: #2443c4; --accent-soft: #e4e9fb;
+  --pass: #17845a; --pass-soft: #d9f1e6; --weak: #a86a12; --weak-soft: #f8ebd3;
+  --fail: #9a4a50; --fail-soft: #f1e4e5; --na: #6c7686; --na-soft: #e8ebf0; --bh: #8a94a6;
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "Public Sans", -apple-system, "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0f141c; --panel: #161d28; --ink: #e6ebf3; --muted: #93a0b4; --line: #273142;
+  --accent: #8ea6ff; --accent-soft: #1d2747;
+  --pass: #4fd39a; --pass-soft: #12352a; --weak: #e8b45a; --weak-soft: #3a2c13;
+  --fail: #e48b91; --fail-soft: #3a2024; --na: #9aa4b5; --na-soft: #222a37; --bh: #6f7b8f;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0f141c; --panel: #161d28; --ink: #e6ebf3; --muted: #93a0b4; --line: #273142;
+  --accent: #8ea6ff; --accent-soft: #1d2747;
+  --pass: #4fd39a; --pass-soft: #12352a; --weak: #e8b45a; --weak-soft: #3a2c13;
+  --fail: #e48b91; --fail-soft: #3a2024; --na: #9aa4b5; --na-soft: #222a37; --bh: #6f7b8f;
+  color-scheme: dark }
+
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--f-body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 44px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(2rem, 5.5vw, 3.2rem); font-weight: 800; line-height: 1.05; }
+h2 { font-size: 1.45rem; font-weight: 600; }
+h3 { font-size: 1.05rem; font-weight: 600; }
+p { margin: 0; max-width: 66ch; }
+.muted { color: var(--muted); }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 600 0.72rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+header { display: flex; flex-direction: column; gap: 14px; }
+.answer { font: 600 clamp(1.25rem, 3vw, 1.6rem)/1.3 var(--f-display); max-width: 34ch; text-wrap: balance; }
+.answer.yes { color: var(--pass); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--muted); font-size: 0.92rem; }
+.facts b { color: var(--ink); font-family: var(--f-mono); }
+
+.pill { display: inline-block; font: 600 0.72rem/1 var(--f-mono); padding: 5px 9px; border-radius: 999px; white-space: nowrap; }
+.k-edge { background: var(--pass-soft); color: var(--pass); }
+.k-close { background: var(--weak-soft); color: var(--weak); }
+.k-luck { background: var(--fail-soft); color: var(--fail); }
+.k-always { background: var(--na-soft); color: var(--na); }
+
+.board { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.board button { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid;
+  grid-template-columns: 2rem minmax(0, 1.6fr) minmax(0, 1.3fr) minmax(0, 1fr) auto; gap: 12px; align-items: center;
+  padding: 12px 16px; border-top: 1px solid var(--line); }
+.board button:first-child { border-top: 0; }
+.board button:hover { background: var(--accent-soft); }
+.board button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.board button[aria-pressed="true"] { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.board .rank { font: 600 0.85rem var(--f-mono); color: var(--muted); }
+.board .who b { display: block; font-weight: 600; }
+.board .who span { font-size: 0.8rem; color: var(--muted); }
+.meter { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; color: var(--muted); }
+.meter .bar { height: 6px; background: var(--line); border-radius: 3px; position: relative; overflow: hidden; }
+.meter .bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 3px; }
+.meter .bar s { position: absolute; top: -2px; bottom: -2px; left: 95%; width: 2px; background: var(--ink); opacity: 0.5; }
+.ret { font: 600 0.9rem var(--f-mono); }
+.ret span { display: block; font: 400 0.75rem var(--f-body); color: var(--muted); }
+@media (max-width: 640px) {
+  .board button { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
+  .board .meter, .board .ret { grid-column: 2 / 4; }
+}
+
+.detail { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 22px; display: flex; flex-direction: column; gap: 18px; }
+.detail-head { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.say { font-size: 1.05rem; max-width: 70ch; }
+.nums { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.nums div { display: flex; flex-direction: column; gap: 2px; border-top: 2px solid var(--line); padding-top: 8px; min-width: 0; }
+.nums dt { font-size: 0.78rem; color: var(--muted); }
+.nums dd { margin: 0; font: 600 1.15rem var(--f-mono); font-variant-numeric: tabular-nums; }
+.nums dd small { font: 400 0.78rem var(--f-body); color: var(--muted); display: block; }
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 22px; }
+.chart { display: flex; flex-direction: column; gap: 8px; min-width: 0; position: relative; }
+.chart svg { width: 100%; height: auto; display: block; overflow: visible; }
+.chart svg text { fill: var(--muted); font: 11px var(--f-mono); }
+.key { display: flex; gap: 14px; font-size: 0.8rem; color: var(--muted); flex-wrap: wrap; }
+.key i { display: inline-block; width: 14px; height: 3px; vertical-align: 3px; margin-right: 6px; border-radius: 2px; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font: 11px/1.4 var(--f-mono); padding: 5px 8px; border-radius: 4px; white-space: nowrap; transform: translate(-50%, -115%); z-index: 2; }
+.lock { font-size: 0.9rem; border-left: 3px solid var(--line); padding-left: 12px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 0.85rem; color: var(--muted); align-items: center; }
+.grid-scroll { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+table.matrix { border-collapse: separate; border-spacing: 3px; width: 100%; min-width: 700px; padding: 6px; }
+.matrix th { font: 600 0.75rem var(--f-mono); color: var(--muted); text-align: center; padding: 6px 4px; }
+.matrix th.row { text-align: left; font: 600 0.86rem var(--f-body); color: var(--ink); padding-right: 10px; min-width: 170px; }
+.matrix tr.group th { text-align: left; font: 600 0.7rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); padding-top: 14px; }
+.matrix button { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  width: 100%; min-height: 34px; border-radius: 4px; font: 600 0.8rem var(--f-mono); font-variant-numeric: tabular-nums; }
+.matrix button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.matrix button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--ink); }
+.matrix button.k-edge { background: var(--pass-soft); color: var(--pass); }
+.matrix button.k-close { background: var(--weak-soft); color: var(--weak); }
+.matrix button.k-luck { background: var(--fail-soft); color: var(--fail); }
+.matrix button.k-always { background: var(--na-soft); color: var(--na); }
+footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow" id="stamp">—</span>
+    <h1>Beat the Coin Flip</h1>
+    <p class="answer" id="answer">—</p>
+    <div class="facts">
+      <span><b id="f-strats">—</b> strategies</span>
+      <span><b id="f-mkts">—</b> markets</span>
+      <span><b id="f-tests">—</b> tests</span>
+      <span><b id="f-close">—</b> close calls</span>
+      <span><b id="f-beat">—</b> beat just holding</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Closest to a real edge</h2>
+    <p class="muted">Ranked by how many of 2,000 random traders each strategy beat. A real edge needs to beat about 95% of them and still hold up once you allow for how many strategies were tried. Select one to see it.</p>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="detail" aria-live="polite">
+    <div class="detail-head"><h2 id="d-title">—</h2><span class="pill" id="d-pill">—</span></div>
+    <p class="say" id="d-say">—</p>
+    <dl class="nums" id="d-nums"></dl>
+    <div class="charts">
+      <div class="chart" id="c-eq">
+        <h3>$10,000 invested</h3>
+        <div class="key"><span><i style="background:var(--accent)"></i>This strategy</span><span><i style="background:var(--bh)"></i>Just holding</span></div>
+        <div class="plot"></div>
+      </div>
+      <div class="chart" id="c-cf">
+        <h3>Against 2,000 random traders</h3>
+        <div class="key"><span><i style="background:var(--na)"></i>Random traders' total gain, same number of trades</span><span><i style="background:var(--accent)"></i>This strategy</span></div>
+        <div class="plot"></div>
+      </div>
+    </div>
+    <p class="lock" id="d-lock" hidden></p>
+  </section>
+
+  <section>
+    <h2>Every result</h2>
+    <p class="muted">Each cell shows the share of random traders the strategy beat on that market. Select a cell to inspect it.</p>
+    <div class="legend">
+      <span class="pill k-edge">Real edge</span>
+      <span class="pill k-close">Close call, probably luck</span>
+      <span class="pill k-luck">No better than luck</span>
+      <span class="pill k-always">Always in the market</span>
+    </div>
+    <div class="grid-scroll"><table class="matrix" id="matrix"></table></div>
+  </section>
+
+  <footer>Results are from years each strategy wasn't tuned on, after trading costs. Daily prices from Yahoo Finance. This is research, not financial advice.</footer>
+</div>
+
+<script id="data" type="application/json">/*DATA*/</script>
+<script>
+(function () {
+  const D = JSON.parse(document.getElementById("data").textContent);
+  const R = D.results, S = D.strategies;
+  const assets = D.assets.map(a => a.ticker);
+  const meta = {}; S.forEach(s => meta[s.id] = s);
+  const name = id => (meta[id] && meta[id].name) || id;
+  const $ = id => document.getElementById(id);
+  const pct = (v, d = 1) => v == null ? "—" : (v * 100).toFixed(d) + "%";
+  const money = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+  const beatShare = r => r.coin_flip ? Math.max(0, 1 - r.coin_flip.p_value) : null;
+  const marketName = { "SPY": "S&P 500", "QQQ": "Nasdaq 100", "IWM": "Small caps", "DIA": "Dow", "GLD": "Gold", "TLT": "Long bonds", "BTC-USD": "Bitcoin" };
+  const mkt = t => marketName[t] ? `${marketName[t]} (${t})` : t;
+
+  function kind(r) {
+    if (r.verdict === "PASS") return r.lockbox && r.lockbox.confirmed === false ? "close" : "edge";
+    if (r.verdict === "WEAK") return "close";
+    if (r.verdict === "FAIL") return "luck";
+    return "always";
+  }
+  const kindLabel = { edge: "Real edge", close: "Close call", luck: "No better than luck", always: "Always in the market" };
+
+  const tested = R.filter(r => r.strategy !== "buy_hold");
+  const cf = tested.filter(r => r.coin_flip);
+  const edges = tested.filter(r => kind(r) === "edge");
+  const close = tested.filter(r => kind(r) === "close");
+  const beatHold = tested.filter(r => r.beat_buy_hold).length;
+  const nStrats = S.filter(s => s.id !== "buy_hold").length;
+
+  $("stamp").textContent = "Backtest results · " + D.generated.slice(0, 10);
+  if (edges.length) {
+    const e = edges[0];
+    $("answer").className = "answer yes";
+    $("answer").textContent = `${edges.length === 1 ? "One strategy" : edges.length + " strategies"} beat random trading: ${name(e.strategy)} on ${mkt(e.asset)}${edges.length > 1 ? " and others" : ""}.`;
+  } else {
+    $("answer").textContent = `None of ${nStrats} strategies beat random trading once you allow for how many were tried.`;
+  }
+  $("f-strats").textContent = nStrats;
+  $("f-mkts").textContent = assets.length;
+  $("f-tests").textContent = tested.length;
+  $("f-close").textContent = close.length;
+  $("f-beat").textContent = `${beatHold}/${tested.length}`;
+
+  // ---------- leaderboard
+  const isEdge = r => kind(r) === "edge" ? 1 : 0;
+  const ranked = cf.slice().sort((a, b) => isEdge(b) - isEdge(a) || a.coin_flip.p_value - b.coin_flip.p_value).slice(0, 10);
+  const board = $("board"); const boardBtns = [];
+  ranked.forEach((r, i) => {
+    const b = document.createElement("button"); b.setAttribute("aria-pressed", "false");
+    const rank = document.createElement("span"); rank.className = "rank"; rank.textContent = i + 1;
+    const who = document.createElement("span"); who.className = "who";
+    const wn = document.createElement("b"); wn.textContent = name(r.strategy);
+    const wm = document.createElement("span"); wm.textContent = mkt(r.asset); who.append(wn, wm);
+    const meter = document.createElement("span"); meter.className = "meter";
+    const mt = document.createElement("span"); mt.textContent = `Beat ${pct(beatShare(r), 1)} of random traders`;
+    const bar = document.createElement("span"); bar.className = "bar";
+    const fill = document.createElement("i"); fill.style.width = (beatShare(r) * 100) + "%";
+    const mark = document.createElement("s"); bar.append(fill, mark); meter.append(mt, bar);
+    const ret = document.createElement("span"); ret.className = "ret"; ret.textContent = pct(r.oos.cagr) + " /yr";
+    const rs = document.createElement("span"); rs.textContent = "holding: " + pct(r.buy_hold_oos.cagr) + " /yr"; ret.appendChild(rs);
+    const pill = document.createElement("span"); pill.className = "pill k-" + kind(r); pill.textContent = kindLabel[kind(r)];
+    b.append(rank, who, meter, ret, pill);
+    b.addEventListener("click", () => select(r));
+    b._r = r; boardBtns.push(b); board.appendChild(b);
+  });
+
+  // ---------- grid
+  const m = $("matrix");
+  const hr = document.createElement("tr"); hr.appendChild(document.createElement("th"));
+  assets.forEach(a => { const th = document.createElement("th"); th.textContent = a; hr.appendChild(th); });
+  const thead = document.createElement("thead"); thead.appendChild(hr); m.appendChild(thead);
+  const tb = document.createElement("tbody"); m.appendChild(tb);
+  const famLabel = { trend: "Trend following", mean_reversion: "Buying dips", seasonal: "Calendar", breakout: "Breakouts", calendar: "Calendar", regime: "Market regime", volatility: "Volatility", pattern: "Price patterns", combo: "Combinations" };
+  const byFam = {};
+  S.filter(s => s.id !== "buy_hold").forEach(s => (byFam[s.family] = byFam[s.family] || []).push(s));
+  const gridBtns = [];
+  Object.keys(byFam).forEach(fam => {
+    const g = document.createElement("tr"); g.className = "group";
+    const gth = document.createElement("th"); gth.colSpan = assets.length + 1; gth.textContent = famLabel[fam] || fam.replace(/_/g, " "); g.appendChild(gth); tb.appendChild(g);
+    byFam[fam].forEach(s => {
+      const tr = document.createElement("tr");
+      const th = document.createElement("th"); th.className = "row"; th.scope = "row"; th.textContent = s.name; tr.appendChild(th);
+      assets.forEach(a => {
+        const td = document.createElement("td");
+        const r = R.find(x => x.strategy === s.id && x.asset === a);
+        if (r) {
+          const b = document.createElement("button"); const k = kind(r);
+          b.className = "k-" + k; b.setAttribute("aria-pressed", "false");
+          b.textContent = r.coin_flip ? pct(beatShare(r), 0) : "—";
+          b.setAttribute("aria-label", `${s.name} on ${a}: ${kindLabel[k]}`);
+          b.addEventListener("click", () => { select(r); $("d-title").scrollIntoView({ behavior: "smooth", block: "start" }); });
+          b._r = r; gridBtns.push(b); td.appendChild(b);
+        }
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  });
+
+  // ---------- detail
+  let current = null;
+  function num(label, val, sub) {
+    const d = document.createElement("div"); const dt = document.createElement("dt"); dt.textContent = label;
+    const dd = document.createElement("dd"); dd.textContent = val;
+    if (sub) { const s = document.createElement("small"); s.textContent = sub; dd.appendChild(s); }
+    d.append(dt, dd); return d;
+  }
+  function say(r) {
+    const n = name(r.strategy), where = mkt(r.asset), k = kind(r);
+    const vs = r.oos.cagr > r.buy_hold_oos.cagr ? "more" : "less";
+    if (k === "always") return `${n} is in the market almost all the time, so it can't be compared with random traders. It made ${pct(r.oos.cagr)} a year on ${where}, ${vs} than just holding (${pct(r.buy_hold_oos.cagr)}).`;
+    const share = pct(beatShare(r), 0);
+    const base = `${n} beat ${share} of random traders on ${where} and made ${pct(r.oos.cagr)} a year, ${vs} than just holding (${pct(r.buy_hold_oos.cagr)}). `;
+    if (k === "edge") return base + `It held up after allowing for every strategy tried, and on markets it was never searched on.`;
+    if (k === "close") return base + (r.verdict === "PASS" ? `It passed here but failed on fresh markets, so it was probably luck.` : `That looks good alone, but across ${cf.length} tests a few results this good happen by chance.`);
+    return base + `That's within the range random trading produces.`;
+  }
+  function select(r) {
+    current = r;
+    [...boardBtns, ...gridBtns].forEach(b => b.setAttribute("aria-pressed", String(b._r === r)));
+    $("d-title").textContent = `${name(r.strategy)} · ${mkt(r.asset)}`;
+    const p = $("d-pill"); p.className = "pill k-" + kind(r); p.textContent = kindLabel[kind(r)];
+    $("d-say").textContent = say(r);
+    const dates = D.bh_curves[r.asset].dates;
+    const years = (new Date(dates[dates.length - 1]) - new Date(dates[0])) / 3.156e10;
+    const last = r.eq[r.eq.length - 1], bhl = D.bh_curves[r.asset].bh.slice(-1)[0];
+    $("d-nums").replaceChildren(
+      num("$10,000 became", money(last * 1e4), "holding: " + money(bhl * 1e4)),
+      num("Return per year", pct(r.oos.cagr), "holding: " + pct(r.buy_hold_oos.cagr)),
+      num("Worst drop", pct(r.oos.max_dd, 0), "holding: " + pct(r.buy_hold_oos.max_dd, 0)),
+      num("Trades per year", r.oos.n_trades == null ? "—" : (r.oos.n_trades / years).toFixed(1), "wins: " + pct(r.oos.win_rate, 0)),
+      num("Time in the market", pct(r.oos.exposure, 0)));
+    const lk = $("d-lock");
+    if (r.lockbox) {
+      lk.hidden = false;
+      const ok = r.lockbox.confirmed;
+      lk.textContent = `On markets it was never searched on (${r.lockbox.assets.map(a => a.ticker).join(", ")}), it ${ok ? "held up" : "did not hold up"}: combined chance of luck ${pct(r.lockbox.fisher_p, 1)}.`;
+    } else lk.hidden = true;
+    draw();
+  }
+
+  // ---------- charts
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  function ticks(lo, hi, n) {
+    const span = hi - lo || 1, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1, 2, 2.5, 5, 10].map(x => x * mag).find(x => span / x <= n) || 10 * mag;
+    const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(10)); return out;
+  }
+  const tipOf = box => { let t = box.querySelector(".tip"); if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; box.appendChild(t); } return t; };
+  const kfmt = v => v >= 1000 ? "$" + (v / 1000).toFixed(v >= 10000 ? 0 : 1) + "k" : "$" + Math.round(v);
+
+  function drawEquity(r) {
+    const box = $("c-eq"), plot = box.querySelector(".plot");
+    const W = Math.max(280, plot.clientWidth || 480), H = 230, L = 48, Rp = 10, T = 10, B = 24;
+    const c = D.bh_curves[r.asset], dates = c.dates, a = r.eq.map(v => v == null ? null : v * 1e4), b = c.bh.map(v => v * 1e4);
+    const vals = a.concat(b).filter(v => v != null), lo = Math.min(...vals), hi = Math.max(...vals);
+    const x = i => L + (W - L - Rp) * i / (dates.length - 1), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo || 1));
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Growth of $10,000" });
+    ticks(lo, hi, 4).forEach(v => {
+      svg.appendChild(el("line", { x1: L, x2: W - Rp, y1: y(v), y2: y(v), stroke: "var(--line)" }));
+      const t = el("text", { x: L - 6, y: y(v) + 4, "text-anchor": "end" }); t.textContent = kfmt(v); svg.appendChild(t);
+    });
+    let prev = null; dates.forEach((d, i) => { const yr = d.slice(0, 4);
+      if (yr !== prev && +yr % 2 === 0 && x(i) > L + 12 && x(i) < W - 18) { const t = el("text", { x: x(i), y: H - 6, "text-anchor": "middle" }); t.textContent = yr; svg.appendChild(t); }
+      prev = yr; });
+    const path = arr => arr.map((v, i) => v == null ? "" : (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("");
+    svg.appendChild(el("path", { d: path(b), fill: "none", stroke: "var(--bh)", "stroke-width": 1.5 }));
+    svg.appendChild(el("path", { d: path(a), fill: "none", stroke: "var(--accent)", "stroke-width": 2 }));
+    svg.appendChild(el("circle", { cx: x(a.length - 1), cy: y(a[a.length - 1]), r: 3.5, fill: "var(--accent)" }));
+    const hair = el("line", { y1: T, y2: H - B, stroke: "var(--muted)", "stroke-dasharray": "2 3", visibility: "hidden" }); svg.appendChild(hair);
+    plot.replaceChildren(svg);
+    const tip = tipOf(box);
+    svg.addEventListener("pointermove", e => {
+      const rc = svg.getBoundingClientRect(), px = (e.clientX - rc.left) * W / rc.width;
+      const i = Math.max(0, Math.min(dates.length - 1, Math.round((px - L) / (W - L - Rp) * (dates.length - 1))));
+      hair.setAttribute("x1", x(i)); hair.setAttribute("x2", x(i)); hair.setAttribute("visibility", "visible");
+      tip.hidden = false; tip.textContent = `${dates[i]}  strategy ${money(a[i])}  holding ${money(b[i])}`;
+      const bx = box.getBoundingClientRect();
+      tip.style.left = Math.max(120, Math.min(bx.width - 120, e.clientX - bx.left)) + "px";
+      tip.style.top = (rc.top - bx.top + y(a[i]) * rc.height / H) + "px";
+    });
+    svg.addEventListener("pointerleave", () => { tip.hidden = true; hair.setAttribute("visibility", "hidden"); });
+  }
+
+  function drawCoin(r) {
+    const box = $("c-cf"), plot = box.querySelector(".plot"), c = r.coin_flip;
+    if (!c) { const p = document.createElement("p"); p.className = "muted";
+      p.textContent = "This strategy is almost always in the market, so random traders with the same time in the market would just be holding. Compare it with the holding line instead.";
+      plot.replaceChildren(p); tipOf(box).hidden = true; return; }
+    const W = Math.max(280, plot.clientWidth || 480), H = 230, L = 34, Rp = 12, T = 24, B = 24;
+    const toPct = v => (Math.exp(v) - 1) * 100;
+    const e = c.hist.edges.map(toPct), n = c.hist.counts, sv = toPct(c.strategy_value);
+    const lo = Math.min(e[0], sv), hi = Math.max(e[e.length - 1], sv), maxN = Math.max(...n);
+    const x = v => L + (W - L - Rp) * (v - lo) / (hi - lo || 1), y = v => T + (H - T - B) * (1 - v / maxN);
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, width: "100%", role: "img", "aria-label": "Strategy versus random traders" });
+    svg.appendChild(el("line", { x1: L, x2: W - Rp, y1: y(0), y2: y(0), stroke: "var(--line)" }));
+    ticks(lo, hi, 5).forEach(v => { const t = el("text", { x: x(v), y: H - 6, "text-anchor": "middle" }); t.textContent = (v > 0 ? "+" : "") + Math.round(v) + "%"; svg.appendChild(t); });
+    const tip = tipOf(box);
+    n.forEach((k, i) => {
+      const x0 = x(e[i]), x1 = x(e[i + 1]);
+      const rect = el("rect", { x: x0 + 0.5, y: y(k), width: Math.max(1, x1 - x0 - 1), height: Math.max(0, y(0) - y(k)), fill: "var(--na)", "fill-opacity": e[i] >= sv ? 0.85 : 0.35 });
+      rect.addEventListener("pointerenter", ev => { tip.hidden = false; tip.textContent = `${k} random traders made ${Math.round(e[i])}% to ${Math.round(e[i + 1])}%`;
+        const bx = box.getBoundingClientRect(), rc = svg.getBoundingClientRect();
+        tip.style.left = Math.max(130, Math.min(bx.width - 130, ev.clientX - bx.left)) + "px"; tip.style.top = (rc.top - bx.top + y(k) * rc.height / H) + "px"; });
+      rect.addEventListener("pointerleave", () => tip.hidden = true);
+      svg.appendChild(rect);
+    });
+    svg.appendChild(el("line", { x1: x(sv), x2: x(sv), y1: T - 4, y2: H - B, stroke: "var(--accent)", "stroke-width": 2.5 }));
+    const lab = el("text", { x: x(sv), y: T - 10, "text-anchor": x(sv) > W - 100 ? "end" : (x(sv) < L + 70 ? "start" : "middle"), style: "fill:var(--accent);font-weight:600" });
+    lab.textContent = `strategy ${sv > 0 ? "+" : ""}${Math.round(sv)}% · beat ${pct(beatShare(r), 0)}`; svg.appendChild(lab);
+    plot.replaceChildren(svg);
+  }
+  function draw() { if (current) { drawEquity(current); drawCoin(current); } }
+  let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 120); });
+
+  select(ranked[0]);
+})();
+</script>
