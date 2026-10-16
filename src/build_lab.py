@@ -82,6 +82,25 @@ ABOUT = {
 }
 
 
+PLAIN = {'MR-IBS': ("Buys the S&P 500 fund (SPY) on days it closes near the bottom of that day's price range, and sells once it closes near the top.", {'a': ('Buy when it closes in the…', 'Lower waits for deeper dips, so it trades less often.', {0.1: "bottom 10% of the day's range", 0.2: "bottom 20% of the day's range", 0.3: "bottom 30% of the day's range"}), 'b': ('Sell when it closes above…', 'Higher holds on longer, waiting for a stronger bounce.', {0.5: "the middle of the day's range", 0.7: "70% of the day's range", 0.8: "80% of the day's range"})}), 'MR-WR': ('Buys the Nasdaq 100 fund (QQQ) right after a short, sharp drop, and sells once it bounces back.', {'n': ('How far back to look', 'Shorter reacts to smaller, quicker dips.', {2: 'last 2 days', 5: 'last 5 days', 10: 'last 10 days'}), 'trend': ('Only buy in an uptrend?', 'Yes skips dips that happen during a falling market.', {True: 'yes, only when above its 200-day average', False: 'no, buy any dip'})}), 'CAL-JAN': ('Always holds the Nasdaq 100 fund (QQQ) in January, then stays in for the rest of the year only if January started well.', {'rule': ('What counts as a good January', 'Decides whether to stay invested from February to December.', {'first5': 'the first 5 trading days were up', 'january': 'the whole month was up'})}), 'CAL-MIX': ('Holds gold (GLD) only on a few calendar days: around month-ends, before holidays and around Federal Reserve meetings. Otherwise it sits in cash.', {'parts': ('Which days to hold', 'More kinds of days means more time in the market.', {('tom', 'fomc'): 'month-ends and Fed days', ('tom', 'holiday'): 'month-ends and pre-holiday days', ('holiday', 'fomc'): 'pre-holiday days and Fed days', ('tom', 'holiday', 'fomc'): 'all three'}), 'halloween_gate': ('Only November to April?', 'Yes skips the summer months, which history says are weaker.', {True: 'yes, skip May to October', False: 'no, all year'})}), 'TS-TREND': ('Holds Bitcoin while its price is above its average price of recent months, and sells when it drops below.', {'n': ('Length of the average', 'Longer reacts more slowly but gives fewer false alarms.', {50: '50 days', 100: '100 days', 150: '150 days', 200: '200 days', 250: '250 days'})}), 'TS-VOL': ('Holds the S&P 500 fund (SPY) while it is in an uptrend, and holds less of it when the market gets jumpy.', {'target': ('How much risk to allow', 'Higher means it holds more SPY most of the time.', {0.1: 'low (10% swings a year)', 0.15: 'medium (15% a year)', 0.2: 'high (20% a year)'})})}
+
+
+def _plain_params(code, combos):
+    """Plain-language label, help and value names for each setting, keyed like the page's axes."""
+    if code not in PLAIN:
+        return {}
+    out = {}
+    for k, (label, help_, vals) in PLAIN[code][1].items():
+        out[k] = {"label": label, "help": help_,
+                  "values": {_js(list(v) if isinstance(v, tuple) else v): t for v, t in vals.items()}}
+    return out
+
+
+def _js(v):
+    """Same text as the browser's JSON.stringify, so settings match on the page."""
+    return json.dumps(list(v) if isinstance(v, tuple) else v, separators=(",", ":"))
+
+
 def _axis_key(x):
     v = json.loads(x)
     return (0, float(v), "") if isinstance(v, (int, float)) and not isinstance(v, bool) else (1, 0.0, x)
@@ -140,7 +159,8 @@ def main():
         book.append({"code": b["code"], "id": b["id"], "name": st["name"], "market": b["market"],
                      "desc": st["description"], "family": fam, "freq": freq, "source": src,
                      "signal": b["signal"], "edge": b["edge"], "kills": b["kills"],
-                     "axes": {k: sorted({json.dumps(c["params"][k]) for c in combos}, key=_axis_key)
+                     "plain": PLAIN[b["code"]][0], "pparams": _plain_params(b["code"], combos),
+                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key)
                               for k in st["grid"][0]},
                      "combos": combos, "chosen": chosen, "verdict": v})
     # the self-improving agent's current best idea
@@ -162,6 +182,8 @@ def main():
                         [f"EXIT   {s['exit']['cond']['feature']} {s['exit']['cond']['op']} p{s['exit']['cond']['q']}"
                          f" or after {s['exit']['max_hold']} sessions"])
                      + ["", "pN = N-th percentile of that feature on the tuning years"],
+                     "plain": "An idea the self-learning agent came up with on its own: " + AS.describe(s).split(": ", 1)[1] + ".",
+                     "pparams": {},
                      "edge": f"Found by the agent after {len(mem.trials)} trials. Its score on the tuning years, "
                              f"deflated for every trial run, is {mem.current_reward(t):.2f} (0.95 is needed before a held-out test).",
                      "kills": ["Chosen as the best of hundreds of tries: some of its score is luck.",

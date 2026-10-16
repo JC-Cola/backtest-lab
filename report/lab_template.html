@@ -25,6 +25,16 @@
 
 body { background: var(--bg); color: var(--ink); font: 13px/1.5 var(--f-sans); }
 [hidden] { display: none !important; }
+body.simple [data-pro], body:not(.simple) [data-simple] { display: none !important; }
+.verdict-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.verdict-card p { margin: 0; font-size: 0.95rem; max-width: 75ch; }
+.stats.s4 .stat:nth-child(4n) { border-right: 0; }
+.stats.s4 .stat { border-bottom: 0; }
+.param .help { font-size: 0.72rem; color: var(--faint); }
+.param .valtxt { font-size: 0.8rem; color: var(--ink); }
+.chips button .star, .param .star { color: var(--amber); }
+.intro { font-size: 0.78rem; color: var(--muted); }
+.intro .star { color: var(--amber); }
 .mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 .cap { font: 500 0.68rem/1 var(--f-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
 button { font: inherit; color: inherit; }
@@ -153,6 +163,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   .stat:nth-child(2n) { border-right: 0; }
   .stat:nth-last-child(-n+4) { border-bottom: 1px solid var(--line); }
   .stat:nth-last-child(-n+2) { border-bottom: 0; }
+  .stats.s4 .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
   .two { grid-template-columns: minmax(0, 1fr); }
   .engine { margin-left: 0; }
 }
@@ -165,12 +176,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <button role="tab" id="tab-research" aria-selected="false">Research</button>
     <button role="tab" id="tab-backtest" aria-selected="true">Backtest</button>
   </div>
-  <div class="seg" id="window" aria-label="Which years to show">
+  <div class="seg" id="mode" aria-label="How much detail to show">
+    <button data-m="simple" aria-pressed="true">Simple</button>
+    <button data-m="detail" aria-pressed="false">Detailed</button>
+  </div>
+  <div class="seg" id="window" aria-label="Which years to show" data-pro>
     <button data-w="test" aria-pressed="true">Test years</button>
     <button data-w="tune" aria-pressed="false">Tuning years</button>
     <button data-w="all" aria-pressed="false">All</button>
   </div>
-  <div class="engine"><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
+  <div class="engine" data-pro><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
 </header>
 
 <main id="view-backtest" class="lab">
@@ -178,10 +193,11 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <span class="cap">Strategy book</span>
     <div class="book" id="book"></div>
     <div class="params">
-      <span class="cap">Parameters</span>
+      <span class="cap">Settings</span>
+      <p class="intro" id="pintro"></p>
       <div id="params"></div>
       <div class="warn" id="warn" hidden></div>
-      <button class="reset" id="reset">Reset to tuning-year choice</button>
+      <button class="reset" id="reset">Back to the ★ setting</button>
       <p class="note" id="pnote"></p>
     </div>
   </aside>
@@ -190,18 +206,20 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="head">
       <h1><span class="tag" id="h-code">—</span><span id="h-name">—</span></h1>
       <p id="h-desc">—</p>
-      <div class="meta" id="h-meta"></div>
+      <div class="meta" id="h-meta" data-pro></div>
     </div>
-    <div class="panel"><div class="stats" id="stats"></div></div>
+    <div class="panel verdict-card" data-simple><span class="cap">Verdict</span><p id="s-verdict"></p></div>
+    <div class="panel" data-simple><div class="stats s4" id="s-stats"></div></div>
+    <div class="panel" data-pro><div class="stats" id="stats"></div></div>
     <div class="panel">
-      <div class="ph"><span class="cap">Equity curve</span><span class="key"><span><i style="background:var(--accent)"></i>strategy</span><span><i style="background:var(--bench)"></i>buy &amp; hold</span><span id="k-shade"><i style="background:var(--shade);height:8px;vertical-align:0"></i>tuning years</span></span><span class="r" id="eq-r"></span></div>
+      <div class="ph"><span class="cap" id="eq-title">Equity curve</span><span class="key"><span><i style="background:var(--accent)"></i>strategy</span><span><i style="background:var(--bench)"></i>buy &amp; hold</span><span id="k-shade"><i style="background:var(--shade);height:8px;vertical-align:0"></i>tuning years</span></span><span class="r" id="eq-r"></span></div>
       <div class="chart" id="c-eq"><canvas height="230"></canvas></div>
     </div>
-    <div class="panel">
+    <div class="panel" data-pro>
       <div class="ph"><span class="cap">Drawdown</span><span class="r" id="dd-r"></span></div>
       <div class="chart" id="c-dd"><canvas height="120"></canvas></div>
     </div>
-    <div class="two">
+    <div class="two" data-pro>
       <div class="panel">
         <div class="ph"><span class="cap">Rolling Sharpe · 63d</span><span class="r" id="rs-r"></span></div>
         <div class="chart" id="c-rs"><canvas height="170"></canvas></div>
@@ -211,23 +229,23 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         <div class="chart" id="c-tp"><canvas height="170"></canvas></div>
       </div>
     </div>
-    <div class="panel">
+    <div class="panel" data-pro>
       <div class="ph"><span class="cap">Monthly returns</span><span class="r" id="mr-r"></span></div>
       <div class="heat-wrap"><table class="heat" id="heat"></table></div>
     </div>
-    <div class="panel">
+    <div class="panel" data-pro>
       <div class="ph"><span class="cap">Year by year</span><span class="r">net of costs</span></div>
       <div class="yy-wrap"><table class="yy" id="yy"></table></div>
     </div>
   </section>
 
   <aside class="col right">
-    <div style="display:flex;flex-direction:column;gap:8px;min-width:0"><span class="cap">Signal definition</span><div class="code" id="sig"></div></div>
-    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Live parameters</span><div class="kv" id="live"></div></div>
-    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Against 2,000 random traders</span><div class="kv" id="rand"></div></div>
-    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Where the edge comes from</span><p class="prose" id="edge" style="margin:0"></p></div>
-    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">What kills it</span><ul class="kills" id="kills"></ul></div>
-    <div class="verdict"><span class="cap">Verdict</span><div><span class="badge" id="v-badge">—</span></div><p id="v-text"></p></div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-width:0" data-pro><span class="cap">Signal definition</span><div class="code" id="sig"></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0" data-pro><span class="cap">Live parameters</span><div class="kv" id="live"></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0" data-pro><span class="cap">Against 2,000 random traders</span><div class="kv" id="rand"></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Why it might work</span><p class="prose" id="edge" style="margin:0"></p></div>
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Why it might fail</span><ul class="kills" id="kills"></ul></div>
+    <div class="verdict" data-pro><span class="cap">Verdict</span><div><span class="badge" id="v-badge">—</span></div><p id="v-text"></p></div>
   </aside>
 </main>
 
@@ -252,11 +270,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const sgn = (v, d = 1) => v == null || !isFinite(v) ? "—" : (v > 0 ? "+" : "") + (v * 100).toFixed(d) + "%";
   const f2 = v => v == null || !isFinite(v) ? "—" : v.toFixed(2);
   const cls = v => v > 0 ? "pos" : v < 0 ? "neg" : "";
-  let cur = 0, combo = 0, win = "test";
-  try { const s = localStorage.getItem("lab-window"); if (s) win = s; } catch (e) {}
+  let cur = 0, combo = 0, win = "test", mode = "simple";
+  try { const s = localStorage.getItem("lab-window"); if (s) win = s; const m = localStorage.getItem("lab-mode"); if (m) mode = m; } catch (e) {}
+  const simple = () => mode === "simple";
+  const money = v => "$" + Math.round(v).toLocaleString("en-US");
 
   // ---------------------------------------------------------------- math
   function range(mk) {
+    if (simple()) win = "test";
     const d = D.markets[mk].dates, n = d.length;
     const oos = d.findIndex(x => x >= D.markets[mk].oos_start), ise = d.findIndex(x => x > D.markets[mk].is_end);
     if (win === "test") return [oos, n];
@@ -370,11 +391,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       const w = windowSeries(b, b.chosen), st = stats(w.r, w.mk.ann);
       const btn = document.createElement("button"); btn.className = "card"; btn.setAttribute("aria-pressed", String(i === cur));
       const code = document.createElement("span"); code.className = "cd"; code.textContent = b.code + " · " + b.market;
-      const sr = document.createElement("span"); sr.className = "sr"; sr.style.color = `var(${vcolor(b)})`; sr.textContent = "SR " + f2(st.sharpe);
+      const sr = document.createElement("span"); sr.className = "sr"; sr.style.color = `var(${vcolor(b)})`;
+      sr.textContent = simple() ? sgn(st.cagr) + "/yr" : "SR " + f2(st.sharpe);
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = b.name;
       const cv = document.createElement("canvas"); cv.setAttribute("height", "22");
       btn.append(code, sr, nm, cv); box.appendChild(btn);
-      btn.addEventListener("click", () => { cur = i; combo = b.chosen; renderAll(); });
+      btn.addEventListener("click", () => { cur = i; combo = b.chosen; renderParams(); renderStrategy(); });
       requestAnimationFrame(() => spark(cv, st.curve.filter((_, k) => k % 5 === 0), css(vcolor(b))));
     });
   }
@@ -382,43 +404,70 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   // ---------------------------------------------------------------- parameters (data-mining guard)
   function comboFor(b, sel) { return b.combos.findIndex(c => Object.keys(sel).every(k => JSON.stringify(c.params[k]) === sel[k])); }
   const show = s => { try { const v = JSON.parse(s); return Array.isArray(v) ? v.join("+") : String(v); } catch (e) { return s; } };
+  const selOf = b => { const sel = {}; Object.keys(b.axes).forEach(k => sel[k] = JSON.stringify(b.combos[combo].params[k])); return sel; };
+  const chosenSel = b => { const sel = {}; Object.keys(b.axes).forEach(k => sel[k] = JSON.stringify(b.combos[b.chosen].params[k])); return sel; };
+  const plainVal = (b, k, v) => (b.pparams[k] && b.pparams[k].values[v]) || show(v);
+  let controls = [];
+  let pending = 0;
+  const scheduleRender = () => { cancelAnimationFrame(pending); pending = requestAnimationFrame(renderStrategy); };
+
+  // Build the controls once per strategy; changes update them in place (never rebuilt mid-drag).
   function renderParams() {
-    const b = S(), box = $("params"); box.replaceChildren();
+    const b = S(), box = $("params"); box.replaceChildren(); controls = [];
     const keys = Object.keys(b.axes);
-    const sel = {}; keys.forEach(k => sel[k] = JSON.stringify(b.combos[combo].params[k]));
-    if (!keys.length) { const p = document.createElement("p"); p.className = "note"; p.textContent = "The agent's idea has fixed settings."; box.appendChild(p); }
+    $("pintro").replaceChildren();
+    if (keys.length) {
+      const star = Object.assign(document.createElement("span"), { className: "star", textContent: "★" });
+      $("pintro").append("Settings decide when the strategy buys and sells. The ", star,
+        ` setting was picked using only ${b.market === "BTC-USD" ? "2014–2020" : "2005–2016"}, before the test years. Try others to see how much results depend on the choice.`);
+    } else $("pintro").textContent = "The agent's idea has fixed settings.";
+    const cs = chosenSel(b);
     keys.forEach(k => {
-      const vals = b.axes[k], numeric = vals.every(v => typeof JSON.parse(v) === "number");
+      const pp = b.pparams[k] || {}, vals = b.axes[k], numeric = vals.every(v => typeof JSON.parse(v) === "number");
       const wrap = document.createElement("div"); wrap.className = "param";
       const row = document.createElement("div"); row.className = "row";
-      const lab = document.createElement("span"); lab.textContent = k.replace(/_/g, " ");
-      const val = document.createElement("b"); val.textContent = show(sel[k]); row.append(lab, val); wrap.appendChild(row);
-      const apply = v => { const s2 = { ...sel, [k]: v }; const ci = comboFor(b, s2); if (ci >= 0) { combo = ci; renderStrategy(); } };
+      row.appendChild(Object.assign(document.createElement("span"), { textContent: pp.label || k.replace(/_/g, " ") }));
+      const valtxt = document.createElement("span"); valtxt.className = "valtxt";
+      wrap.append(row, valtxt);
+      const ctl = { k, vals, valtxt, wrap };
       if (numeric && vals.length > 2) {
         const inp = document.createElement("input"); inp.type = "range"; inp.min = 0; inp.max = vals.length - 1; inp.step = 1; inp.id = "p-" + k;
-        inp.value = vals.indexOf(sel[k]); inp.setAttribute("aria-label", k);
-        inp.addEventListener("input", () => apply(vals[+inp.value])); wrap.appendChild(inp);
+        inp.setAttribute("aria-label", pp.label || k);
+        inp.addEventListener("input", () => apply(k, vals[+inp.value]));
+        ctl.input = inp; wrap.appendChild(inp);
       } else {
-        const ch = document.createElement("div"); ch.className = "chips";
-        vals.forEach(v => { const bt = document.createElement("button"); bt.textContent = show(v); bt.setAttribute("aria-pressed", String(v === sel[k]));
-          bt.addEventListener("click", () => apply(v)); ch.appendChild(bt); });
+        const ch = document.createElement("div"); ch.className = "chips"; ctl.buttons = [];
+        vals.forEach(v => { const bt = document.createElement("button");
+          bt.append(plainVal(b, k, v)); if (v === cs[k]) bt.append(" ", Object.assign(document.createElement("span"), { className: "star", textContent: "★" }));
+          bt.addEventListener("click", () => apply(k, v)); ch.appendChild(bt); ctl.buttons.push([v, bt]); });
         wrap.appendChild(ch);
       }
-      box.appendChild(wrap);
+      if (pp.help) wrap.appendChild(Object.assign(document.createElement("span"), { className: "help", textContent: pp.help }));
+      controls.push(ctl); box.appendChild(wrap);
+    });
+    updateParams();
+  }
+  function apply(k, v) {
+    const b = S(), sel = { ...selOf(b), [k]: v }, ci = comboFor(b, sel);
+    if (ci >= 0 && ci !== combo) { combo = ci; updateParams(); scheduleRender(); }
+  }
+  function updateParams() {
+    const b = S(), sel = selOf(b), cs = chosenSel(b);
+    controls.forEach(c => {
+      c.valtxt.textContent = plainVal(b, c.k, sel[c.k]) + (sel[c.k] === cs[c.k] ? "  ★" : "");
+      if (c.input && +c.input.value !== c.vals.indexOf(sel[c.k])) c.input.value = c.vals.indexOf(sel[c.k]);
+      if (c.buttons) c.buttons.forEach(([v, bt]) => bt.setAttribute("aria-pressed", String(v === sel[c.k])));
     });
     const chosen = combo === b.chosen, warn = $("warn");
-    $("reset").hidden = chosen || !keys.length;
+    $("reset").hidden = chosen || !controls.length;
     if (!chosen) {
-      const all = b.combos.map((c, i) => stats(windowSeries(b, i).r, D.markets[b.market].ann).sharpe).sort((x, y) => x - y);
+      const all = b.combos.map((c, i) => stats(windowSeries(b, i).r, D.markets[b.market].ann).cagr).sort((x, y) => x - y);
       const med = all[Math.floor(all.length / 2)];
-      warn.hidden = false;
-      warn.innerHTML = "";
-      const t = document.createElement("span");
-      t.append(Object.assign(document.createElement("b"), { textContent: "Picking by eye. " }),
-        `These settings were not the ones chosen on the tuning years. Choosing settings after seeing results is data-mining. The middle of all ${b.combos.length} settings scores a Sharpe of ${f2(med)} here.`);
-      warn.appendChild(t);
+      warn.hidden = false; warn.replaceChildren();
+      warn.append(Object.assign(document.createElement("b"), { textContent: "You're now choosing by looking at results. " }),
+        `Picking whichever setting looks best after the fact is how backtests fool people. Across all ${b.combos.length} settings, the typical one made ${sgn(med)} a year here.`);
     } else warn.hidden = true;
-    $("pnote").textContent = keys.length ? `Each setting below was fixed on ${b.market === "BTC-USD" ? "2014–2020" : "2005–2016"} before the test years were run.` : "";
+    $("pnote").textContent = "";
   }
 
   // ---------------------------------------------------------------- center
@@ -460,7 +509,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     $("k-shade").hidden = !shade;
     $("eq-r").textContent = `${sgn(st.total, 0)} vs holding ${sgn(bh.total, 0)}`;
     lineChart($("c-eq"), [{ y: st.curve, color: css("--accent"), width: 1.6, fill: true, label: "strategy" }, { y: bh.curve, color: css("--bench"), width: 1.1, label: "hold" }],
-      { dates: w.dates, fmt: v => v == null ? "—" : v.toFixed(v >= 10 ? 0 : 2) + "×", shade });
+      { dates: w.dates, fmt: v => v == null ? "—" : simple() ? "$" + (v * 10).toFixed(v >= 10 ? 0 : 1) + "k" : v.toFixed(v >= 10 ? 0 : 2) + "×", shade });
     $("dd-r").textContent = `max ${pct(st.mdd)} · longest ${st.longest}d`;
     lineChart($("c-dd"), [{ y: st.dd, color: css("--neg"), fill: true }], { dates: w.dates, fmt: v => v == null ? "—" : Math.round(v * 100) + "%", zero: true, shade });
     const rs = w.r.map((_, i) => { if (i < 62) return null; const s = stats(w.r.slice(i - 62, i + 1), mk.ann); return s.sharpe; });
@@ -493,7 +542,35 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       [[y, ""], [sgn(s.total), cls(s.total)], [sgn(sb.total), ""], [f2(s.sharpe), ""], [pct(s.mdd), "neg"], [nt, ""]].forEach(([t, c]) => row.appendChild(Object.assign(document.createElement("td"), { textContent: t, className: c })));
       yy.appendChild(row); });
     renderRight(b, st, bh);
-    renderParams();
+    renderSimple(b, w, st, bh, expo);
+  }
+  function renderSimple(b, w, st, bh, expo) {
+    $("h-desc").textContent = simple() ? b.plain : b.desc;
+    $("eq-title").textContent = simple() ? "What $10,000 became" : "Equity curve";
+    const name = { SPY: "the S&P 500 fund", QQQ: "the Nasdaq 100 fund", GLD: "gold", "BTC-USD": "Bitcoin" }[b.market] || b.market;
+    $("s-stats").replaceChildren(
+      tile("$10,000 became", money(1e4 * (1 + st.total)), "just holding: " + money(1e4 * (1 + bh.total))),
+      tile("Per year", sgn(st.cagr), "just holding: " + sgn(bh.cagr), cls(st.cagr)),
+      tile("Worst drop", pct(st.mdd, 0), "just holding: " + pct(bh.mdd, 0), "neg"),
+      tile("Time invested", pct(expo, 0), "the rest of the time in cash"));
+    const v = b.verdict, years = `${w.dates[0].slice(0, 4)}–${w.dates[w.dates.length - 1].slice(0, 4)}`;
+    const vsHold = st.cagr > bh.cagr ? `It also made more than simply holding ${name}` : `It made less than simply holding ${name}`;
+    const nums = ` (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year, ${years}).`;
+    const lead = {
+      PASS: "Real edge.",
+      WEAK: "Probably luck.",
+      FAIL: "No edge.",
+      AGENT: "Still being researched.",
+    }[v.verdict] || "";
+    const body = {
+      PASS: " It beat random trading even after allowing for every strategy tested.",
+      WEAK: ` It beat ${pct(1 - (v.p ?? 1), 0)} of 2,000 random traders, which looks good alone, but after testing ${D.research.hunt_tests} strategy-market pairs a few results this good always show up by chance.`,
+      FAIL: " It did no better than buying and selling on random days.",
+      AGENT: " The self-learning agent found it, but it has not yet earned a test on unseen years, so treat these numbers as a sketch.",
+    }[v.verdict] || "";
+    const fresh = v.fresh && v.fresh.confirmed ? " It did beat random timing on data nobody had looked at, but the edge is small." : "";
+    const off = combo !== b.chosen ? " (The verdict is for the ★ setting.)" : "";
+    $("s-verdict").textContent = lead + body + fresh + " " + vsHold + nums + off;
   }
 
   // ---------------------------------------------------------------- right column
@@ -540,7 +617,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
 
   // ---------------------------------------------------------------- wiring
-  function renderAll() { renderBook(); renderStrategy(); }
+  function renderAll() { document.body.classList.toggle("simple", simple()); renderBook(); renderStrategy(); }
   document.querySelectorAll("#window button").forEach(bt => {
     bt.setAttribute("aria-pressed", String(bt.dataset.w === win));
     bt.addEventListener("click", () => { win = bt.dataset.w; try { localStorage.setItem("lab-window", win); } catch (e) {}
@@ -552,10 +629,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("window").hidden = k !== "backtest";
     if (k === "backtest") renderStrategy();
   }));
-  $("reset").addEventListener("click", () => { combo = S().chosen; renderStrategy(); });
+  $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
   $("s-gen").textContent = "Results generated " + D.generated.slice(0, 10);
+  document.querySelectorAll("#mode button").forEach(bt => {
+    bt.setAttribute("aria-pressed", String(bt.dataset.m === mode));
+    bt.addEventListener("click", () => { mode = bt.dataset.m; try { localStorage.setItem("lab-mode", mode); } catch (e) {}
+      document.querySelectorAll("#mode button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
+      document.querySelectorAll("#window button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.w === win))); renderAll(); });
+  });
   combo = S().chosen;
-  renderResearch(); renderAll();
+  renderResearch(); renderParams(); renderAll();
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", renderAll);
   new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
