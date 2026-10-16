@@ -59,6 +59,11 @@ def deflated_sharpe(r, trial_sharpes_daily) -> float | None:
     sr = r.mean() / sd
     z = (r - r.mean()) / sd
     skew, kurt = float(np.mean(z**3)), float(np.mean(z**4))
+    return deflated_sharpe_moments(sr, T, skew, kurt, trial_sharpes_daily)
+
+
+def deflated_sharpe_moments(sr, T, skew, kurt, trial_sharpes_daily) -> float:
+    """Same as deflated_sharpe, from a trial's stored moments (lets old trials be re-deflated)."""
     n = len(trial_sharpes_daily)
     nd = NormalDist()
     sr0 = 0.0
