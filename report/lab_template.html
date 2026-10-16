@@ -306,7 +306,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 
   // ---------------------------------------------------------------- canvas charts
   function setup(cv) {
-    const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = +cv.getAttribute("height");
+    if (!cv.dataset.h) cv.dataset.h = cv.getAttribute("height");  // CSS height, kept apart from the pixel buffer size
+    const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = +cv.dataset.h;
     cv.style.height = h + "px"; cv.width = w * dpr; cv.height = h * dpr;
     const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); return [g, w, h];
   }
