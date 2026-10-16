@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Backtest Strategy Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,7 +71,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .card .nm { grid-column: 1 / -1; font-weight: 500; font-size: 0.82rem; }
 .card canvas { grid-column: 1 / -1; width: 100%; height: 22px; display: block; }
 
-.params { display: flex; flex-direction: column; gap: 12px; border-top: 1px solid var(--line); padding-top: 12px; }
+.params { display: flex; flex-direction: column; gap: 10px; padding: 0 12px 12px; }
+.params > .ph { padding: 9px 0 0; align-items: center; }
+.params .intro { margin: 0; }
+#params { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px 20px; }
 .param { display: flex; flex-direction: column; gap: 6px; }
 .param .row { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); }
 .param .row b { font: 500 0.76rem var(--f-mono); color: var(--accent); }
@@ -81,8 +85,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .chips button:focus-visible { outline: 2px solid var(--accent); }
 .warn { font-size: 0.78rem; border: 1px solid var(--amber); background: var(--amber-soft); color: var(--ink); border-radius: 6px; padding: 8px 10px; }
 .warn b { color: var(--amber); }
-.reset { all: unset; cursor: pointer; text-align: center; font: 500 0.68rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase;
-  border: 1px solid var(--line); border-radius: 4px; padding: 8px; color: var(--muted); }
+.reset { all: unset; cursor: pointer; text-align: center; font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid var(--line); border-radius: 4px; padding: 5px 9px; color: var(--muted); }
 .reset:hover { color: var(--ink); border-color: var(--muted); }
 .reset:focus-visible { outline: 2px solid var(--accent); }
 .note { font-size: 0.74rem; color: var(--muted); }
@@ -192,14 +196,6 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <aside class="col left">
     <span class="cap">Strategy book</span>
     <div class="book" id="book"></div>
-    <div class="params">
-      <span class="cap">Settings</span>
-      <p class="intro" id="pintro"></p>
-      <div id="params"></div>
-      <div class="warn" id="warn" hidden></div>
-      <button class="reset" id="reset">Back to the ★ setting</button>
-      <p class="note" id="pnote"></p>
-    </div>
   </aside>
 
   <section class="col center">
@@ -213,7 +209,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="panel" data-pro><div class="stats" id="stats"></div></div>
     <div class="panel">
       <div class="ph"><span class="cap" id="eq-title">Equity curve</span><span class="key"><span><i style="background:var(--accent)"></i>strategy</span><span><i style="background:var(--bench)"></i>buy &amp; hold</span><span id="k-shade"><i style="background:var(--shade);height:8px;vertical-align:0"></i>tuning years</span></span><span class="r" id="eq-r"></span></div>
-      <div class="chart" id="c-eq"><canvas height="230"></canvas></div>
+      <div class="chart" id="c-eq"><canvas height="210"></canvas></div>
+    </div>
+    <div class="panel params" id="settings">
+      <div class="ph"><span class="cap">Settings</span><button class="reset" id="reset">Back to the ★ setting</button></div>
+      <p class="intro" id="pintro"></p>
+      <div id="params"></div>
+      <div class="warn" id="warn" hidden></div>
+      <p class="note" id="pnote" hidden></p>
     </div>
     <div class="panel" data-pro>
       <div class="ph"><span class="cap">Drawdown</span><span class="r" id="dd-r"></span></div>
@@ -419,8 +422,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     $("pintro").replaceChildren();
     if (keys.length) {
       const star = Object.assign(document.createElement("span"), { className: "star", textContent: "★" });
-      $("pintro").append("Settings decide when the strategy buys and sells. The ", star,
-        ` setting was picked using only ${b.market === "BTC-USD" ? "2014–2020" : "2005–2016"}, before the test years. Try others to see how much results depend on the choice.`);
+      $("pintro").append("These decide when the strategy buys and sells. ", star,
+        ` was picked using only ${b.market === "BTC-USD" ? "2014–2020" : "2005–2016"}. Move a setting and watch the chart above change.`);
     } else $("pintro").textContent = "The agent's idea has fixed settings.";
     const cs = chosenSel(b);
     keys.forEach(k => {
