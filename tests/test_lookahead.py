@@ -86,3 +86,66 @@ def test_coinflip_pvalue_for_random_strategy_not_small():
     ps = np.array(ps)
     assert 0.3 < ps.mean() < 0.7
     assert (ps < 0.05).mean() < 0.15
+
+
+# ---------------------------------------------------------------- portfolio strategies
+import portfolio as pfe  # noqa: E402
+from strategies import PORTFOLIO_STRATEGIES  # noqa: E402
+
+
+def synth_panel(seed, n_assets=12, n=1500, perturb_after=None):
+    rng = np.random.default_rng(seed)
+    idx = pd.bdate_range("2010-01-01", periods=n)
+    cols = [f"A{i}" for i in range(n_assets)]
+    O, H, L, C = ({} for _ in range(4))
+    for i, c in enumerate(cols):
+        lr = rng.normal(0.0003, 0.012, n)
+        if perturb_after is not None:
+            lr[perturb_after + 1:] = np.random.default_rng(1000 + i).normal(0, 0.06, n - perturb_after - 1)
+        cl = 100 * np.exp(np.cumsum(lr))
+        op = cl * np.exp(rng.normal(0, 0.004, n))
+        if perturb_after is not None:
+            op[perturb_after + 1:] = cl[perturb_after + 1:] * 1.01
+        C[c], O[c] = cl, op
+        H[c], L[c] = np.maximum(op, cl) * 1.004, np.minimum(op, cl) * 0.996
+        if i == 3:  # one asset starts late
+            for d in (O, H, L, C):
+                d[c] = np.where(np.arange(n) < 300, np.nan, d[c])
+    mk = lambda d: pd.DataFrame(d, index=idx)
+    Cf = mk(C)
+    return pfe.Panel(mk(O), mk(H), mk(L), Cf, Cf.notna())
+
+
+def _cut(P, k):
+    return pfe.Panel(*(x.iloc[: k + 1] for x in (P.O, P.H, P.L, P.C, P.started)))
+
+
+@pytest.mark.parametrize("st", PORTFOLIO_STRATEGIES, ids=[s["id"] for s in PORTFOLIO_STRATEGIES])
+def test_portfolio_no_lookahead(st):
+    P = synth_panel(4)
+    P2 = synth_panel(4, perturb_after=K)
+    for params in st["grid"][:4]:
+        a = pfe.finalize(st["fn"](P, **params), P).iloc[: K + 1].values
+        b = pfe.finalize(st["fn"](P2, **params), P2).iloc[: K + 1].values
+        np.testing.assert_allclose(a, b, err_msg=f"{st['id']} {params} peeks at the future")
+        Pc = _cut(P, K)
+        c = pfe.finalize(st["fn"](Pc, **params), Pc).values
+        np.testing.assert_allclose(a, c, err_msg=f"{st['id']} {params} depends on later rows existing")
+        assert np.all(a[:300, 3] == 0), "weight on an asset before it started"
+        assert np.abs(a).sum(axis=1).max() <= 2.0 + 1e-9
+
+
+def test_portfolio_coinflip_random_weights_not_small():
+    P = synth_panel(9, n_assets=10, n=1200)
+    rng = np.random.default_rng(3)
+    ps = []
+    for i in range(30):
+        W = pd.DataFrame(0.0, index=P.index, columns=P.tickers)
+        for p0 in range(0, len(P.index), 21):
+            w = np.zeros(10)
+            w[rng.choice([0, 1, 2, 4, 5, 6, 7, 8, 9], 3, replace=False)] = 1 / 3
+            W.iloc[p0:p0 + 21] = w
+        W = pfe.finalize(W, P)
+        ps.append(pfe.coin_flip_portfolio(P, W, slice(None), 3, n_sims=300, seed=i)["p_value"])
+    ps = np.array(ps)
+    assert 0.25 < ps.mean() < 0.75 and (ps < 0.05).mean() < 0.2

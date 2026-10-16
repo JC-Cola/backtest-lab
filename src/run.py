@@ -14,9 +14,10 @@ import pandas as pd
 
 import data
 from engine import count_trades, extract_trades, returns_np
-from stats import (bh_qvalues, coin_flip, deflated_sharpe, metrics, select_best,
+from stats import (bh_qvalues, cagr_np, coin_flip, deflated_sharpe, metrics, select_best,
                    sharpe_np, walk_forward)
-from strategies import STRATEGIES, positions
+import portfolio as pfe
+from strategies import PORTFOLIO_STRATEGIES, STRATEGIES, UNIVERSES, positions
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "results" / "results.json"
@@ -179,7 +180,8 @@ def assign_verdicts(results):
         if r["strategy"] == "buy_hold":
             r["verdict"] = "BENCHMARK"
         elif cf is None:
-            r["verdict"] = "N/A (always invested)" if r["oos"]["exposure"] > 0.95 else "N/A (no trades)"
+            always = r["oos"]["exposure"] > 0.95 and r.get("kind") != "portfolio"
+            r["verdict"] = "N/A (always invested)" if always else "N/A (no trades)"
             r["note"] = (f"OOS Sharpe {sh:.2f} vs buy&hold {bhs:.2f}: "
                          f"{'beat' if sh > bhs else 'did not beat'} buy & hold")
         elif cf["p_value"] < 0.05:
@@ -187,6 +189,98 @@ def assign_verdicts(results):
             r["verdict"] = "PASS" if ok else "WEAK"
         else:
             r["verdict"] = "FAIL"
+
+
+PF_CFG = dict(_ETF)  # portfolios: same windows and costs as the ETF markets
+
+
+def _slices(idx, cfg):
+    lo_i = idx.searchsorted(pd.Timestamp(cfg["is_start"]), "left")
+    hi_i = idx.searchsorted(pd.Timestamp(cfg["is_end"]), "right")
+    lo_o = idx.searchsorted(pd.Timestamp(cfg["oos_start"]), "left")
+    return slice(lo_i, hi_i), slice(lo_o, len(idx))
+
+
+def _gross(W, sl):
+    return W.abs().sum(axis=1).values[sl]
+
+
+def evaluate_portfolio(st, key, P, cfg, bench=False):
+    """Same procedure as evaluate(): tune on in-sample, one OOS run, 2x costs, coin-flip
+    (random-asset baseline). Walk-forward is not run for portfolios."""
+    idx = P.index
+    I, X = _slices(idx, cfg)
+    ann, cost = cfg["ann"], cfg["cost_bps"]
+    grid = [{}] if bench else st["grid"]
+    Ws = [pfe.equal_weight(P)] if bench else [pfe.finalize(st["fn"](P, **p), P) for p in grid]
+    is_r = [pfe.portfolio_returns(P, W, cost, I) for W in Ws]
+    is_sh = [sharpe_np(r, ann) for r in is_r]
+    is_nt = [pfe.n_rebalances(W, I) for W in Ws]
+    b = select_best(is_sh, is_nt, MIN_IS_TRADES)
+    W = Ws[b]
+    is_m = metrics(is_r[b], _gross(W, I), pfe.pseudo_trades(P, W, I, cost), ann)
+    trial = [r.mean() / r.std(ddof=1) for r in is_r if r.std(ddof=1) > 1e-12]
+    dsr = None if bench else deflated_sharpe(is_r[b], trial)
+    r_oos = pfe.portfolio_returns(P, W, cost, X)
+    oos_m = metrics(r_oos, _gross(W, X), pfe.pseudo_trades(P, W, X, cost), ann)
+    sh2 = sharpe_np(pfe.portfolio_returns(P, W, 2 * cost, X), ann)
+    grid_med = float(np.median([sharpe_np(pfe.portfolio_returns(P, w, cost, X), ann) for w in Ws]))
+    cf = None if bench else pfe.coin_flip_portfolio(
+        P, W, X, cost, N_SIMS, SEED + zlib.crc32(f"{st['id']}{key}".encode()) % 100000)
+    dd, eqs = weekly_equity(idx[X], r_oos)
+    return {"strategy": "buy_hold" if bench else st["id"], "asset": key, "kind": "portfolio",
+            "params": grid[b], "n_trials": len(grid), "is": is_m, "oos": oos_m,
+            "oos_cost2x_sharpe": sh2, "oos_grid_median_sharpe": grid_med, "dsr_prob": dsr,
+            "walk_forward": None, "coin_flip": cf, "_eq": eqs, "_dates": dd}
+
+
+def run_portfolios(strategies, panels):
+    rows, unis = [], []
+    used = sorted({s["universe"] for s in strategies}, key=list(UNIVERSES).index)
+    for key in used:
+        if key not in panels:
+            panels[key] = pfe.load_panel(UNIVERSES[key]["tickers"])
+        P = panels[key]
+        bench = evaluate_portfolio(None, key, P, PF_CFG, bench=True)
+        bm = bench["oos"]
+        bh = {"sharpe": bm["sharpe"], "cagr": bm["cagr"], "max_dd": bm["max_dd"], "eq": bench["_eq"]}
+        rs = [bench]
+        for st in [s for s in strategies if s["universe"] == key]:
+            t0 = time.time()
+            row = evaluate_portfolio(st, key, P, PF_CFG)
+            cf = row["coin_flip"]
+            print(f"  {key:14s} {st['id']:26s} oosSh={row['oos']['sharpe']:6.2f}  "
+                  f"p={'-' if cf is None else format(cf['p_value'], '.3f')}  ({time.time() - t0:.1f}s)", flush=True)
+            rs.append(row)
+        for r in rs:
+            r["buy_hold_oos"] = {k: bh[k] for k in ("sharpe", "cagr", "max_dd")}
+            r["equity"] = {"dates": r.pop("_dates"), "strategy": r.pop("_eq"), "buy_hold": bh["eq"]}
+        rows += rs
+        w = window_info(key, PF_CFG, P.C)
+        unis.append(w | {"label": UNIVERSES[key]["label"], "tickers": UNIVERSES[key]["tickers"],
+                         "benchmark": "equal weight of every asset that has started trading"})
+    return rows, unis
+
+
+def lockbox_portfolio(row, st):
+    lb = UNIVERSES[row["asset"]]["lockbox"]
+    if lb is None:
+        return {"assets": [{"ticker": "no independent history exists for this universe"}], "available": False,
+                "fisher_p": None, "median_oos_sharpe": None, "confirmed": False,
+                "rule": "no lockbox data: a PASS here cannot be confirmed"}
+    P = pfe.load_panel(lb["tickers"])
+    W = pfe.finalize(st["fn"](P, **row["params"]), P)
+    idx = P.index
+    sl = slice(idx.searchsorted(pd.Timestamp(lb["start"]), "left"), idx.searchsorted(pd.Timestamp(lb["end"]), "right"))
+    r = pfe.portfolio_returns(P, W, PF_CFG["cost_bps"], sl)
+    cf = pfe.coin_flip_portfolio(P, W, sl, PF_CFG["cost_bps"], N_SIMS,
+                                 SEED + zlib.crc32(f"lockbox{st['id']}".encode()) % 100000)
+    p = cf["p_value"] if cf else 1.0
+    sh = sharpe_np(r, PF_CFG["ann"])
+    return {"assets": [{"ticker": lb["label"], "p_value": p, "oos_sharpe": sh, "params": row["params"],
+                        "oos_cagr": cagr_np(r, PF_CFG["ann"]), "n_trades": pfe.n_rebalances(W, sl)}],
+            "available": True, "fisher_p": p, "median_oos_sharpe": sh, "confirmed": bool(p < 0.05 and sh > 0),
+            "rule": "params fixed in-sample, run on pre-2005 lockbox years: coin-flip p < 0.05 and Sharpe > 0"}
 
 
 def hunt_summary(results, strategies, through):
@@ -234,18 +328,25 @@ def main(through=None):
         rows, a = run_asset(ticker, cfg, df, ctx, strategies)
         results += rows
         assets.append(a)
+    pstrats = [s for s in PORTFOLIO_STRATEGIES if s["batch"] <= through]
+    universes = []
+    if pstrats:
+        print("== portfolio strategies", flush=True)
+        prow, universes = run_portfolios(pstrats, {})
+        results += prow
     assign_verdicts(results)
-    by_id = {s["id"]: s for s in strategies}
+    by_id = {s["id"]: s for s in strategies + pstrats}
     cache = {}
     for r in results:
         if r["verdict"] in ("PASS", "WEAK"):
-            r["lockbox"] = lockbox(r, by_id[r["strategy"]], ctx_raw, cache)
+            st = by_id[r["strategy"]]
+            r["lockbox"] = lockbox_portfolio(r, st) if r.get("kind") == "portfolio" else lockbox(r, st, ctx_raw, cache)
             lb = r["lockbox"]
-            print(f"  lockbox {r['strategy']:20s} {r['asset']:8s} {r['verdict']:4s} combined p={lb['fisher_p']:.3f} "
-                  f"medSh={lb['median_oos_sharpe']:.2f} confirmed={lb['confirmed']}", flush=True)
+            fp = "n/a" if lb["fisher_p"] is None else format(lb["fisher_p"], ".3f")
+            print(f"  lockbox {r['strategy']:24s} {r['asset']:14s} {r['verdict']:4s} p={fp} confirmed={lb['confirmed']}", flush=True)
         else:
             r["lockbox"] = None
-    entry = hunt_summary(results, strategies, through)
+    entry = hunt_summary(results, strategies + pstrats, through)
     entry["generated"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
     log = write_log(entry)
     done = bool(entry["confirmed_pass"])
@@ -262,8 +363,9 @@ def main(through=None):
                       "execution": "signal on close t, trade at open t+1"},
            "hunt": hunt,
            "strategies": [{k: s[k] for k in ("id", "name", "family", "source", "description", "batch")}
-                          | {"grid_size": len(s["grid"]), "uses_context": s["ctx"]} for s in strategies],
-           "assets": assets, "results": results}
+                          | {"grid_size": len(s["grid"]), "uses_context": s.get("ctx", False),
+                             "universe": s.get("universe")} for s in strategies + pstrats],
+           "assets": assets, "universes": universes, "results": results}
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(json.dumps(clean(out), allow_nan=False))
     print(f"\n{'strategy':20s} {'asset':8s} {'OOS Sh':>7s} {'B&H Sh':>7s} {'p':>6s} {'q':>6s}  verdict")
@@ -271,7 +373,7 @@ def main(through=None):
         cf = r["coin_flip"]
         if not cf or cf["p_value"] >= 0.05:
             continue
-        print(f"{r['strategy']:20s} {r['asset']:8s} {r['oos']['sharpe']:7.2f} "
+        print(f"{r['strategy']:26s} {r['asset']:14s} {r['oos']['sharpe']:7.2f} "
               f"{r['buy_hold_oos']['sharpe']:7.2f} {cf['p_value']:6.3f} {cf['q_value']:6.3f}  {r['verdict']}")
     print("\nverdicts:", entry["verdicts"], "| BH pool:", entry["tests_in_bh_pool"],
           "| confirmed:", entry["confirmed_pass"] or "none")

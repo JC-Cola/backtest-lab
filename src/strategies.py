@@ -7,6 +7,8 @@ import strategies_calendar as cal
 import strategies_combo as cb
 import strategies_meanrev as mr
 import strategies_pattern as pt
+import strategies_portfolio as pf
+import strategies_qp as qp
 import strategies_regime as rg
 import strategies_trend as tr
 import strategies_tv as tv
@@ -221,4 +223,124 @@ STRATEGIES = [
     _s("combo_trend_dip", "Dip Entry, Trend Exit [chosen after results]", "combo", "Combination chosen after seeing batch 0-4 results: RSI(2) dip entry + SMA trend exit",
        "Enter on an RSI(2) dip in an uptrend, exit only when the trend breaks.", cb.trend_dip,
        grid(n=[100, 200], x=[5, 10, 20]), batch=5),
+    # ---------------- hunt batch 6: Quantpedia free strategy database, single-market rules
+    _s("qp_january_barometer", "January Barometer", "calendar", "Quantpedia: https://quantpedia.com/strategies/january-barometer",
+       "Hold January; stay in for the rest of the year only if January (or its first 5 days) was up.",
+       qp.january_barometer, grid(rule=["january", "first5"]), batch=6),
+    _s("qp_payday", "Payday Anomaly", "calendar", "Quantpedia: https://quantpedia.com/strategies/payday-anomaly",
+       "Hold the first n sessions on or after the 15th/16th of each month.", qp.payday,
+       grid(day=[15, 16], n=[1, 2]), batch=6),
+    _s("qp_oil_predicts", "Crude Oil Predicts Stocks", "regime", "Quantpedia: https://quantpedia.com/strategies/crude-oil-predicts-equity-returns",
+       "Monthly: invested if last month's oil move predicts a return above T-bills.", qp.oil_predicts,
+       grid(mode=["regression", "sign"], min_months=[36, 60]), batch=6, ctx=True),
+    _s("qp_ath_trend", "All-Time-High Trend Following", "trend", "Quantpedia: https://quantpedia.com/strategies/trend-following-effect-in-stocks",
+       "Buy a close at the all-time high, exit on a k x ATR(10) trailing stop.", qp.ath_trend,
+       grid(k=[3, 5, 10]), batch=6),
+]
+
+
+def _p(id_, name, universe, slug, desc, fn, g, batch=6):
+    assert len(g) <= 12, f"{id_}: grid of {len(g)} combos exceeds the 12-combo cap"
+    return {"id": id_, "name": name, "family": "portfolio", "source": "Quantpedia: https://quantpedia.com/strategies/" + slug,
+            "description": desc, "fn": fn, "grid": g, "batch": batch, "universe": universe}
+
+
+# Universes and their lockboxes are fixed here BEFORE any portfolio strategy was run.
+# Lockbox = the same tickers or close fund proxies over years never used anywhere else (before
+# 2005), run with the parameters chosen in-sample, no re-tuning. None = no independent data exists.
+_SECTOR_FUNDS = ["FSPTX", "FSENX", "FIDSX", "FSPHX", "FSUTX", "FSCPX", "FDFAX", "FSCHX", "FSDAX"]
+_COUNTRIES = ["EWA", "EWC", "EWD", "EWG", "EWH", "EWI", "EWJ", "EWK", "EWL", "EWM", "EWN", "EWO",
+              "EWP", "EWQ", "EWS", "EWU", "EWW", "EWZ", "EWT", "EWY", "EZA"]
+UNIVERSES = {
+    "asset_classes": {"label": "Asset-class ETFs", "tickers": ["SPY", "EFA", "AGG", "VNQ", "GSG"],
+                      "lockbox": {"label": "Vanguard/PIMCO funds 1997-2004", "tickers": ["VFINX", "VGTSX", "VBMFX", "VGSIX", "PCRIX"],
+                                  "start": "1997-01-01", "end": "2004-12-31"}},
+    "sectors": {"label": "US sector ETFs", "tickers": ["XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY"],
+                "lockbox": {"label": "Fidelity sector funds 1989-2004", "tickers": _SECTOR_FUNDS,
+                            "start": "1989-01-01", "end": "2004-12-31"}},
+    "sectors_mkt": {"label": "US sector ETFs vs SPY", "tickers": ["SPY", "XLB", "XLE", "XLF", "XLI", "XLK", "XLP", "XLU", "XLV", "XLY"],
+                    "lockbox": {"label": "Fidelity sector funds vs VFINX 1989-2004", "tickers": ["VFINX"] + _SECTOR_FUNDS,
+                                "start": "1989-01-01", "end": "2004-12-31"}},
+    "countries": {"label": "Country ETFs", "tickers": _COUNTRIES,
+                  "lockbox": {"label": "Same country ETFs 1997-2004", "tickers": _COUNTRIES, "start": "1997-01-01", "end": "2004-12-31"}},
+    "countries_mkt": {"label": "Country ETFs vs SPY", "tickers": ["SPY"] + _COUNTRIES,
+                      "lockbox": {"label": "Same country ETFs vs SPY 1997-2004", "tickers": ["SPY"] + _COUNTRIES,
+                                  "start": "1997-01-01", "end": "2004-12-31"}},
+    "stock_bond": {"label": "Stocks vs bonds (SPY/TLT)", "tickers": ["SPY", "TLT"],
+                   "lockbox": {"label": "Vanguard VFINX/VUSTX 1988-2004 (the paper's funds)", "tickers": ["VFINX", "VUSTX"],
+                               "start": "1988-01-01", "end": "2004-12-31"}},
+    "small_large": {"label": "Small vs large caps (IWM/SPY)", "tickers": ["SPY", "IWM"],
+                    "lockbox": {"label": "Vanguard VFINX/NAESX 1985-2004", "tickers": ["VFINX", "NAESX"],
+                                "start": "1985-01-01", "end": "2004-12-31"}},
+    "styles": {"label": "Russell style ETFs", "tickers": ["IWD", "IWF", "IWS", "IWP", "IWN", "IWO"], "lockbox": None},
+    "commodities": {"label": "Commodity ETFs", "tickers": ["GLD", "SLV", "USO", "UNG", "DBA", "DBB", "DBE", "DBP", "DBO",
+                                                           "UGA", "PALL", "PPLT", "CORN", "WEAT", "SOYB", "CANE"], "lockbox": None},
+    "currencies": {"label": "Currencies vs USD", "tickers": ["EURUSD=X", "GBPUSD=X", "AUDUSD=X", "NZDUSD=X", "JPY=X", "CAD=X",
+                                                             "CHF=X", "SEK=X", "NOK=X", "DKK=X", "SGD=X", "MXN=X", "ZAR=X"],
+                   "lockbox": None},
+    "cross_asset": {"label": "Cross-asset ETFs", "tickers": ["SPY", "IWM", "EFA", "EEM", "EWJ", "TLT", "IEF", "LQD", "GLD", "SLV",
+                                                            "DBC", "USO", "FXE", "FXY"],
+                    "lockbox": {"label": "Vanguard/PIMCO funds + yen 1997-2004", "tickers": ["VFINX", "NAESX", "VGTSX", "VEIEX", "VBMFX",
+                                                                                      "VUSTX", "VGSIX", "PCRIX", "JPY=X"],
+                                "start": "1997-01-01", "end": "2004-12-31"}},
+}
+
+PORTFOLIO_STRATEGIES = [
+    _p("qp_asset_class_momentum", "Asset-Class Momentum Rotation", "asset_classes", "asset-class-momentum-rotational-system",
+       "Hold the 3 asset-class ETFs with the best 12-month return; monthly.", pf.asset_class_momentum,
+       grid(months=[3, 6, 12], top=[1, 2, 3])),
+    _p("qp_asset_class_trend", "Asset-Class Trend Following", "asset_classes", "asset-class-trend-following",
+       "Each asset-class ETF held only above its 10-month average; monthly.", pf.asset_class_trend,
+       grid(months=[6, 8, 10, 12])),
+    _p("qp_sector_momentum", "Sector Momentum Rotation", "sectors", "sector-momentum-rotational-system",
+       "Hold the 3 sector ETFs with the best 12-month return; monthly.", pf.sector_momentum,
+       grid(months=[3, 6, 12], top=[1, 2, 3])),
+    _p("qp_sector_low_vol", "Low-Volatility Sectors", "sectors", "low-volatility-factor-effect-in-stocks",
+       "Hold the least volatile sector ETFs (adaptation of the stock-level rule); monthly.", pf.low_vol_rotation,
+       grid(years=[1, 3], k=[2, 3])),
+    _p("qp_sector_cycle", "12-Month Cycle (Sectors)", "sectors", "12-month-cycle-in-cross-section-of-stocks-returns",
+       "Rank sectors by their return in the same month last year; monthly.", pf.month_cycle,
+       grid(k=[2, 3], mode=["ls", "long"])),
+    _p("qp_industry_bubbles", "Riding Industry Bubbles", "sectors_mkt", "riding-industry-bubbles",
+       "Hold sectors whose 5-10 year CAPM alpha is statistically significant; monthly.", pf.industry_bubbles,
+       grid(window=[60, 120], t_thr=[1.64, 1.96])),
+    _p("qp_country_momentum", "Country Momentum", "countries", "momentum-factor-effect-in-country-equity-indexes",
+       "Hold the 5 country ETFs with the best 10-12 month return; monthly.", pf.country_momentum,
+       grid(months=[6, 10, 12], top=[3, 5])),
+    _p("qp_country_reversal", "Country Mean Reversion", "countries", "mean-reversion-effect-in-country-equity-indexes",
+       "Long the 4 worst countries over 3 years (short the 4 best); rebalance every 1-3 years.", pf.country_reversal,
+       grid(months=[24, 36], every=[12, 36], mode=["ls", "long"])),
+    _p("qp_country_cycle", "12-Month Cycle (Countries)", "countries", "12-month-cycle-in-cross-section-of-stocks-returns",
+       "Rank countries by their return in the same month last year; monthly.", pf.month_cycle,
+       grid(k=[3, 5], mode=["ls", "long"])),
+    _p("qp_country_bab", "Betting Against Beta (Countries)", "countries_mkt", "betting-against-beta-factor-in-country-equity-indexes",
+       "Long low-beta countries, short high-beta, beta-neutral; monthly.", pf.country_bab,
+       grid(window=[252, 504], mode=["ls", "long"])),
+    _p("qp_country_pairs", "Pairs Trading (Countries)", "countries", "pairs-trading-with-country-etfs",
+       "Distance-method pairs on country ETFs: trade divergences of the 5 closest pairs.", pf.pairs_trading,
+       grid(formation=[120, 250], k=[0.5, 1.0, 2.0])),
+    _p("qp_paired_switching", "Paired Switching (Stocks/Bonds)", "stock_bond", "paired-switching",
+       "Hold whichever of stocks or bonds did better last quarter; re-decide each quarter.", pf.paired_switching,
+       grid(months=[1, 3, 6], hold=[1, 3])),
+    _p("qp_january_small", "January Effect (Small Caps)", "small_large", "january-effect-in-stocks",
+       "Small caps in January, large caps the rest of the year.", pf.january_small,
+       [{"months": (1,)}, {"months": (12, 1)}]),
+    _p("qp_style_rotation", "Style Momentum Rotation", "styles", "momentum-factor-and-style-rotation-effect",
+       "Long the best Russell style ETF by 6-12 month return (short the worst); monthly.", pf.style_rotation,
+       grid(months=[6, 12], mode=["ls", "long"])),
+    _p("qp_commodity_momentum", "Commodity Momentum", "commodities", "momentum-effect-in-commodities",
+       "Long the top commodity quintile by past return (short the bottom); monthly.", pf.commodity_momentum,
+       grid(months=[3, 6, 12], mode=["ls", "long"])),
+    _p("qp_commodity_skewness", "Commodity Skewness", "commodities", "skewness-effect-in-commodities",
+       "Long the most negatively skewed commodities, short the most positively skewed; monthly.", pf.commodity_skewness,
+       grid(months=[6, 12], mode=["ls", "long"])),
+    _p("qp_commodity_asymmetry", "Commodity Return Asymmetry", "commodities", "return-asymmetry-effect-in-commodity-futures",
+       "Long commodities with the fewest extreme up-days relative to down-days; monthly.", pf.commodity_asymmetry,
+       grid(mode=["ls", "long"])),
+    _p("qp_currency_momentum", "Currency Momentum", "currencies", "currency-momentum-factor",
+       "Long the 3 strongest currencies vs USD over 12 months, short the 3 weakest; monthly.", pf.currency_momentum,
+       grid(months=[3, 6, 12], k=[2, 3])),
+    _p("qp_cross_asset_tsmom", "Cross-Asset Time-Series Momentum", "cross_asset", "time-series-momentum-effect",
+       "Long assets with positive 12-month returns, short negative, volatility-weighted; monthly.", pf.cross_asset_tsmom,
+       grid(months=[3, 6, 12], mode=["ls", "long"])),
 ]

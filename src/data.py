@@ -41,7 +41,7 @@ def load(ticker: str, max_age_s: float = 86400, cache_dir: Path = DATA_DIR) -> p
         raise
 
 
-CTX_TICKERS = ["^VIX", "^VIX3M", "^IRX", "^TNX", "HYG", "IEF", "LQD", "UUP", "SPY", "TLT", "AGG", "EFA"]
+CTX_TICKERS = ["^VIX", "^VIX3M", "^IRX", "^TNX", "HYG", "IEF", "LQD", "UUP", "SPY", "TLT", "AGG", "EFA", "CL=F"]
 
 
 def load_close(ticker: str, max_age_s: float = 86400, cache_dir: Path = DATA_DIR) -> pd.Series:
