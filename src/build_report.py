@@ -20,8 +20,25 @@ def slim(d: dict) -> dict:
     return d
 
 
+# Plain-language caveats from post-hoc checks run AFTER the pre-registered confirmation
+# (they cannot change its verdict; see the commit history for the order of events).
+CONFIRM_NOTES = {
+    "ibs": "Holds up even on the 7 markets whose opening prices are real trades (some index data "
+           "reuses yesterday's close as the open, which would flatter a dip-buyer). But it is only in "
+           "the market about a third of the time and usually earned less than just holding: a real "
+           "timing edge, not a better investment on its own.",
+    "qp_january_barometer": "Only one decision a year, and Januaries move together worldwide. Most of "
+           "its edge comes from three global bear markets (2000, 2001, 2008); in other years it often sat "
+           "out rising markets. That is about three lucky calls, so treat it as unproven.",
+    "williams_r": "Strong combined score, but too few markets were individually convincing.",
+}
+
+
 def main():
     d = slim(json.loads((ROOT / "results" / "results.json").read_text()))
+    cpath = ROOT / "results" / "confirmation.json"
+    if cpath.exists():
+        d["confirmation"] = json.loads(cpath.read_text()) | {"notes": CONFIRM_NOTES}
     blob = json.dumps(d, separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "template.html").read_text().replace("/*DATA*/", blob)
     out = ROOT / "report" / "index.html"

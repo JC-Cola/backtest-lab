@@ -106,6 +106,23 @@ table.matrix { border-collapse: separate; border-spacing: 3px; width: 100%; min-
 .matrix button.k-close { background: var(--weak-soft); color: var(--weak); }
 .matrix button.k-luck { background: var(--fail-soft); color: var(--fail); }
 .matrix button.k-always { background: var(--na-soft); color: var(--na); }
+.cands { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.cand { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cand.ok { border-color: var(--pass); box-shadow: inset 0 3px 0 var(--pass); }
+.cand-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.cand p { font-size: 0.92rem; }
+.cand .caveat { font-size: 0.85rem; color: var(--muted); border-left: 3px solid var(--weak); padding-left: 10px; }
+.mini { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.mini th, .mini td { padding: 4px 6px; border-top: 1px solid var(--line); text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.mini th:first-child, .mini td:first-child { text-align: left; font-family: var(--f-body); }
+.mini thead th { color: var(--muted); font-weight: 600; border-top: 0; }
+.mini td.hit { color: var(--pass); font-weight: 600; }
+.plist { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+.plist table { width: 100%; border-collapse: collapse; min-width: 560px; font-size: 0.88rem; }
+.plist th, .plist td { padding: 8px 12px; border-top: 1px solid var(--line); text-align: left; }
+.plist thead th { border-top: 0; color: var(--muted); font: 600 0.72rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; }
+.plist button { all: unset; cursor: pointer; font-weight: 600; }
+.plist button:hover, .plist button:focus-visible { color: var(--accent); text-decoration: underline; }
 footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px; }
 </style>
 
@@ -117,12 +134,18 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
     <div class="facts">
       <span><b id="f-strats">—</b> strategies</span>
       <span><b id="f-mkts">—</b> markets</span>
+      <span><b id="f-unis">—</b> portfolios</span>
       <span><b id="f-tests">—</b> tests</span>
       <span><b id="f-close">—</b> close calls</span>
       <span><b id="f-beat">—</b> beat just holding</span>
     </div>
   </header>
 
+  <section id="confirm-sec" hidden>
+    <h2>Tested again on fresh data</h2>
+    <p class="muted" id="confirm-intro"></p>
+    <div class="cands" id="cands"></div>
+  </section>
   <section>
     <h2>Closest to a real edge</h2>
     <p class="muted">Ranked by how many of 2,000 random traders each strategy beat. A real edge needs to beat about 95% of them and still hold up once you allow for how many strategies were tried. Select one to see it.</p>
@@ -160,6 +183,11 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
     <div class="grid-scroll"><table class="matrix" id="matrix"></table></div>
   </section>
 
+  <section id="pf-sec" hidden>
+    <h2>Portfolio strategies</h2>
+    <p class="muted">Rotation strategies from Quantpedia that pick among several funds at once. Each is compared with 2,000 random portfolios that hold the same number of funds on the same dates, and with holding all the funds equally.</p>
+    <div class="plist"><table><thead><tr><th>Strategy</th><th>Funds</th><th>Beat random</th><th>Per year</th><th>Verdict</th></tr></thead><tbody id="pf-body"></tbody></table></div>
+  </section>
   <footer>Results are from years each strategy wasn't tuned on, after trading costs. Daily prices from Yahoo Finance. This is research, not financial advice.</footer>
 </div>
 
@@ -176,7 +204,8 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
   const money = v => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
   const beatShare = r => r.coin_flip ? Math.max(0, 1 - r.coin_flip.p_value) : null;
   const marketName = { "SPY": "S&P 500", "QQQ": "Nasdaq 100", "IWM": "Small caps", "DIA": "Dow", "GLD": "Gold", "TLT": "Long bonds", "BTC-USD": "Bitcoin" };
-  const mkt = t => marketName[t] ? `${marketName[t]} (${t})` : t;
+  const uniName = {}; (D.universes || []).forEach(u => uniName[u.ticker] = u.label);
+  const mkt = t => marketName[t] ? `${marketName[t]} (${t})` : (uniName[t] || t);
 
   function kind(r) {
     if (r.verdict === "PASS") return r.lockbox && r.lockbox.confirmed === false ? "close" : "edge";
@@ -203,6 +232,7 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
   }
   $("f-strats").textContent = nStrats;
   $("f-mkts").textContent = assets.length;
+  $("f-unis").textContent = (D.universes || []).length;
   $("f-tests").textContent = tested.length;
   $("f-close").textContent = close.length;
   $("f-beat").textContent = `${beatHold}/${tested.length}`;
@@ -238,7 +268,7 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
   const tb = document.createElement("tbody"); m.appendChild(tb);
   const famLabel = { trend: "Trend following", mean_reversion: "Buying dips", seasonal: "Calendar", breakout: "Breakouts", calendar: "Calendar", regime: "Market regime", volatility: "Volatility", pattern: "Price patterns", combo: "Combinations" };
   const byFam = {};
-  S.filter(s => s.id !== "buy_hold").forEach(s => (byFam[s.family] = byFam[s.family] || []).push(s));
+  S.filter(s => s.id !== "buy_hold" && s.family !== "portfolio").forEach(s => (byFam[s.family] = byFam[s.family] || []).push(s));
   const gridBtns = [];
   Object.keys(byFam).forEach(fam => {
     const g = document.createElement("tr"); g.className = "group";
@@ -380,6 +410,60 @@ footer { font-size: 0.8rem; color: var(--muted); border-top: 1px solid var(--lin
   function draw() { if (current) { drawEquity(current); drawCoin(current); } }
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(draw, 120); });
 
+  // ---------- portfolio list
+  const pfRows = R.filter(r => r.kind === "portfolio" && r.strategy !== "buy_hold");
+  if (pfRows.length) {
+    $("pf-sec").hidden = false;
+    pfRows.slice().sort((a, b) => (a.coin_flip ? a.coin_flip.p_value : 2) - (b.coin_flip ? b.coin_flip.p_value : 2)).forEach(r => {
+      const tr = document.createElement("tr");
+      const td = t => { const c = document.createElement("td"); c.textContent = t; return c; };
+      const c0 = document.createElement("td"); const b = document.createElement("button"); b.textContent = name(r.strategy);
+      b.addEventListener("click", () => { select(r); $("d-title").scrollIntoView({ behavior: "smooth", block: "start" }); }); c0.appendChild(b);
+      const pc = document.createElement("td"); const pl = document.createElement("span"); pl.className = "pill k-" + kind(r); pl.textContent = kindLabel[kind(r)]; pc.appendChild(pl);
+      tr.append(c0, td(mkt(r.asset)), td(r.coin_flip ? pct(beatShare(r), 1) : "—"), td(`${pct(r.oos.cagr)} vs ${pct(r.buy_hold_oos.cagr)}`), pc);
+      $("pf-body").appendChild(tr);
+    });
+  }
+  // ---------- confirmation on fresh data
+  const CF = D.confirmation;
+  if (CF) {
+    $("confirm-sec").hidden = false;
+    const ids = Object.keys(CF.candidates);
+    const nOk = ids.filter(k => CF.candidates[k].confirmed).length;
+    $("confirm-intro").textContent = `Searching more can't prove anything on its own: with ${cf.length} tests, a few always look good by luck. So ${ids.length} candidates were picked from the results above, every rule was written down and saved first, and each was run once on data this project had never touched: US markets before 2005 and ${CF.candidates[ids[0]].n_markets - 3} international stock indexes. ${nOk ? nOk + " of " + ids.length + " held up." : "None held up."}`;
+    if (nOk) {
+      const best = ids.filter(k => CF.candidates[k].confirmed).map(name).join(" and ");
+      $("answer").textContent += ` On fresh data, ${best} ${nOk === 1 ? "held up" : "held up"}, but read the caveats below before trusting ${nOk === 1 ? "it" : "them"}.`;
+    }
+    ids.forEach(k => {
+      const c = CF.candidates[k], ms = c.markets;
+      const card = document.createElement("article"); card.className = "cand" + (c.confirmed ? " ok" : "");
+      const head = document.createElement("div"); head.className = "cand-head";
+      const h = document.createElement("h3"); h.textContent = name(k);
+      const pl = document.createElement("span"); pl.className = "pill " + (c.confirmed ? "k-edge" : "k-luck"); pl.textContent = c.confirmed ? "Held up on fresh data" : "Did not hold up";
+      head.append(h, pl);
+      const beatHold = ms.filter(m => m.cagr > m.buy_hold_cagr).length;
+      const p1 = document.createElement("p");
+      p1.textContent = `Beat random timing clearly in ${c["markets_p_below_0.10"]} of ${c.n_markets} fresh markets (needed ${Math.ceil(c.n_markets / 2)}). Combined chance this is luck: ${c.fisher_p < 0.0001 ? "under 0.01%" : pct(c.fisher_p, 2)}. Made more money than just holding in ${beatHold} of ${c.n_markets}.`;
+      const card2 = [head, p1];
+      if (CF.notes && CF.notes[k]) { const n = document.createElement("p"); n.className = "caveat"; n.textContent = CF.notes[k]; card2.push(n); }
+      const tbl = document.createElement("table"); tbl.className = "mini";
+      tbl.innerHTML = "<thead><tr><th>Fresh market</th><th>Beat random</th><th>Per year</th><th>Holding</th></tr></thead>";
+      const tb = document.createElement("tbody");
+      ms.forEach(m => {
+        const tr = document.createElement("tr");
+        [m.market.replace("^", ""), pct(1 - m.p_value, 1), pct(m.cagr), pct(m.buy_hold_cagr)].forEach((v, i) => {
+          const td = document.createElement("td"); td.textContent = v;
+          if (i === 1 && m.p_value < 0.10) td.className = "hit";
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+      tbl.appendChild(tb); card2.push(tbl);
+      card.append(...card2);
+      $("cands").appendChild(card);
+    });
+  }
   select(ranked[0]);
 })();
 </script>
