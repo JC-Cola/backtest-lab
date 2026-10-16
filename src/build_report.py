@@ -26,7 +26,9 @@ CONFIRM_NOTES = {
     "ibs": "Holds up even on the 7 markets whose opening prices are real trades (some index data "
            "reuses yesterday's close as the open, which would flatter a dip-buyer). But it is only in "
            "the market about a third of the time and usually earned less than just holding: a real "
-           "timing edge, not a better investment on its own.",
+           "timing edge, not a better investment on its own. Since 2014, after IBS became widely "
+           "published, it still beat random timing on SPY, QQQ and DIA but not on any of the 10 "
+           "international indexes, and it earned less than holding in 13 of 14 markets.",
     "qp_january_barometer": "Only one decision a year, and Januaries move together worldwide. Most of "
            "its edge comes from three global bear markets (2000, 2001, 2008); in other years it often sat "
            "out rising markets. That is about three lucky calls, so treat it as unproven.",
