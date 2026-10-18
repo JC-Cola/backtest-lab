@@ -1,0 +1,131 @@
+{
+ "generated": "2026-10-18T17:06:23+00:00",
+ "strategies": {
+  "MR-IBS": {
+   "name": "Internal Bar Strength",
+   "market": "SPY",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 0.0
+   }
+  },
+  "MR-WR": {
+   "name": "Williams %R",
+   "market": "QQQ",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 1.0
+   }
+  },
+  "CAL-JAN": {
+   "name": "January Barometer",
+   "market": "QQQ",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 1.0
+   }
+  },
+  "CAL-MIX": {
+   "name": "Calendar Composite",
+   "market": "GLD",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 0.0
+   }
+  },
+  "TS-TREND": {
+   "name": "Trend Filter (close > SMA)",
+   "market": "BTC-USD",
+   "since": "2026-10-17",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-17",
+    "position": 1.0
+   }
+  },
+  "TS-VOL": {
+   "name": "Vol-Targeted Trend",
+   "market": "SPY",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 1.0
+   }
+  },
+  "AGENT-09939fb1d3b6": {
+   "name": "Agent: GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p65; hold 2 days",
+   "market": "GLD",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 0.0
+   }
+  },
+  "AGENT-c34787ecccc3": {
+   "name": "Agent: IWM: buy when ret_20 > p80 and rsi_2 < p50 (only if range_rank_7 > p40); hold 5 days",
+   "market": "IWM",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 0.0
+   }
+  },
+  "AGENT-67021a556cb2": {
+   "name": "Agent: IWM: buy when ret_20 > p80 and rsi_2 < p50 and vix > p20 (only if range_rank_7 > p40); hold 5 days",
+   "market": "IWM",
+   "since": "2026-10-16",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-10-16",
+    "position": 0.0
+   }
+  }
+ }
+}

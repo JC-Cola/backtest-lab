@@ -27,6 +27,8 @@
 body { background: var(--bg); color: var(--ink); font: 13px/1.5 var(--f-sans); }
 [hidden] { display: none !important; }
 body.simple [data-pro], body:not(.simple) [data-simple] { display: none !important; }
+.paperline { padding: 10px 14px; font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; border-color: var(--accent); }
+.paperline .cap { color: var(--accent); }
 .verdict-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
 .verdict-card p { margin: 0; font-size: 0.95rem; max-width: 75ch; }
 .stats.s4 .stat:nth-child(4n) { border-right: 0; }
@@ -204,6 +206,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       <p id="h-desc">—</p>
       <div class="meta" id="h-meta" data-pro></div>
     </div>
+    <div class="panel paperline" id="paperline"></div>
     <div class="panel verdict-card" data-simple><span class="cap">Verdict</span><p id="s-verdict"></p></div>
     <div class="panel" data-simple><div class="stats s4" id="s-stats"></div></div>
     <div class="panel" data-pro><div class="stats" id="stats"></div></div>
@@ -258,6 +261,9 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="panel"><div class="stats rstats" id="r-stats"></div></div>
   <span class="cap">The agent's best ideas, re-scored against every trial run so far</span>
   <div class="panel ideas"><table><thead><tr><th>Idea</th><th style="text-align:right">Score now</th><th style="text-align:right">When found</th><th style="text-align:right">Sharpe by period (tuning years)</th></tr></thead><tbody id="r-ideas"></tbody></table></div>
+  <span class="cap">Paper trading: decisions written down before the outcome existed</span>
+  <div class="panel ideas"><table><thead><tr><th>Strategy</th><th>Market</th><th>Since</th><th style="text-align:right">Days scored</th><th style="text-align:right">Paper result</th><th style="text-align:right">Just holding</th><th>Latest decision</th></tr></thead><tbody id="r-paper"></tbody></table></div>
+  <p class="note" id="r-paper-note"></p>
   <p class="note">A score of 0.95 is needed before an idea gets its one shot at the held-out years. Scores fall as the agent tries more ideas, because more tries make a lucky result more likely.</p>
 </main>
 
@@ -547,6 +553,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       yy.appendChild(row); });
     renderRight(b, st, bh);
     renderSimple(b, w, st, bh, expo);
+    renderPaperLine(b);
   }
   function renderSimple(b, w, st, bh, expo) {
     $("h-desc").textContent = simple() ? b.plain : b.desc;
@@ -610,8 +617,24 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
 
   // ---------------------------------------------------------------- research tab
+  function paperFor(key) { return (D.paper.strategies || {})[key]; }
+  function renderPaperLine(b) {
+    const box = $("paperline"), pk = b.code === "AGENT" ? "AGENT-" + b.id.replace("agent_", "") : b.code, pr = paperFor(pk);
+    box.replaceChildren(Object.assign(document.createElement("span"), { className: "cap", textContent: "Paper trading" }));
+    if (!pr) { box.append("Not paper traded yet."); return; }
+    const pos = pr.latest.position > 0 ? "in the market" : "in cash";
+    if (!pr.scored) box.append(`Started ${pr.since}. The first decision (${pos}) is waiting for the next trading day to be scored.`);
+    else box.append(`Since ${pr.since}: ${sgn(pr.paper_return, 2)} over ${pr.scored} trading day${pr.scored > 1 ? "s" : ""} (just holding: ${sgn(pr.holding_return, 2)}). Latest decision: ${pos}. Too few days to mean anything yet.`);
+  }
   function renderResearch() {
     const R = D.research;
+    const PS = D.paper.strategies || {};
+    $("r-paper").replaceChildren(...Object.entries(PS).map(([k, p]) => { const tr = document.createElement("tr");
+      [[p.name.length > 70 ? p.name.slice(0, 68) + "…" : p.name, ""], [p.market, ""], [p.since, ""], [String(p.scored), "n"],
+       [p.scored ? sgn(p.paper_return, 2) : "—", "n " + (p.scored ? cls(p.paper_return) : "")], [p.scored ? sgn(p.holding_return, 2) : "—", "n"],
+       [`${p.latest.date}: ${p.latest.position > 0 ? "in" : "cash"}`, ""]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
+      return tr; }));
+    $("r-paper-note").textContent = Object.keys(PS).length ? `Updated ${D.paper.generated.slice(0, 10)}. Each decision is scored from the next day's open to the one after, with costs. Paper results need many months before they say anything.` : "No paper trades yet.";
     $("r-intro").textContent = `The hunt tested ${R.hunt_strategies} strategies (${R.hunt_tests} strategy × market tests) and none passed. The self-improving agent keeps searching: it proposes ideas, scores them on the tuning years only, and remembers every result between sessions.`;
     $("r-stats").replaceChildren(tile("Agent trials", R.trials, "all sessions"), tile("Scored", R.scored, "passed the data checks"),
       tile("Rejected", R.rejected, "coverage, trades, look-ahead"), tile("Held-out shots", R.holdout_shots, R.holdout_pass + " passed"));

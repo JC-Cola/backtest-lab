@@ -1,0 +1,10 @@
+logged_at_utc,decision_date,key,name,market,position,close
+2026-10-18T17:02:35+00:00,2026-10-16,MR-IBS,Internal Bar Strength,SPY,0.0,763.25
+2026-10-18T17:02:35+00:00,2026-10-16,MR-WR,Williams %R,QQQ,1.0,709.8
+2026-10-18T17:02:35+00:00,2026-10-16,CAL-JAN,January Barometer,QQQ,1.0,709.8
+2026-10-18T17:02:35+00:00,2026-10-16,CAL-MIX,Calendar Composite,GLD,0.0,382.01
+2026-10-18T17:02:35+00:00,2026-10-17,TS-TREND,Trend Filter (close > SMA),BTC-USD,1.0,81382.1484
+2026-10-18T17:02:35+00:00,2026-10-16,TS-VOL,Vol-Targeted Trend,SPY,1.0,763.25
+2026-10-18T17:02:35+00:00,2026-10-16,AGENT-09939fb1d3b6,Agent: GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p65; hold 2 days,GLD,0.0,382.01
+2026-10-18T17:02:35+00:00,2026-10-16,AGENT-c34787ecccc3,Agent: IWM: buy when ret_20 > p80 and rsi_2 < p50 (only if range_rank_7 > p40); hold 5 days,IWM,0.0,270.44
+2026-10-18T17:02:35+00:00,2026-10-16,AGENT-67021a556cb2,Agent: IWM: buy when ret_20 > p80 and rsi_2 < p50 and vix > p20 (only if range_rank_7 > p40); hold 5 days,IWM,0.0,270.44

@@ -206,7 +206,9 @@ def main():
                          "found": t["reward"], "folds": t["fold_sharpes"]} for t in mem.top(8)],
                 "hunt_tests": sum(1 for r in results if r.get("coin_flip")),
                 "hunt_strategies": len({r["strategy"] for r in results}) - 1}
-    blob = json.dumps({"book": book, "markets": markets, "research": research,
+    pp = ROOT / "agent_memory" / "paper_report.json"
+    paper = json.loads(pp.read_text()) if pp.exists() else {"strategies": {}}
+    blob = json.dumps({"book": book, "markets": markets, "research": research, "paper": paper,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

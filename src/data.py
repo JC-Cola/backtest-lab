@@ -78,9 +78,9 @@ def load_close(ticker: str, max_age_s: float = 86400, cache_dir: Path = DATA_DIR
         raise
 
 
-def load_context(tickers=CTX_TICKERS) -> pd.DataFrame:
+def load_context(tickers=CTX_TICKERS, max_age_s: float = 86400) -> pd.DataFrame:
     """Daily closes of the cross-asset context series (VIX etc.), one column per ticker."""
-    return pd.concat([load_close(t) for t in tickers], axis=1).sort_index()
+    return pd.concat([load_close(t, max_age_s) for t in tickers], axis=1).sort_index()
 
 
 def align_ctx(ctx: pd.DataFrame | None, index: pd.DatetimeIndex) -> pd.DataFrame | None:
