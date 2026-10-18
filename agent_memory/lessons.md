@@ -1,46 +1,46 @@
 # What the agent has learned so far
 
-Updated 2026-10-18. 1600 trials in total: 1161 scored, 439 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-10-18. 2100 trials in total: 1535 scored, 565 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
-- reward now 0.381 (when found 0.445) | folds [0.603, 0.904, 1.637] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70; sell when ibs < p70 or after 5 days
-- reward now 0.378 (when found 0.852) | folds [0.723, 0.926, 1.486] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p65 (only if ret_1 < p90); sell when ibs < p70 or after 5 days
-- reward now 0.377 (when found 0.392) | folds [0.279, 1.053, 0.851] | IWM: buy when ret_20 > p80 and rsi_2 < p50 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
-- reward now 0.377 (when found 0.383) | folds [0.279, 1.053, 0.851] | IWM: buy when ret_20 > p80 and rsi_2 < p50 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
-- reward now 0.372 (when found 0.377) | folds [0.689, 0.956, 1.486] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p65 (only if wr_10 < p95); sell when ibs < p70 or after 5 days
-- reward now 0.345 (when found 0.573) | folds [0.383, 1.041, 0.668] | IWM: buy when ret_20 > p80 and rsi_2 < p50 and vix > p25 (only if range_rank_7 > p40); hold 5 days
-- reward now 0.344 (when found 0.361) | folds [0.603, 0.883, 1.578] | GLD: buy when range_rank_7 < p75 and vix_vs_50 < p75 (only if dom_next < p5); sell when ibs < p70 or after 5 days
-- reward now 0.338 (when found 0.352) | folds [0.003, 1.177, 0.891] | IWM: buy when ret_20 > p85 and rsi_2 < p55 and vix > p30 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
-- reward now 0.337 (when found 0.482) | folds [0.335, 1.041, 0.701] | IWM: buy when ret_20 > p80 and rsi_2 < p50 and vix > p30 (only if range_rank_7 > p40); hold 5 days
-- reward now 0.337 (when found 0.382) | folds [0.335, 1.041, 0.701] | IWM: buy when ret_20 > p80 and rsi_2 < p50 and vix > p30 (only if range_rank_7 > p30); hold 5 days
+- reward now 0.415 (when found 0.444) | folds [0.181, 1.204, 1.141] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p60 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
+- reward now 0.385 (when found 0.472) | folds [0.699, 0.502, 1.067] | QQQ: buy when rsi_14 < p5; sell when vix_vs_50 > p50 or after 5 days
+- reward now 0.385 (when found 0.417) | folds [0.699, 0.502, 1.067] | QQQ: buy when rsi_14 < p5 (only if rsi_14 < p80); sell when vix_vs_50 > p50 or after 5 days
+- reward now 0.379 (when found 0.379) | folds [0.691, 0.502, 1.067] | QQQ: buy when ret_20 < p45 and rsi_14 < p5; sell when vix_vs_50 > p50 or after 5 days
+- reward now 0.363 (when found 0.382) | folds [0.191, 1.107, 1.062] | IWM: buy when ret_20 > p80 and rsi_2 < p55 and to_month_end > p10 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
+- reward now 0.363 (when found 0.374) | folds [0.191, 1.107, 1.062] | IWM: buy when ret_20 > p80 and rsi_2 < p55 and to_month_end > p10 (only if range_rank_7 > p30); sell when wr_10 > p70 or after 5 days
+- reward now 0.353 (when found 0.374) | folds [0.652, 0.502, 1.067] | QQQ: buy when ret_20 < p30 and rsi_14 < p5; sell when vix_vs_50 > p50 or after 5 days
+- reward now 0.349 (when found 0.389) | folds [0.238, 1.136, 0.868] | IWM: buy when ret_20 > p80 and rsi_2 < p55 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
+- reward now 0.349 (when found 0.386) | folds [0.238, 1.136, 0.868] | IWM: buy when ret_20 > p80 and rsi_2 < p55 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
+- reward now 0.349 (when found 0.372) | folds [0.238, 1.136, 0.868] | IWM: buy when ret_20 > p80 and rsi_2 < p55 and rsi_2 > p5 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
 
 ## Features that tend to help (learned weights, 1 = average)
 
-- rsi_14: 1.24
-- curve: 1.17
-- ibs: 1.12
-- to_fomc: 1.12
+- rsi_14: 1.22
+- curve: 1.14
+- to_fomc: 1.11
+- ibs: 1.09
 - ret_20: 1.08
-- rsi_2: 1.08
-- vix_vs_50: 1.07
+- vix_vs_50: 1.08
+- rsi_2: 1.07
 - range_rank_7: 1.05
 
 ## Features that tend to hurt
 
+- dist_sma_200: 0.83
+- ret_60: 0.80
 - wr_2: 0.79
-- dist_sma_200: 0.78
-- ret_60: 0.76
-- pre_holiday: 0.66
-- credit_trend: 0.65
+- credit_trend: 0.71
+- pre_holiday: 0.69
 
 ## Why ideas were rejected
 
-- too few trades: 439
+- too few trades: 565
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
 
 
 ## Last session
 
-50 rounds x 10 ideas with the evolution proposer in 232s. Best deflated reward went from 0.746 to 0.381. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+50 rounds x 10 ideas with the evolution proposer in 268s. Best deflated reward went from 0.381 to 0.415. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
