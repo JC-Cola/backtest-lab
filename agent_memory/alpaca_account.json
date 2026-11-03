@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-03T15:39:56+00:00",
+ "generated": "2026-11-03T15:49:17+00:00",
  "start_equity": 100000.0,
- "equity": 99938.14,
+ "equity": 100167.17,
  "cash": 17239.48,
  "last_equity": 100000.0,
  "positions": [
@@ -9,28 +9,28 @@
    "symbol": "BTCUSD",
    "qty": 0.215079951,
    "avg_price": 77298.565280644,
-   "price": 77296.752,
-   "value": 16624.981633,
-   "pl": -0.39,
-   "pl_pct": -2e-05
+   "price": 77684.66,
+   "value": 16708.412866,
+   "pl": 83.041233,
+   "pl_pct": 0.00499
   },
   {
    "symbol": "QQQ",
    "qty": 48.0,
    "avg_price": 685.5975,
-   "price": 685.185,
-   "value": 32888.88,
-   "pl": -19.8,
-   "pl_pct": -0.0006
+   "price": 687.045,
+   "value": 32978.16,
+   "pl": 69.48,
+   "pl_pct": 0.00211
   },
   {
    "symbol": "SPY",
    "qty": 44.0,
    "avg_price": 754.2,
-   "price": 754.2,
-   "value": 33184.8,
-   "pl": 0.0,
-   "pl_pct": 0.0
+   "price": 755.48,
+   "value": 33241.12,
+   "pl": 56.32,
+   "pl_pct": 0.0017
   }
  ],
  "orders": [

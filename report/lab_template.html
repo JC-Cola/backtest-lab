@@ -95,7 +95,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .rk .money span { display: block; font: 0.68rem var(--f-mono); color: var(--faint); }
 .rk .go { font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-align: right; }
 .rk .who .bestbadge, .bestbadge { font: 600 0.62rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; background: var(--pos); color: var(--panel); margin-left: 6px; vertical-align: 1px; }
-.acct { border-bottom: 1px solid var(--line); background: var(--bg); display: flex; flex-direction: column; gap: 12px;
+.acct { border-bottom: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; gap: 12px;
   padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .acct-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
 .acct-head h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
@@ -244,15 +244,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="engine" data-pro><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
 </header>
 
-<section class="leader" id="leader">
-  <h2>Which strategy is best?</h2>
-  <p class="answer" id="ld-answer"></p>
-  <div class="ranks" id="ranks"></div>
-  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at, +1 if it held up on extra markets it was never tuned on, −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2017 on; Bitcoin 2021 on), after costs.</p>
-</section>
-
 <section class="acct" id="acct" hidden>
-  <div class="acct-head"><h2>Alpaca paper account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
+  <div class="acct-head"><h2>Live paper trading: Alpaca account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
   <div class="acct-tables">
     <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
@@ -260,6 +253,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   </div>
   <p class="note">Each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed after the close and fill at the next open (Bitcoin straight away). The panel refreshes every time the nightly run works.</p>
 </section>
+
+<section class="leader" id="leader">
+  <h2>Which strategy is best?</h2>
+  <p class="answer" id="ld-answer"></p>
+  <div class="ranks" id="ranks"></div>
+  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at, +1 if it held up on extra markets it was never tuned on, −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2017 on; Bitcoin 2021 on), after costs.</p>
+</section>
+
 
 <main id="view-backtest" class="lab">
   <aside class="col left">
@@ -777,7 +778,9 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   function renderAcct() {
     const A = D.alpaca; if (!A) return;
     $("acct").hidden = false;
-    $("ac-upd").textContent = "updated " + A.generated.replace("T", " ").slice(0, 16) + " UTC";
+    const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
+    const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
+    $("ac-upd").textContent = `figures from ${A.generated.replace("T", " ").slice(0, 16)} UTC (${ago}) · live prices are in Alpaca or TradingView`;
     const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, invested = A.positions.reduce((s, p) => s + p.value, 0);
     $("ac-stats").replaceChildren(
       tile("Account value", usd(A.equity), "started with " + usd(A.start_equity)),
