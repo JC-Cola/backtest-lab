@@ -306,16 +306,14 @@ def in_window(t, sl):
     return (t["day"] >= sl.start) & (t["day"] < sl.stop)
 
 
-def coin_flip(D, t, seed):
-    """Same days, same number of trades, same holding times, shuffled long/short mix; only the entry
-    minute moves (uniform within the session). Value = sum of trade returns net of costs."""
+def coin_vals(D, t, seed):
+    """N_SIMS random-timing values for a trade list (see coin_flip)."""
     k = len(t["ret"])
     if k == 0:
-        return None
+        return np.zeros(N_SIMS)
     rng = np.random.default_rng(seed)
     day, h = t["day"], np.maximum(1, t["exit_m"] - t["entry_m"])
     span = D.last[day] + 2 - h          # valid entry minutes: 0 .. last+1-h
-    strat = float(t["ret"].sum())
     vals = np.empty(N_SIMS)
     for a in range(0, N_SIMS, 200):
         b = min(N_SIMS, a + 200)
@@ -324,6 +322,17 @@ def coin_flip(D, t, seed):
         p_out = D.P[day, e + h]
         dirs = np.take_along_axis(np.tile(t["dir"], (b - a, 1)), np.argsort(rng.random((b - a, k)), axis=1), axis=1)
         vals[a:b] = np.nansum(dirs * (p_out / p_in - 1) - 2 * COST, axis=1)
+    return vals
+
+
+def coin_flip(D, t, seed, vals=None):
+    """Same days, same number of trades, same holding times, shuffled long/short mix; only the entry
+    minute moves (uniform within the session). Value = sum of trade returns net of costs."""
+    k = len(t["ret"])
+    if k == 0:
+        return None
+    strat = float(t["ret"].sum())
+    vals = coin_vals(D, t, seed) if vals is None else vals
     counts, edges = np.histogram(vals, bins=30)
     return {"p_value": (1 + int(np.sum(vals >= strat))) / (1 + N_SIMS), "strategy_value": strat,
             "median_random": float(np.median(vals)), "hist": {"edges": edges.tolist(), "counts": counts.tolist()}}
@@ -348,7 +357,7 @@ def evaluate(st, symbol, D):
     import ftmo
     challenge = ftmo.table(D, t, X.start)
     hold_min = (tx["exit_m"] - tx["entry_m"]).astype(float)
-    return {"strategy": st["id"], "asset": symbol, "params": st["grid"][b], "n_trials": len(runs),
+    return {"_t": t, "strategy": st["id"], "asset": symbol, "params": st["grid"][b], "n_trials": len(runs),
             "is_sharpe": is_sh[b], "is_trades": is_n[b],
             "oos": {"sharpe": sharpe(r), "cagr": cagr(r), "total": float(np.prod(1 + r) - 1), "trades": int(len(tx["ret"])),
                     "win_rate": float((tx["ret"] > 0).mean()) if len(tx["ret"]) else None,
@@ -384,6 +393,54 @@ def main(markets=DISCOVERY):
     return rows
 
 
+def portfolio(name, members, days, rows_by_key):
+    """Equal-weight portfolio of (strategy, market) members in ONE account, at their tuning-year settings.
+    Daily return = average of the members' daily returns. Random baseline: every member's trades are
+    re-timed at random (same seeds as their own tests) and the members' random values averaged.
+    FTMO: the day's worst moment is taken as the average of the members' own worst moments, which is
+    never better than the true combined low (members rarely hit their lows at the same minute)."""
+    import ftmo
+    D0 = days[members[0][1]]
+    X = slice(int(D0.dates.searchsorted(pd.Timestamp(OOS_START))), D0.n)
+    I_ = slice(0, int(D0.dates.searchsorted(pd.Timestamp(IS_END), "right")))
+    n = len(members)
+    r_full = np.zeros(D0.n); r2_full = np.zeros(D0.n); fin = np.zeros(D0.n); low = np.zeros(D0.n)
+    vals = np.zeros(N_SIMS); strat = 0.0
+    for sid, sym in members:
+        D, row = days[sym], rows_by_key[(sid, sym)]
+        assert D.dates.equals(D0.dates)
+        t = row["_t"]
+        r = np.zeros(D.n); np.add.at(r, t["day"], t["ret"])
+        r2 = r.copy(); np.subtract.at(r2, t["day"], 2 * COST)
+        r_full += r / n; r2_full += r2 / n
+        f, lo = ftmo.day_paths(D, t)
+        fin += f / n; low += lo / n
+        k = in_window(t, X)
+        tx = {kk: v[k] for kk, v in t.items()}
+        vals += coin_vals(D, tx, SEED + zlib.crc32(f"{sid}{sym}".encode()) % 100000) / n
+        strat += float(tx["ret"].sum()) / n
+    bh = np.r_[0.0, D0.close[1:] / D0.close[:-1] - 1]
+    out = []
+    starts = range(X.start, D0.n - 20)
+    for lev in ftmo.LEVERAGES:
+        res = [ftmo.simulate(fin, low, st, lev) for st in starts]
+        passed = [d for rr, d in res if rr == "passed"]
+        m = len(res)
+        out.append({"leverage": lev, "attempts": m, "pass_rate": len(passed) / m,
+                    "fail_daily": sum(rr == "failed (daily loss)" for rr, _ in res) / m,
+                    "fail_max": sum(rr == "failed (max loss)" for rr, _ in res) / m,
+                    "unfinished": sum(rr == "unfinished" for rr, _ in res) / m,
+                    "median_days_to_pass": float(np.median(passed)) if passed else None})
+    counts, edges = np.histogram(vals, bins=30)
+    rx = r_full[X]
+    return {"name": name, "members": [list(m) for m in members], "is_sharpe": sharpe(r_full[I_]),
+            "oos": {"sharpe": sharpe(rx), "cagr": cagr(rx), "total": float(np.prod(1 + rx) - 1)},
+            "oos_cost2x_sharpe": sharpe(r2_full[X]), "buy_hold_oos": {"sharpe": sharpe(bh[X]), "cagr": cagr(bh[X])},
+            "coin_flip": {"p_value": (1 + int(np.sum(vals >= strat))) / (1 + N_SIMS), "strategy_value": strat,
+                          "median_random": float(np.median(vals)), "hist": {"edges": edges.tolist(), "counts": counts.tolist()}},
+            "ftmo": out, "_r": r_full}
+
+
 def lockbox(st, markets=LOCKBOX):
     out = []
     for sym in markets:
@@ -401,6 +458,35 @@ if __name__ == "__main__":
     by_id = {s["id"]: s for s in STRATEGIES}
     for r in rows:
         r["lockbox"] = lockbox(by_id[r["strategy"]]) if r.get("candidate") else None
+    # portfolios, members chosen from TUNING-YEAR results only
+    days = {s: Days(s) for s in DISCOVERY}
+    key = {(r["strategy"], r["asset"]): r for r in rows}
+    tested = [(r["strategy"], r["asset"]) for r in rows if r["coin_flip"]]
+    pos_is = [(r["strategy"], r["asset"]) for r in rows if r["coin_flip"] and r["is_sharpe"] > 0]
+    ports = [portfolio("A: positive on the tuning years", pos_is, days, key),
+             portfolio("B: all tested intraday strategies", tested, days, key)]
+    for pf in ports:
+        lb_days = {s: Days(s) for s in LOCKBOX}
+        lb_rows = []
+        for s_ in LOCKBOX:
+            for st in STRATEGIES:
+                if st["coin"]:
+                    lb_rows.append(evaluate(st, s_, lb_days[s_]))
+        lkey = {(r["strategy"], r["asset"]): r for r in lb_rows}
+        lps = []
+        for s_ in LOCKBOX:
+            mem = [(r["strategy"], s_) for r in lb_rows if r["asset"] == s_ and
+                   ((pf["name"].startswith("A") and r["is_sharpe"] > 0) or pf["name"].startswith("B"))]
+            if mem:
+                lp = portfolio(pf["name"] + " (" + s_ + ")", mem, {s_: lb_days[s_]}, lkey)
+                lps.append({"asset": s_, "members": mem, "p_value": lp["coin_flip"]["p_value"], "oos_sharpe": lp["oos"]["sharpe"]})
+        fp = fisher_p([x["p_value"] for x in lps]) if lps else 1.0
+        med = float(np.median([x["oos_sharpe"] for x in lps])) if lps else 0.0
+        pf["lockbox"] = {"markets": lps, "fisher_p": fp, "median_oos_sharpe": med, "confirmed": bool(fp < 0.05 and med > 0)}
+        best = max(pf["ftmo"], key=lambda x: x["pass_rate"])
+        print(f"\nportfolio {pf['name']} ({len(pf['members'])} members): IS Sh {pf['is_sharpe']:.2f} | OOS Sh {pf['oos']['sharpe']:.2f} "
+              f"2x {pf['oos_cost2x_sharpe']:.2f} p={pf['coin_flip']['p_value']:.3f} | lockbox Fisher p={fp:.3f} median Sh={med:.2f} | "
+              f"FTMO best {best['pass_rate']:.0%} at {best['leverage']}x")
     print("\ncandidates (p<0.05, q<0.10, Sharpe>0 at 1x and 2x costs):")
     for r in rows:
         if r.get("candidate"):
@@ -409,7 +495,11 @@ if __name__ == "__main__":
                   f"median Sh={lb['median_oos_sharpe']:.2f} -> {'CONFIRMED' if lb['confirmed'] else 'not confirmed'}")
     if not any(r.get("candidate") for r in rows):
         print("  none")
-    OUT.write_text(json.dumps({"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    for r in rows:
+        r.pop("_t", None)
+    for pf in ports:
+        pf.pop("_r", None)
+    OUT.write_text(json.dumps({"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "portfolios": ports,
                                "plan": "INTRADAY_PLAN.md", "cost_per_side": COST, "n_sims": N_SIMS,
                                "strategies": [{k: s[k] for k in ("id", "name", "source", "plain")} | {"grid_size": len(s["grid"])}
                                               for s in STRATEGIES], "results": rows}, default=float))
