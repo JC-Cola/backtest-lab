@@ -36,3 +36,14 @@ The same as study 1:
 - **Candidate:** p < 0.05, q < 0.10, and Sharpe > 0 at both 1× and 2× costs.
 - **Confirmed:** the same strategy, with fresh tuning, on all 15 lockbox symbols gives Fisher's combined
   p < 0.05 and a median Sharpe > 0.
+
+## Amendment 1 (after discovery, before ANY lockbox data was looked at)
+
+Discovery gave no candidate (120 tests, none with q < 0.10). The one consistent pattern was **gap fade on single
+stocks**: a positive test-window Sharpe on 10 of the 12 stocks, and p < 0.05 on 4 of them. Because this follow-up
+was chosen after seeing discovery, it is labelled post-hoc. It is a single hypothesis tested on untouched data:
+
+- run `id_gap_fade` with the same grid and fresh tuning (2019–2021) on all 15 lockbox symbols;
+- **confirmed** only if Fisher's combined p < 0.05 **and** the median test Sharpe > 0 across the 12 lockbox stocks
+  (the 3 ETFs are reported but not counted, since the discovery pattern was in stocks);
+- no other strategy is run on the lockbox.
