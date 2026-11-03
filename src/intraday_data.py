@@ -26,12 +26,20 @@ def download(symbol: str, start="2016-01-01", end=None):
     from alpaca.data.timeframe import TimeFrame
     crypto = "/" in symbol
     cl = _client(crypto)
-    end = end or datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    from datetime import timedelta
+    now_cap = datetime.now(timezone.utc) - timedelta(minutes=20)  # free plan: no SIP data from the last 15 min
+    end = end or now_cap.strftime("%Y-%m-%d")
     parts = []
+    DIR.mkdir(parents=True, exist_ok=True)
     for y in range(int(start[:4]), int(end[:4]) + 1):
+        cache = DIR / f"{symbol.replace('/', '')}_{y}.pkl"
+        if cache.exists() and y < now_cap.year:
+            parts.append(pd.read_pickle(cache))
+            print(f"  {symbol} {y}: cached", flush=True)
+            continue
         a, b = max(start, f"{y}-01-01"), min(end, f"{y}-12-31")
         t0 = datetime.fromisoformat(a).replace(tzinfo=timezone.utc)
-        t1 = datetime.fromisoformat(b).replace(hour=23, minute=59, tzinfo=timezone.utc)
+        t1 = min(datetime.fromisoformat(b).replace(hour=23, minute=59, tzinfo=timezone.utc), now_cap)
         if crypto:
             req = CryptoBarsRequest(symbol_or_symbols=symbol, timeframe=TimeFrame.Minute, start=t0, end=t1)
             df = cl.get_crypto_bars(req).df
@@ -47,11 +55,12 @@ def download(symbol: str, start="2016-01-01", end=None):
         if not crypto:
             t = df.index.hour * 60 + df.index.minute
             df = df[(t >= 570) & (t < 960)]  # 09:30 <= bar start < 16:00
-        parts.append(df[["open", "high", "low", "close", "volume"]])
+        df = df[["open", "high", "low", "close", "volume"]]
+        df.to_pickle(cache)
+        parts.append(df)
         print(f"  {symbol} {y}: {len(df):,} bars", flush=True)
     out = pd.concat(parts).sort_index()
     out = out[~out.index.duplicated()]
-    DIR.mkdir(parents=True, exist_ok=True)
     out.to_pickle(DIR / f"{symbol.replace('/', '')}.pkl")
     return out
 
