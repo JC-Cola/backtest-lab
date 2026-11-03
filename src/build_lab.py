@@ -96,6 +96,116 @@ def _plain_params(code, combos):
     return out
 
 
+# Daily strategies kept in the lab: the ones behind the three open Alpaca positions (SPY, QQQ, BTC).
+LAB_DAILY = {"MR-IBS", "TS-VOL", "MR-WR", "CAL-JAN", "TS-TREND"}
+SHOW_AGENT = False
+
+INTRA = {
+    "id_overnight": ("ID-NIGHT", "Buys the fund at the close and sells at the next morning's open, so it only owns the night.",
+        ["ENTRY  buy at the session close", "EXIT   sell at the next session's open", "COST   1 bp per side"],
+        "Studies find most of the stock market's long-run gain arrived overnight, while it was closed.",
+        ["Pays costs every single day: 2 bp a night adds up to about 5% a year.", "Holds through weekends, which FTMO's Standard account forbids on the funded stage.", "The overnight edge has shrunk in recent years."], {}),
+    "id_intraday_only": ("ID-DAY", "Buys the fund at the open and sells at the close, every trading day.",
+        ["ENTRY  buy at the session open", "EXIT   sell at the session close", "COST   1 bp per side"],
+        "The contrast to the overnight hold: it shows how little of the market's gain comes during trading hours.",
+        ["Historically earns close to nothing before costs.", "Pays costs every day.", "Mainly a benchmark, not a strategy."], {}),
+    "id_intraday_momentum": ("ID-MOM", "Looks at the move from yesterday's close to 10:00 (or 10:30). If it was up, buys for the last part of the day; if down, sells short.",
+        ["r     = price(10:00 or 10:30) / yesterday's close - 1", "ENTRY  last 30 or 60 minutes: long if r > 0, short if r < 0", "EXIT   at the close"],
+        "Gao, Han, Li & Zhou (2018) found the first half hour predicts the last half hour, as late traders and hedgers repeat the morning's direction.",
+        ["The effect was found on 1993-2013 data and has weakened since publication.", "Only about one trade a day, so costs are a large share of a small edge.", "Works mainly on big-news days; most days it is noise."],
+        {"sig_min": ("Signal measured until", "Later gives a better read on the day but leaves less time to trade.", {30: "10:00 (first 30 minutes)", 60: "10:30 (first hour)"}),
+         "hold": ("Trade the last", "Longer holds catch more of the move but more noise too.", {30: "30 minutes", 60: "60 minutes"})}),
+    "id_orb": ("ID-ORB", "Waits for the first 5 to 30 minutes of the day, then trades in that range's direction, with a stop at the other end of the range.",
+        ["range  = first N minutes (high, low, direction)", "ENTRY  next bar, in the range's direction", "STOP   other end of the range", "EXIT   10x the risk (10R) or the close"],
+        "Zarattini, Barbon & Aziz (2023): strong opens often keep going, and a tight stop keeps losers small.",
+        ["Wins only about 1 trade in 4, so long losing streaks are normal.", "An independent replication found the profit vanishes after costs.", "The paper had no out-of-sample test."],
+        {"or_min": ("Opening range length", "Shorter reacts faster but is noisier.", {5: "first 5 minutes", 15: "first 15 minutes", 30: "first 30 minutes"}),
+         "target": ("Take profit", "10R takes big wins early; none holds to the close.", {10.0: "at 10x the risk (10R)", 0.0: "none, hold to the close"})}),
+    "id_vwap_trend": ("ID-VWAP", "Long while the price is above the day's volume-weighted average price (VWAP), short while below, flipping every time it crosses.",
+        ["vwap   = cumulative (price x volume) / cumulative volume, from 09:30", "SIDE   long if close > vwap, short if close < vwap", "CHECK  every 1, 5 or 15 minutes; flat at the close"],
+        "Zarattini & Aziz (2023): big institutions benchmark against VWAP, so moves away from it can persist.",
+        ["Flips many times a day, so costs pile up fast.", "Choppy days are death by a thousand small losses.", "The paper's results used leveraged QQQ and no slippage."],
+        {"bar": ("Check the price every", "Less often means fewer flips and lower costs.", {1: "1 minute", 5: "5 minutes", 15: "15 minutes"})}),
+    "id_noise_breakout": ("ID-NOISE", "Only trades when the price leaves its usual daily range, measured from the last 10 or 14 days, and is on the right side of VWAP.",
+        ["band   = open x (1 +/- average move at this time over the last N days)", "LONG   if price > max(upper band, vwap)", "SHORT  if price < min(lower band, vwap)", "CHECK  every 30 or 60 minutes; flat at the close"],
+        "Zarattini, Aziz & Barbon (2024): moves beyond the normal noise of the day signal real buying or selling pressure.",
+        ["Many days it never trades; when it does, it can be stopped out at the next check.", "The paper reports results with leverage up to 4x.", "Weak after double costs in this test."],
+        {"lookback": ("Normal range measured over", "Longer gives a steadier band.", {10: "last 10 days", 14: "last 14 days"}),
+         "check": ("Check the price every", "Less often means fewer trades.", {30: "30 minutes", 60: "60 minutes"})}),
+    "id_gap_fade": ("ID-GAP", "When the market opens far from yesterday's close, bets it moves back towards that close.",
+        ["gap    = open / yesterday's close - 1", "ENTRY  09:31, against the gap, if |gap| > threshold", "EXIT   when the gap fills, or at the close"],
+        "Big gaps are often overreactions to overnight news that partly reverse once regular trading starts.",
+        ["Big gaps are rare, so there are few trades.", "When a gap keeps running it can lose all day.", "Trader folklore, not a peer-reviewed result."],
+        {"gap": ("Minimum gap", "Bigger gaps are rarer but more stretched.", {0.0025: "0.25%", 0.005: "0.5%", 0.01: "1%"}),
+         "exit_": ("Take profit", "'When it fills' banks the win early.", {"fill": "when the gap fills", "close": "hold to the close"})}),
+    "id_halfhour_periodicity": ("ID-HALF", "Each half hour of the day, bets the same way that half hour went on average over recent days.",
+        ["slot   = one of the 13 half hours of the session", "SIGNAL = average return of this slot over the last N days", "SIDE   long if > 0 (short if < 0, or flat in long-only)"],
+        "Heston, Korajczyk & Sadka (2010) found the same half hour tends to repeat its performance on later days.",
+        ["The paper found it unprofitable after trading costs.", "It was a cross-section of stocks; one index fund is a weaker test.", "Trades up to 13 times a day."],
+        {"lookback": ("Average over", "Longer is steadier but slower to adapt.", {10: "last 10 days", 20: "last 20 days", 40: "last 40 days"}),
+         "mode": ("Direction", "Long-only never goes short.", {"ls": "long and short", "long": "long only"})}),
+}
+
+
+def build_intraday(book, markets):
+    """Add the intraday study's strategies (results/intraday.json) to the book, with every grid setting
+    recomputed so the page's sliders work, plus each strategy's FTMO 2-Step challenge table."""
+    path = ROOT / "results" / "intraday.json"
+    if not path.exists():
+        return
+    import intraday as I
+    res = json.loads(path.read_text())
+    by_id = {s["id"]: s for s in I.STRATEGIES}
+    pool = sum(1 for r in res["results"] if r.get("coin_flip"))
+    days = {}
+    for row in res["results"]:
+        sym, st = row["asset"], by_id[row["strategy"]]
+        if sym not in days:
+            days[sym] = I.Days(sym)
+            D = days[sym]
+            markets[f"{sym}-1m"] = {"dates": [str(d.date()) for d in D.dates],
+                                    "bench": r5(np.r_[0.0, D.close[1:] / D.close[:-1] - 1]),
+                                    "oos_start": I.OOS_START, "is_end": I.IS_END, "ann": 252, "cost_bps": 1}
+        D = days[sym]
+        combos = []
+        for p in st["grid"]:
+            t = st["fn"](D, **p)
+            r = np.zeros(D.n)
+            np.add.at(r, t["day"], t["ret"])
+            traded = np.zeros(D.n, int)
+            traded[t["day"]] = 100
+            combos.append({"params": p, "r": r5(r), "trades": [[int(d), round(float(x), 5)] for d, x in zip(t["day"], t["ret"])],
+                           "pos": traded.tolist()})
+        chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(row["params"]))
+        code, plain, signal, edge, kills, pp = INTRA[st["id"]]
+        cf, lb = row.get("coin_flip"), row.get("lockbox")
+        if cf is None:
+            verdict = "NOTEST"
+        elif row.get("candidate") and lb and lb.get("confirmed"):
+            verdict = "PASS"
+        elif cf["p_value"] < 0.05:
+            verdict = "WEAK"
+        else:
+            verdict = "FAIL"
+        oos_years = (D.n - int(D.dates.searchsorted(np.datetime64(I.OOS_START)))) / 252
+        per_year = row["oos"]["trades"] / oos_years if oos_years > 0 else 0.0
+        beat = 1 - cf["p_value"] if cf else 0.0
+        lock = bool(lb and lb.get("confirmed"))
+        cand = bool(row.get("candidate"))
+        book.append({"code": f"{code}", "id": f"{st['id']}_{sym}", "name": st["name"], "market": f"{sym}-1m",
+                     "desc": st["plain"], "family": "Intraday", "freq": "Minute bars, flat every night" if st["id"] != "id_overnight" else "Holds overnight only",
+                     "source": st["source"], "signal": signal, "edge": edge, "kills": kills, "plain": plain,
+                     "pparams": {k: {"label": a, "help": h, "values": {_js(v): txt for v, txt in vals.items()}} for k, (a, h, vals) in pp.items()},
+                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key) for k in st["grid"][0]},
+                     "combos": combos, "chosen": chosen, "ftmo": row.get("ftmo"),
+                     "verdict": {"verdict": verdict, "p": cf["p_value"] if cf else None, "q": cf.get("q_value") if cf else None,
+                                 "lockbox": lock if cand else None, "pool": pool, "params": row["params"],
+                                 "cost2x": row["oos_cost2x_sharpe"]},
+                     "evidence": {"fresh": lock, "lockbox": cand, "beat": round(beat, 4), "per_year": round(per_year, 1),
+                                  "few": bool(per_year < 5), "tested": cf is not None,
+                                  "score": (2 if lock else 0) + (1 if cand else 0) - (1 if per_year < 5 else 0) - (0 if cf else 2)}})
+
+
 def _js(v):
     """Same text as the browser's JSON.stringify, so settings match on the page."""
     return json.dumps(list(v) if isinstance(v, tuple) else v, separators=(",", ":"))
@@ -145,6 +255,8 @@ def rank_book(book, cache):
     +2 held up on fresh data, +1 held up on lockbox markets, -1 if fewer than 5 decisions a year
     (a record built on a handful of calls); ties broken by the share of random traders beaten."""
     for b in book:
+        if "evidence" in b:  # intraday entries carry their own evidence
+            continue
         v = b["verdict"]
         df, _, cfg = cache[b["market"]]
         oos = df.index.searchsorted(np.datetime64(cfg["oos_start"]))
@@ -172,6 +284,8 @@ def main():
     ctx_raw = data.load_context()
     cache, markets, book = {}, {}, []
     for b in BOOK:
+        if b["code"] not in LAB_DAILY:
+            continue
         st = BY_ID[b["id"]]
         df, ctx, cfg = build_market(b["market"], ctx_raw, cache)
         v = verdict_for(b["id"], b["market"], results, conf)
@@ -190,7 +304,7 @@ def main():
                      "combos": combos, "chosen": chosen, "verdict": v})
     # the self-improving agent's current best idea
     mem = Memory()
-    top = mem.top(1)
+    top = mem.top(1) if SHOW_AGENT else []
     if top:
         t = top[0]
         s = t["spec"]
@@ -217,6 +331,7 @@ def main():
                      "axes": {}, "combos": [{"params": {}} | series(df, pos, cfg["cost_bps"])], "chosen": 0,
                      "verdict": {"verdict": "AGENT", "reward": round(mem.current_reward(t), 3),
                                  "trials": len(mem.trials)}})
+    build_intraday(book, markets)
     rank_book(book, cache)
     for ticker, (df, _, cfg) in cache.items():
         o, c = df.Open.values, df.Close.values

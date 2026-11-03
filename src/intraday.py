@@ -345,6 +345,8 @@ def evaluate(st, symbol, D):
     np.subtract.at(r2, tx["day"] - X.start, 2 * COST)
     bh = np.r_[0.0, D.close[1:] / D.close[:-1] - 1][X]
     cf = coin_flip(D, tx, SEED + zlib.crc32(f"{st['id']}{symbol}".encode()) % 100000) if st["coin"] else None
+    import ftmo
+    challenge = ftmo.table(D, t, X.start)
     hold_min = (tx["exit_m"] - tx["entry_m"]).astype(float)
     return {"strategy": st["id"], "asset": symbol, "params": st["grid"][b], "n_trials": len(runs),
             "is_sharpe": is_sh[b], "is_trades": is_n[b],
@@ -356,7 +358,7 @@ def evaluate(st, symbol, D):
             "oos_cost2x_sharpe": sharpe(r2),
             "grid_median_oos_sharpe": float(np.median([sharpe(daily_returns(D, u, X)) for u in runs])),
             "buy_hold_oos": {"sharpe": sharpe(bh), "cagr": cagr(bh)},
-            "coin_flip": cf, "window": [str(D.dates[X.start].date()), str(D.dates[-1].date())],
+            "coin_flip": cf, "ftmo": challenge, "window": [str(D.dates[X.start].date()), str(D.dates[-1].date())],
             "equity": {"dates": [str(x.date()) for x in D.dates[X][::5]],
                        "strategy": [round(float(v), 4) for v in np.cumprod(1 + r)[::5]],
                        "buy_hold": [round(float(v), 4) for v in np.cumprod(1 + bh)[::5]]}}

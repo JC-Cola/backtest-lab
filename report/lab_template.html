@@ -112,6 +112,15 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .acct .tw { overflow-x: auto; }
 .acct .note { margin: 0; }
 @media (max-width: 900px) { .acct-tables { grid-template-columns: minmax(0, 1fr); } .acct .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ftmo { padding: 0 0 6px; }
+.ftmo .ftmo-say { margin: 6px 12px 4px; font-size: 0.88rem; max-width: 80ch; }
+.ftmo .ftmo-note { margin: 6px 12px 4px; font-size: 0.72rem; color: var(--faint); }
+.ftmo table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 560px; }
+.ftmo th { text-align: left; font: 500 0.62rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.ftmo td { padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.ftmo td.n, .ftmo th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.ftmo tr.best td { background: var(--pos-soft); }
+.ftmo .tw { overflow-x: auto; }
 .leader .rule { font-size: 0.74rem; color: var(--faint); margin: 0; }
 @media (max-width: 760px) {
   .rk { grid-template-columns: 2rem minmax(0, 1fr) auto; }
@@ -258,7 +267,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <h2>Which strategy is best?</h2>
   <p class="answer" id="ld-answer"></p>
   <div class="ranks" id="ranks"></div>
-  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at, +1 if it held up on extra markets it was never tuned on, −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2017 on; Bitcoin 2021 on), after costs.</p>
+  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at (intraday: IWM and DIA), +1 if it held up on extra markets it was never tuned on (intraday: passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (daily strategies 2017 on; Bitcoin and intraday 2021 on), after costs. Intraday strategies are flat every night.</p>
 </section>
 
 
@@ -276,6 +285,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     </div>
     <div class="panel paperline" id="paperline"></div>
     <div class="panel verdict-card" data-simple><span class="cap">Verdict</span><p id="s-verdict"></p></div>
+    <div class="panel ftmo" id="ftmo" hidden>
+      <div class="ph"><span class="cap">FTMO 2-Step challenge: how often would it pass?</span><span class="r" id="ftmo-r"></span></div>
+      <p class="ftmo-say" id="ftmo-say"></p>
+      <div class="tw"><table><thead><tr><th>Position size</th><th class="n">Passed both phases</th><th class="n">Broke the 5% daily loss</th><th class="n">Broke the 10% max loss</th><th class="n">Still going after a year</th><th class="n">Typical days to pass</th></tr></thead><tbody id="ftmo-body"></tbody></table></div>
+      <p class="ftmo-note">Replayed from every start day since 2021 with the ★ settings. Rules: +10% then +5%, never more than 5% down in a day (checked against the worst moment of each day) or 10% in total, at least 4 trading days. Picking a size after seeing this table is hindsight.</p>
+    </div>
     <div class="panel" data-simple><div class="stats s4" id="s-stats"></div></div>
     <div class="panel" data-pro><div class="stats" id="stats"></div></div>
     <div class="panel">
@@ -497,7 +512,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     if (keys.length) {
       const star = Object.assign(document.createElement("span"), { className: "star", textContent: "★" });
       $("pintro").append("These decide when the strategy buys and sells. ", star,
-        ` was picked using only ${b.market === "BTC-USD" ? "2014–2020" : "2005–2016"}. Move a setting and watch the chart above change.`);
+        ` was picked using only ${D.markets[b.market].dates[0].slice(0, 4)}–${D.markets[b.market].is_end.slice(0, 4)}. Move a setting and watch the chart above change.`);
     } else $("pintro").textContent = "The agent's idea has fixed settings.";
     const cs = chosenSel(b);
     keys.forEach(k => {
@@ -622,11 +637,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     renderRight(b, st, bh);
     renderSimple(b, w, st, bh, expo);
     renderPaperLine(b);
+    renderFtmo(b);
   }
   function renderSimple(b, w, st, bh, expo) {
     $("h-desc").textContent = simple() ? b.plain : b.desc;
     $("eq-title").textContent = simple() ? "What $10,000 became" : "Equity curve";
-    const name = { SPY: "the S&P 500 fund", QQQ: "the Nasdaq 100 fund", GLD: "gold", "BTC-USD": "Bitcoin" }[b.market] || b.market;
+    const name = { SPY: "the S&P 500 fund", QQQ: "the Nasdaq 100 fund", GLD: "gold", "BTC-USD": "Bitcoin",
+                   "SPY-1m": "the S&P 500 fund", "QQQ-1m": "the Nasdaq 100 fund" }[b.market] || b.market;
     $("s-stats").replaceChildren(
       tile("$10,000 became", money(1e4 * (1 + st.total)), "just holding: " + money(1e4 * (1 + bh.total))),
       tile("Per year", sgn(st.cagr), "just holding: " + sgn(bh.cagr), cls(st.cagr)),
@@ -640,11 +657,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       WEAK: "Probably luck.",
       FAIL: "No edge.",
       AGENT: "Still being researched.",
+      NOTEST: "A benchmark, not tested against random traders.",
     }[v.verdict] || "";
     const body = {
       PASS: " It beat random trading even after allowing for every strategy tested.",
-      WEAK: ` It beat ${pct(1 - (v.p ?? 1), 0)} of 2,000 random traders, which looks good alone, but after testing ${D.research.hunt_tests} strategy-market pairs a few results this good always show up by chance.`,
+      WEAK: ` It beat ${pct(1 - (v.p ?? 1), 0)} of 2,000 random traders, which looks good alone, but after testing ${v.pool || D.research.hunt_tests} strategy-market pairs a few results this good always show up by chance.`,
       FAIL: " It did no better than buying and selling on random days.",
+      NOTEST: " Its timing is fixed, so it can't be compared with random traders; it shows how the market behaves at that time of day.",
       AGENT: " The self-learning agent found it, but it has not yet earned a test on unseen years, so treat these numbers as a sketch.",
     }[v.verdict] || "";
     const fresh = v.fresh && v.fresh.confirmed ? " It did beat random timing on data nobody had looked at, but the edge is small." : "";
@@ -673,18 +692,33 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     $("edge").textContent = b.edge;
     $("kills").replaceChildren(...b.kills.map(k => Object.assign(document.createElement("li"), { textContent: k })));
     const badge = $("v-badge");
-    const label = { PASS: ["Passes gate", "b-pass"], WEAK: ["Close call", "b-weak"], FAIL: ["Fails gate", "b-fail"], AGENT: ["In research", "b-agent"] }[v.verdict] || [v.verdict, "b-fail"];
+    const label = { PASS: ["Passes gate", "b-pass"], WEAK: ["Close call", "b-weak"], FAIL: ["Fails gate", "b-fail"], AGENT: ["In research", "b-agent"], NOTEST: ["Benchmark", "b-agent"] }[v.verdict] || [v.verdict, "b-fail"];
     badge.textContent = label[0]; badge.className = "badge " + label[1];
     const txt = {
       PASS: "Beat random trading after allowing for every test, and held up on markets it was never searched on.",
-      WEAK: `Beat ${pct(1 - (v.p ?? 1), 1)} of random traders, but across ${D.research.hunt_tests} tests a few results this good appear by luck. Not tradeable on this evidence.`,
+      WEAK: `Beat ${pct(1 - (v.p ?? 1), 1)} of random traders, but across ${v.pool || D.research.hunt_tests} tests a few results this good appear by luck. Not tradeable on this evidence.`,
       FAIL: "No better than random timing on the test years. Nothing to trade here.",
+      NOTEST: "Its timing is fixed (every day at the same moment), so it can't be compared with random traders. It is here as a benchmark.",
       AGENT: "Still being searched. It needs a deflated score of 0.95 before it gets one shot at the held-out years, then paper trading.",
     }[v.verdict] || "";
     $("v-text").textContent = txt + (v.fresh && v.fresh.confirmed ? " It did hold up on untouched data, but earned less than just holding." : "");
   }
 
   // ---------------------------------------------------------------- research tab
+  function renderFtmo(b) {
+    const box = $("ftmo");
+    if (!b.ftmo) { box.hidden = true; return; }
+    box.hidden = false;
+    const rows = b.ftmo, best = rows.reduce((a, r) => r.pass_rate > a.pass_rate ? r : a, rows[0]);
+    $("ftmo-r").textContent = `${rows[0].attempts.toLocaleString("en-US")} simulated attempts per size`;
+    $("ftmo-say").textContent = best.pass_rate > 0
+      ? `At best, about ${Math.round(best.pass_rate * 100)} in 100 attempts pass both phases (at ${best.leverage}× size). Most attempts that fail break the 5% daily loss limit, and bigger sizes fail faster.`
+      : "No simulated attempt passed both phases at any size.";
+    $("ftmo-body").replaceChildren(...rows.map(r => { const tr = document.createElement("tr"); if (r === best && r.pass_rate > 0) tr.className = "best";
+      [[`${r.leverage}× the account`, ""], [pct(r.pass_rate, 0), "n"], [pct(r.fail_daily, 0), "n"], [pct(r.fail_max, 0), "n"], [pct(r.unfinished, 0), "n"],
+       [r.median_days_to_pass == null ? "—" : Math.round(r.median_days_to_pass) + " days", "n"]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
+      return tr; }));
+  }
   function paperFor(key) { return (D.paper.strategies || {})[key]; }
   function renderPaperLine(b) {
     const box = $("paperline"), pk = b.code === "AGENT" ? "AGENT-" + b.id.replace("agent_", "") : b.code, pr = paperFor(pk);
@@ -737,7 +771,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const mk = D.markets[b.market], c = b.combos[b.chosen], a = mk.dates.findIndex(d => d >= mk.oos_start);
     return [stats(c.r.slice(a).map(v => v ?? 0), mk.ann), stats(mk.bench.slice(a).map(v => v ?? 0), mk.ann)];
   }
-  const mname = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold", "BTC-USD": "Bitcoin", IWM: "Small caps" };
+  const mname = { SPY: "S&P 500 fund · daily", QQQ: "Nasdaq 100 fund · daily", GLD: "Gold", "BTC-USD": "Bitcoin · daily", IWM: "Small caps",
+                  "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
   function renderLeader() {
     const box = $("ranks"); box.replaceChildren();
     D.book.forEach((b, i) => {
@@ -752,8 +787,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       const chip = (t, c) => ch.appendChild(Object.assign(document.createElement("span"), { className: "ck " + c, textContent: t }));
       if (!e.tested) chip("not tested on unseen years yet", "warnc");
       else {
-        chip("held up on fresh data", e.fresh ? "yes" : "no");
-        chip("held up on extra markets", e.lockbox ? "yes" : "no");
+        if (b.family === "Intraday") {
+          chip("passed after allowing for every test", e.lockbox ? "yes" : "no");
+          chip("held up on IWM & DIA", e.fresh ? "yes" : "no");
+        } else {
+          chip("held up on fresh data", e.fresh ? "yes" : "no");
+          chip("held up on extra markets", e.lockbox ? "yes" : "no");
+        }
         chip(`beat ${pct(e.beat, e.beat >= 0.99 ? 1 : 0)} of random traders`, e.beat >= 0.95 ? "yes" : "");
       }
       if (e.few) chip(`only ${e.per_year} decisions a year`, "warnc");
