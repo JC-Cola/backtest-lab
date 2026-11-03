@@ -351,7 +351,9 @@ def main():
     paper = json.loads(pp.read_text()) if pp.exists() else {"strategies": {}}
     ap = ROOT / "agent_memory" / "alpaca_account.json"
     alpaca = json.loads(ap.read_text()) if ap.exists() else None
-    blob = json.dumps({"book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
+    ip = ROOT / "results" / "intraday.json"
+    portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
+    blob = json.dumps({"portfolios": portfolios, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

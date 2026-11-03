@@ -121,6 +121,12 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .ftmo td.n, .ftmo th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
 .ftmo tr.best td { background: var(--pos-soft); }
 .ftmo .tw { overflow-x: auto; }
+.ports table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 640px; }
+.ports th { text-align: left; font: 500 0.62rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.ports td { padding: 7px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.ports td.n, .ports th.n { text-align: right; font-family: var(--f-mono); }
+.ports td small { display: block; color: var(--faint); font-size: 0.72rem; }
+.ports .tw { overflow-x: auto; }
 .leader .rule { font-size: 0.74rem; color: var(--faint); margin: 0; }
 @media (max-width: 760px) {
   .rk { grid-template-columns: 2rem minmax(0, 1fr) auto; }
@@ -264,9 +270,19 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </section>
 
 <section class="leader" id="leader">
-  <h2>Which strategy is best?</h2>
+  <div class="acct-head"><h2>Which strategy is best?</h2>
+    <div class="seg" id="lfilter" aria-label="Which strategies to rank">
+      <button data-f="intraday" aria-pressed="true">Intraday (1 min – 1 day)</button>
+      <button data-f="daily" aria-pressed="false">Daily (being traded)</button>
+      <button data-f="all" aria-pressed="false">All</button>
+    </div></div>
   <p class="answer" id="ld-answer"></p>
   <div class="ranks" id="ranks"></div>
+  <div class="panel ports" id="ports" hidden>
+    <div class="ph"><span class="cap">Testing several intraday strategies at once, in one account</span></div>
+    <div class="tw"><table><thead><tr><th>Portfolio</th><th class="n">Test years Sharpe</th><th class="n">At 2× costs</th><th class="n">Beat random</th><th class="n">Best FTMO pass rate</th><th>Verdict</th></tr></thead><tbody id="ports-body"></tbody></table></div>
+    <p class="ftmo-note">Members are picked from 2016–2020 results only. This test was added after the individual results were seen, so treat it as a lead, not proof.</p>
+  </div>
   <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at (intraday: IWM and DIA), +1 if it held up on extra markets it was never tuned on (intraday: passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (daily strategies 2017 on; Bitcoin and intraday 2021 on), after costs. Intraday strategies are flat every night.</p>
 </section>
 
@@ -773,19 +789,41 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   const mname = { SPY: "S&P 500 fund · daily", QQQ: "Nasdaq 100 fund · daily", GLD: "Gold", "BTC-USD": "Bitcoin · daily", IWM: "Small caps",
                   "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
+  let lfilter = "intraday";
+  try { const f = localStorage.getItem("lab-lfilter"); if (f) lfilter = f; } catch (e) {}
+  const inFilter = b => lfilter === "all" || (lfilter === "intraday") === (b.family === "Intraday");
+  function renderPorts() {
+    const P = D.portfolios || [], box = $("ports");
+    box.hidden = !P.length || lfilter === "daily";
+    const label = { id_noise_breakout: "Noise-Band Breakout", id_orb: "Opening Range Breakout", id_gap_fade: "Gap Fade", id_vwap_trend: "VWAP Trend",
+      id_intraday_momentum: "Intraday Momentum", id_halfhour_periodicity: "Same Half-Hour" };
+    $("ports-body").replaceChildren(...P.map(p => { const tr = document.createElement("tr");
+      const best = p.ftmo.reduce((a, r) => r.pass_rate > a.pass_rate ? r : a, p.ftmo[0]);
+      const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
+      const mem = p.members.map(m => `${label[m[0]] || m[0]} (${m[1]})`).join(", ");
+      const verdict = p.oos.sharpe > 0 && p.oos_cost2x_sharpe > 0 && p.coin_flip.p_value < 0.05 ? "Promising lead, not confirmed" : "Loses money";
+      tr.append(td(p.name.replace(/^[AB]: /, ""), "", p.members.length > 4 ? `${p.members.length} strategy × market pairs` : mem),
+        td(f2(p.oos.sharpe), "n " + cls(p.oos.sharpe), "holding: " + f2(p.buy_hold_oos.sharpe)), td(f2(p.oos_cost2x_sharpe), "n " + cls(p.oos_cost2x_sharpe)),
+        td(pct(1 - p.coin_flip.p_value, 1), "n"), td(best.pass_rate > 0 ? `${Math.round(best.pass_rate * 100)}% at ${best.leverage}×` : "never", "n"), td(verdict));
+      return tr; }));
+  }
   function renderLeader() {
     const box = $("ranks"); box.replaceChildren();
+    renderPorts();
+    let shownRank = 0;
     D.book.forEach((b, i) => {
+      if (!inFilter(b)) return;
+      shownRank++;
       const e = b.evidence, [st, bh] = testStats(b);
-      const row = document.createElement("button"); row.className = "rk" + (b.rank === 1 ? " best" : ""); row.setAttribute("aria-pressed", String(i === cur));
-      const n = Object.assign(document.createElement("span"), { className: "n", textContent: "#" + b.rank });
+      const row = document.createElement("button"); row.className = "rk" + (shownRank === 1 ? " best" : ""); row.setAttribute("aria-pressed", String(i === cur));
+      const n = Object.assign(document.createElement("span"), { className: "n", textContent: "#" + shownRank });
       const who = document.createElement("span"); who.className = "who";
       const nm = document.createElement("b"); nm.textContent = b.name;
-      if (b.rank === 1) nm.appendChild(Object.assign(document.createElement("span"), { className: "bestbadge", textContent: "Best so far" }));
+      if (shownRank === 1) nm.appendChild(Object.assign(document.createElement("span"), { className: "bestbadge", textContent: b.family === "Intraday" ? "Best intraday" : "Best so far" }));
       who.append(nm, Object.assign(document.createElement("span"), { textContent: mname[b.market] || b.market }));
       const ch = document.createElement("span"); ch.className = "chips2";
       const chip = (t, c) => ch.appendChild(Object.assign(document.createElement("span"), { className: "ck " + c, textContent: t }));
-      if (!e.tested) chip("not tested on unseen years yet", "warnc");
+      if (!e.tested) chip(b.verdict.verdict === "NOTEST" ? "benchmark: same time every day, no random comparison" : "not tested on unseen years yet", "warnc");
       else {
         if (b.family === "Intraday") {
           chip("passed after allowing for every test", e.lockbox ? "yes" : "no");
@@ -794,7 +832,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
           chip("held up on fresh data", e.fresh ? "yes" : "no");
           chip("held up on extra markets", e.lockbox ? "yes" : "no");
         }
-        chip(`beat ${pct(e.beat, e.beat >= 0.99 ? 1 : 0)} of random traders`, e.beat >= 0.95 ? "yes" : "");
+        chip(e.beat >= 0.9995 ? "beat all 2,000 random traders" : `beat ${pct(e.beat, e.beat >= 0.99 ? 1 : 0)} of random traders`, e.beat >= 0.95 ? "yes" : "");
       }
       if (e.few) chip(`only ${e.per_year} decisions a year`, "warnc");
       const money = document.createElement("span"); money.className = "money"; money.textContent = "$10k → " + money_k(st.total);
@@ -805,14 +843,22 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         $("h-name").scrollIntoView({ behavior: "smooth", block: "start" }); });
       box.appendChild(row);
     });
-    const best = D.book[0], [st, bh] = testStats(best);
+    const shown = D.book.filter(inFilter), best = shown[0] || D.book[0], [st, bh] = testStats(best);
     const a = $("ld-answer"); a.replaceChildren();
     a.append(Object.assign(document.createElement("b"), { textContent: `${best.name} on the ${mname[best.market] || best.market}` }),
-      ` has the strongest evidence: it beat random timing on data nobody had looked at and on extra markets. ` +
+      best.family === "Intraday"
+        ? ` did best of the intraday strategies: it beat ${best.evidence.beat >= 0.9995 ? "all 2,000" : pct(best.evidence.beat, 1) + " of"} random traders on 2021–2026 and made ${sgn(st.cagr)} a year after costs (holding: ${sgn(bh.cagr)}). `
+          + (best.verdict.lockbox ? "It also held up on IWM and DIA." : "But it lost money on IWM and DIA, markets it was never tuned on, so it is not confirmed. Treat it as a lead to paper-trade, not a reason to risk real money.")
+        : ` has the strongest evidence: it beat random timing on data nobody had looked at and on extra markets. ` +
       (st.cagr < bh.cagr ? `But even the best one made less than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year), because it sits in cash most of the time. None of these is a reason to risk real money.`
                          : `It also made more than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year).`));
   }
   const money_k = t => "$" + (10 * (1 + t)).toFixed(1) + "k";
+  document.querySelectorAll("#lfilter button").forEach(bt => {
+    bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
+    bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
+      document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt))); renderLeader(); });
+  });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
   function renderAcct() {
