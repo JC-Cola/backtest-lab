@@ -1,0 +1,2 @@
+time_ny,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_id,note
+2026-11-03 13:00:20,check,687.0,685.97,688.54,676.74,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
