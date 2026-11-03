@@ -2,6 +2,8 @@
 
 Written and committed **before** any intraday result was computed.
 
+Amendment 1, also before any result: the user asked for no strategy reused from earlier batches, so the 5-minute RSI(2) rule (a Connors variant already tested on daily bars) is replaced by the half-hour periodicity strategy. The noise-band rule now follows the paper's gap-adjusted bands and VWAP condition.
+
 ## Question
 
 Do any published or popular intraday strategies (no position held longer than one day) beat random
@@ -33,9 +35,9 @@ Alpaca historical minute bars, full-market SIP feed, split- and dividend-adjuste
 | `id_intraday_momentum` | Gao, Han, Li & Zhou (2018), *Market intraday momentum* | Sign of the return from the previous close to 10:00 (or to 10:30), traded in the last 30 or 60 minutes. Long or short. |
 | `id_orb` | Zarattini, Barbon & Aziz (2023), *A profitable day trading strategy for the US equity market* | Opening range of 5, 15 or 30 minutes: trade in the direction of that range's candle, with the stop at the range's opposite end. Target 10R, or hold to the close. |
 | `id_vwap_trend` | Zarattini & Aziz (2023), *VWAP: the holy grail for day trading* | On 1-, 5- or 15-minute bars, long above the session VWAP and short below it, flipping on each cross. Flat at the close. |
-| `id_noise_breakout` | Zarattini, Aziz & Barbon (2024), *Beat the market: an effective intraday momentum strategy for SPY* | Noise bands = today's open ± the average absolute move from the open at that time of day over the last 10 or 14 days. Checked every 30 or 60 minutes: long above the upper band, short below the lower one. Exit on a cross back inside the band, or at the close. |
+| `id_noise_breakout` | Zarattini, Aziz & Barbon (2024), *Beat the market: an effective intraday momentum strategy for SPY* | Noise bands: upper = max(today's open, previous close) × (1 + σ), lower = min(open, previous close) × (1 − σ). σ is the average absolute move from the open at that minute over the last 10 or 14 days. At each check (every 30 or 60 minutes), go long above max(upper band, VWAP), short below min(lower band, VWAP), otherwise flat. Flat at the close. |
 | `id_gap_fade` | Practitioner gap-fill folklore | If the open gaps more than 0.25%, 0.5% or 1% from the previous close, fade it from the 09:31 bar. Exit when the gap fills, or at the close. |
-| `id_rsi2_5m` | Connors-style short-term reversal on intraday bars | On 5- or 15-minute bars, buy when RSI(2) < 5 or < 10 and price is above the session VWAP. Exit when RSI(2) > 70, or at the close. Long only. |
+| `id_halfhour_periodicity` | Heston, Korajczyk & Sadka (2010), *Intraday patterns in the cross-section of stock returns* (adapted to one fund) | For each of the 13 half-hours of the session, hold it long (or short) when that same half-hour's average return over the last 10, 20 or 40 days was positive (negative). Long-short, or long-only. |
 
 ## Tests and decision rule
 
