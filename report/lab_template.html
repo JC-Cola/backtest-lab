@@ -68,6 +68,39 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .card:hover { background: var(--raised); }
 .card:focus-visible { outline: 2px solid var(--accent); }
 .card[aria-pressed="true"] { background: var(--raised); border-left-color: var(--accent); }
+.card.best .cd { color: var(--pos); }
+.leader { border-bottom: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; gap: 12px;
+  padding-block: 18px 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.leader h2 { margin: 0; font-size: 1.15rem; font-weight: 600; }
+.leader .answer { margin: 0; font-size: 0.95rem; max-width: 90ch; }
+.leader .answer b { color: var(--pos); }
+.ranks { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.rk { all: unset; box-sizing: border-box; cursor: pointer; display: grid; align-items: center; gap: 6px 14px; padding: 9px 12px;
+  grid-template-columns: 2.2rem minmax(150px, 1.3fr) minmax(0, 2.4fr) minmax(140px, 0.9fr) 4.5rem; border-top: 1px solid var(--line); }
+.rk:first-child { border-top: 0; }
+.rk:hover { background: var(--raised); }
+.rk:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.rk[aria-pressed="true"] { background: var(--accent-soft); }
+.rk.best { background: var(--pos-soft); box-shadow: inset 3px 0 0 var(--pos); }
+.rk .n { font: 600 1rem var(--f-mono); color: var(--faint); }
+.rk.best .n { color: var(--pos); }
+.rk .who b { display: block; font-weight: 600; font-size: 0.88rem; }
+.rk .who span { font-size: 0.74rem; color: var(--muted); }
+.rk .chips2 { display: flex; flex-wrap: wrap; gap: 4px; }
+.ck { font: 500 0.66rem var(--f-mono); padding: 3px 6px; border-radius: 3px; background: var(--raised); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.ck.yes { color: var(--pos); border-color: color-mix(in srgb, var(--pos) 40%, var(--line)); }
+.ck.no { color: var(--faint); text-decoration: line-through; }
+.ck.warnc { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, var(--line)); }
+.rk .money { font: 500 0.82rem var(--f-mono); text-align: right; }
+.rk .money span { display: block; font: 0.68rem var(--f-mono); color: var(--faint); }
+.rk .go { font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-align: right; }
+.rk .who .bestbadge, .bestbadge { font: 600 0.62rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; background: var(--pos); color: var(--panel); margin-left: 6px; vertical-align: 1px; }
+.leader .rule { font-size: 0.74rem; color: var(--faint); margin: 0; }
+@media (max-width: 760px) {
+  .rk { grid-template-columns: 2rem minmax(0, 1fr) auto; }
+  .rk .chips2 { grid-column: 2 / 4; }
+  .rk .go { display: none; }
+}
 .card .cd { font: 500 0.66rem var(--f-mono); color: var(--faint); letter-spacing: 0.06em; }
 .card .sr { font: 500 0.7rem var(--f-mono); text-align: right; }
 .card .nm { grid-column: 1 / -1; font-weight: 500; font-size: 0.82rem; }
@@ -193,6 +226,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   </div>
   <div class="engine" data-pro><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
 </header>
+
+<section class="leader" id="leader">
+  <h2>Which strategy is best?</h2>
+  <p class="answer" id="ld-answer"></p>
+  <div class="ranks" id="ranks"></div>
+  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at, +1 if it held up on extra markets it was never tuned on, −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2017 on; Bitcoin 2021 on), after costs.</p>
+</section>
 
 <main id="view-backtest" class="lab">
   <aside class="col left">
@@ -399,8 +439,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const box = $("book"); box.replaceChildren();
     D.book.forEach((b, i) => {
       const w = windowSeries(b, b.chosen), st = stats(w.r, w.mk.ann);
-      const btn = document.createElement("button"); btn.className = "card"; btn.setAttribute("aria-pressed", String(i === cur));
-      const code = document.createElement("span"); code.className = "cd"; code.textContent = b.code + " · " + b.market;
+      const btn = document.createElement("button"); btn.className = "card" + (b.rank === 1 ? " best" : ""); btn.setAttribute("aria-pressed", String(i === cur));
+      const code = document.createElement("span"); code.className = "cd"; code.textContent = `#${b.rank}${b.rank === 1 ? " BEST" : ""} · ${b.market}`;
       const sr = document.createElement("span"); sr.className = "sr"; sr.style.color = `var(${vcolor(b)})`;
       sr.textContent = simple() ? sgn(st.cagr) + "/yr" : "SR " + f2(st.sharpe);
       const nm = document.createElement("span"); nm.className = "nm"; nm.textContent = b.name;
@@ -644,7 +684,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
 
   // ---------------------------------------------------------------- wiring
-  function renderAll() { document.body.classList.toggle("simple", simple()); renderBook(); renderStrategy(); }
+  function renderAll() { document.body.classList.toggle("simple", simple()); renderLeader(); renderBook(); renderStrategy(); }
   document.querySelectorAll("#window button").forEach(bt => {
     bt.setAttribute("aria-pressed", String(bt.dataset.w === win));
     bt.addEventListener("click", () => { win = bt.dataset.w; try { localStorage.setItem("lab-window", win); } catch (e) {}
@@ -653,7 +693,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const tabs = { research: $("tab-research"), backtest: $("tab-backtest") };
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => {
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("window").hidden = k !== "backtest";
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("window").hidden = k !== "backtest";
     if (k === "backtest") renderStrategy();
   }));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
@@ -665,6 +705,46 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       document.querySelectorAll("#window button").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.w === win))); renderAll(); });
   });
   combo = S().chosen;
+  function testStats(b) {
+    const mk = D.markets[b.market], c = b.combos[b.chosen], a = mk.dates.findIndex(d => d >= mk.oos_start);
+    return [stats(c.r.slice(a).map(v => v ?? 0), mk.ann), stats(mk.bench.slice(a).map(v => v ?? 0), mk.ann)];
+  }
+  const mname = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold", "BTC-USD": "Bitcoin", IWM: "Small caps" };
+  function renderLeader() {
+    const box = $("ranks"); box.replaceChildren();
+    D.book.forEach((b, i) => {
+      const e = b.evidence, [st, bh] = testStats(b);
+      const row = document.createElement("button"); row.className = "rk" + (b.rank === 1 ? " best" : ""); row.setAttribute("aria-pressed", String(i === cur));
+      const n = Object.assign(document.createElement("span"), { className: "n", textContent: "#" + b.rank });
+      const who = document.createElement("span"); who.className = "who";
+      const nm = document.createElement("b"); nm.textContent = b.name;
+      if (b.rank === 1) nm.appendChild(Object.assign(document.createElement("span"), { className: "bestbadge", textContent: "Best so far" }));
+      who.append(nm, Object.assign(document.createElement("span"), { textContent: mname[b.market] || b.market }));
+      const ch = document.createElement("span"); ch.className = "chips2";
+      const chip = (t, c) => ch.appendChild(Object.assign(document.createElement("span"), { className: "ck " + c, textContent: t }));
+      if (!e.tested) chip("not tested on unseen years yet", "warnc");
+      else {
+        chip("held up on fresh data", e.fresh ? "yes" : "no");
+        chip("held up on extra markets", e.lockbox ? "yes" : "no");
+        chip(`beat ${pct(e.beat, e.beat >= 0.99 ? 1 : 0)} of random traders`, e.beat >= 0.95 ? "yes" : "");
+      }
+      if (e.few) chip(`only ${e.per_year} decisions a year`, "warnc");
+      const money = document.createElement("span"); money.className = "money"; money.textContent = "$10k → " + money_k(st.total);
+      money.appendChild(Object.assign(document.createElement("span"), { textContent: "holding: " + money_k(bh.total) }));
+      const go = Object.assign(document.createElement("span"), { className: "go", textContent: i === cur ? "Viewing" : "View ›" });
+      row.append(n, who, ch, money, go);
+      row.addEventListener("click", () => { cur = i; combo = b.chosen; renderParams(); renderAll();
+        $("h-name").scrollIntoView({ behavior: "smooth", block: "start" }); });
+      box.appendChild(row);
+    });
+    const best = D.book[0], [st, bh] = testStats(best);
+    const a = $("ld-answer"); a.replaceChildren();
+    a.append(Object.assign(document.createElement("b"), { textContent: `${best.name} on the ${mname[best.market] || best.market}` }),
+      ` has the strongest evidence: it beat random timing on data nobody had looked at and on extra markets. ` +
+      (st.cagr < bh.cagr ? `But even the best one made less than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year), because it sits in cash most of the time. None of these is a reason to risk real money.`
+                         : `It also made more than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year).`));
+  }
+  const money_k = t => "$" + (10 * (1 + t)).toFixed(1) + "k";
   renderResearch(); renderParams(); renderAll();
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", renderAll);

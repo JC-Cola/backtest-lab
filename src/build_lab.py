@@ -140,6 +140,31 @@ def series(df, pos, cost):
             "pos": [int(round(p * 100)) for p in pos]}
 
 
+def rank_book(book, cache):
+    """Order the book by strength of evidence (rule shown on the page):
+    +2 held up on fresh data, +1 held up on lockbox markets, -1 if fewer than 5 decisions a year
+    (a record built on a handful of calls); ties broken by the share of random traders beaten."""
+    for b in book:
+        v = b["verdict"]
+        df, _, cfg = cache[b["market"]]
+        oos = df.index.searchsorted(np.datetime64(cfg["oos_start"]))
+        years = (len(df) - oos) / cfg["ann"]
+        n_tr = sum(1 for e, _ in b["combos"][b["chosen"]]["trades"] if e >= oos)
+        per_year = float(n_tr / years) if years > 0 else 0.0
+        fresh = bool((v.get("fresh") or {}).get("confirmed"))
+        lock = bool(v.get("lockbox"))
+        beat = 1 - v["p"] if v.get("p") is not None else 0.0
+        few = bool(per_year < 5)
+        score = (2 if fresh else 0) + (1 if lock else 0) - (1 if few and b["code"] != "AGENT" else 0)
+        if b["code"] == "AGENT":
+            score = -9  # no held-out evidence at all yet
+        b["evidence"] = {"fresh": fresh, "lockbox": lock, "beat": round(beat, 4), "per_year": round(per_year, 1),
+                         "few": few, "score": score, "tested": v.get("p") is not None}
+    book.sort(key=lambda b: (-b["evidence"]["score"], -b["evidence"]["beat"]))
+    for i, b in enumerate(book, 1):
+        b["rank"] = i
+
+
 def main():
     results = json.loads((ROOT / "results" / "results.json").read_text())["results"]
     cp = ROOT / "results" / "confirmation.json"
@@ -192,6 +217,7 @@ def main():
                      "axes": {}, "combos": [{"params": {}} | series(df, pos, cfg["cost_bps"])], "chosen": 0,
                      "verdict": {"verdict": "AGENT", "reward": round(mem.current_reward(t), 3),
                                  "trials": len(mem.trials)}})
+    rank_book(book, cache)
     for ticker, (df, _, cfg) in cache.items():
         o, c = df.Open.values, df.Close.values
         markets[ticker] = {"dates": [d.strftime("%Y-%m-%d") for d in df.index],
