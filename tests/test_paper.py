@@ -38,3 +38,15 @@ def test_report_scores_next_open_to_open_with_costs(tmp_path, monkeypatch):
     # decision 10-12 -> open 10-13 (2) to open 10-14 (3); decision 10-13 -> 3 to 4; 10-14 not yet known
     exp = (1 + (3 / 2 - 1) - c) * (1 + (4 / 3 - 1)) - 1
     assert out["scored"] == 2 and abs(out["paper_return"] - exp) < 1e-12
+
+
+def test_alpaca_sleeves_net_and_whole_shares():
+    import alpaca_paper as a
+    d = {"A": {"market": "SPY", "position": "1"}, "B": {"market": "SPY", "position": "0"},
+         "C": {"market": "BTC-USD", "position": "1"}}
+    t = a.targets(d, 90000)
+    assert t == {"SPY": 30000.0, "BTC/USD": 30000.0}
+    orders = {o["symbol"]: o for o in a.plan(t, {"SPY": 10, "QQQ": 5}, {"SPY": 700, "BTC/USD": 60000, "QQQ": 600})}
+    assert orders["SPY"]["qty"] == 32 and orders["SPY"]["tif"] == "opg"      # 42 whole shares wanted, 10 held
+    assert orders["QQQ"]["side"] == "sell" and orders["QQQ"]["qty"] == 5     # no longer wanted
+    assert orders["BTC/USD"]["qty"] == 0.5 and orders["BTC/USD"]["tif"] == "gtc"

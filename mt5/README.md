@@ -45,3 +45,18 @@ is a genuinely new test, because the broker's data differs from what the lab use
   the broker's lot step (`Share of equity at a full position`, default 1.0 = no leverage).
 - **No tuning in MT5.** Leave the ★ settings. Optimising them in the Strategy Tester is the data-mining the
   lab warns about.
+
+---
+
+# Alternative: Alpaca paper account (viewable in TradingView)
+
+`src/alpaca_paper.py` mirrors the lab's daily paper decisions into an **Alpaca paper account**. The
+daily cycle (`src/daily.py`) runs it automatically when `ALPACA_API_KEY` and `ALPACA_SECRET_KEY` are set.
+
+- Each Strategy Lab strategy gets an equal share of the account. Shares on the same symbol are added together.
+- Stock orders are market-on-open (fill at the next open, like the backtest). Bitcoin orders go straight in.
+- `paper=True` is hard-coded, so it cannot reach a live account.
+- `python src/alpaca_paper.py --dry-run` shows the orders it would place, without keys.
+- Every order is logged to `agent_memory/alpaca_orders.csv`.
+
+**To watch it in TradingView:** open TradingView's Trading Panel, choose Alpaca, sign in, and pick the paper account.
