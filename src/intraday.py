@@ -247,12 +247,51 @@ def halfhour_periodicity(D, lookback=20, mode="ls"):
     return _trades(rows)
 
 
+def orb_in_play(D, rvol=2.0, target=10.0):
+    """Zarattini, Barbon & Aziz (2024), stocks in play: a 5-minute opening range breakout taken only when the
+    first 5 minutes' volume is above rvol x its average over the previous 14 sessions."""
+    v5 = D.V[:, :5].sum(axis=1)
+    ok = np.zeros(D.n, bool)
+    for d in range(14, D.n):
+        avg = v5[d - 14:d].mean()
+        ok[d] = avg > 0 and v5[d] > rvol * avg
+    t = orb(D, or_min=5, target=target)
+    keep = ok[t["day"]] if len(t["day"]) else np.array([], bool)
+    return {k: v[keep] for k, v in t.items()}
+
+
+def halfhour_reversal(D, thr=0.003, hold=30):
+    """Heston, Korajczyk & Sadka (2010): short-term reversal across recent half hours. After a 30-minute move
+    bigger than thr, trade against it for the next `hold` minutes. Checked on the half hour from 10:00 to
+    15:00; never in the first or last half hour."""
+    rows = []
+    for d in range(D.n):
+        end = D.last[d] + 1
+        m = 59  # first decision on the close of the 10:29 bar (the 10:00-10:30 move); trade from 10:30
+        while m + 1 + hold <= end - 30 and m < end:
+            r = D.C[d, m] / D.C[d, m - 30] - 1
+            if abs(r) > thr:
+                sgn = -1.0 if r > 0 else 1.0
+                e, x = m + 1, m + 1 + hold
+                rows.append((d, e, x, sgn, _ret(sgn, D.P[d, e], D.P[d, x])))
+                m = x - 1 + 30  # next decision after this trade ends plus a fresh half hour
+            else:
+                m += 30
+    return _trades(rows)
+
+
 def grid(**axes):
     import itertools
     return [dict(zip(axes, v)) for v in itertools.product(*axes.values())]
 
 
 STRATEGIES = [
+    {"id": "id_orb_in_play", "name": "ORB on Stocks in Play", "fn": orb_in_play, "grid": grid(rvol=[1.5, 2.0, 3.0], target=[10.0, 0.0]),
+     "coin": True, "study": 2, "source": "Zarattini, Barbon & Aziz (2024), SSRN (stocks in play)",
+     "plain": "Opening range breakout, but only on days with unusually heavy early volume."},
+    {"id": "id_halfhour_reversal", "name": "Half-Hour Reversal", "fn": halfhour_reversal, "grid": grid(thr=[0.003, 0.005], hold=[30, 60]),
+     "coin": True, "study": 2, "source": "Heston, Korajczyk & Sadka (2010), Journal of Finance (reversal)",
+     "plain": "After a sharp 30-minute move, bet it partly reverses over the next 30-60 minutes."},
     {"id": "id_overnight", "name": "Overnight Hold", "fn": overnight, "grid": [{}], "coin": False,
      "source": "Cliff, Cooper & Gulen (2008); Lou, Polk & Skouras (2019)",
      "plain": "Buy at the close, sell at the next morning's open."},
@@ -378,7 +417,7 @@ def main(markets=DISCOVERY):
     for sym in markets:
         D = Days(sym)
         print(f"== {sym}: {D.n} days {D.dates[0].date()}..{D.dates[-1].date()}", flush=True)
-        for st in STRATEGIES:
+        for st in [x for x in STRATEGIES if x.get("study", 1) == 1]:
             row = evaluate(st, sym, D)
             rows.append(row)
             cf = row["coin_flip"]
