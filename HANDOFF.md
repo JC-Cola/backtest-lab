@@ -22,9 +22,14 @@ cd src && ../.venv/bin/python daily.py --rounds 30
 ```
 
 This logs paper decisions, places Alpaca paper orders (they fill at the next open), runs the agent, and rebuilds
-`report/lab.html`. Then commit `agent_memory/` and `report/lab.html`. To schedule it on the Mac, use `cron` or
-`launchd`. The cloud scheduled task (00:23 UTC) still exists; it fails whenever your usage limit is reached.
-Delete or pause it at claude.ai, Scheduled tasks, if you run locally.
+`report/lab.html`. Then commit `agent_memory/` and `report/lab.html`. The cloud scheduled task (00:23 UTC) still
+exists; it fails whenever your usage limit is reached. Delete or pause it at claude.ai, Scheduled tasks, if you run
+locally.
+
+To schedule it on the Mac (New York time zone), put the paper keys in `~/.config/backtest-lab/alpaca.env` as two
+`export` lines, then run `scripts/install_launchd.sh`. It runs the daily routine at 16:45 and the QQQ noise-band
+checks hourly 10:01–15:01 plus the 15:47 flatten, on weekdays, and commits the updated files locally (push them
+yourself). Logs go to `~/Library/Logs/backtest-lab/`. Remove it with `scripts/install_launchd.sh --remove`.
 
 ## Where things stand (2026-11-03)
 
