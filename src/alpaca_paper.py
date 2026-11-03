@@ -94,6 +94,12 @@ def main():
     from alpaca.data.requests import CryptoLatestTradeRequest, StockLatestTradeRequest
 
     client = TradingClient(key, secret, paper=True)
+    # Alpaca only accepts market-on-open (OPG) orders outside 09:28-19:00 New York time. Inside that
+    # window the decision's open has already passed, so send a normal DAY market order instead and
+    # record it as a late fill compared with the backtest's next-open assumption.
+    from zoneinfo import ZoneInfo
+    ny = datetime.now(ZoneInfo("America/New_York"))
+    late = ny.weekday() < 5 and (9, 28) <= (ny.hour, ny.minute) < (19, 0)
     acct = client.get_account()  # paper=True: this client can only reach paper-api.alpaca.markets
     equity = float(acct.equity)
     held = {("BTC/USD" if p.symbol in ("BTCUSD", "BTC/USD") else p.symbol): float(p.qty)
@@ -121,8 +127,11 @@ def main():
         for o in plan(tgt, held, prices):
             req = MarketOrderRequest(symbol=o["symbol"], qty=o["qty"],
                                      side=OrderSide.BUY if o["side"] == "buy" else OrderSide.SELL,
-                                     time_in_force=TimeInForce.GTC if o["tif"] == "gtc" else TimeInForce.OPG,
+                                     time_in_force=TimeInForce.GTC if o["tif"] == "gtc" else
+                                     (TimeInForce.DAY if late else TimeInForce.OPG),
                                      client_order_id=f"lab-{stamp}-{o['symbol'].replace('/', '')}")
+            if o["tif"] == "opg" and late:
+                o["tif"] = "day (late: after the open)"
             res = client.submit_order(req)
             w.writerow({"sent_at_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), **o,
                         "order_id": str(res.id), "status": str(res.status)})
