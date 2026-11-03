@@ -1,0 +1,108 @@
+{
+ "generated": "2026-11-03T15:39:56+00:00",
+ "start_equity": 100000.0,
+ "equity": 99938.14,
+ "cash": 17239.48,
+ "last_equity": 100000.0,
+ "positions": [
+  {
+   "symbol": "BTCUSD",
+   "qty": 0.215079951,
+   "avg_price": 77298.565280644,
+   "price": 77296.752,
+   "value": 16624.981633,
+   "pl": -0.39,
+   "pl_pct": -2e-05
+  },
+  {
+   "symbol": "QQQ",
+   "qty": 48.0,
+   "avg_price": 685.5975,
+   "price": 685.185,
+   "value": 32888.88,
+   "pl": -19.8,
+   "pl_pct": -0.0006
+  },
+  {
+   "symbol": "SPY",
+   "qty": 44.0,
+   "avg_price": 754.2,
+   "price": 754.2,
+   "value": 33184.8,
+   "pl": 0.0,
+   "pl_pct": 0.0
+  }
+ ],
+ "orders": [
+  {
+   "date": "2026-11-03T15:32+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 44.0,
+   "status": "filled",
+   "price": 754.2
+  },
+  {
+   "date": "2026-11-03T15:32+00:00",
+   "symbol": "QQQ",
+   "side": "buy",
+   "qty": 48.0,
+   "status": "filled",
+   "price": 685.5975
+  },
+  {
+   "date": "2026-11-03T15:32+00:00",
+   "symbol": "BTC/USD",
+   "side": "buy",
+   "qty": 0.215619,
+   "status": "filled",
+   "price": 77298.565280611
+  }
+ ],
+ "strategies_by_symbol": {
+  "SPY": [
+   {
+    "key": "MR-IBS",
+    "name": "Internal Bar Strength",
+    "position": 1.0,
+    "decided": "2026-11-02"
+   },
+   {
+    "key": "TS-VOL",
+    "name": "Vol-Targeted Trend",
+    "position": 1.0,
+    "decided": "2026-11-02"
+   }
+  ],
+  "QQQ": [
+   {
+    "key": "MR-WR",
+    "name": "Williams %R",
+    "position": 1.0,
+    "decided": "2026-11-02"
+   },
+   {
+    "key": "CAL-JAN",
+    "name": "January Barometer",
+    "position": 1.0,
+    "decided": "2026-11-02"
+   }
+  ],
+  "GLD": [
+   {
+    "key": "CAL-MIX",
+    "name": "Calendar Composite",
+    "position": 0.0,
+    "decided": "2026-11-02"
+   }
+  ],
+  "BTCUSD": [
+   {
+    "key": "TS-TREND",
+    "name": "Trend Filter (close > SMA)",
+    "position": 1.0,
+    "decided": "2026-11-02"
+   }
+  ]
+ }
+}

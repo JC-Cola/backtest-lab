@@ -234,7 +234,9 @@ def main():
                 "hunt_strategies": len({r["strategy"] for r in results}) - 1}
     pp = ROOT / "agent_memory" / "paper_report.json"
     paper = json.loads(pp.read_text()) if pp.exists() else {"strategies": {}}
-    blob = json.dumps({"book": book, "markets": markets, "research": research, "paper": paper,
+    ap = ROOT / "agent_memory" / "alpaca_account.json"
+    alpaca = json.loads(ap.read_text()) if ap.exists() else None
+    blob = json.dumps({"book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

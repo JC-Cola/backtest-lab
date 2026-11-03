@@ -95,6 +95,23 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .rk .money span { display: block; font: 0.68rem var(--f-mono); color: var(--faint); }
 .rk .go { font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); text-align: right; }
 .rk .who .bestbadge, .bestbadge { font: 600 0.62rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 3px; background: var(--pos); color: var(--panel); margin-left: 6px; vertical-align: 1px; }
+.acct { border-bottom: 1px solid var(--line); background: var(--bg); display: flex; flex-direction: column; gap: 12px;
+  padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.acct-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.acct-head h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.acct-head .live { font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--pos); }
+.acct-head .upd { font: 0.72rem var(--f-mono); color: var(--faint); }
+.acct .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.acct .stats .stat { border-bottom: 0; }
+.acct-tables { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 12px; }
+.acct table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.acct th { text-align: left; font: 500 0.62rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.08em; color: var(--faint); padding: 7px 10px; border-bottom: 1px solid var(--line); }
+.acct td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.acct td.n, .acct th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.acct td small { display: block; color: var(--faint); font-size: 0.72rem; }
+.acct .tw { overflow-x: auto; }
+.acct .note { margin: 0; }
+@media (max-width: 900px) { .acct-tables { grid-template-columns: minmax(0, 1fr); } .acct .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .leader .rule { font-size: 0.74rem; color: var(--faint); margin: 0; }
 @media (max-width: 760px) {
   .rk { grid-template-columns: 2rem minmax(0, 1fr) auto; }
@@ -232,6 +249,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <p class="answer" id="ld-answer"></p>
   <div class="ranks" id="ranks"></div>
   <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at, +1 if it held up on extra markets it was never tuned on, −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2017 on; Bitcoin 2021 on), after costs.</p>
+</section>
+
+<section class="acct" id="acct" hidden>
+  <div class="acct-head"><h2>Alpaca paper account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
+  <div class="panel"><div class="stats" id="ac-stats"></div></div>
+  <div class="acct-tables">
+    <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
+    <div class="panel tw"><table><thead><tr><th>Recent orders</th><th class="n">Quantity</th><th class="n">Filled at</th><th>Status</th></tr></thead><tbody id="ac-ord"></tbody></table></div>
+  </div>
+  <p class="note">Each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed after the close and fill at the next open (Bitcoin straight away). The panel refreshes every time the nightly run works.</p>
 </section>
 
 <main id="view-backtest" class="lab">
@@ -693,7 +720,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const tabs = { research: $("tab-research"), backtest: $("tab-backtest") };
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => {
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("window").hidden = k !== "backtest";
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !D.alpaca; $("window").hidden = k !== "backtest";
     if (k === "backtest") renderStrategy();
   }));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
@@ -745,7 +772,33 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
                          : `It also made more than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year).`));
   }
   const money_k = t => "$" + (10 * (1 + t)).toFixed(1) + "k";
-  renderResearch(); renderParams(); renderAll();
+  const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
+  function renderAcct() {
+    const A = D.alpaca; if (!A) return;
+    $("acct").hidden = false;
+    $("ac-upd").textContent = "updated " + A.generated.replace("T", " ").slice(0, 16) + " UTC";
+    const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, invested = A.positions.reduce((s, p) => s + p.value, 0);
+    $("ac-stats").replaceChildren(
+      tile("Account value", usd(A.equity), "started with " + usd(A.start_equity)),
+      tile("Profit / loss so far", susd(tot), pct(tot / A.start_equity, 2), cls(tot)),
+      tile("Since last close", susd(day), pct(day / (A.last_equity || A.equity), 2), cls(day)),
+      tile("Invested", usd(invested), usd(A.cash) + " in cash"));
+    const names = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold fund", IWM: "Small caps", BTCUSD: "Bitcoin" };
+    const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
+    const rows = A.positions.map(p => { const tr = document.createElement("tr");
+      const by = (A.strategies_by_symbol[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—";
+      tr.append(td(p.symbol, "", names[p.symbol] || ""), td(by), td(p.qty < 1 ? p.qty.toFixed(4) : String(p.qty), "n"),
+        td(usd(p.avg_price, 2), "n"), td(usd(p.price, 2), "n"), td(susd(p.pl), "n " + cls(p.pl), pct(p.pl_pct, 2)));
+      return tr; });
+    if (!rows.length) { const tr = document.createElement("tr"); tr.append(td("No positions: every strategy is in cash right now.")); rows.push(tr); }
+    $("ac-pos").replaceChildren(...rows);
+    $("ac-ord").replaceChildren(...A.orders.slice(0, 8).map(o => { const tr = document.createElement("tr");
+      tr.append(td(`${o.side === "buy" ? "Bought" : "Sold"} ${o.symbol}`, "", o.date.slice(0, 16).replace("T", " ") + " UTC"), td(o.qty < 1 ? o.qty.toFixed(4) : String(o.qty), "n"),
+        td(o.price ? usd(o.price, 2) : "—", "n"), td(o.status.replace(/_/g, " ")));
+      return tr; }));
+  }
+  renderResearch(); renderAcct(); renderParams(); renderAll();
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", renderAll);
   new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

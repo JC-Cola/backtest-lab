@@ -24,6 +24,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "agent_memory" / "paper_log.csv"
 ORDERS = ROOT / "agent_memory" / "alpaca_orders.csv"
+SNAPSHOT = ROOT / "agent_memory" / "alpaca_account.json"
+START_EQUITY = 100_000.0
 SYMBOL = {"SPY": "SPY", "QQQ": "QQQ", "GLD": "GLD", "IWM": "IWM", "BTC-USD": "BTC/USD"}
 MIN_TRADE_USD = 50.0  # ignore tiny rebalances
 
@@ -69,9 +71,36 @@ def plan(tgt: dict, held: dict, prices: dict) -> list[dict]:
     return orders
 
 
+def snapshot(client, decisions=None):
+    """Save the paper account's state for the Strategy Lab page (no trading)."""
+    import json
+    from alpaca.trading.enums import QueryOrderStatus
+    from alpaca.trading.requests import GetOrdersRequest
+    decisions = decisions if decisions is not None else latest_decisions()
+    behind = {}
+    for k, r in decisions.items():
+        behind.setdefault(SYMBOL[r["market"]].replace("/", ""), []).append(
+            {"key": k, "name": r["name"], "position": float(r["position"]), "decided": r["decision_date"]})
+    a = client.get_account()
+    pos = [{"symbol": p.symbol, "qty": float(p.qty), "avg_price": float(p.avg_entry_price),
+            "price": float(p.current_price), "value": float(p.market_value), "pl": float(p.unrealized_pl),
+            "pl_pct": float(p.unrealized_plpc)} for p in client.get_all_positions()]
+    orders = [{"date": o.submitted_at.isoformat(timespec="minutes"), "symbol": o.symbol, "side": o.side.value,
+               "qty": float(o.qty or 0), "status": o.status.value,
+               "price": float(o.filled_avg_price) if o.filled_avg_price else None}
+              for o in client.get_orders(GetOrdersRequest(status=QueryOrderStatus.ALL, limit=15))]
+    snap = {"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "start_equity": START_EQUITY,
+            "equity": float(a.equity), "cash": float(a.cash), "last_equity": float(a.last_equity),
+            "positions": pos, "orders": orders, "strategies_by_symbol": behind}
+    SNAPSHOT.write_text(json.dumps(snap, indent=1))
+    print(f"saved account snapshot: equity ${snap['equity']:,.0f}, {len(pos)} positions")
+    return snap
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--snapshot", action="store_true", help="only save the account state for the lab page")
     a = ap.parse_args()
     decisions = latest_decisions()
     if not decisions:
@@ -94,6 +123,9 @@ def main():
     from alpaca.data.requests import CryptoLatestTradeRequest, StockLatestTradeRequest
 
     client = TradingClient(key, secret, paper=True)
+    if a.snapshot:
+        snapshot(client, decisions)
+        return
     # Alpaca only accepts market-on-open (OPG) orders outside 09:28-19:00 New York time. Inside that
     # window the decision's open has already passed, so send a normal DAY market order instead and
     # record it as a late fill compared with the backtest's next-open assumption.
@@ -137,6 +169,7 @@ def main():
                         "order_id": str(res.id), "status": str(res.status)})
             print(f"  sent {o['side']} {o['qty']} {o['symbol']} ({o['tif']}): {res.status}")
     print(f"account equity ${equity:,.0f}; targets " + ", ".join(f"{s} ${v:,.0f}" for s, v in sorted(tgt.items())))
+    snapshot(client, decisions)
 
 
 if __name__ == "__main__":
