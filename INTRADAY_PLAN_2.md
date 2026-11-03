@@ -40,7 +40,9 @@ The same as study 1:
 ## Amendment 1 (after discovery, before ANY lockbox data was looked at)
 
 Discovery gave no candidate (120 tests, none with q < 0.10). The one consistent pattern was **gap fade on single
-stocks**: a positive test-window Sharpe on 10 of the 12 stocks, and p < 0.05 on 4 of them. Because this follow-up
+stocks**: a positive test-window Sharpe on 7 of the 12 stocks (MSFT flat; AAPL, NVDA, AMZN and TSLA negative),
+and p < 0.05 on 4 of them (JPM, GOOGL, HD, XOM). (Corrected before any lockbox result: an earlier version of this
+line said 10 of 12, which was a misreading.) Because this follow-up
 was chosen after seeing discovery, it is labelled post-hoc. It is a single hypothesis tested on untouched data:
 
 - run `id_gap_fade` with the same grid and fresh tuning (2019–2021) on all 15 lockbox symbols;
