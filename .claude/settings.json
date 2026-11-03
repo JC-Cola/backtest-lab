@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.venv/bin/pytest:*)",
+      "Bash(.venv/bin/python:*)",
+      "Bash(../.venv/bin/python:*)",
+      "Bash(cd src && ../.venv/bin/python:*)",
+      "Bash(cd /home/user/backtest-lab/src && ../.venv/bin/python:*)",
+      "Bash(python3 -m venv .venv:*)",
+      "Bash(.venv/bin/pip install:*)"
+    ]
+  }
+}
