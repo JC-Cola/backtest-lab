@@ -4,13 +4,14 @@
   explores new random ones, and samples features by the weights the memory has learned.
   Never re-proposes anything already tried (including rejected ideas).
 - ClaudeProposer (optional): asks Claude for new specs, giving it the grammar, lessons.md and
-  the recent results. Needs Anthropic credentials (e.g. ANTHROPIC_API_KEY).
+  the recent results. Goes through the local Claude Code CLI (subscription login, no API key).
 """
 from __future__ import annotations
 
 import json
 import random
 
+from agent import claude_cli
 from agent import spec as S
 from agent.features import CALENDAR, CONTEXT, PRICE
 from agent.memory import Memory
@@ -54,20 +55,22 @@ SPEC_SCHEMA = {
 
 
 class ClaudeProposer:
-    """Asks Claude for the next experiments. Returned specs are validated; invalid ones are recorded
-    as rejected with the reason, so Claude sees its own mistakes next round."""
+    """Asks Claude (through the local Claude Code CLI) for the next experiments. Returned specs are validated;
+    invalid ones are recorded as rejected with the reason, so Claude sees its own mistakes next round."""
+    S = S  # spec module; subclasses swap in another grammar
 
-    def __init__(self, memory: Memory, model: str = "claude-opus-5-5"):
-        import anthropic
+    def __init__(self, memory: Memory):
+        self.mem = memory
 
-        self.client, self.mem, self.model = anthropic.Anthropic(), memory, model
+    def _lessons_and_recent(self) -> tuple[str, str]:
+        f = self.mem.root / "lessons.md"
+        rec = "\n".join(
+            f"- {t.get('status')}: {self.S.describe(t['spec']) if t.get('spec') else t.get('raw', '')[:120]} | "
+            f"reward {t.get('reward')} folds {t.get('fold_sharpes')} {t.get('reason') or ''}" for t in self.mem.trials[-25:])
+        return (f.read_text() if f.exists() else "(none yet)"), rec
 
     def _prompt(self, k, markets):
-        lessons = (self.mem.root / "lessons.md").read_text() if (self.mem.root / "lessons.md").exists() else "(none yet)"
-        recent = self.mem.trials[-25:]
-        rec = "\n".join(
-            f"- {t.get('status')}: {S.describe(t['spec']) if t.get('spec') else t.get('raw', '')[:120]} | "
-            f"reward {t.get('reward')} folds {t.get('fold_sharpes')} {t.get('reason') or ''}" for t in recent)
+        lessons, rec = self._lessons_and_recent()
         return f"""You are the research agent of a trading backtest lab. Propose {k} NEW long-only daily strategy specs
 for these markets: {markets}. Each spec is scored on in-sample years only, split into 3 time folds, deflated by
 the total number of trials ever run, so only propose ideas you have a real reason to expect to be robust.
@@ -86,23 +89,19 @@ Most recent trials:
 """
 
     def propose(self, k: int, markets: list[str]) -> list[dict]:
-        resp = self.client.messages.create(
-            model=self.model,
-            max_tokens=16000,
-            output_config={"effort": "high", "format": {"type": "json_schema", "schema": SPEC_SCHEMA}},
-            messages=[{"role": "user", "content": self._prompt(k, markets)}],
-        )
-        if resp.stop_reason == "refusal":
+        resp = claude_cli.ask(self._prompt(k, markets), SPEC_SCHEMA)
+        if not resp:
             return []
-        text = next((b.text for b in resp.content if b.type == "text"), '{"specs": []}')
-        out = []
-        for raw in json.loads(text)["specs"]:
+        out, hashes = [], set()
+        for raw in resp.get("specs", []):
             try:
-                s = S.canonical(S.validate(json.loads(raw)))
-            except (ValueError, json.JSONDecodeError) as e:
-                self.mem.add({"status": "rejected", "reason": f"invalid spec: {e}", "raw": raw, "spec": None,
+                s = self.S.canonical(self.S.validate(json.loads(raw)))
+            except (ValueError, TypeError, json.JSONDecodeError) as e:
+                self.mem.add({"status": "rejected", "reason": f"invalid spec: {e}", "raw": str(raw), "spec": None,
                               "proposer": "claude"})
                 continue
-            if S.spec_hash(s) not in self.mem.seen:
+            h = self.S.spec_hash(s)
+            if h not in self.mem.seen and h not in hashes:
+                hashes.add(h)
                 out.append(s)
         return out

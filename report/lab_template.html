@@ -359,6 +359,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="panel"><div class="stats rstats" id="r-stats"></div></div>
   <span class="cap">The agent's best ideas, re-scored against every trial run so far</span>
   <div class="panel ideas"><table><thead><tr><th>Idea</th><th style="text-align:right">Score now</th><th style="text-align:right">When found</th><th style="text-align:right">Sharpe by period (tuning years)</th></tr></thead><tbody id="r-ideas"></tbody></table></div>
+  <span class="cap">Intraday agent: same search on SPY and QQQ minute bars</span>
+  <div class="panel"><div class="stats rstats" id="ri-stats"></div></div>
+  <span class="cap">The intraday agent's best ideas, re-scored against every trial run so far</span>
+  <div class="panel ideas"><table><thead><tr><th>Idea</th><th style="text-align:right">Score now</th><th style="text-align:right">When found</th><th style="text-align:right">Sharpe by period (tuning years)</th></tr></thead><tbody id="ri-ideas"></tbody></table></div>
+  <span class="cap">New strategies awaiting your approval</span>
+  <div class="panel ideas"><table><thead><tr><th>Account</th><th>Rule</th><th style="text-align:right">Held-out Sharpe</th><th style="text-align:right">At 2x costs</th><th>Beats current?</th><th>Status</th></tr></thead><tbody id="r-cands"></tbody></table></div>
+  <p class="note" id="r-cands-note"></p>
   <span class="cap">Paper trading: decisions written down before the outcome existed</span>
   <div class="panel ideas"><table><thead><tr><th>Strategy</th><th>Market</th><th>Since</th><th style="text-align:right">Days scored</th><th style="text-align:right">Paper result</th><th style="text-align:right">Just holding</th><th>Latest decision</th></tr></thead><tbody id="r-paper"></tbody></table></div>
   <p class="note" id="r-paper-note"></p>
@@ -759,11 +766,21 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       return tr; }));
     $("r-paper-note").textContent = Object.keys(PS).length ? `Updated ${D.paper.generated.slice(0, 10)}. Each decision is scored from the next day's open to the one after, with costs. Paper results need many months before they say anything.` : "No paper trades yet.";
     $("r-intro").textContent = `The hunt tested ${R.hunt_strategies} strategies (${R.hunt_tests} strategy × market tests) and none passed. The self-improving agent keeps searching: it proposes ideas, scores them on the tuning years only, and remembers every result between sessions.`;
-    $("r-stats").replaceChildren(tile("Agent trials", R.trials, "all sessions"), tile("Scored", R.scored, "passed the data checks"),
-      tile("Rejected", R.rejected, "coverage, trades, look-ahead"), tile("Held-out shots", R.holdout_shots, R.holdout_pass + " passed"));
-    $("r-ideas").replaceChildren(...R.top.map(t => { const tr = document.createElement("tr");
-      [[t.desc, ""], [f2(t.now), "n"], [f2(t.found), "n"], [t.folds.map(f2).join(" · "), "n"]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
-      return tr; }));
+    const fill = (R, st, ideas) => {
+      $(st).replaceChildren(tile("Agent trials", R.trials, "all sessions"), tile("Scored", R.scored, "passed the data checks"),
+        tile("Rejected", R.rejected, "coverage, trades, look-ahead"), tile("Held-out shots", R.holdout_shots, R.holdout_pass + " passed"));
+      $(ideas).replaceChildren(...R.top.map(t => { const tr = document.createElement("tr");
+        [[t.desc, ""], [f2(t.now), "n"], [f2(t.found), "n"], [t.folds.map(f2).join(" · "), "n"]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
+        return tr; }));
+    };
+    fill(R, "r-stats", "r-ideas");
+    fill(D.research_intraday, "ri-stats", "ri-ideas");
+    const C = D.candidates || { candidates: [], benchmarks: {} }, bm = C.benchmarks || {};
+    $("r-cands").replaceChildren(...(C.candidates.length ? C.candidates.map(c => { const tr = document.createElement("tr");
+      [[c.account, ""], [c.description, ""], [f2(c.sharpe), "n"], [f2(c.sharpe_2x_cost), "n"], [c.better ? "Yes" : "No", ""], [c.status, ""]]
+        .forEach(([v, k]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: k })));
+      return tr; }) : [Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="6">None yet: no idea has passed its one-shot held-out test.</td>' })]));
+    $("r-cands-note").textContent = `Nothing trades until you approve it. An idea is better if its held-out Sharpe at 2x costs beats what the account trades now (long-term ${f2(bm["long-term"])}, intraday ${f2(bm.intraday)}).`;
   }
 
   // ---------------------------------------------------------------- wiring

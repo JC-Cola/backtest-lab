@@ -10,6 +10,7 @@ import numpy as np
 
 import data
 import ftmo_lab
+import lab_research
 from agent import platform as AP
 from agent import spec as AS
 from agent.memory import Memory
@@ -465,7 +466,7 @@ def main():
     portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
     portfolios = [pf for pf in [mix_portfolio(mix_daily)] + portfolios if pf["oos"]["total"] > 0]  # money-makers only
     book, hidden = ftmo_lab.keep_positive(book, markets)
-    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca, "alpaca_intraday": alpaca_intraday,
+    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, **lab_research.page_data(), "paper": paper, "alpaca": alpaca, "alpaca_intraday": alpaca_intraday,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

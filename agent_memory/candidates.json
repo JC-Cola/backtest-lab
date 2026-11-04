@@ -1,0 +1,8 @@
+{
+ "generated": "2026-11-04T16:43:43+00:00",
+ "benchmarks": {
+  "intraday": 0.4409,
+  "long-term": 0.8562
+ },
+ "candidates": []
+}

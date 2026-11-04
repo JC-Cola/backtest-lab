@@ -2,7 +2,7 @@
 (rarely) one-shot held-out test -> write lessons. Run from src/:
 
     python -m agent.loop --rounds 20 --per-round 10                 # free built-in proposer
-    python -m agent.loop --rounds 5 --per-round 8 --proposer claude  # Claude proposes (needs API key)
+    python -m agent.loop --rounds 5 --per-round 8 --proposer claude  # Claude proposes (local Claude CLI)
 """
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import argparse
 import time
 
 import data
+from agent import claude_cli
 from agent import platform as P
 from agent import spec as S
 from agent.memory import Memory
@@ -29,17 +30,22 @@ def run(rounds=10, per_round=10, markets=None, proposer="evolution", seed=0, qui
         log("read lessons.md from the last session")
     ctx = data.load_context()
     mk = {}
-    prop = ClaudeProposer(mem) if proposer == "claude" else EvolutionProposer(mem, seed)
+    evo = EvolutionProposer(mem, seed)
+    prop = ClaudeProposer(mem) if proposer == "claude" else evo
+    spent0 = claude_cli.spent()
     shots = 0
     start_best = max([mem.current_reward(t) for t in mem.top(1)], default=0.0)
     t0 = time.time()
     for rnd in range(1, rounds + 1):
-        specs = prop.propose(per_round, markets)
+        specs, used = prop.propose(per_round, markets), proposer
+        if not specs and proposer == "claude":
+            log(f"round {rnd}: claude returned no ideas, using the evolution proposer")
+            specs, used = evo.propose(per_round, markets), "evolution"
         for s in specs:
             m = mk.setdefault(s["market"], P.Market(s["market"], ctx))
             h = S.spec_hash(s)
             res = P.score(m, s, mem.trial_sharpes(s["market"]))
-            rec = mem.add({"hash": h, "spec": s, "proposer": proposer, "round": rnd} | res)
+            rec = mem.add({"hash": h, "spec": s, "proposer": used, "round": rnd} | res)
             if (res["status"] == "scored" and res["dsr"] >= PROMOTE_DSR and res["consistent"]
                     and shots < MAX_HOLDOUT_PER_SESSION):
                 shots += 1
@@ -55,6 +61,8 @@ def run(rounds=10, per_round=10, markets=None, proposer="evolution", seed=0, qui
             f"Best deflated reward went from {start_best:.3f} to {end_best:.3f}. "
             f"Held-out shots this session: {shots}. Strategies passing the held-out test (BH across all "
             f"{len(verdicts)} shots ever): {sum(v['pass'] for v in verdicts)}.")
+    if proposer == "claude":
+        note += f" Claude CLI cost this session: ${claude_cli.spent() - spent0:.2f}."
     mem.write_lessons(note)
     log(note)
     return mem
