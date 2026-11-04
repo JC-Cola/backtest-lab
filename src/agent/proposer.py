@@ -17,6 +17,8 @@ from agent.memory import Memory
 
 
 class EvolutionProposer:
+    S = S  # spec module; subclasses swap in another grammar
+
     def __init__(self, memory: Memory, seed: int = 0, explore: float = 0.3):
         self.mem, self.rng, self.explore = memory, random.Random(seed + len(memory.trials)), explore
 
@@ -29,17 +31,17 @@ class EvolutionProposer:
             tries += 1
             r = self.rng.random()
             if not parents or r < self.explore:
-                s = S.random_spec(self.rng, w, self.rng.choice(markets))
+                s = self.S.random_spec(self.rng, w, self.rng.choice(markets))
             elif r < 0.85 or len(parents) < 2:
-                s = S.mutate(self.rng.choice(parents[: max(3, len(parents) // 2)]), self.rng, w)
+                s = self.S.mutate(self.rng.choice(parents[: max(3, len(parents) // 2)]), self.rng, w)
             else:
                 a, b = self.rng.sample(parents, 2)
-                s = S.mutate(S.crossover(a, b, self.rng), self.rng, w)
-            h = S.spec_hash(s)
+                s = self.S.mutate(self.S.crossover(a, b, self.rng), self.rng, w)
+            h = self.S.spec_hash(s)
             if h in self.mem.seen or h in hashes:
                 continue
             hashes.add(h)
-            out.append(S.canonical(s))
+            out.append(self.S.canonical(s))
         return out
 
 

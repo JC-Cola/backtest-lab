@@ -20,6 +20,9 @@ ROOT = Path(__file__).resolve().parents[2] / "agent_memory"
 
 
 class Memory:
+    S = S  # spec module; subclasses swap in another grammar
+    TITLE = "What the agent has learned so far"
+
     def __init__(self, root: Path = ROOT):
         self.root = root
         root.mkdir(parents=True, exist_ok=True)
@@ -70,7 +73,7 @@ class Memory:
         acc = defaultdict(list)
         for t in self.trials:
             if t.get("status") in ("scored", "promoted"):
-                for f in S.features_used(t["spec"]):
+                for f in self.S.features_used(t["spec"]):
                     acc[f].append(t["reward"])
         base = np.mean([t["reward"] for t in self.scored()]) if self.scored() else 0.0  # relative weights
         return {f: float(np.exp(4 * (np.mean(v) - base))) for f, v in acc.items()}
@@ -78,8 +81,7 @@ class Memory:
     def holdout_tests(self):
         return [t for t in self.trials if t.get("holdout")]
 
-    @staticmethod
-    def prior_window_pvalues() -> list[float]:
+    def prior_window_pvalues(self) -> list[float]:
         """Coin-flip p-values of every human-hunt test already run on the same held-out years."""
         f = ROOT.parent / "results" / "results.json"
         if not f.exists():
@@ -112,14 +114,14 @@ class Memory:
         w = sorted(self.feature_weights().items(), key=lambda x: -x[1])
         hv = self.holdout_verdicts()
         lines = [
-            "# What the agent has learned so far", "",
+            f"# {self.TITLE}", "",
             f"Updated {datetime.now(timezone.utc).date()}. {len(self.trials)} trials in total: "
             f"{len(sc)} scored, {len(rej)} rejected, {len(hv)} sent to the held-out test, "
             f"{sum(v['pass'] for v in hv)} passed it.", "",
             "## Best ideas on the search years (deflated by every trial run)", "",
         ]
         for t in self.top(10):
-            lines.append(f"- reward now {self.current_reward(t):.3f} (when found {t['reward']:.3f}) | folds {t['fold_sharpes']} | {S.describe(t['spec'])}")
+            lines.append(f"- reward now {self.current_reward(t):.3f} (when found {t['reward']:.3f}) | folds {t['fold_sharpes']} | {self.S.describe(t['spec'])}")
         lines += ["", "## Features that tend to help (learned weights, 1 = average)", ""]
         lines += [f"- {f}: {v:.2f}" for f, v in w[:8]]
         lines += ["", "## Features that tend to hurt", ""]
@@ -129,7 +131,7 @@ class Memory:
         lines += ["", f"## Held-out tests (one shot each; BH-corrected together with the "
                   f"{len(self.prior_window_pvalues())} earlier hunt tests on the same years)", ""]
         for v in hv:
-            lines.append(f"- {'PASS' if v['pass'] else 'fail'} (q={v['q']:.2f}) {S.describe(v['spec'])}")
+            lines.append(f"- {'PASS' if v['pass'] else 'fail'} (q={v['q']:.2f}) {self.S.describe(v['spec'])}")
         if session_note:
             lines += ["", "## Last session", "", session_note]
         (self.root / "lessons.md").write_text("\n".join(lines) + "\n")
