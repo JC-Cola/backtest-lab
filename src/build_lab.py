@@ -200,9 +200,10 @@ def build_intraday(book, markets):
     import intraday4
     import intraday5
     import intraday6
-    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES + intraday4.STRATEGIES + intraday5.STRATEGIES + intraday6.STRATEGIES}
+    import intraday7
+    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES + intraday4.STRATEGIES + intraday5.STRATEGIES + intraday6.STRATEGIES + intraday7.STRATEGIES}
     days = {}
-    for fname in ("intraday.json", "intraday3.json", "intraday4.json", "intraday5.json", "intraday6.json"):
+    for fname in ("intraday.json", "intraday3.json", "intraday4.json", "intraday5.json", "intraday6.json", "intraday7.json"):
         path = ROOT / "results" / fname
         if path.exists():
             _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)

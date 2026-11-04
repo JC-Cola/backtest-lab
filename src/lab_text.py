@@ -1,4 +1,4 @@
-"""Strategy Lab text for the intraday studies 4-6 (split out of build_lab.py to keep it short)."""
+"""Strategy Lab text for the intraday studies 4-7 (split out of build_lab.py to keep it short)."""
 
 INTRA_456 = {
     # study 5 (INTRADAY_PLAN_5.md)
@@ -58,4 +58,16 @@ INTRA_456 = {
         ["Stops and targets cannot create an edge from random entries; they only reshape the wins and losses.", "It must also beat the plain Noise-Band Breakout at double costs, or it does not count.", "Tuned on only 6 settings; fills assume no slippage past the stop."],
         {"m": ("Stop distance", "A wider stop is hit less often.", {0.25: "0.25 x ATR", 0.5: "0.5 x ATR"}),
          "R": ("Target", "A bigger target is reached less often but pays more.", {2: "2 x the stop", 3: "3 x the stop", 4: "4 x the stop"})}),
+    # study 7 (INTRADAY_PLAN_7.md)
+    "id_dts_orb": ("ID-DTS-ORB", "Waits for the first 15 minutes, then buys the first 5-minute bar that closes above that range, with a stop inside the range and a profit target of 1 or 2 times the risk.",
+        ["range  = high and low of 09:30-09:45", "ENTRY  first 5-minute close above the range high (09:45-15:30)", "STOP   range midpoint or low;  TARGET  entry + R x (entry - stop)", "EXIT   stop, target, or 15:55"],
+        "A day that pushes out of its opening range on a closing basis may keep going, and the stop caps the loss if it does not.",
+        ["Opening-range breakouts on SPY and QQQ did not beat random timing in studies 1 and 3.", "The stop sits inside a tight range, so normal noise stops many trades out.", "The rules come from a trading-skill pack for individual stocks; here they run on two index funds."],
+        {"stop": ("Stop", "The low is a wider stop than the midpoint.", {"mid": "range midpoint", "low": "range low"}),
+         "R": ("Target", "A bigger target is reached less often but pays more.", {1: "1 x the risk", 2: "2 x the risk"})}),
+    "id_dts_orb_setup": ("ID-DTS-SETUP", "The same opening-range breakout, taken only when the previous day's closes show one of the daily scanner setups.",
+        ["SETUP  from daily closes before today: 20-day breakout, bull flag, reclaim of the 20-day average, or oversold bounce", "ENTRY  the opening-range breakout, only on setup days", "STOP   range midpoint;  TARGET  2 x the risk", "EXIT   stop, target, or 15:55"],
+        "The scanner picks days when buyers already have the upper hand, which should make a breakout more likely to run.",
+        ["The scanner was built to pick among thousands of stocks, not to time two index funds.", "Each setup is rare, so there are few trades and a result is easy to get by luck.", "The plain breakout it builds on did not beat random timing."],
+        {"setup": ("Setup", "Each is a different daily pattern.", {"breakout_20d": "20-day breakout", "bull_flag": "bull flag", "reclaim_ma20": "reclaim 20-day average", "oversold_bounce": "oversold bounce"})}),
 }
