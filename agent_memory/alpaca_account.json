@@ -1,68 +1,11 @@
 {
- "generated": "2026-11-04T15:57:41+00:00",
- "start_equity": 100000.0,
- "equity": 101434.69,
- "cash": 101434.69,
- "last_equity": 99667.2246007203,
+ "generated": "2026-11-04T16:18:27+00:00",
+ "start_equity": 25000.0,
+ "equity": 25000.0,
+ "cash": 25000.0,
+ "last_equity": 25000.0,
  "positions": [],
- "orders": [
-  {
-   "date": "2026-11-04T15:47+00:00",
-   "symbol": "SPY",
-   "side": "sell",
-   "qty": 44.0,
-   "status": "filled",
-   "price": 765.544772
-  },
-  {
-   "date": "2026-11-04T15:47+00:00",
-   "symbol": "QQQ",
-   "side": "sell",
-   "qty": 48.0,
-   "status": "filled",
-   "price": 693.610833
-  },
-  {
-   "date": "2026-11-04T15:47+00:00",
-   "symbol": "BTC/USD",
-   "side": "sell",
-   "qty": 0.215079951,
-   "status": "filled",
-   "price": 80254.324015385
-  },
-  {
-   "date": "2026-11-04T09:00+00:00",
-   "symbol": "SPY",
-   "side": "sell",
-   "qty": 1.0,
-   "status": "expired",
-   "price": null
-  },
-  {
-   "date": "2026-11-03T15:32+00:00",
-   "symbol": "SPY",
-   "side": "buy",
-   "qty": 44.0,
-   "status": "filled",
-   "price": 754.2
-  },
-  {
-   "date": "2026-11-03T15:32+00:00",
-   "symbol": "QQQ",
-   "side": "buy",
-   "qty": 48.0,
-   "status": "filled",
-   "price": 685.5975
-  },
-  {
-   "date": "2026-11-03T15:32+00:00",
-   "symbol": "BTC/USD",
-   "side": "buy",
-   "qty": 0.215619,
-   "status": "filled",
-   "price": 77298.565280611
-  }
- ],
+ "orders": [],
  "strategies_by_symbol": {
   "SPY": [
    {
