@@ -1,0 +1,4 @@
+time_ny,symbol,basis,price,qty_closed,order_id,note
+2026-11-04 10:47:47,BTC/USD,77298.565280644,80280.207,0.215079951,27aaf080-365b-4a65-9e3a-ca730d4be9de,broke even; closed
+2026-11-04 10:47:47,QQQ,685.5975,693.61,48.0,3b7221a7-e845-451d-8509-7af610c2a4ed,broke even; closed
+2026-11-04 10:47:47,SPY,754.2,765.56,44.0,19ade390-7b29-4e51-8435-d22cb59f5c20,broke even; closed
