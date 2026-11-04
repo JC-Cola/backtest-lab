@@ -63,7 +63,9 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
             if res["status"] == "rejected":
                 emit(s, 1, "dead", res["reason"], det)
             else:
-                emit(s, 1, "ok", f"score {res['reward']:.2f}, needs {PROMOTE_DSR}", det)
+                passed = res["dsr"] >= PROMOTE_DSR and res["consistent"]
+                emit(s, 1, "ok" if passed else "dead",
+                     f"score {res['reward']:.2f}" + ("" if passed else f", needs {PROMOTE_DSR}"), det)
             if (res["status"] == "scored" and res["dsr"] >= PROMOTE_DSR and res["consistent"]
                     and shots < MAX_HOLDOUT_PER_SESSION):
                 shots += 1
