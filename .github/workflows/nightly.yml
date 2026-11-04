@@ -12,6 +12,10 @@ on:
       claude_rounds:
         description: "Rounds where Claude proposes the ideas"
         default: "2"
+      no_orders:
+        description: "Test run: do not place long-term account orders"
+        type: boolean
+        default: false
 
 concurrency:
   group: backtest-lab-trading
@@ -58,7 +62,7 @@ jobs:
       - name: Refresh minute data
         run: cd src && python intraday_data.py SPY QQQ
       - name: Nightly run
-        run: cd src && python daily.py --rounds "$ROUNDS" --claude-rounds "$CLAUDE_ROUNDS"
+        run: cd src && python daily.py --rounds "$ROUNDS" --claude-rounds "$CLAUDE_ROUNDS" ${{ inputs.no_orders && '--no-orders' || '' }}
       - name: Daily report
         if: always()
         run: cd src && python report.py

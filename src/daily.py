@@ -44,11 +44,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--rounds", type=int, default=30)
     ap.add_argument("--claude-rounds", type=int, default=2)
+    ap.add_argument("--no-orders", action="store_true", help="test run: do not place long-term account orders")
     a = ap.parse_args()
     sys.argv = sys.argv[:1]  # alpaca_paper.main() parses its own (empty) arguments
     print("== paper trading: record"); paper.record()
     print("== paper trading: report"); paper.report()
-    if os.environ.get("ALPACA_API_KEY") and os.environ.get("ALPACA_SECRET_KEY"):
+    if a.no_orders:
+        print("== Alpaca paper account: skipped (--no-orders test run)")
+    elif os.environ.get("ALPACA_API_KEY") and os.environ.get("ALPACA_SECRET_KEY"):
         print("== Alpaca paper account: place orders"); alpaca_paper.main()
     else:
         print("== Alpaca paper account: skipped (ALPACA_API_KEY / ALPACA_SECRET_KEY not set)")
