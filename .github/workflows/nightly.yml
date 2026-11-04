@@ -2,8 +2,8 @@ name: nightly
 # After the US close, weekdays 21:45 UTC (16:45 EST / 17:45 EDT): paper decisions, long-term account orders,
 # self-improving agents (with the Claude CLI), Strategy Lab page, then the daily report as a commit and an issue.
 on:
-  schedule:
-    - cron: "45 21 * * 1-5"
+  # schedule: switched off until the Mac jobs are removed (never run both)
+  #   - cron: "45 21 * * 1-5"
   workflow_dispatch:
     inputs:
       rounds:
