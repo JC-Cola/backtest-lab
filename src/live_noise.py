@@ -6,9 +6,9 @@ Rules = the backtest's tuning-year choice (INTRADAY_PLAN.md; lookback 14 days, h
   at 10:00, 11:00, ... 15:00 New York: long if price > max(upper, VWAP), short if < min(lower, VWAP), else flat
   flat at the close (market-on-close order, i.e. the official closing price, like the backtest)
 
-Sizing: a sleeve of FRACTION x account equity per symbol (default 25%, so SPY + QQQ = the intraday 50%;
-the daily strategies share the other 50%), traded ON TOP of the daily strategies'
-positions and always flat by the close, so the nightly daily-strategy orders never see it.
+Sizing: its own $25k INTRADAY paper account (keys ALPACA_INTRADAY_API_KEY / ALPACA_INTRADAY_SECRET_KEY), FRACTION
+x equity per symbol (default 50%, so SPY + QQQ use the whole account), always flat by the close. The daily
+strategies trade a separate $25k account (alpaca_paper.py).
 Differences from the backtest, stated honestly: today's price and VWAP come from Alpaca's free IEX feed
 (IEX volume only; the full-market feed is not available for the last 15 minutes on the free plan), and
 fills are at the live price a few seconds after the check, not exactly the next minute's open.
@@ -42,7 +42,9 @@ FIELDS = ["time_ny", "symbol", "event", "price", "vwap", "upper", "lower", "deci
 def clients():
     from alpaca.data.historical import StockHistoricalDataClient
     from alpaca.trading.client import TradingClient
-    k, s = os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"]
+    k, s = os.environ.get("ALPACA_INTRADAY_API_KEY"), os.environ.get("ALPACA_INTRADAY_SECRET_KEY")
+    if not (k and s):
+        raise SystemExit("ALPACA_INTRADAY_API_KEY / ALPACA_INTRADAY_SECRET_KEY not set (the intraday account's keys)")
     return TradingClient(k, s, paper=True), StockHistoricalDataClient(k, s)
 
 
@@ -175,7 +177,7 @@ def schedule(now):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", action="store_true")
-    ap.add_argument("--fraction", type=float, default=0.25)
+    ap.add_argument("--fraction", type=float, default=0.5)
     ap.add_argument("--until", default=None, help="stop after this New York time, HH:MM")
     a = ap.parse_args()
     trading, data_client = clients()

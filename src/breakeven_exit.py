@@ -2,8 +2,8 @@
 
 Each watched symbol is closed the first time its price is back at or above the average entry price recorded
 when the watch was set (below it, for a short), then dropped from the watch list, so the strategies may buy
-it again later. Only the daily strategies' shares are closed: the QQQ noise-band sleeve (live_noise.py) is
-left alone. Stocks are closed with market orders while the market is open; Bitcoin at any time.
+it again later. It runs on the long-term account (ALPACA_API_KEY); the intraday account is never touched.
+Stocks are closed with market orders while the market is open; Bitcoin at any time.
 
     python src/breakeven_exit.py --init    # record the current positions and their entry prices
     python src/breakeven_exit.py           # check once, close what has broken even (launchd, every 5 min)
@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -57,8 +58,7 @@ def check(trading):
     held = {_sym(p): p for p in trading.get_all_positions()}
     for sym, spec in list(w["symbols"].items()):
         p = held.get(sym)
-        sleeve = live_noise.load_state(now.date(), sym)["qty"] if sym in live_noise.SYMBOLS else 0
-        qty = (float(p.qty) if p else 0.0) - sleeve
+        qty = float(p.qty) if p else 0.0
         if qty * spec["side"] <= 0:
             log({"time_ny": f"{now:%Y-%m-%d %H:%M:%S}", "symbol": sym, "basis": spec["basis"], "qty_closed": 0,
                  "note": "no daily-strategy position left; stopped watching"})
@@ -84,5 +84,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--init", action="store_true")
     a = ap.parse_args()
-    trading, _ = live_noise.clients()
+    from alpaca.trading.client import TradingClient
+    trading = TradingClient(os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"], paper=True)
     init(trading) if a.init else check(trading)

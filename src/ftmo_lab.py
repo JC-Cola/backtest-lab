@@ -64,7 +64,7 @@ def mix(daily, noise, days, bench_sym="SPY"):
         w = 0.5 / len(noise)
         fin += w * f[X:]; low += w * lo[X:]; fin2 += w * (f - extra)[X:]
     bh = np.r_[0.0, D0.close[1:] / D0.close[:-1] - 1][X:]
-    return {"name": "50/50 mix (the live paper account)",
+    return {"name": "Both $25k accounts together (50/50)",
             "members": [["Daily strategies, equal shares", "50%"]] + [["id_noise_breakout", f"{s}, 25%"] for s in noise],
             "oos": {"sharpe": I.sharpe(fin), "cagr": I.cagr(fin), "total": float(np.prod(1 + fin) - 1)},
             "oos_cost2x_sharpe": I.sharpe(fin2), "buy_hold_oos": {"sharpe": I.sharpe(bh), "cagr": I.cagr(bh)},

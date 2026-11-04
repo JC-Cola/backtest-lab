@@ -44,8 +44,8 @@ def test_alpaca_sleeves_net_and_whole_shares():
     import alpaca_paper as a
     d = {"A": {"market": "SPY", "position": "1"}, "B": {"market": "SPY", "position": "0"},
          "C": {"market": "BTC-USD", "position": "1"}}
-    t = a.targets(d, 180000)  # the daily strategies share DAILY_SHARE (half) of equity: 90000 / 3 sleeves
-    assert a.DAILY_SHARE == 0.5 and t == {"SPY": 30000.0, "BTC/USD": 30000.0}
+    t = a.targets(d, 90000)  # the long-term account is the daily strategies' alone: 90000 / 3 sleeves
+    assert a.DAILY_SHARE == 1.0 and t == {"SPY": 30000.0, "BTC/USD": 30000.0}
     orders = {o["symbol"]: o for o in a.plan(t, {"SPY": 10, "QQQ": 5}, {"SPY": 700, "BTC/USD": 60000, "QQQ": 600})}
     assert orders["SPY"]["qty"] == 32 and orders["SPY"]["tif"] == "opg"      # 42 whole shares wanted, 10 held
     assert orders["QQQ"]["side"] == "sell" and orders["QQQ"]["qty"] == 5     # no longer wanted
