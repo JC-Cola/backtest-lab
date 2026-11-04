@@ -25,7 +25,7 @@ ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "agent_memory" / "paper_log.csv"
 ORDERS = ROOT / "agent_memory" / "alpaca_orders.csv"
 SNAPSHOT = ROOT / "agent_memory" / "alpaca_account.json"
-START_EQUITY = 100_000.0
+START_EQUITY = 25_000.0  # new $25k paper account from 2026-11-04 (the first account started at $100k)
 SYMBOL = {"SPY": "SPY", "QQQ": "QQQ", "GLD": "GLD", "IWM": "IWM", "BTC-USD": "BTC/USD"}
 MIN_TRADE_USD = 50.0  # ignore tiny rebalances
 
@@ -115,7 +115,7 @@ def main():
             print("ALPACA_API_KEY / ALPACA_SECRET_KEY are not set: showing a dry run on a $100,000 account")
         import data
         prices = {SYMBOL[m]: float(data.load(m).Close.iloc[-1]) for m in {r["market"] for r in decisions.values()}}
-        for o in plan(targets(decisions, 100_000.0), {}, prices):
+        for o in plan(targets(decisions, START_EQUITY), {}, prices):
             print(f"  would {o['side']} {o['qty']} {o['symbol']} ({o['tif']}), target ${o['target_usd']:,.0f}")
         return
 

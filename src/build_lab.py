@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 
 import data
+import ftmo_lab
 from agent import platform as AP
 from agent import spec as AS
 from agent.memory import Memory
@@ -369,23 +370,37 @@ def rank_book(book, cache):
         b["rank"] = i
 
 
+def mix_portfolio(mix_daily):
+    """The live 50/50 account: daily strategies 50%, noise-band breakout on SPY and QQQ 25% each."""
+    import intraday as I
+    rows = json.loads((ROOT / "results" / "intraday.json").read_text())["results"]
+    days, noise = {}, {}
+    for sym in ("SPY", "QQQ"):
+        days[sym] = I.Days(sym)
+        p = next(r["params"] for r in rows if r["strategy"] == "id_noise_breakout" and r["asset"] == sym)
+        noise[sym] = I.noise_breakout(days[sym], **p)
+    return ftmo_lab.mix(mix_daily, noise, days)
+
+
 def main():
     results = json.loads((ROOT / "results" / "results.json").read_text())["results"]
     cp = ROOT / "results" / "confirmation.json"
     conf = json.loads(cp.read_text()) if cp.exists() else None
     ctx_raw = data.load_context()
-    cache, markets, book = {}, {}, []
+    cache, markets, book, mix_daily = {}, {}, [], []
     for b in BOOK:
         if b["code"] not in LAB_DAILY:
             continue
         st = BY_ID[b["id"]]
         df, ctx, cfg = build_market(b["market"], ctx_raw, cache)
         v = verdict_for(b["id"], b["market"], results, conf)
-        combos = []
+        combos, poss = [], []
         for p in st["grid"]:
             pos = np.clip(np.nan_to_num(positions(st, df, ctx, p).values.astype(float)), 0, 1)
             combos.append({"params": p} | series(df, pos, cfg["cost_bps"]))
+            poss.append(pos)
         chosen = next(i for i, c in enumerate(combos) if json.loads(json.dumps(c["params"])) == v["params"])
+        mix_daily.append((df, poss[chosen], cfg["cost_bps"]))
         fam, freq, src = ABOUT[b["code"]]
         book.append({"code": b["code"], "id": b["id"], "name": st["name"], "market": b["market"],
                      "desc": st["description"], "family": fam, "freq": freq, "source": src,
@@ -393,7 +408,8 @@ def main():
                      "plain": PLAIN[b["code"]][0], "pparams": _plain_params(b["code"], combos),
                      "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key)
                               for k in st["grid"][0]},
-                     "combos": combos, "chosen": chosen, "verdict": v})
+                     "combos": combos, "chosen": chosen, "verdict": v,
+                     "ftmo": ftmo_lab.daily_table(df, poss[chosen], cfg["cost_bps"], cfg["oos_start"])})
     # the self-improving agent's current best idea
     mem = Memory()
     top = mem.top(1) if SHOW_AGENT else []
@@ -445,7 +461,9 @@ def main():
     alpaca = json.loads(ap.read_text()) if ap.exists() else None
     ip = ROOT / "results" / "intraday.json"
     portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
-    blob = json.dumps({"portfolios": portfolios, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
+    portfolios = [pf for pf in [mix_portfolio(mix_daily)] + portfolios if pf["oos"]["total"] > 0]  # money-makers only
+    book, hidden = ftmo_lab.keep_positive(book, markets)
+    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

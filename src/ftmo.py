@@ -81,8 +81,13 @@ def simulate(final, low, start, lev):
 
 def table(D, t, oos_start_idx):
     final, low = day_paths(D, t)
+    return table_from_paths(final, low, oos_start_idx)
+
+
+def table_from_paths(final, low, oos_start_idx):
+    """Pass/fail rates at each size, replaying the challenge from every start day from oos_start_idx on."""
     out = []
-    starts = range(oos_start_idx, D.n - 20)
+    starts = range(oos_start_idx, len(final) - 20)
     for lev in LEVERAGES:
         res = [simulate(final, low, s, lev) for s in starts]
         n = len(res)

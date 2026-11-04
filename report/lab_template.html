@@ -283,7 +283,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="tw"><table><thead><tr><th>Portfolio</th><th class="n">Test years Sharpe</th><th class="n">At 2× costs</th><th class="n">Beat random</th><th class="n">Best FTMO pass rate</th><th>Verdict</th></tr></thead><tbody id="ports-body"></tbody></table></div>
     <p class="ftmo-note">Members are picked from 2016–2020 results only. This test was added after the individual results were seen, so treat it as a lead, not proof.</p>
   </div>
-  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at (intraday: IWM and DIA), +1 if it held up on extra markets it was never tuned on (intraday: passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (daily strategies 2017 on; Bitcoin and intraday 2021 on), after costs. Intraday strategies are flat every night.</p>
+  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at (intraday: IWM and DIA), +1 if it held up on extra markets it was never tuned on (intraday: passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (daily strategies 2017 on; Bitcoin and intraday 2021 on), after costs. Intraday strategies are flat every night. <span id="hidden-note"></span></p>
 </section>
 
 
@@ -305,7 +305,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       <div class="ph"><span class="cap">FTMO 2-Step challenge: how often would it pass?</span><span class="r" id="ftmo-r"></span></div>
       <p class="ftmo-say" id="ftmo-say"></p>
       <div class="tw"><table><thead><tr><th>Position size</th><th class="n">Passed both phases</th><th class="n">Broke the 5% daily loss</th><th class="n">Broke the 10% max loss</th><th class="n">Still going after a year</th><th class="n">Typical days to pass</th></tr></thead><tbody id="ftmo-body"></tbody></table></div>
-      <p class="ftmo-note">Replayed from every start day since 2021 with the ★ settings. Rules: +10% then +5%, never more than 5% down in a day (checked against the worst moment of each day) or 10% in total, at least 4 trading days. Picking a size after seeing this table is hindsight.</p>
+      <p class="ftmo-note">Replayed from every start day of the test years (daily strategies 2017 on, Bitcoin and intraday 2021 on) with the ★ settings. Rules: +10% then +5%, never more than 5% down in a day (checked against the worst moment of each day) or 10% in total, at least 4 trading days. Picking a size after seeing this table is hindsight.</p>
     </div>
     <div class="panel" data-simple><div class="stats s4" id="s-stats"></div></div>
     <div class="panel" data-pro><div class="stats" id="stats"></div></div>
@@ -798,18 +798,21 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   try { const f = localStorage.getItem("lab-lfilter"); if (f) lfilter = f; } catch (e) {}
   const inFilter = b => lfilter === "all" || (lfilter === "intraday") === (b.family === "Intraday");
   function renderPorts() {
+    const H = D.hidden || [];
+    $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years are shown; ${H.length} that lost money are hidden: ${H.join(", ")}.` : "";
     const P = D.portfolios || [], box = $("ports");
-    box.hidden = !P.length || lfilter === "daily";
+    box.hidden = !P.length;
     const label = { id_noise_breakout: "Noise-Band Breakout", id_orb: "Opening Range Breakout", id_gap_fade: "Gap Fade", id_vwap_trend: "VWAP Trend",
       id_intraday_momentum: "Intraday Momentum", id_halfhour_periodicity: "Same Half-Hour" };
     $("ports-body").replaceChildren(...P.map(p => { const tr = document.createElement("tr");
       const best = p.ftmo.reduce((a, r) => r.pass_rate > a.pass_rate ? r : a, p.ftmo[0]);
       const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
       const mem = p.members.map(m => `${label[m[0]] || m[0]} (${m[1]})`).join(", ");
-      const verdict = p.oos.sharpe > 0 && p.oos_cost2x_sharpe > 0 && p.coin_flip.p_value < 0.05 ? "Promising lead, not confirmed" : "Loses money";
+      const verdict = !(p.oos.sharpe > 0) ? "Loses money" : !p.coin_flip ? (p.oos_cost2x_sharpe > 0 ? "Makes money in the test years; not tested against random timing" : "Makes money, but not at double costs")
+        : p.oos_cost2x_sharpe > 0 && p.coin_flip.p_value < 0.05 ? "Promising lead, not confirmed" : "Loses money";
       tr.append(td(p.name.replace(/^[AB]: /, ""), "", p.members.length > 4 ? `${p.members.length} strategy × market pairs` : mem),
         td(f2(p.oos.sharpe), "n " + cls(p.oos.sharpe), "holding: " + f2(p.buy_hold_oos.sharpe)), td(f2(p.oos_cost2x_sharpe), "n " + cls(p.oos_cost2x_sharpe)),
-        td(pct(1 - p.coin_flip.p_value, 1), "n"), td(best.pass_rate > 0 ? `${Math.round(best.pass_rate * 100)}% at ${best.leverage}×` : "never", "n"), td(verdict));
+        td(p.coin_flip ? pct(1 - p.coin_flip.p_value, 1) : "—", "n"), td(best.pass_rate > 0 ? `${Math.round(best.pass_rate * 100)}% at ${best.leverage}×` : "never", "n"), td(verdict));
       return tr; }));
   }
   function renderLeader() {
