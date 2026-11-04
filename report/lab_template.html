@@ -372,6 +372,11 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 <script>
 (function () {
   const D = JSON.parse(document.getElementById("lab").textContent);
+  for (const b of D.book) for (const c of b.combos) if (c.tr) {  // packed intraday trades: day deltas + returns x 1e5
+    let d = 0;
+    c.trades = c.tr[0].map((dd, i) => [d += dd, c.tr[1][i] / 1e5]);
+    delete c.tr;
+  }
   const $ = id => document.getElementById(id);
   const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
   const pct = (v, d = 1) => v == null || !isFinite(v) ? "—" : (v >= 0 && d >= 0 ? "" : "") + (v * 100).toFixed(d) + "%";

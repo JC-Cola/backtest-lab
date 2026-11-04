@@ -199,12 +199,12 @@ STRATEGIES = [
 ]
 
 
-def run(symbols):
+def run(symbols, strategies=STRATEGIES):
     rows = []
     for sym in symbols:
         D = I.Days(sym)
         print(f"== {sym}: {D.n} days {D.dates[0].date()}..{D.dates[-1].date()}", flush=True)
-        for st in STRATEGIES:
+        for st in strategies:
             r = I.evaluate(st, sym, D)
             r.pop("_t", None)
             rows.append(r)
@@ -215,8 +215,9 @@ def run(symbols):
     return rows
 
 
-if __name__ == "__main__":
-    rows = run(DISCOVERY)
+def main(strategies=STRATEGIES, lockbox=LOCKBOX, out=OUT, plan="INTRADAY_PLAN_3.md"):
+    """Discovery on SPY and QQQ, BH q-values, candidates; with --lockbox, any candidate on the lockbox markets."""
+    rows = run(DISCOVERY, strategies)
     tested = [r for r in rows if r["coin_flip"]]
     for r, q in zip(tested, bh_qvalues([r["coin_flip"]["p_value"] for r in tested])):
         r["coin_flip"]["q_value"] = float(q)
@@ -225,18 +226,22 @@ if __name__ == "__main__":
     print(f"\n{len(tested)} tests; candidates: {[(r['strategy'], r['asset']) for r in cands] or 'none'}")
     if cands and "--lockbox" in sys.argv:
         import intraday_data
-        for s in LOCKBOX:
+        for s in lockbox:
             intraday_data.download(s)
-        by_id = {s["id"]: s for s in STRATEGIES}
+        by_id = {s["id"]: s for s in strategies}
         for sid in {r["strategy"] for r in cands}:
-            lb = I.lockbox(by_id[sid], LOCKBOX)
+            lb = I.lockbox(by_id[sid], lockbox)
             for r in rows:
                 if r["strategy"] == sid and r.get("candidate"):
                     r["lockbox"] = lb
             print(f"lockbox {sid}: Fisher p={lb['fisher_p']:.3f} median Sharpe={lb['median_oos_sharpe']:.2f} -> "
                   f"{'CONFIRMED' if lb['confirmed'] else 'not confirmed'}")
-    OUT.write_text(json.dumps({"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "plan": "INTRADAY_PLAN_3.md",
-                               "cost_per_side": I.COST, "n_sims": I.N_SIMS, "discovery": DISCOVERY, "lockbox_symbols": LOCKBOX,
+    out.write_text(json.dumps({"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "plan": plan,
+                               "cost_per_side": I.COST, "n_sims": I.N_SIMS, "discovery": DISCOVERY, "lockbox_symbols": lockbox,
                                "strategies": [{k: s[k] for k in ("id", "name", "source", "plain")} | {"grid_size": len(s["grid"])}
-                                              for s in STRATEGIES], "results": rows}, default=float))
-    print(f"wrote {OUT}")
+                                              for s in strategies], "results": rows}, default=float))
+    print(f"wrote {out}")
+
+
+if __name__ == "__main__":
+    main()

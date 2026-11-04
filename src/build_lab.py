@@ -185,6 +185,49 @@ INTRA = {
         "Lucca & Moench (2015): stocks rose before Fed announcements from 1994 to 2011, a large share of the equity premium.",
         ["Only about 8 trades a year, so results are very noisy.", "Later studies found the drift faded after it was published.", "The coin-flip test here only checks the timing within those days."],
         {"entry": ("Buy at", "Later skips the opening noise.", {0: "09:30", 30: "10:00"})}),
+    # study 4 (INTRADAY_PLAN_4.md)
+    "id_gap_go": ("ID-GAPGO", "When the market opens with a big gap and the first minutes keep going that way, trades with the gap until the close.",
+        ["gap    = open / yesterday's close - 1", "CONFIRM first N minutes close in the gap's direction", "ENTRY  with the gap, after N minutes", "STOP   yesterday's close (gap filled)"],
+        "Big gaps on news can keep running as slower traders react; the opposite bet to Gap Fade.",
+        ["Big gaps are rare, so there are few trades.", "Gap Fade, its exact opposite, is also on this page.", "Practitioner lore, no peer-reviewed evidence."],
+        {"gap": ("Minimum gap", "Bigger gaps are rarer.", {0.0025: "0.25%", 0.005: "0.5%", 0.01: "1%"}),
+         "confirm": ("Confirm over the first", "Longer confirmation is surer but enters later.", {5: "5 minutes", 15: "15 minutes"})}),
+    "id_pivot_revert": ("ID-PIVOT", "Sells the first touch of yesterday's pivot resistance and buys the first touch of support, betting the level holds.",
+        ["P      = (yesterday's high + low + close) / 3", "R1/S1  = 2P - low / 2P - high;  R2/S2 = P +/- range", "ENTRY  fade the first touch", "STOP   next level out;  EXIT  at P or the close"],
+        "Floor traders have watched these levels for decades, so orders cluster there.",
+        ["The levels are arithmetic, not real supply and demand.", "Strong trend days slice straight through them.", "Practitioner lore, no peer-reviewed evidence."],
+        {"level": ("Fade the", "Level 2 is further out and touched less often.", {1: "first level (R1/S1)", 2: "second level (R2/S2)"}),
+         "target": ("Take profit", "The pivot banks wins early.", {"pivot": "at the pivot P", "close": "hold to the close"})}),
+    "id_first_hour_reversal": ("ID-FHR", "If the first hour of trading moves a lot, bets the rest of the day goes the other way.",
+        ["r     = price(10:30) / open - 1", "ENTRY  against r at 10:30, if |r| > threshold", "EXIT   after 2 hours, or at the close"],
+        "Morning moves are often overreactions to overnight news that partly unwind by the afternoon.",
+        ["Market Intraday Momentum finds the opposite: the morning predicts the close.", "Trend days punish it all afternoon.", "Practitioner idea, not a published result."],
+        {"thr": ("Minimum first-hour move", "Bigger moves are rarer.", {0.0025: "0.25%", 0.005: "0.5%", 0.01: "1%"}),
+         "hold": ("Hold for", "Shorter holds take less risk.", {120: "2 hours", 0: "until the close"})}),
+    "id_time_of_day": ("ID-TOD", "Owns the market during only one fixed part of every trading day, and nothing else.",
+        ["WINDOW one fixed part of the session", "ENTRY  long at its start, every day", "EXIT   at its end"],
+        "Studies of intraday seasonality find some parts of the day (often the open and the last half hour) earn more than others.",
+        ["Pays costs every single day.", "Picking the best window after seeing the data is hindsight.", "Any pattern this simple tends to get traded away."],
+        {"window": ("Hold during", "Each is a different part of the day.", {"open30": "09:30-10:00", "morning": "10:00-12:00", "midday": "12:00-14:00",
+                                                                             "afternoon": "14:00-15:30", "last30": "last 30 minutes", "last60": "last 60 minutes"})}),
+    "id_volume_spike_fade": ("ID-VSPK", "When one minute has a huge burst of volume and a sharp move, bets the price snaps back over the next 15 to 30 minutes.",
+        ["spike  = volume > k x average of the last 30 minutes", "AND    the minute moved more than 0.1%", "ENTRY  against that move, next minute", "EXIT   after 15 or 30 minutes"],
+        "Big market orders push prices past fair value for a moment; liquidity providers then pull them back.",
+        ["Spikes on real news do not snap back.", "Short holds make costs a big share of the edge.", "Practitioner idea, not a published result."],
+        {"k": ("Volume spike of", "Bigger spikes are rarer.", {5.0: "5x normal", 10.0: "10x normal"}),
+         "hold": ("Hold for", "Longer gives the snap-back more time.", {15: "15 minutes", 30: "30 minutes"})}),
+    "id_crabel_stretch": ("ID-CRAB", "Trades the first move away from the open that is bigger than the market's usual opening 'stretch'.",
+        ["stretch = 10-day average of min(high - open, open - low)", "bands   = open +/- m x stretch", "ENTRY  first close beyond a band", "EXIT   at the close"],
+        "Toby Crabel (1990): the open usually sits near one end of the day's range, so a move past the normal stretch shows the day's direction.",
+        ["Close cousin of Williams's Volatility Breakout.", "Built on 1980s futures data.", "One trade a day, so costs eat a small edge."],
+        {"mult": ("Band width", "Wider bands trade less often.", {1.0: "1 x stretch", 1.5: "1.5 x stretch", 2.0: "2 x stretch"}),
+         "mode": ("Direction", "Long-only never goes short.", {"ls": "long and short", "long": "long only"})}),
+    "id_lunch_breakout": ("ID-LUNCH", "Waits for the quiet lunchtime range, then trades the first afternoon break out of it until the close.",
+        ["range  = high and low of the midday window", "ENTRY  first close beyond the range", "STOP   optional: the range's other end", "EXIT   at the close"],
+        "Lunchtime is quiet; when afternoon traders return, a break of that range can show the day's last move.",
+        ["Many afternoon breaks fail and snap back.", "Little time left in the day to profit.", "Practitioner idea, not a published result."],
+        {"win": ("Midday window", "Each is a different lunch range.", {"1130": "11:30-13:00", "1200": "12:00-13:30"}),
+         "stop": ("Stop", "A stop cuts failed breaks short.", {"none": "none, hold to the close", "range": "the range's other end"})}),
 }
 
 
@@ -193,9 +236,10 @@ def build_intraday(book, markets):
     grid setting recomputed so the page's sliders work, plus each strategy's FTMO 2-Step challenge table."""
     import intraday as I
     import intraday3
-    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES}
+    import intraday4
+    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES + intraday4.STRATEGIES}
     days = {}
-    for fname in ("intraday.json", "intraday3.json"):
+    for fname in ("intraday.json", "intraday3.json", "intraday4.json"):
         path = ROOT / "results" / fname
         if path.exists():
             _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)
@@ -220,7 +264,9 @@ def _add_intraday(book, markets, res, by_id, days):
             np.add.at(r, t["day"], t["ret"])
             traded = np.zeros(D.n, int)
             traded[t["day"]] = 100
-            combos.append({"params": p, "r": r5(r), "trades": [[int(d), round(float(x), 5)] for d, x in zip(t["day"], t["ret"])],
+            # trades packed as [day deltas, returns in 1e-5 units]; the page unpacks them into [[day, ret], ...]
+            days_ = t["day"].astype(int)
+            combos.append({"params": p, "r": r5(r), "tr": [np.diff(days_, prepend=0).tolist(), np.round(t["ret"] * 1e5).astype(int).tolist()],
                            "pos": traded.tolist()})
         chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(row["params"]))
         code, plain, signal, edge, kills, pp = INTRA[st["id"]]
