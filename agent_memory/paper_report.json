@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-04T21:33:30+00:00",
+ "generated": "2026-11-04T21:20:33+00:00",
  "strategies": {
   "MR-IBS": {
    "name": "Internal Bar Strength",
@@ -11,7 +11,7 @@
    "holding_return": 0.011820421622084076,
    "days_invested": 1,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 1.0
    }
   },
@@ -25,7 +25,7 @@
    "holding_return": -0.00019154786847941363,
    "days_invested": 2,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 1.0
    }
   },
@@ -39,7 +39,7 @@
    "holding_return": -0.00019154786847941363,
    "days_invested": 2,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 1.0
    }
   },
@@ -50,10 +50,10 @@
    "decisions": 3,
    "scored": 2,
    "paper_return": 0.0,
-   "holding_return": 0.013393207807469665,
+   "holding_return": 0.013393207807469443,
    "days_invested": 0,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 0.0
    }
   },
@@ -81,7 +81,7 @@
    "holding_return": 0.011820421622084076,
    "days_invested": 2,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 1.0
    }
   },
@@ -92,7 +92,7 @@
    "decisions": 1,
    "scored": 1,
    "paper_return": 0.0,
-   "holding_return": -0.009228401230272132,
+   "holding_return": -0.009228401230272243,
    "days_invested": 0,
    "latest": {
     "date": "2026-10-16",
@@ -137,7 +137,7 @@
    "holding_return": 0.02283231479972958,
    "days_invested": 0,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 0.0
    }
   },
@@ -151,7 +151,7 @@
    "holding_return": 0.02283231479972958,
    "days_invested": 0,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 0.0
    }
   },
@@ -165,7 +165,7 @@
    "holding_return": 0.015473188773971858,
    "days_invested": 0,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-03",
     "position": 0.0
    }
   }

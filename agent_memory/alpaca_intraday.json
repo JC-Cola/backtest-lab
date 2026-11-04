@@ -1,37 +1,26 @@
 {
- "generated": "2026-11-04T19:01:23+00:00",
+ "generated": "2026-11-04T21:21:19+00:00",
  "start_equity": 25000.0,
- "equity": 24937.99,
- "cash": 883.92,
+ "equity": 24924.48,
+ "cash": 24924.48,
  "last_equity": 25000.0,
- "positions": [
-  {
-   "symbol": "QQQ",
-   "qty": 17.0,
-   "avg_price": 696.409412,
-   "price": 692.79,
-   "value": 11777.43,
-   "pl": -61.530004,
-   "pl_pct": -0.0052
-  },
-  {
-   "symbol": "SPY",
-   "qty": 16.0,
-   "avg_price": 767.32,
-   "price": 767.29,
-   "value": 12276.64,
-   "pl": -0.48,
-   "pl_pct": -4e-05
-  }
- ],
+ "positions": [],
  "orders": [
+  {
+   "date": "2026-11-04T20:56+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 766.381875
+  },
   {
    "date": "2026-11-04T19:01+00:00",
    "symbol": "QQQ",
    "side": "sell",
    "qty": 17.0,
-   "status": "new",
-   "price": null
+   "status": "filled",
+   "price": 692.85
   },
   {
    "date": "2026-11-04T18:01+00:00",

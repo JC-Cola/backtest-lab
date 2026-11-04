@@ -3,7 +3,7 @@
    and (when Alpaca paper keys are set) mirror the decisions into the Alpaca paper account;
 2. backtesting: one more session of each self-improving agent (daily, intraday; memory carries over), then
    a few rounds where Claude (local CLI) proposes the ideas, then the candidates-awaiting-approval list;
-3. rebuild the Strategy Lab page.
+3. rebuild the Strategy Lab page and the pipeline page.
 
     python src/daily.py [--rounds 30] [--claude-rounds 2]
 """
@@ -16,6 +16,7 @@ import sys
 
 import alpaca_paper
 import build_lab
+import build_pipeline
 import candidates
 import paper
 from agent import claude_cli
@@ -60,3 +61,4 @@ if __name__ == "__main__":
     claude_steps(a.claude_rounds)
     print("== candidates awaiting approval"); safe("candidates", candidates.update)
     print("== rebuild Strategy Lab"); build_lab.main()
+    print("== rebuild pipeline page"); safe("pipeline page", build_pipeline.main)

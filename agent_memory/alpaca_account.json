@@ -1,24 +1,59 @@
 {
- "generated": "2026-11-04T16:18:27+00:00",
+ "generated": "2026-11-04T21:21:18+00:00",
  "start_equity": 25000.0,
- "equity": 25000.0,
- "cash": 25000.0,
+ "equity": 24986.71,
+ "cash": 20835.68,
  "last_equity": 25000.0,
- "positions": [],
- "orders": [],
+ "positions": [
+  {
+   "symbol": "BTCUSD",
+   "qty": 0.051823117,
+   "avg_price": 80155.6,
+   "price": 80100.0,
+   "value": 4151.031672,
+   "pl": -2.881365,
+   "pl_pct": -0.00069
+  }
+ ],
+ "orders": [
+  {
+   "date": "2026-11-04T21:20+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 10.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-04T21:20+00:00",
+   "symbol": "QQQ",
+   "side": "buy",
+   "qty": 12.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-04T21:20+00:00",
+   "symbol": "BTC/USD",
+   "side": "buy",
+   "qty": 0.051953,
+   "status": "filled",
+   "price": 80155.6
+  }
+ ],
  "strategies_by_symbol": {
   "SPY": [
    {
     "key": "MR-IBS",
     "name": "Internal Bar Strength",
     "position": 1.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    },
    {
     "key": "TS-VOL",
     "name": "Vol-Targeted Trend",
     "position": 1.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    }
   ],
   "QQQ": [
@@ -26,13 +61,13 @@
     "key": "MR-WR",
     "name": "Williams %R",
     "position": 1.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    },
    {
     "key": "CAL-JAN",
     "name": "January Barometer",
     "position": 1.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    }
   ],
   "GLD": [
@@ -40,7 +75,7 @@
     "key": "CAL-MIX",
     "name": "Calendar Composite",
     "position": 0.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    }
   ],
   "BTCUSD": [
@@ -48,7 +83,7 @@
     "key": "TS-TREND",
     "name": "Trend Filter (close > SMA)",
     "position": 1.0,
-    "decided": "2026-11-02"
+    "decided": "2026-11-03"
    }
   ]
  }
