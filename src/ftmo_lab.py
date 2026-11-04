@@ -88,8 +88,8 @@ def test_total(entry, markets, cost_mult=1):
 
 
 def keep_positive(book, markets):
-    """Keep strategies that made money on their test years at normal AND double costs; return (kept, hidden names)."""
+    """Keep strategies that made money on their test years (at normal costs); return (kept, hidden names)."""
     kept, hidden = [], []
     for b in book:
-        (kept if min(test_total(b, markets), test_total(b, markets, 2)) > 0 else hidden).append(b)
+        (kept if test_total(b, markets) > 0 else hidden).append(b)
     return kept, [f"{b['name']} ({b['market'].replace('-1m', '')})" for b in hidden]

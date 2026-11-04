@@ -804,7 +804,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   enterSection();
   function renderPorts() {
     const H = D.hidden || [];
-    $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years at both normal and double trading costs are kept; ${H.length} others are left out.` : "";
+    $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years are shown; ${H.length} that lost money are hidden: ${H.join(", ")}.` : "";
     const P = (D.portfolios || []).filter(p => lfilter === "intraday" || p.name.startsWith("Both")), box = $("ports");
     box.hidden = !P.length;
     const label = { id_noise_breakout: "Noise-Band Breakout", id_orb: "Opening Range Breakout", id_gap_fade: "Gap Fade", id_vwap_trend: "VWAP Trend",
