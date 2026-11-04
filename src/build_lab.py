@@ -187,6 +187,13 @@ INTRA = {
         "Lucca & Moench (2015): stocks rose before Fed announcements from 1994 to 2011, a large share of the equity premium.",
         ["Only about 8 trades a year, so results are very noisy.", "Later studies found the drift faded after it was published.", "The coin-flip test here only checks the timing within those days."],
         {"entry": ("Buy at", "Later skips the opening noise.", {0: "09:30", 30: "10:00"})}),
+    # study 5 (INTRADAY_PLAN_5.md)
+    "id_darvas_intraday": ("ID-BOX", "Draws Darvas boxes on 5- or 15-minute bars during the day, buys a break above the latest box and sells if price falls below the box's floor.",
+        ["top    = a high not beaten for the next `hold` bars", "bottom = the lowest low after it, not broken for `hold` bars", "ENTRY  close above the last confirmed box top", "EXIT   close below the latest box bottom, or at the close"],
+        "Nicolas Darvas (1960): stocks moving to new highs out of a quiet range tend to keep going; the box floor limits the loss.",
+        ["Darvas traded daily charts of fast-growing stocks over months, not index funds within a day.", "The daily version on SPY, QQQ and 5 other markets never beat random timing.", "Intraday breakouts often fail and snap back."],
+        {"bar": ("Bar size", "Bigger bars make fewer, larger boxes.", {5: "5 minutes", 15: "15 minutes"}),
+         "hold": ("Box must hold for", "More bars make a box harder to confirm.", {3: "3 bars", 5: "5 bars"})}),
     # study 4 (INTRADAY_PLAN_4.md)
     "id_gap_go": ("ID-GAPGO", "When the market opens with a big gap and the first minutes keep going that way, trades with the gap until the close.",
         ["gap    = open / yesterday's close - 1", "CONFIRM first N minutes close in the gap's direction", "ENTRY  with the gap, after N minutes", "STOP   yesterday's close (gap filled)"],
@@ -239,9 +246,10 @@ def build_intraday(book, markets):
     import intraday as I
     import intraday3
     import intraday4
-    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES + intraday4.STRATEGIES}
+    import intraday5
+    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES + intraday4.STRATEGIES + intraday5.STRATEGIES}
     days = {}
-    for fname in ("intraday.json", "intraday3.json", "intraday4.json"):
+    for fname in ("intraday.json", "intraday3.json", "intraday4.json", "intraday5.json"):
         path = ROOT / "results" / fname
         if path.exists():
             _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)

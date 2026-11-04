@@ -4,10 +4,11 @@ import pytest
 import intraday as I
 import intraday3 as S3
 import intraday4 as S4
+import intraday5 as S5
 from test_intraday import perturbed, synth
 
 
-@pytest.mark.parametrize("st", S3.STRATEGIES + S4.STRATEGIES, ids=[s["id"] for s in S3.STRATEGIES + S4.STRATEGIES])
+@pytest.mark.parametrize("st", S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES, ids=[s["id"] for s in S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES])
 def test_entries_do_not_peek(st):
     d0, K = 30, 200
     A = I.Days.from_arrays(*synth())
@@ -20,7 +21,7 @@ def test_entries_do_not_peek(st):
         assert early(ta) == early(tb), f"{st['id']} {p} decides with future prices"
 
 
-@pytest.mark.parametrize("st", S3.STRATEGIES + S4.STRATEGIES, ids=[s["id"] for s in S3.STRATEGIES + S4.STRATEGIES])
+@pytest.mark.parametrize("st", S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES, ids=[s["id"] for s in S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES])
 def test_trades_are_intraday_and_priced(st):
     A = I.Days.from_arrays(*synth())
     for p in st["grid"]:
