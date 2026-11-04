@@ -24,7 +24,7 @@ case "$1" in
   daily) ../.venv/bin/python daily.py --rounds 30 || exit 1
          paths=(agent_memory report/lab.html) ;;
   noise) ../.venv/bin/python live_noise.py --once || exit 1
-         paths=(agent_memory/noise_live.csv agent_memory/noise_state.json) ;;
+         paths=(agent_memory/noise_live.csv agent_memory/noise_state_*.json(N)) ;;
   breakeven) [[ -f ../agent_memory/breakeven_watch.json ]] || exit 0
          ../.venv/bin/python breakeven_exit.py || exit 1
          paths=(agent_memory/breakeven_watch.json)

@@ -57,7 +57,7 @@ def check(trading):
     held = {_sym(p): p for p in trading.get_all_positions()}
     for sym, spec in list(w["symbols"].items()):
         p = held.get(sym)
-        sleeve = live_noise.load_state(now.date())["qty"] if sym == live_noise.SYMBOL else 0
+        sleeve = live_noise.load_state(now.date(), sym)["qty"] if sym in live_noise.SYMBOLS else 0
         qty = (float(p.qty) if p else 0.0) - sleeve
         if qty * spec["side"] <= 0:
             log({"time_ny": f"{now:%Y-%m-%d %H:%M:%S}", "symbol": sym, "basis": spec["basis"], "qty_closed": 0,

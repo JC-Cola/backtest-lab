@@ -1,7 +1,7 @@
-time_ny,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_id,note
-2026-11-03 13:00:20,check,687.0,685.97,688.54,676.74,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
-2026-11-03 14:00:20,check,687.43,686.22,690.08,675.21,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
-2026-11-03 14:00:54,check,687.43,686.22,690.08,675.21,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
-2026-11-03 15:00:20,check,684.34,686.08,690.24,675.05,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
-2026-11-03 15:46:00,flatten at close,,,,,,0,0,,already flat
-2026-11-04 11:01:02,check,693.85,695.3,692.22,681.88,flat,0,0,,bands from 14 sessions to 2026-11-03; prev close 685.34; open 688.75 (IEX)
+time_ny,symbol,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_id,note
+2026-11-03 13:00:20,QQQ,check,687.0,685.97,688.54,676.74,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
+2026-11-03 14:00:20,QQQ,check,687.43,686.22,690.08,675.21,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
+2026-11-03 14:00:54,QQQ,check,687.43,686.22,690.08,675.21,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
+2026-11-03 15:00:20,QQQ,check,684.34,686.08,690.24,675.05,flat,0,0,,bands from 14 sessions to 2026-11-02; prev close 681.13; open 684.13 (IEX)
+2026-11-03 15:46:00,QQQ,flatten at close,,,,,,0,0,,already flat
+2026-11-04 11:01:02,QQQ,check,693.85,695.3,692.22,681.88,flat,0,0,,bands from 14 sessions to 2026-11-03; prev close 685.34; open 688.75 (IEX)

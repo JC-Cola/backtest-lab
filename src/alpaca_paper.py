@@ -3,7 +3,7 @@
     python src/alpaca_paper.py --dry-run   # show the orders it would place (no keys needed)
     python src/alpaca_paper.py             # place them (needs ALPACA_API_KEY / ALPACA_SECRET_KEY)
 
-How it sizes: each strategy in the Strategy Lab book gets an equal sleeve of account equity; a
+How it sizes: each strategy in the Strategy Lab book gets an equal sleeve of DAILY_SHARE (50%) of equity; a
 strategy that is "in" holds its sleeve in its market, "cash" holds nothing. Sleeves on the same
 symbol are added together, then the account is moved to those targets.
 Timing matches the backtest: decisions come from paper_log.csv (made on the last COMPLETE daily
@@ -42,9 +42,12 @@ def latest_decisions() -> dict:
     return last
 
 
+DAILY_SHARE = 0.5  # the daily strategies share half the account; the intraday noise-band sleeves (live_noise.py) the other half
+
+
 def targets(decisions: dict, equity: float) -> dict:
     """Dollar target per Alpaca symbol."""
-    sleeve = equity / max(1, len(decisions))
+    sleeve = DAILY_SHARE * equity / max(1, len(decisions))
     out = {}
     for r in decisions.values():
         sym = SYMBOL[r["market"]]
