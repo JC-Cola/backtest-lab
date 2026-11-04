@@ -1,11 +1,30 @@
 {
- "generated": "2026-11-04T16:24:17+00:00",
+ "generated": "2026-11-04T17:05:47+00:00",
  "start_equity": 25000.0,
- "equity": 25000.0,
- "cash": 25000.0,
+ "equity": 25000.48,
+ "cash": 12722.88,
  "last_equity": 25000.0,
- "positions": [],
- "orders": [],
+ "positions": [
+  {
+   "symbol": "SPY",
+   "qty": 16.0,
+   "avg_price": 767.32,
+   "price": 767.35,
+   "value": 12277.6,
+   "pl": 0.48,
+   "pl_pct": 4e-05
+  }
+ ],
+ "orders": [
+  {
+   "date": "2026-11-04T17:05+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 767.32
+  }
+ ],
  "strategies_by_symbol": {
   "SPY": [
    {
