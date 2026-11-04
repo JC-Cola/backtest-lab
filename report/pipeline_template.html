@@ -38,7 +38,7 @@ header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
   border-radius: 6px; padding: 8px 12px; }
 .note b { color: var(--ink); font-weight: 600; }
 
-.line { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-auto-rows: 420px; gap: 10px; }
+.line { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-auto-rows: 470px; gap: 10px; }
 .stage { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; display: flex; flex-direction: column; min-width: 0; height: 100%;
   overflow: hidden; position: relative; }
 .stage .hd { padding: 10px 11px 8px; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; height: 92px; box-sizing: border-box; flex: none; }
@@ -69,7 +69,9 @@ header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
 .chip .why { display: block; margin-top: 3px; font-size: 0.62rem; color: var(--muted); }
 .chip { cursor: help; }
 .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-.chip .txt { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.chip { flex: none; }
+.chip .txt { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }  /* full rule in the hover details */
+.chip .why { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .chip.busy { border-color: var(--accent); }
 .chip.busy .why::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1s infinite ease-in-out; }
 .chip.dead { background: var(--neg-soft); border-color: transparent; color: var(--muted); }
@@ -96,7 +98,7 @@ header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
 .stat .s { font-size: 0.72rem; color: var(--muted); }
 
 @media (max-width: 1100px) { .line { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .line { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 260px; } .stage .hd { height: auto; } }
+@media (max-width: 640px) { .line { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 330px; } .stage .hd { height: auto; } }
 @media (prefers-reduced-motion: reduce) { .chip { transition: none; } .chip.busy .why::after { animation: none; } }
 </style>
 
@@ -291,7 +293,7 @@ header p { margin: 4px 0 0; color: var(--muted); max-width: 70ch; }
   async function spawner() {  // replay the real events in order, several in flight at once, then loop
     if (!D.events.length) { slot(0).appendChild(el$("div", "none", "No ideas to show yet")); return; }
     for (let i = 0; ; i = (i + 1) % D.events.length) {
-      while (live >= 4) await wait(400);
+      while (live >= 3) await wait(400);  // 3 at once always fit in one stage box
       run(D.events[i]);
       await wait(1000 + Math.random() * 600);
     }
