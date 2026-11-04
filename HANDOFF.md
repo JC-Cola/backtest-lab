@@ -31,6 +31,45 @@ To schedule it on the Mac (New York time zone), put the paper keys in `~/.config
 checks hourly 10:01–15:01 plus the 15:47 flatten, on weekdays, and commits the updated files locally (push them
 yourself). Logs go to `~/Library/Logs/backtest-lab/`. Remove it with `scripts/install_launchd.sh --remove`.
 
+## Running in the cloud (GitHub Actions)
+
+Two workflows in `.github/workflows/` replace the Mac's launchd jobs. Both share one concurrency group
+(`backtest-lab-trading`), so they never run at the same time, and both can be started by hand from the Actions tab.
+
+- **intraday** (`intraday.yml`): every 30 minutes on weekdays, 13:01-20:31 UTC (10:01-15:31 New York in both EST and
+  EDT). Runs `live_noise.py --once` on the intraday account and commits the log, state and snapshot. GitHub may start
+  a run 5-20 minutes late or twice; the script acts once per check point, sends the market-on-close order with the 15:00
+  check, and closes any position left over from an earlier day.
+- **nightly** (`nightly.yml`): 21:45 UTC on weekdays (16:45 EST / 17:45 EDT). Refreshes the minute data, runs
+  `daily.py` (paper decisions, long-term account orders, both agents, Claude proposer rounds, Strategy Lab page), then
+  `report.py`, commits `agent_memory/`, `report/lab.html` and `reports/`, and opens an issue "Trading report YYYY-MM-DD"
+  labelled `daily-report`. The first run downloads about 10 years of minute bars (roughly 45 minutes); later runs reuse
+  the cache.
+
+Set the five secrets once (each command prompts for the value; never paste keys into files or chat):
+
+```bash
+gh secret set ALPACA_API_KEY -R JC-Cola/backtest-lab
+gh secret set ALPACA_SECRET_KEY -R JC-Cola/backtest-lab
+gh secret set ALPACA_INTRADAY_API_KEY -R JC-Cola/backtest-lab
+gh secret set ALPACA_INTRADAY_SECRET_KEY -R JC-Cola/backtest-lab
+gh secret set CLAUDE_CODE_OAUTH_TOKEN -R JC-Cola/backtest-lab
+```
+
+Make the Claude token with `claude setup-token` on the Mac (it prints a long-lived token for your subscription).
+
+**Never run the Mac jobs and the cloud jobs together.** Once a manual run of each workflow works, remove the Mac
+schedule with `scripts/install_launchd.sh --remove` (this also removes the break-even job, which the cloud does not run).
+
+Where to look: the daily report is `reports/YYYY-MM-DD.md` (index in `reports/README.md`) and arrives as an issue;
+the Strategy Lab page is `report/lab.html`; a failed run shows in the Actions tab. All of it is committed to `main`.
+
+Actions minutes (private repo, free tier 2,000 minutes per month, Linux runners, each job rounded up to whole minutes):
+intraday is 16 runs a day, about 1-2 minutes each, so roughly 350-700 a month; nightly at 15 rounds is about 30-40
+minutes a day, so roughly 650-850 a month. Expect about 1,000-1,550 in total, plus a one-off 45-60 for the first
+data download. That fits but with little room; lower `rounds` in the nightly workflow's inputs if the usage page
+shows you drifting towards 2,000. GitHub also disables schedules after 60 days without repo activity (the commits prevent that).
+
 ## Where things stand (2026-11-03)
 
 - **Daily strategies:** 486 tests, none passed. IBS held up on fresh data but earns less than holding.

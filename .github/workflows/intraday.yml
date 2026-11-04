@@ -1,0 +1,46 @@
+name: intraday
+# SPY/QQQ noise-band breakout on the INTRADAY Alpaca paper account. Every 30 minutes on weekdays, 13:01-20:31 UTC,
+# which covers 10:01-15:31 New York in both EST and EDT. live_noise.py --once ignores runs outside the session,
+# acts once per check point, and is safe to run late or twice.
+on:
+  schedule:
+    - cron: "1,31 13-20 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: backtest-lab-trading
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Intraday check
+        env:
+          ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+          ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+        run: cd src && python live_noise.py --once
+      - name: Commit log and state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in agent_memory/noise_live.csv agent_memory/noise_state_*.json agent_memory/alpaca_intraday.json; do
+            [ -e "$f" ] && git add -- "$f"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Intraday run $(TZ=America/New_York date '+%Y-%m-%d %H:%M') New York"
+          for i in 1 2 3; do
+            git pull --rebase --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1
