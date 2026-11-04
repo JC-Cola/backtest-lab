@@ -1,0 +1,27 @@
+{
+ "generated": "2026-11-04T16:24:17+00:00",
+ "start_equity": 25000.0,
+ "equity": 25000.0,
+ "cash": 25000.0,
+ "last_equity": 25000.0,
+ "positions": [],
+ "orders": [],
+ "strategies_by_symbol": {
+  "SPY": [
+   {
+    "key": "ID-NOISE",
+    "name": "Noise-Band Breakout",
+    "position": 1.0,
+    "decided": "each hourly check"
+   }
+  ],
+  "QQQ": [
+   {
+    "key": "ID-NOISE",
+    "name": "Noise-Band Breakout",
+    "position": 1.0,
+    "decided": "each hourly check"
+   }
+  ]
+ }
+}

@@ -260,7 +260,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </header>
 
 <section class="acct" id="acct" hidden>
-  <div class="acct-head"><h2>Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
+  <div class="acct-head"><h2 id="ac-title">Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
   <div class="acct-tables">
     <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
@@ -272,9 +272,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 <section class="leader" id="leader">
   <div class="acct-head"><h2>Which strategy is best?</h2>
     <div class="seg" id="lfilter" aria-label="Which strategies to rank">
-      <button data-f="intraday" aria-pressed="true">Intraday (1 min – 1 day)</button>
-      <button data-f="daily" aria-pressed="false">Daily (being traded)</button>
-      <button data-f="all" aria-pressed="false">All</button>
+      <button data-f="longterm" aria-pressed="false">Long-term (daily, held days to months)</button>
+      <button data-f="intraday" aria-pressed="true">Intraday (1 min – 1 day, flat every night)</button>
     </div></div>
   <p class="answer" id="ld-answer"></p>
   <div class="ranks" id="ranks"></div>
@@ -502,6 +501,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   function renderBook() {
     const box = $("book"); box.replaceChildren();
     D.book.forEach((b, i) => {
+      if (!inFilter(b)) return;
       const w = windowSeries(b, b.chosen), st = stats(w.r, w.mk.ann);
       const btn = document.createElement("button"); btn.className = "card" + (b.rank === 1 ? " best" : ""); btn.setAttribute("aria-pressed", String(i === cur));
       const code = document.createElement("span"); code.className = "cd"; code.textContent = `#${b.rank}${b.rank === 1 ? " BEST" : ""} · ${b.market}`;
@@ -776,7 +776,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const tabs = { research: $("tab-research"), backtest: $("tab-backtest") };
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => {
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !D.alpaca; $("window").hidden = k !== "backtest";
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest";
     if (k === "backtest") renderStrategy();
   }));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
@@ -794,13 +794,18 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   const mname = { SPY: "S&P 500 fund · daily", QQQ: "Nasdaq 100 fund · daily", GLD: "Gold", "BTC-USD": "Bitcoin · daily", IWM: "Small caps",
                   "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
-  let lfilter = "intraday";
-  try { const f = localStorage.getItem("lab-lfilter"); if (f) lfilter = f; } catch (e) {}
-  const inFilter = b => lfilter === "all" || (lfilter === "intraday") === (b.family === "Intraday");
+  let lfilter = "intraday";  // the lab is split in two: "longterm" (daily strategies) and "intraday"
+  try { const f = localStorage.getItem("lab-lfilter"); if (f) lfilter = f === "intraday" || f === "all" ? "intraday" : "longterm"; } catch (e) {}
+  const inFilter = b => (lfilter === "intraday") === (b.family === "Intraday");
+  const acctData = () => lfilter === "intraday" ? D.alpaca_intraday : D.alpaca;
+  function enterSection() {  // select the section's top strategy
+    if (!inFilter(D.book[cur])) { const i = D.book.findIndex(inFilter); if (i >= 0) { cur = i; combo = D.book[i].chosen; } }
+  }
+  enterSection();
   function renderPorts() {
     const H = D.hidden || [];
-    $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years are shown; ${H.length} that lost money are hidden: ${H.join(", ")}.` : "";
-    const P = D.portfolios || [], box = $("ports");
+    $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years at both normal and double trading costs are kept; ${H.length} others are left out.` : "";
+    const P = (D.portfolios || []).filter(p => lfilter === "intraday" || p.name.startsWith("Both")), box = $("ports");
     box.hidden = !P.length;
     const label = { id_noise_breakout: "Noise-Band Breakout", id_orb: "Opening Range Breakout", id_gap_fade: "Gap Fade", id_vwap_trend: "VWAP Trend",
       id_intraday_momentum: "Intraday Momentum", id_halfhour_periodicity: "Same Half-Hour" };
@@ -865,13 +870,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   document.querySelectorAll("#lfilter button").forEach(bt => {
     bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
     bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
-      document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt))); renderLeader(); });
+      document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
+      enterSection(); renderAcct(); renderParams(); renderAll(); });
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
   function renderAcct() {
-    const A = D.alpaca; if (!A) return;
-    $("acct").hidden = false;
+    const A = acctData(); $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
+    $("ac-title").textContent = lfilter === "intraday" ? "Live paper trading: intraday account" : "Live paper trading: long-term account";
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
     $("ac-upd").textContent = `figures from ${A.generated.replace("T", " ").slice(0, 16)} UTC (${ago}) · live prices are in Alpaca or TradingView`;

@@ -32,6 +32,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parent.parent
 LOG = ROOT / "agent_memory" / "noise_live.csv"
+SNAPSHOT = ROOT / "agent_memory" / "alpaca_intraday.json"
 NY = ZoneInfo("America/New_York")
 SYMBOLS, LOOKBACK = ["SPY", "QQQ"], 14
 CHECKS = [(10, 0), (11, 0), (12, 0), (13, 0), (14, 0), (15, 0)]
@@ -167,6 +168,16 @@ def act_flatten(trading, now, sym):
              "note": "already flat"})
 
 
+def snapshot(trading):
+    """The intraday account's state for the Strategy Lab page."""
+    import alpaca_paper
+    try:
+        alpaca_paper.snapshot(trading, path=SNAPSHOT, behind={s: [{"key": "ID-NOISE", "name": "Noise-Band Breakout", "position": 1.0,
+                                                                     "decided": "each hourly check"}] for s in SYMBOLS})
+    except Exception as e:  # the page can wait; trading must not
+        print(f"snapshot failed: {e}", flush=True)
+
+
 def schedule(now):
     day = now.date()
     pts = [datetime.combine(day, datetime.min.time(), NY).replace(hour=h, minute=mi, second=20) for h, mi in CHECKS]
@@ -194,6 +205,7 @@ def main():
         p = past[-1]
         for sym in SYMBOLS:
             (act_flatten(trading, now, sym) if p == pts[-1] else act_check(trading, data_client, now, a.fraction, sym))
+        snapshot(trading)
         return
     stop = None
     if a.until:

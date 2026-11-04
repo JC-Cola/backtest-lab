@@ -459,11 +459,13 @@ def main():
     paper = json.loads(pp.read_text()) if pp.exists() else {"strategies": {}}
     ap = ROOT / "agent_memory" / "alpaca_account.json"
     alpaca = json.loads(ap.read_text()) if ap.exists() else None
+    ai = ROOT / "agent_memory" / "alpaca_intraday.json"
+    alpaca_intraday = json.loads(ai.read_text()) if ai.exists() else None
     ip = ROOT / "results" / "intraday.json"
     portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
     portfolios = [pf for pf in [mix_portfolio(mix_daily)] + portfolios if pf["oos"]["total"] > 0]  # money-makers only
     book, hidden = ftmo_lab.keep_positive(book, markets)
-    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca,
+    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, "paper": paper, "alpaca": alpaca, "alpaca_intraday": alpaca_intraday,
                        "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

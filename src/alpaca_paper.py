@@ -74,13 +74,14 @@ def plan(tgt: dict, held: dict, prices: dict) -> list[dict]:
     return orders
 
 
-def snapshot(client, decisions=None):
-    """Save the paper account's state for the Strategy Lab page (no trading)."""
+def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
+    """Save a paper account's state for the Strategy Lab page (no trading). The intraday account passes its
+    own path and `behind` (symbol -> strategies holding it)."""
     import json
     from alpaca.trading.enums import QueryOrderStatus
     from alpaca.trading.requests import GetOrdersRequest
-    decisions = decisions if decisions is not None else latest_decisions()
-    behind = {}
+    decisions = decisions if decisions is not None else ({} if behind is not None else latest_decisions())
+    behind = {} if behind is None else behind
     for k, r in decisions.items():
         behind.setdefault(SYMBOL[r["market"]].replace("/", ""), []).append(
             {"key": k, "name": r["name"], "position": float(r["position"]), "decided": r["decision_date"]})
@@ -95,7 +96,7 @@ def snapshot(client, decisions=None):
     snap = {"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "start_equity": START_EQUITY,
             "equity": float(a.equity), "cash": float(a.cash), "last_equity": float(a.last_equity),
             "positions": pos, "orders": orders, "strategies_by_symbol": behind}
-    SNAPSHOT.write_text(json.dumps(snap, indent=1))
+    path.write_text(json.dumps(snap, indent=1))
     print(f"saved account snapshot: equity ${snap['equity']:,.0f}, {len(pos)} positions")
     return snap
 

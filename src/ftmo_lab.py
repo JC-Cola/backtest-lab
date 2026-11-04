@@ -71,17 +71,25 @@ def mix(daily, noise, days, bench_sym="SPY"):
             "coin_flip": None, "ftmo": ftmo.table_from_paths(fin, low, 0)}
 
 
-def test_total(entry, markets):
-    """Compounded test-year return of an entry's chosen setting, after costs."""
+def test_total(entry, markets, cost_mult=1):
+    """Compounded test-year return of an entry's chosen setting, after costs (cost_mult=2: double costs,
+    i.e. one more round trip per intraday trade, or one more cost per daily position change)."""
     mk = markets[entry["market"]]
     a = next((i for i, d in enumerate(mk["dates"]) if d >= mk["oos_start"]), len(mk["dates"]))
-    r = np.nan_to_num(np.array(entry["combos"][entry["chosen"]]["r"][a:], float))
-    return float(np.prod(1 + r) - 1)
+    c = entry["combos"][entry["chosen"]]
+    r = np.nan_to_num(np.array(c["r"], float))
+    extra = (cost_mult - 1) * mk["cost_bps"] / 1e4
+    if extra and "tr" in c:      # intraday: packed trades [day deltas, returns]
+        np.subtract.at(r, np.cumsum(c["tr"][0]).astype(int), 2 * extra)
+    elif extra:                  # daily: cost on each change of position (engine.returns_np)
+        p = np.array(c["pos"], float) / 100
+        r -= extra * np.abs(np.r_[0.0, p[:-1]] - np.r_[0.0, 0.0, p[:-2]])
+    return float(np.prod(1 + r[a:]) - 1)
 
 
 def keep_positive(book, markets):
-    """Drop strategies that lost money on their test years; return (kept, hidden names)."""
+    """Keep strategies that made money on their test years at normal AND double costs; return (kept, hidden names)."""
     kept, hidden = [], []
     for b in book:
-        (kept if test_total(b, markets) > 0 else hidden).append(b)
+        (kept if min(test_total(b, markets), test_total(b, markets, 2)) > 0 else hidden).append(b)
     return kept, [f"{b['name']} ({b['market'].replace('-1m', '')})" for b in hidden]
