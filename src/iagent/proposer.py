@@ -37,6 +37,10 @@ Do not repeat anything already tried.
 Grammar (return each spec as a JSON string; "time" is minutes after the 09:30 open):
 {S.__doc__}
 Decision times: {times}.
+Risk options: "stop_bp" (basis points from the entry price) can be null, 10, 25, 50, 100 or 200. "target_r" is an
+optional take-profit placed at target_r x the stop distance (1.5, 2, 3 or 4, e.g. stop_bp 50 with target_r 3 targets
++150 bp); it needs a stop_bp, and a bar that touches both the stop and the target is treated as a stop-out.
+Omit "target_r" (or use null) for no target. Hold exits take n of 5, 15, 30, 60, 120 or 240 minutes.
 Features (all known at the decision time):
 {feats}
 "q" is a percentile 1-99 of that feature at that decision time over 2016-2020.

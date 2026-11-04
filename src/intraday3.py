@@ -215,13 +215,15 @@ def run(symbols, strategies=STRATEGIES):
     return rows
 
 
-def main(strategies=STRATEGIES, lockbox=LOCKBOX, out=OUT, plan="INTRADAY_PLAN_3.md"):
-    """Discovery on SPY and QQQ, BH q-values, candidates; with --lockbox, any candidate on the lockbox markets."""
+def main(strategies=STRATEGIES, lockbox=LOCKBOX, out=OUT, plan="INTRADAY_PLAN_3.md", extra=None):
+    """Discovery on SPY and QQQ, BH q-values, candidates; with --lockbox, any candidate on the lockbox markets.
+    `extra(row) -> bool` is an additional candidate condition (it may also annotate the row)."""
     rows = run(DISCOVERY, strategies)
     tested = [r for r in rows if r["coin_flip"]]
     for r, q in zip(tested, bh_qvalues([r["coin_flip"]["p_value"] for r in tested])):
         r["coin_flip"]["q_value"] = float(q)
-        r["candidate"] = bool(r["coin_flip"]["p_value"] < 0.05 and q < 0.10 and r["oos"]["sharpe"] > 0 and r["oos_cost2x_sharpe"] > 0)
+        ok = extra(r) if extra else True
+        r["candidate"] = bool(r["coin_flip"]["p_value"] < 0.05 and q < 0.10 and r["oos"]["sharpe"] > 0 and r["oos_cost2x_sharpe"] > 0 and ok)
     cands = [r for r in rows if r.get("candidate")]
     print(f"\n{len(tested)} tests; candidates: {[(r['strategy'], r['asset']) for r in cands] or 'none'}")
     if cands and "--lockbox" in sys.argv:

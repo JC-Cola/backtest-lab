@@ -55,11 +55,13 @@ class Days:
         L = np.where(np.isnan(mats["low"]), O, mats["low"])
         V = np.nan_to_num(mats["volume"])
         self._derive(dates[keep], O[keep], H[keep], L[keep], C[keep], V[keep], last[keep])
+        self.symbol = symbol
 
     @classmethod
     def from_arrays(cls, dates, O, H, L, C, V, last):
         self = cls.__new__(cls)
         self._derive(pd.DatetimeIndex(dates), O, H, L, C, V, np.asarray(last))
+        self.symbol = None
         return self
 
     def _derive(self, dates, O, H, L, C, V, last):

@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 
-DECISIONS = [30, 60, 90, 120, 180, 240, 300, 330, 360]
+DECISIONS = list(range(30, 361, 30))   # 10:00 .. 15:30 every half hour
 FEATURES = ["gap", "ret_open", "ret_prev_close", "ret_30", "vwap_dist", "range_pos", "noise_z",
             "vol_ratio", "prev_day_ret", "prev_day_ibs", "rv_5d"]
 LOOK = 14  # days for the noise band and the volume baseline

@@ -2,11 +2,12 @@
 
 spec = {
   "market": "SPY" | "QQQ",
-  "time":   30 | 60 | 90 | 120 | 180 | 240 | 300 | 330 | 360,   # minutes after 09:30; decide on the close of bar m-1, fill at P[m]
+  "time":   30 | 60 | 90 | ... | 330 | 360 (every 30),          # minutes after 09:30; decide on the close of bar m-1, fill at P[m]
   "side":   "long" | "short",
   "entry":  [{"feature": "vwap_dist", "op": ">", "q": 90}, ...],  # 1-3 conditions, all must hold
-  "exit":   {"type": "hold", "n": 15|30|60|120} | {"type": "close"},
-  "stop_bp": null | 25 | 50 | 100
+  "exit":   {"type": "hold", "n": 5|15|30|60|120|240} | {"type": "close"},
+  "stop_bp": null | 10 | 25 | 50 | 100 | 200,
+  "target_r": null | 1.5 | 2 | 3 | 4     # optional take-profit at target_r x the stop distance; needs stop_bp
 }
 Thresholds are percentiles q (1-99) of the feature at that decision time over the SEARCH window only.
 One trade at most per day. Costs: 1 bp per side (intraday.COST).
@@ -26,8 +27,9 @@ from iagent.features import DECISIONS, FEATURES
 MARKETS = ["SPY", "QQQ"]
 OPS = ("<", ">")
 SIDES = ("long", "short")
-HOLDS = (15, 30, 60, 120)
-STOPS = (None, 25, 50, 100)
+HOLDS = (5, 15, 30, 60, 120, 240)
+STOPS = (None, 10, 25, 50, 100, 200)
+TARGETS = (None, 1.5, 2, 3, 4)
 
 
 class SpecError(ValueError):
@@ -48,7 +50,7 @@ def _cond_ok(c):
 def validate(s: dict) -> dict:
     if not isinstance(s, dict):
         raise SpecError("spec must be an object")
-    extra = set(s) - {"market", "time", "side", "entry", "exit", "stop_bp"}
+    extra = set(s) - {"market", "time", "side", "entry", "exit", "stop_bp", "target_r"}
     if extra:
         raise SpecError(f"unknown keys {sorted(extra)}")
     if s.get("market") not in MARKETS:
@@ -71,6 +73,10 @@ def validate(s: dict) -> dict:
         raise SpecError("close exit takes no parameters")
     if s.get("stop_bp") not in STOPS:
         raise SpecError(f"stop_bp must be one of {STOPS}")
+    if s.get("target_r") not in TARGETS:
+        raise SpecError(f"target_r must be one of {TARGETS}")
+    if s.get("target_r") is not None and not s.get("stop_bp"):
+        raise SpecError("target_r needs a stop_bp (the target is a multiple of the stop distance)")
     return s
 
 
@@ -85,6 +91,10 @@ def canonical(s: dict) -> dict:
             best[k] = c
     s["entry"] = sorted(best.values(), key=lambda c: (c["feature"], c["op"], c["q"]))
     s.setdefault("stop_bp", None)
+    if s.get("target_r") is None:
+        s.pop("target_r", None)   # absent == None, so specs from before targets existed keep their hash
+    elif float(s["target_r"]).is_integer():
+        s["target_r"] = int(s["target_r"])
     return s
 
 
@@ -101,7 +111,8 @@ def describe(s: dict) -> str:
     ex = s["exit"]
     txt = f"{s['market']} at {clock(s['time'])}: {s['side']} when " + " and ".join(cd(c) for c in s["entry"])
     txt += f"; hold {ex['n']} min" if ex["type"] == "hold" else "; hold to the close"
-    return txt + (f"; stop {s['stop_bp']} bp" if s.get("stop_bp") else "")
+    txt += f"; stop {s['stop_bp']} bp" if s.get("stop_bp") else ""
+    return txt + (f", target {s['target_r']:g}R" if s.get("target_r") else "")
 
 
 def features_used(s: dict) -> list[str]:
@@ -139,7 +150,8 @@ def trades(s: dict, D, cube: np.ndarray, th: dict, sl: slice | None = None) -> d
     """Trades dict (day, entry_m, exit_m, dir, ret) for the whole history, or only days in `sl`.
     Entry at P[d, m]; hold exits at P[d, min(m+n, last+1)], close exits at P[d, last+1]. A stop exits
     at its level when the bar's L (long) / H (short) crosses it, or at the bar's open if it opens
-    through it (never on the entry bar's open). Net of 2*COST."""
+    through it (never on the entry bar's open). target_r adds a take-profit at target_r x the stop distance with
+    the same fill rules; a bar that touches both takes the stop. Net of 2*COST."""
     m, dr = s["time"], 1.0 if s["side"] == "long" else -1.0
     off = sl.start if sl is not None and sl.start else 0
     d = np.flatnonzero(entry_mask(s, cube, th, sl)) + off
@@ -153,17 +165,26 @@ def trades(s: dict, D, cube: np.ndarray, th: dict, sl: slice | None = None) -> d
     exit_m = j.copy()
     if s.get("stop_bp"):
         stop = p_in * (1 - dr * s["stop_bp"] / 1e4)
+        tg = s.get("target_r")
+        tgt = p_in * (1 + dr * tg * s["stop_bp"] / 1e4) if tg else None
         k = m + np.arange(int((j - m).max()))[None, :]          # bars m .. j-1 held through
         kk = np.minimum(k, 389)
         valid = k < j[:, None]
-        op, ex_px = D.O[d[:, None], kk], (D.L if dr > 0 else D.H)[d[:, None], kk]
-        s_ = stop[:, None]
+        d2, s_ = d[:, None], stop[:, None]
+        op, bad, good = D.O[d2, kk], (D.L if dr > 0 else D.H)[d2, kk], (D.H if dr > 0 else D.L)[d2, kk]
         thru = (k > m) & ((op <= s_) if dr > 0 else (op >= s_))
-        cross = (ex_px <= s_) if dr > 0 else (ex_px >= s_)
-        hit = valid & (thru | cross)
+        cross = (bad <= s_) if dr > 0 else (bad >= s_)
+        if tgt is not None:
+            t_ = tgt[:, None]
+            thru_t = (k > m) & ((op >= t_) if dr > 0 else (op <= t_))
+            cross_t = (good >= t_) if dr > 0 else (good <= t_)
+        else:
+            thru_t = cross_t = np.zeros_like(thru)
+        hit = valid & (thru | cross | thru_t | cross_t)
         has, f = hit.any(axis=1), hit.argmax(axis=1)
         r = np.arange(len(d))
-        px = np.where(thru[r, f], op[r, f], stop)
+        at_open = thru[r, f] | thru_t[r, f]
+        px = np.where(at_open, op[r, f], np.where(cross[r, f], stop, tgt if tgt is not None else stop))
         p_out = np.where(has, px, p_out)
         exit_m = np.where(has, np.maximum(m + f, m + 1), j)
     return {"day": d, "entry_m": np.full(len(d), m), "exit_m": exit_m, "dir": np.full(len(d), dr),
@@ -180,16 +201,24 @@ def _rand_exit(rng):
     return {"type": "hold", "n": rng.choice(HOLDS)} if rng.random() < 0.7 else {"type": "close"}
 
 
+def _rand_target(rng, s):
+    """Give a spec with a stop a 40% chance of a take-profit; without a stop it has none."""
+    s.pop("target_r", None)
+    if s.get("stop_bp") and rng.random() < 0.4:
+        s["target_r"] = rng.choice([t for t in TARGETS if t])
+
+
 def random_spec(rng: random.Random, weights=None, market=None) -> dict:
     s = {"market": market or rng.choice(MARKETS), "time": rng.choice(DECISIONS), "side": rng.choice(SIDES),
          "entry": [random_cond(rng, weights) for _ in range(rng.choice([1, 1, 2, 2, 3]))],
          "exit": _rand_exit(rng), "stop_bp": rng.choice(STOPS)}
+    _rand_target(rng, s)
     return validate(s)
 
 
 def mutate(s: dict, rng: random.Random, weights=None) -> dict:
     s = copy.deepcopy(s)
-    move = rng.choice(["q", "q", "feature", "op", "add", "drop", "time", "side", "exit", "stop"])
+    move = rng.choice(["q", "q", "feature", "op", "add", "drop", "time", "side", "exit", "stop", "target"])
     conds = s["entry"]
     if move == "q":
         c = rng.choice(conds)
@@ -209,6 +238,12 @@ def mutate(s: dict, rng: random.Random, weights=None) -> dict:
         s["side"] = "short" if s["side"] == "long" else "long"
     elif move == "stop":
         s["stop_bp"] = rng.choice(STOPS)
+        if not s["stop_bp"]:
+            s.pop("target_r", None)
+    elif move == "target" and s.get("stop_bp"):
+        s["target_r"] = rng.choice(TARGETS)
+        if s["target_r"] is None:
+            del s["target_r"]
     else:
         s["exit"] = _rand_exit(rng)
     return validate(s)
@@ -219,7 +254,10 @@ def crossover(a: dict, b: dict, rng: random.Random) -> dict:
         return copy.deepcopy(a)
     pool = a["entry"] + b["entry"]
     pick = lambda k: copy.deepcopy(rng.choice([a, b])[k])
+    risk = rng.choice([a, b])   # stop and target come from the same parent
     s = {"market": a["market"], "time": pick("time"), "side": pick("side"),
          "entry": copy.deepcopy(rng.sample(pool, min(len(pool), rng.choice([1, 2, 3])))),
-         "exit": pick("exit"), "stop_bp": rng.choice([a, b]).get("stop_bp")}
+         "exit": pick("exit"), "stop_bp": risk.get("stop_bp")}
+    if risk.get("target_r"):
+        s["target_r"] = risk["target_r"]
     return validate(s)
