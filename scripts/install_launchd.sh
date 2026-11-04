@@ -8,7 +8,7 @@ ROOT="${0:A:h:h}"
 AGENTS="$HOME/Library/LaunchAgents"
 
 if [[ "${1:-}" == "--remove" ]]; then
-  for job in daily noise; do
+  for job in daily noise breakeven; do
     launchctl bootout "gui/$UID/com.backtestlab.$job" 2>/dev/null || true
     rm -f "$AGENTS/com.backtestlab.$job.plist"
   done
@@ -28,8 +28,16 @@ times_for() {  # $1 = job; prints <dict> entries for weekdays 1-5
   done
 }
 
-for job in daily noise; do
+for job in daily noise breakeven; do
   plist="$AGENTS/com.backtestlab.$job.plist"
+  if [[ $job == breakeven ]]; then  # every 5 minutes; it does nothing once its watch list is empty
+    when="<key>StartInterval</key><integer>300</integer>"
+  else
+    when="<key>StartCalendarInterval</key>
+  <array>
+$(times_for $job)
+  </array>"
+  fi
   cat >"$plist" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -38,10 +46,7 @@ for job in daily noise; do
   <key>Label</key><string>com.backtestlab.$job</string>
   <key>ProgramArguments</key>
   <array><string>/bin/zsh</string><string>$ROOT/scripts/local_run.sh</string><string>$job</string></array>
-  <key>StartCalendarInterval</key>
-  <array>
-$(times_for $job)
-  </array>
+  $when
 </dict>
 </plist>
 EOF

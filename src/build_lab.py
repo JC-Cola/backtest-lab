@@ -144,20 +144,66 @@ INTRA = {
         ["The paper found it unprofitable after trading costs.", "It was a cross-section of stocks; one index fund is a weaker test.", "Trades up to 13 times a day."],
         {"lookback": ("Average over", "Longer is steadier but slower to adapt.", {10: "last 10 days", 20: "last 20 days", 40: "last 40 days"}),
          "mode": ("Direction", "Long-only never goes short.", {"ls": "long and short", "long": "long only"})}),
+    # study 3 (INTRADAY_PLAN_3.md)
+    "id_vol_breakout": ("ID-WILL", "Sets bands at today's open plus and minus part of yesterday's high-low range, and trades the first break of either band until the close.",
+        ["range  = yesterday's high - yesterday's low", "bands  = today's open +/- k x range", "ENTRY  first close beyond a band, in that direction", "EXIT   at the close"],
+        "Larry Williams (1999): a move bigger than a slice of yesterday's range shows today's real direction.",
+        ["Built for 1980s-90s futures; markets have changed since.", "Late breaks leave little time to profit.", "One trade a day, so a small edge is eaten by costs."],
+        {"k": ("Band width", "Wider bands trade less often, on bigger moves.", {0.25: "0.25 x yesterday's range", 0.5: "0.5 x", 0.75: "0.75 x"}),
+         "mode": ("Direction", "Long-only never goes short.", {"ls": "long and short", "long": "long only"})}),
+    "id_prev_day_breakout": ("ID-PDB", "Buys when the price breaks above yesterday's high, sells short when it breaks below yesterday's low, and holds to the close.",
+        ["levels = yesterday's high and low", "ENTRY  first close beyond a level", "STOP   optional: back through the level", "EXIT   at the close"],
+        "Yesterday's high and low are levels many traders watch, so breaking them can bring in more buyers or sellers.",
+        ["Many breaks fail and snap back.", "Gap days trigger at the open, often at the worst price.", "Practitioner lore, no peer-reviewed evidence."],
+        {"start": ("Start checking at", "Waiting skips the noisy first half hour.", {0: "09:30", 30: "10:00"}),
+         "stop": ("Stop", "A stop cuts failed breaks short.", {"none": "none, hold to the close", "level": "back through the broken level"})}),
+    "id_vwap_reversion": ("ID-VREV", "When the price is stretched far from the day's VWAP, bets it comes back to it.",
+        ["dev    = price / vwap - 1, checked 10:00-15:30", "ENTRY  against the move if |dev| > threshold", "EXIT   when the price crosses VWAP, or at the close"],
+        "The mirror image of VWAP Trend: big intraday stretches are often liquidity shocks that fade.",
+        ["Trend days run away from VWAP and never come back.", "Practitioner idea, not a published result.", "The opposite rule (VWAP Trend) is also on this page; both cannot be right."],
+        {"thr": ("Minimum stretch", "Bigger stretches are rarer but more extreme.", {0.003: "0.3% from VWAP", 0.005: "0.5%", 0.008: "0.8%"}),
+         "exit_": ("Take profit", "'At VWAP' banks the win early.", {"vwap": "when it reaches VWAP", "close": "hold to the close"})}),
+    "id_bollinger_5m": ("ID-BB", "On 5-minute bars, buys closes below the lower Bollinger Band and sells closes above the upper one, until the price is back at the average.",
+        ["mid    = average of the last n 5-minute closes", "bands  = mid +/- k standard deviations", "ENTRY  fade a close outside a band", "EXIT   close crosses mid, or at the close"],
+        "Bollinger (2001): prices outside the bands are statistically stretched and tend to revert.",
+        ["Bollinger himself warned bands are not buy and sell signals on their own.", "Strong trends ride the band for hours.", "Many small trades, so costs matter."],
+        {"n": ("Average over", "More bars make steadier bands.", {20: "20 bars (100 minutes)", 40: "40 bars (200 minutes)"}),
+         "k": ("Band width", "Wider bands trade only bigger stretches.", {2.0: "2 standard deviations", 2.5: "2.5 standard deviations"})}),
+    "id_donchian": ("ID-DON", "Goes long when the price beats the high of the last 30 to 120 minutes and short when it breaks the low, always in the market after the first break.",
+        ["hh, ll = high and low of the previous N minutes", "LONG   close > hh;  SHORT  close < ll", "EXIT   the opposite break, or at the close"],
+        "The Turtle traders' channel breakout, moved from daily to minute bars: ride whichever way the price escapes.",
+        ["Built for long trends on daily bars; intraday trends are short.", "Choppy days whipsaw it back and forth.", "Always exposed after the first break."],
+        {"N": ("Channel length", "Longer channels break less often.", {30: "30 minutes", 60: "60 minutes", 120: "120 minutes"})}),
+    "id_late_momentum": ("ID-LATE", "If the market is up on the day by 15:00 or 15:30 it buys into the close; if down, it sells short.",
+        ["r     = price(15:00 or 15:30) / reference - 1", "REF   yesterday's close or today's open", "ENTRY  long if r > 0, short if r < 0", "EXIT   at the close"],
+        "Baltussen, Da, Lammers & Martens (2021): option dealers' hedging pushes late-day prices in the day's direction.",
+        ["The hedging flow depends on dealer positioning, which changes.", "One short trade a day, so costs are a big share.", "Overlaps with Market Intraday Momentum."],
+        {"ref": ("Measure from", "Yesterday's close includes the overnight gap.", {"close": "yesterday's close", "open": "today's open"}),
+         "sig_end": ("Signal until", "Later reads more of the day but leaves less to trade.", {330: "15:00 (hold 60 minutes)", 360: "15:30 (hold 30 minutes)"})}),
+    "id_fomc_drift": ("ID-FOMC", "On the eight Fed announcement days a year, buys in the morning and sells at 14:00, just before the statement.",
+        ["DAYS   FOMC announcement days only", "ENTRY  09:30 or 10:00, long", "EXIT   14:00"],
+        "Lucca & Moench (2015): stocks rose before Fed announcements from 1994 to 2011, a large share of the equity premium.",
+        ["Only about 8 trades a year, so results are very noisy.", "Later studies found the drift faded after it was published.", "The coin-flip test here only checks the timing within those days."],
+        {"entry": ("Buy at", "Later skips the opening noise.", {0: "09:30", 30: "10:00"})}),
 }
 
 
 def build_intraday(book, markets):
-    """Add the intraday study's strategies (results/intraday.json) to the book, with every grid setting
-    recomputed so the page's sliders work, plus each strategy's FTMO 2-Step challenge table."""
-    path = ROOT / "results" / "intraday.json"
-    if not path.exists():
-        return
+    """Add the intraday studies' strategies (results/intraday.json and intraday3.json) to the book, with every
+    grid setting recomputed so the page's sliders work, plus each strategy's FTMO 2-Step challenge table."""
     import intraday as I
-    res = json.loads(path.read_text())
-    by_id = {s["id"]: s for s in I.STRATEGIES}
-    pool = sum(1 for r in res["results"] if r.get("coin_flip"))
+    import intraday3
+    by_id = {s["id"]: s for s in I.STRATEGIES + intraday3.STRATEGIES}
     days = {}
+    for fname in ("intraday.json", "intraday3.json"):
+        path = ROOT / "results" / fname
+        if path.exists():
+            _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)
+
+
+def _add_intraday(book, markets, res, by_id, days):
+    import intraday as I
+    pool = sum(1 for r in res["results"] if r.get("coin_flip"))
     for row in res["results"]:
         sym, st = row["asset"], by_id[row["strategy"]]
         if sym not in days:

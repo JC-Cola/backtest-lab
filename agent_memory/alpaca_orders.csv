@@ -2,3 +2,4 @@ sent_at_utc,symbol,side,qty,tif,target_usd,order_id,status
 2026-11-03T15:32:00+00:00,BTC/USD,buy,0.215619,gtc,16666.67,938337c7-05bc-4a38-9e73-0cb9febb1432,OrderStatus.PENDING_NEW
 2026-11-03T15:32:00+00:00,QQQ,buy,48.0,day (late: after the open),33333.33,fc35338c-6d22-414f-9349-e0819d7773aa,OrderStatus.PENDING_NEW
 2026-11-03T15:32:00+00:00,SPY,buy,44.0,day (late: after the open),33333.33,47d9cd68-e86b-4a0a-b43e-6bdbbb830378,OrderStatus.PENDING_NEW
+2026-11-04T01:59:18+00:00,SPY,sell,1.0,opg,33048.26,ce3fbe02-5da3-4381-9582-2a47f1233385,OrderStatus.ACCEPTED
