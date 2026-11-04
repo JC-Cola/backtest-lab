@@ -40,7 +40,7 @@ jobs:
       - run: pip install -r requirements.txt
       - id: today
         run: echo "d=$(date -u +%F)" >> "$GITHUB_OUTPUT"
-      - name: Restore data (read-only: only the nightly job saves the big cache)
+      - name: "Restore data (read-only, only the nightly job saves the big cache)"
         uses: actions/cache/restore@v4
         with:
           path: data
