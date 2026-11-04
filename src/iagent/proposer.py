@@ -1,7 +1,7 @@
 """Intraday proposers: the free evolution proposer and the Claude one (via the local Claude Code CLI)."""
 from __future__ import annotations
 
-from agent.proposer import ClaudeProposer, EvolutionProposer
+from agent.proposer import ClaudeProposer, EvolutionProposer, WebResearchProposer
 from iagent import spec as S
 from iagent.features import DECISIONS
 
@@ -51,3 +51,7 @@ What the lab has learned so far:
 Most recent trials:
 {rec}
 """
+
+
+class IWebResearchProposer(WebResearchProposer, IClaudeProposer):
+    FOCUS = "minute-bar intraday rules on SPY and QQQ (at most one trade a day, decided at a fixed time after the open)"

@@ -236,15 +236,14 @@ def test_intraday_workflow():
 def test_nightly_workflow():
     text, d = load_wf("nightly.yml")
     assert '"45 21 * * 1-5"' in text and "workflow_dispatch" in text and "group: backtest-lab-trading" in text
-    for name in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", "CLAUDE_CODE_OAUTH_TOKEN"):
+    for name in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"):
         assert f"secrets.{name}" in text
-    for s in ("python intraday_data.py SPY QQQ", "python daily.py --rounds", "python report.py", "npm install -g @anthropic-ai/claude-code",
+    for s in ("python intraday_data.py SPY QQQ", "python daily.py", "python report.py",
               "gh issue create", "daily-report", "issues: write", "contents: write", "restore-keys", "actions/cache@v4"):
         assert s in text
     assert text.index("daily.py") < text.index("report.py") < text.index("gh issue create")
     if d:
-        ins = d[True]["workflow_dispatch"]["inputs"]
-        assert ins["rounds"]["default"] == "15" and ins["claude_rounds"]["default"] == "2"
+        assert "rounds" not in d[True]["workflow_dispatch"]["inputs"]
 
 
 def test_requirements_cover_imports():

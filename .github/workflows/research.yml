@@ -1,0 +1,75 @@
+name: research
+# Research that never stops: every 30 minutes the self-learning agents (intraday + long-term) test new ideas from the
+# evolution proposer, from Claude (lessons files, every 2 h) and from Claude's web research (every 6 h). What is being
+# tested right now streams to the Supabase live table (live page). Never trades; separate concurrency group from trading.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: "Time budget in minutes"
+        default: "20"
+
+concurrency:
+  group: backtest-lab-research
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  MINUTES: ${{ inputs.minutes || '20' }}
+  ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+  ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+  CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+  BACKTEST_LIVE_URL: ${{ secrets.BACKTEST_LIVE_URL }}
+  BACKTEST_LIVE_KEY: ${{ secrets.BACKTEST_LIVE_KEY }}
+  BACKTEST_LIVE_TOKEN: ${{ secrets.BACKTEST_LIVE_TOKEN }}
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - id: today
+        run: echo "d=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      - name: Restore data (read-only: only the nightly job saves the big cache)
+        uses: actions/cache/restore@v4
+        with:
+          path: data
+          key: data-${{ steps.today.outputs.d }}
+          restore-keys: |
+            data-
+      - name: Drop restored Yahoo daily files (stale by a few minutes; they re-download in seconds)
+        run: find data -maxdepth 1 -name '*.csv' ! -name fomc_dates.csv -delete
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Minute data (only when the cache had none)
+        run: |
+          if [ ! -f data/intraday/SPY.pkl ]; then cd src && python intraday_data.py SPY QQQ; fi
+      - name: Research
+        run: cd src && python research.py --minutes "$MINUTES"
+      - name: Commit the agents' memory
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in agent_memory/journal.jsonl agent_memory/lessons.md agent_memory/intraday agent_memory/candidates.json; do
+            [ -e "$f" ] && git add -- "$f"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Research run $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do
+            git pull --rebase --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1

@@ -3,8 +3,8 @@ name: intraday
 # which covers 10:01-15:31 New York in both EST and EDT. live_noise.py --once ignores runs outside the session,
 # acts once per check point, and is safe to run late or twice.
 on:
-  # schedule: switched off until the Mac jobs are removed (never run both)
-  #   - cron: "1,31 13-20 * * 1-5"
+  schedule:
+    - cron: "1,31 13-20 * * 1-5"
   workflow_dispatch:
 
 concurrency:

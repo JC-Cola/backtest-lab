@@ -1,7 +1,8 @@
 """Ask Claude through the local Claude Code CLI in headless mode (uses the user's subscription login, no API key).
 
-The call runs in an empty temp directory with every tool disabled, so no project settings, CLAUDE.md or hooks
-load and Claude can only answer. `ask` returns the structured output or None (with a one-line reason)."""
+The call runs in an empty temp directory with every tool disabled (except WebSearch/WebFetch when allow_web), so no
+project settings, CLAUDE.md or hooks load and Claude can only answer. `ask` returns the structured output or None
+(with a one-line reason)."""
 from __future__ import annotations
 
 import json
@@ -11,6 +12,8 @@ import subprocess
 import tempfile
 
 NO_TOOLS = "Bash Edit Write Read Glob Grep WebFetch WebSearch Agent NotebookEdit"
+WEB_TOOLS = ("WebSearch", "WebFetch")
+WEB_TIMEOUT = 900
 _spent = 0.0
 
 
@@ -25,14 +28,19 @@ def binary() -> str | None:
     return b if os.path.isfile(b) and os.access(b, os.X_OK) else None
 
 
-def ask(prompt: str, schema: dict, timeout: int = 600) -> dict | None:
+def ask(prompt: str, schema: dict, timeout: int | None = None, allow_web: bool = False) -> dict | None:
+    """allow_web: keep WebSearch and WebFetch available (every other tool stays disabled); longer default timeout."""
     global _spent
+    timeout = timeout or (WEB_TIMEOUT if allow_web else 600)
     exe = binary()
     if exe is None:
         print("claude_cli: claude binary not found")
         return None
     cmd = [exe, "-p", prompt, "--output-format", "json", "--no-session-persistence",
-           "--json-schema", json.dumps(schema), "--disallowedTools", NO_TOOLS]
+           "--json-schema", json.dumps(schema),
+           "--disallowedTools", " ".join(t for t in NO_TOOLS.split() if not (allow_web and t in WEB_TOOLS))]
+    if allow_web:
+        cmd += ["--allowedTools", " ".join(WEB_TOOLS)]
     try:
         with tempfile.TemporaryDirectory() as cwd:
             p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)

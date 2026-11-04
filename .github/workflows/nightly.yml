@@ -1,17 +1,11 @@
 name: nightly
 # After the US close, weekdays 21:45 UTC (16:45 EST / 17:45 EDT): paper decisions, long-term account orders,
-# self-improving agents (with the Claude CLI), Strategy Lab page, then the daily report as a commit and an issue.
+# Strategy Lab page, then the daily report as a commit and an issue. The self-improving agents run in research.yml.
 on:
-  # schedule: switched off until the Mac jobs are removed (never run both)
-  #   - cron: "45 21 * * 1-5"
+  schedule:
+    - cron: "45 21 * * 1-5"
   workflow_dispatch:
     inputs:
-      rounds:
-        description: "Agent rounds per session"
-        default: "15"
-      claude_rounds:
-        description: "Rounds where Claude proposes the ideas"
-        default: "2"
       no_orders:
         description: "Test run: do not place long-term account orders"
         type: boolean
@@ -26,13 +20,10 @@ permissions:
   issues: write
 
 env:
-  ROUNDS: ${{ inputs.rounds || '15' }}
-  CLAUDE_ROUNDS: ${{ inputs.claude_rounds || '2' }}
   ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
   ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
   ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
   ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
-  CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
 jobs:
   nightly:
@@ -55,14 +46,10 @@ jobs:
             data-
       - name: Drop restored Yahoo daily files (stale by a few minutes; they re-download in seconds)
         run: find data -maxdepth 1 -name '*.csv' ! -name fomc_dates.csv -delete
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - run: npm install -g @anthropic-ai/claude-code
-      - name: Refresh minute data
+      - name: Refresh minute data (the data/ cache saved by this job is what research.yml restores)
         run: cd src && python intraday_data.py SPY QQQ
       - name: Nightly run
-        run: cd src && python daily.py --rounds "$ROUNDS" --claude-rounds "$CLAUDE_ROUNDS" ${{ inputs.no_orders && '--no-orders' || '' }}
+        run: cd src && python daily.py ${{ inputs.no_orders && '--no-orders' || '' }}
       - name: Daily report
         if: always()
         run: cd src && python report.py
@@ -71,7 +58,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in agent_memory report/lab.html report/pipeline.html reports; do
+          for f in agent_memory report/lab.html reports; do
             [ -e "$f" ] && git add -- "$f"
           done
           git diff --cached --quiet && exit 0
