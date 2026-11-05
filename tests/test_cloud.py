@@ -75,6 +75,11 @@ class FakeTrading:
     def get_account(self):
         return self._A()
 
+    def get_order_by_id(self, oid):  # entry orders fill at once in the fake
+        class _O:
+            status = "OrderStatus.FILLED"
+        return _O()
+
 
 @pytest.fixture
 def fake(tmp_path, monkeypatch):

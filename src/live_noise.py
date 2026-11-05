@@ -155,6 +155,16 @@ def submit(trading, qty, tif, sym):
     return str(o.id)
 
 
+def wait_filled(trading, oid, timeout=60):
+    """Wait until an order is no longer open (filled, cancelled or rejected); market orders fill in seconds."""
+    end = time.time() + timeout
+    while time.time() < end:
+        if str(trading.get_order_by_id(oid).status).split(".")[-1].lower() in ("filled", "canceled", "rejected", "expired"):
+            return
+        time.sleep(1)
+    raise RuntimeError(f"order {oid} still open after {timeout}s")
+
+
 def act_check(trading, data_client, now, fraction, sym, point=None, last=False):
     today = now.date()
     sigma, prev_close, last_day = history_bands(data_client, today, sym)
@@ -184,6 +194,8 @@ def act_check(trading, data_client, now, fraction, sym, point=None, last=False):
     st["done"] = sorted(set(st["done"]) | {point or f"{now:%H:%M}"})
     save_state(sym, st)  # saved before the close order so a repeat run never acts on this point twice
     if last and target:  # last check: send the market-on-close order now, no separate run needed
+        if oid:  # Alpaca rejects an opposite-side order while the entry is still open ("potential wash trade")
+            wait_filled(trading, oid)
         oid = submit(trading, -target, "cls", sym)
         log({"time_ny": stamp, "symbol": sym, "event": "flatten at close", "qty_before": target, "qty_after": 0,
              "order_id": oid, "note": "market-on-close order, sent with the last check"})
@@ -254,15 +266,22 @@ def main():
     if a.once:
         states = {sym: load_state(now.date(), sym) for sym in SYMBOLS}
         held = held_qty(trading)
+        failed = []
         for act in plan_once(now, pts, states, held):
             sym = act["sym"]
-            if act["kind"] == "safety":
-                act_safety(trading, now, sym, held[sym])
-            elif act["kind"] == "check":
-                act_check(trading, data_client, now, a.fraction, sym, act["point"], act["last"])
-            else:
-                act_flatten(trading, now, sym, act["kind"])
+            try:  # one symbol failing must not stop the other one
+                if act["kind"] == "safety":
+                    act_safety(trading, now, sym, held[sym])
+                elif act["kind"] == "check":
+                    act_check(trading, data_client, now, a.fraction, sym, act["point"], act["last"])
+                else:
+                    act_flatten(trading, now, sym, act["kind"])
+            except Exception as e:
+                print(f"{sym} {act['kind']} failed: {e}", flush=True)
+                failed.append(sym)
         snapshot(trading)
+        if failed:
+            raise SystemExit(f"failed: {', '.join(failed)}")
         return
     stop = None
     if a.until:

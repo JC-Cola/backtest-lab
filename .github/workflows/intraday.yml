@@ -30,6 +30,7 @@ jobs:
           ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
         run: cd src && python live_noise.py --once
       - name: Commit log and state
+        if: always()  # a failed run must still save what it already did
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
