@@ -1,0 +1,36 @@
+name: morning
+# Telegram briefing before the US open. Cron runs at 13:15 and 14:15 UTC = 09:15 New York in EDT and in EST; the script
+# only sends between 09:00 and 09:40 New York on a trading day, so exactly one of the two sends. Manual runs always send.
+on:
+  schedule:
+    - cron: "15 13,14 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: backtest-lab-briefing
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+  ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  morning:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Morning briefing
+        run: cd src && python briefing.py morning ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}

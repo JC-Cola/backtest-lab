@@ -58,7 +58,7 @@ def table(head, rows):
 
 
 def norm(sym):
-    return (sym or "").replace("/", "")
+    return (sym or "").replace("/", "").replace("-", "")  # BTC/USD (Alpaca) == BTC-USD (paper log)
 
 
 # ---------- input shaping ----------
@@ -100,7 +100,8 @@ def fetch_account(key, secret, day):
     c = TradingClient(key, secret, paper=True)
     a = c.get_account()
     pos = [{"symbol": p.symbol, "qty": float(p.qty), "avg_price": float(p.avg_entry_price), "price": float(p.current_price),
-            "pl": float(p.unrealized_pl)} for p in c.get_all_positions()]
+            "pl": float(p.unrealized_pl),
+            "day_pl": float(p.unrealized_intraday_pl) if p.unrealized_intraday_pl is not None else None} for p in c.get_all_positions()]
     start = datetime.combine(day - timedelta(days=4), time.min, NY)
     orders = []
     for o in c.get_orders(GetOrdersRequest(status=QueryOrderStatus.ALL, after=start, limit=500)):
