@@ -1,11 +1,86 @@
 {
- "generated": "2026-11-04T21:21:19+00:00",
+ "generated": "2026-11-05T20:11:08+00:00",
  "start_equity": 25000.0,
- "equity": 24924.48,
- "cash": 24924.48,
- "last_equity": 25000.0,
- "positions": [],
+ "equity": 24974.18,
+ "cash": 49108.96,
+ "last_equity": 24923.97,
+ "positions": [
+  {
+   "symbol": "QQQ",
+   "qty": -19.0,
+   "avg_price": 651.163158,
+   "price": 651.1777,
+   "value": -12372.3763,
+   "pl": -0.276298,
+   "pl_pct": -2e-05
+  },
+  {
+   "symbol": "SPY",
+   "qty": -16.0,
+   "avg_price": 737.249375,
+   "price": 735.04,
+   "value": -11760.64,
+   "pl": 35.35,
+   "pl_pct": 0.003
+  }
+ ],
  "orders": [
+  {
+   "date": "2026-11-05T20:11+00:00",
+   "symbol": "QQQ",
+   "side": "buy",
+   "qty": 19.0,
+   "status": "new",
+   "price": null
+  },
+  {
+   "date": "2026-11-05T20:11+00:00",
+   "symbol": "QQQ",
+   "side": "sell",
+   "qty": 19.0,
+   "status": "filled",
+   "price": 651.163158
+  },
+  {
+   "date": "2026-11-05T20:09+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 16.0,
+   "status": "new",
+   "price": null
+  },
+  {
+   "date": "2026-11-05T20:07+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 737.249375
+  },
+  {
+   "date": "2026-11-05T20:05+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 737.46375
+  },
+  {
+   "date": "2026-11-05T20:03+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 16.0,
+   "status": "canceled",
+   "price": null
+  },
+  {
+   "date": "2026-11-05T20:01+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 738.52
+  },
   {
    "date": "2026-11-04T20:56+00:00",
    "symbol": "SPY",
