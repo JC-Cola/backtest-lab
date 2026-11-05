@@ -135,7 +135,8 @@ def test_research_main_with_fake_loops(tmp_path, monkeypatch):
 
 def test_workflow_and_page():
     text = (REPO / ".github/workflows/research.yml").read_text()
-    for s in ('cron: "*/30 * * * *"', "workflow_dispatch", "group: backtest-lab-research", "cancel-in-progress: false",
+    assert "schedule:" not in text
+    for s in ("workflow_dispatch", "group: backtest-lab-research", "cancel-in-progress: false",
               "timeout-minutes: 40", "actions/cache/restore@v4", "restore-keys", "claude-code", "python research.py --minutes"):
         assert s in text
     assert "backtest-lab-trading" not in text

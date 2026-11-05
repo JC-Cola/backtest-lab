@@ -223,7 +223,7 @@ def test_evening_verdict_in_text_and_trade_overflow():
 def test_workflows_wiring():
     wf = bf.ROOT / ".github" / "workflows"
     m = (wf / "morning.yml").read_text()
-    assert 'cron: "15 13,14 * * 1-5"' in m and "workflow_dispatch:" in m and "group: backtest-lab-briefing" in m
+    assert "schedule:" not in m and "inputs.force != 'false'" in m and "workflow_dispatch:" in m and "group: backtest-lab-briefing" in m
     for k in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY",
               "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"):
         assert f"{k}: ${{{{ secrets.{k} }}}}" in m

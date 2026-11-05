@@ -225,17 +225,17 @@ def load_wf(name):
 
 def test_intraday_workflow():
     text, d = load_wf("intraday.yml")
-    assert '"1,31 13-20 * * 1-5"' in text and "workflow_dispatch" in text
+    assert "schedule:" not in text and "workflow_dispatch" in text  # timer: Supabase pg_cron bl-intraday
     assert "group: backtest-lab-trading" in text and "cancel-in-progress: false" in text and "contents: write" in text
     assert "python live_noise.py --once" in text and "secrets.ALPACA_INTRADAY_API_KEY" in text and "secrets.ALPACA_INTRADAY_SECRET_KEY" in text
     assert "secrets.ALPACA_API_KEY" not in text
     if d:
-        assert d["concurrency"]["cancel-in-progress"] is False and d[True]["schedule"][0]["cron"] == "1,31 13-20 * * 1-5"
+        assert d["concurrency"]["cancel-in-progress"] is False and "schedule" not in d[True]
 
 
 def test_nightly_workflow():
     text, d = load_wf("nightly.yml")
-    assert '"45 21 * * 1-5"' in text and "workflow_dispatch" in text and "group: backtest-lab-trading" in text
+    assert "schedule:" not in text and "workflow_dispatch" in text and "group: backtest-lab-trading" in text
     for name in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"):
         assert f"secrets.{name}" in text
     for s in ("python intraday_data.py SPY QQQ", "python daily.py", "python report.py",
