@@ -1,39 +1,55 @@
 {
- "generated": "2026-11-05T20:17:25+00:00",
+ "generated": "2026-11-05T21:46:12+00:00",
  "start_equity": 25000.0,
- "equity": 24123.71,
- "cash": 5010.65,
+ "equity": 23984.1,
+ "cash": 4942.22,
  "last_equity": 25007.3217253309,
  "positions": [
   {
    "symbol": "BTCUSD",
-   "qty": 0.051823117,
-   "avg_price": 80155.6,
-   "price": 75988.8,
-   "value": 3937.976473,
-   "pl": -215.936564,
-   "pl_pct": -0.05198
+   "qty": 0.052722862,
+   "avg_price": 80082.3479402,
+   "price": 75814.84,
+   "value": 3997.175347,
+   "pl": -224.995232,
+   "pl_pct": -0.05329
   },
   {
    "symbol": "QQQ",
    "qty": 12.0,
    "avg_price": 682.51,
-   "price": 651.54,
-   "value": 7818.48,
-   "pl": -371.64,
-   "pl_pct": -0.04538
+   "price": 644.9,
+   "value": 7738.8,
+   "pl": -451.32,
+   "pl_pct": -0.05511
   },
   {
    "symbol": "SPY",
    "qty": 10.0,
    "avg_price": 763.491,
-   "price": 735.66,
-   "value": 7356.6,
-   "pl": -278.31,
-   "pl_pct": -0.03645
+   "price": 730.59,
+   "value": 7305.9,
+   "pl": -329.01,
+   "pl_pct": -0.04309
   }
  ],
  "orders": [
+  {
+   "date": "2026-11-05T21:46+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 1.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-05T21:46+00:00",
+   "symbol": "BTC/USD",
+   "side": "buy",
+   "qty": 0.000902,
+   "status": "filled",
+   "price": 75863.208
+  },
   {
    "date": "2026-11-05T09:00+00:00",
    "symbol": "QQQ",
@@ -65,13 +81,13 @@
     "key": "MR-IBS",
     "name": "Internal Bar Strength",
     "position": 1.0,
-    "decided": "2026-11-03"
+    "decided": "2026-11-05"
    },
    {
     "key": "TS-VOL",
     "name": "Vol-Targeted Trend",
-    "position": 1.0,
-    "decided": "2026-11-03"
+    "position": 0.7471,
+    "decided": "2026-11-05"
    }
   ],
   "QQQ": [
@@ -79,13 +95,13 @@
     "key": "MR-WR",
     "name": "Williams %R",
     "position": 1.0,
-    "decided": "2026-11-03"
+    "decided": "2026-11-05"
    },
    {
     "key": "CAL-JAN",
     "name": "January Barometer",
     "position": 1.0,
-    "decided": "2026-11-03"
+    "decided": "2026-11-05"
    }
   ],
   "GLD": [
@@ -93,7 +109,7 @@
     "key": "CAL-MIX",
     "name": "Calendar Composite",
     "position": 0.0,
-    "decided": "2026-11-03"
+    "decided": "2026-11-05"
    }
   ],
   "BTCUSD": [
@@ -101,7 +117,7 @@
     "key": "TS-TREND",
     "name": "Trend Filter (close > SMA)",
     "position": 1.0,
-    "decided": "2026-11-03"
+    "decided": "2026-11-04"
    }
   ]
  },
@@ -111,12 +127,6 @@
    "pl": 7.32,
    "pct": 0.03,
    "equity": 25007.32
-  },
-  {
-   "date": "2026-11-05",
-   "pl": -883.61,
-   "pct": -3.533,
-   "equity": 24123.71
   }
  ]
 }
