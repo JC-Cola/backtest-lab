@@ -1,10 +1,13 @@
 name: morning
 # Telegram briefing before the US open. Cron runs at 13:15 and 14:15 UTC = 09:15 New York in EDT and in EST; the script
 # only sends between 09:00 and 09:40 New York on a trading day, so exactly one of the two sends. Manual runs always send.
+# The timer lives in Supabase (pg_cron), which dispatches with force=false so the time gate applies.
 on:
-  schedule:
-    - cron: "15 13,14 * * 1-5"
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Send even outside 09:00-09:40 New York"
+        default: "true"
 
 concurrency:
   group: backtest-lab-briefing
@@ -33,4 +36,4 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Morning briefing
-        run: cd src && python briefing.py morning ${{ github.event_name == 'workflow_dispatch' && '--force' || '' }}
+        run: cd src && python briefing.py morning ${{ inputs.force != 'false' && '--force' || '' }}

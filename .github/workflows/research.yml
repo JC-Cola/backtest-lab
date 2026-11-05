@@ -2,9 +2,8 @@ name: research
 # Research that never stops: every 30 minutes the self-learning agents (intraday + long-term) test new ideas from the
 # evolution proposer, from Claude (lessons files, every 2 h) and from Claude's web research (every 6 h). What is being
 # tested right now streams to the Supabase live table (live page). Never trades; separate concurrency group from trading.
+# Timer: Supabase pg_cron (job bl-research) dispatches this workflow; GitHub's own cron dropped runs.
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   workflow_dispatch:
     inputs:
       minutes:

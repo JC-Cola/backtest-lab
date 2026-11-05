@@ -2,9 +2,8 @@ name: intraday
 # SPY/QQQ noise-band breakout on the INTRADAY Alpaca paper account. Every 30 minutes on weekdays, 13:01-20:31 UTC,
 # which covers 10:01-15:31 New York in both EST and EDT. live_noise.py --once ignores runs outside the session,
 # acts once per check point, and is safe to run late or twice.
+# Timer: Supabase pg_cron (job bl-intraday) dispatches this workflow; GitHub's own cron dropped runs.
 on:
-  schedule:
-    - cron: "1,31 13-20 * * 1-5"
   workflow_dispatch:
 
 concurrency:

@@ -1,9 +1,8 @@
 name: nightly
 # After the US close, weekdays 21:45 UTC (16:45 EST / 17:45 EDT): paper decisions, long-term account orders,
 # Strategy Lab page, then the daily report as a commit and an issue. The self-improving agents run in research.yml.
+# Timer: Supabase pg_cron (job bl-nightly) dispatches this workflow; GitHub's own cron dropped runs.
 on:
-  schedule:
-    - cron: "45 21 * * 1-5"
   workflow_dispatch:
     inputs:
       no_orders:
