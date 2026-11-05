@@ -120,7 +120,8 @@ def plan_once(now, pts, states, held):
     past = [p for p in pts if p <= now]
     out = []
     for sym, st in states.items():
-        if held.get(sym, 0) and not st.get("qty"):  # shares held but today's state expects none: left from an earlier day
+        # shares held but today's state expects none and no close order is pending: left from an earlier day
+        if held.get(sym, 0) and not st.get("qty") and not st.get("moc"):
             out.append({"sym": sym, "kind": "safety", "point": ""})
         if not past:
             continue

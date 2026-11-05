@@ -256,3 +256,9 @@ def test_requirements_cover_imports():
     for p in ("yfinance", "pandas", "numpy", "pytest", "alpaca-py"):
         assert p in req
     assert "anthropic" not in req
+
+
+def test_no_safety_flatten_while_close_order_pending():
+    now = at(15, 31)
+    acts = ln.plan_once(now, ln.schedule(now), {"SPY": {"qty": 0, "done": ["15:00"], "moc": True}}, {"SPY": -16})
+    assert acts == []
