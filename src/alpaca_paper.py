@@ -74,6 +74,50 @@ def plan(tgt: dict, held: dict, prices: dict) -> list[dict]:
     return orders
 
 
+def calendar_from_history(timestamps, equity, profit_loss, profit_loss_pct):
+    """Per-trading-day P&L from Alpaca portfolio history (1D bars). pct is in percent. Days before the
+    account started (equity 0/None) are skipped."""
+    from zoneinfo import ZoneInfo
+    ny, out = ZoneInfo("America/New_York"), []
+    for i, ts in enumerate(timestamps or []):
+        eq = equity[i] if i < len(equity or []) else None
+        if not eq or eq <= 0:
+            continue
+        pl = profit_loss[i] if i < len(profit_loss or []) else None
+        pc = profit_loss_pct[i] if i < len(profit_loss_pct or []) else None
+        if pl is None:
+            continue
+        if not out and not pl:  # the funding day before any trade: nothing to show
+            continue
+        # 1D bars are stamped at 20:00 New York on the trading day itself, so the New York date is the trading date
+        d = datetime.fromtimestamp(ts, ny).date()
+        out.append({"date": d.isoformat(), "pl": round(float(pl), 2),
+                    "pct": round(float(pc) * 100, 3) if pc is not None else 0.0, "equity": round(float(eq), 2)})
+    return out
+
+
+def account_calendar(client, account):
+    """History from Alpaca plus today's live day when the market is open. Never raises."""
+    try:
+        from alpaca.trading.requests import GetPortfolioHistoryRequest
+        h = client.get_portfolio_history(GetPortfolioHistoryRequest(period="3M", timeframe="1D"))
+        cal = calendar_from_history(h.timestamp, h.equity, h.profit_loss, h.profit_loss_pct)
+        try:
+            clock = client.get_clock()
+            if clock.is_open:
+                today = clock.timestamp.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat()
+                eq, last = float(account.equity), float(account.last_equity)
+                if last > 0:
+                    row = {"date": today, "pl": round(eq - last, 2), "pct": round((eq - last) / last * 100, 3), "equity": round(eq, 2)}
+                    cal = [c for c in cal if c["date"] != today] + [row]
+        except Exception:
+            pass
+        return cal
+    except Exception as e:
+        print(f"calendar unavailable: {e}", flush=True)
+        return None
+
+
 def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
     """Save a paper account's state for the Strategy Lab page (no trading). The intraday account passes its
     own path and `behind` (symbol -> strategies holding it)."""
@@ -96,6 +140,9 @@ def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
     snap = {"generated": datetime.now(timezone.utc).isoformat(timespec="seconds"), "start_equity": START_EQUITY,
             "equity": float(a.equity), "cash": float(a.cash), "last_equity": float(a.last_equity),
             "positions": pos, "orders": orders, "strategies_by_symbol": behind}
+    cal = account_calendar(client, a)
+    if cal is not None:
+        snap["calendar"] = cal
     path.write_text(json.dumps(snap, indent=1))
     print(f"saved account snapshot: equity ${snap['equity']:,.0f}, {len(pos)} positions")
     return snap

@@ -165,6 +165,27 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .meta { display: flex; flex-wrap: wrap; gap: 4px 16px; font: 0.72rem var(--f-mono); color: var(--faint); }
 .meta b { color: var(--muted); font-weight: 500; }
 
+.pcal { padding: 10px 12px 12px; }
+.pcal-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-bottom: 8px; }
+.pcal-nav { display: flex; align-items: center; gap: 6px; }
+.pcal-nav button { background: var(--raised); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; width: 28px; height: 28px; cursor: pointer; font: 0.9rem var(--f-mono); }
+.pcal-nav button:disabled { opacity: 0.35; cursor: default; }
+.pcal-nav b { font-weight: 600; min-width: 8.5em; text-align: center; }
+.pcal-sum { font: 0.74rem var(--f-mono); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.pcal-sum .pos { color: var(--pos); } .pcal-sum .neg { color: var(--neg); }
+.pcal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.pcal-dow { font: 0.62rem var(--f-mono); color: var(--faint); text-align: center; text-transform: uppercase; padding-bottom: 2px; }
+.pcal-c { min-width: 0; min-height: 52px; border-radius: 4px; padding: 3px 4px; border: 1px solid transparent; background: var(--raised); color: var(--muted); font: 0.62rem var(--f-mono); overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
+.pcal-c .d { opacity: 0.8; }
+.pcal-c .v { font-weight: 600; font-size: 0.72rem; white-space: nowrap; overflow: hidden; text-overflow: clip; }
+.pcal-c .p { opacity: 0.85; white-space: nowrap; overflow: hidden; }
+.pcal-c.empty { background: transparent; }
+.pcal-c.we { opacity: 0.45; }
+.pcal-c.up { background: var(--pos-soft); color: var(--pos); border-color: var(--pos); }
+.pcal-c.dn { background: var(--neg-soft); color: var(--neg); border-color: var(--neg); }
+.pcal-c.on { outline: 2px solid var(--accent); }
+.pcal-tip { font: 0.74rem var(--f-mono); color: var(--muted); min-height: 1.3em; margin-top: 6px; }
+@media (max-width: 600px) { .pcal-c { min-height: 44px; padding: 2px 3px; } .pcal-c .p { display: none; } .pcal-c .v { font-size: 0.6rem; } .pcal-grid { gap: 2px; } }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
 .panel > .ph { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline; padding: 9px 12px 0; }
 .panel > .ph .r { font: 0.7rem var(--f-mono); color: var(--muted); }
@@ -262,6 +283,11 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 <section class="acct" id="acct" hidden>
   <div class="acct-head"><h2 id="ac-title">Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
+  <div class="panel pcal" id="pcal" aria-label="P&amp;L calendar">
+    <div class="pcal-top"><div class="pcal-nav"><button id="pcal-prev" aria-label="Previous month">&lsaquo;</button><b id="pcal-month"></b><button id="pcal-next" aria-label="Next month">&rsaquo;</button></div><div class="pcal-sum" id="pcal-sum"></div></div>
+    <div class="pcal-grid" id="pcal-grid"></div>
+    <div class="pcal-tip" id="pcal-tip" aria-live="polite"></div>
+  </div>
   <div class="acct-tables">
     <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
     <div class="panel tw"><table><thead><tr><th>Recent orders</th><th class="n">Quantity</th><th class="n">Filled at</th><th>Status</th></tr></thead><tbody id="ac-ord"></tbody></table></div>
@@ -892,8 +918,45 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
+  const kfmt = v => { const a = Math.abs(v), sg = v > 0 ? "+" : v < 0 ? "−" : "";
+    return sg + "$" + (a >= 1e6 ? (a / 1e6).toFixed(1) + "m" : a >= 1e4 ? Math.round(a / 1e3) + "k" : a >= 1e3 ? (a / 1e3).toFixed(1) + "k" : Math.round(a)); };
+  let calMonth = null, calKey = null;
+  function renderCal(A) {
+    const cal = (A.calendar || []).slice().sort((a, b) => a.date < b.date ? -1 : 1), box = $("pcal-grid"), tip = $("pcal-tip");
+    tip.textContent = "";
+    if (!cal.length) { $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
+      box.replaceChildren(Object.assign(document.createElement("div"), { textContent: "No trading days yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
+    const months = [...new Set(cal.map(c => c.date.slice(0, 7)))], key = lfilter;
+    if (calKey !== key || !months.includes(calMonth)) { calKey = key; calMonth = months[months.length - 1]; }
+    const mi = months.indexOf(calMonth); $("pcal-prev").disabled = mi <= 0; $("pcal-next").disabled = mi >= months.length - 1;
+    const [y, m] = calMonth.split("-").map(Number), byDate = Object.fromEntries(cal.map(c => [c.date, c]));
+    $("pcal-month").textContent = new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
+    const mine = cal.filter(c => c.date.startsWith(calMonth)), total = mine.reduce((s, c) => s + c.pl, 0);
+    const wins = mine.filter(c => c.pl > 0).length, loss = mine.filter(c => c.pl < 0).length;
+    $("pcal-sum").innerHTML = `<span class="${cls(total)}">Month ${susd(total)}</span><span class="pos">${wins} win day${wins === 1 ? "" : "s"}</span><span class="neg">${loss} loss day${loss === 1 ? "" : "s"}</span>`;
+    const els = ["S", "M", "T", "W", "T", "F", "S"].map(d => Object.assign(document.createElement("div"), { className: "pcal-dow", textContent: d }));
+    const first = new Date(Date.UTC(y, m - 1, 1)).getUTCDay(), dim = new Date(Date.UTC(y, m, 0)).getUTCDate();
+    for (let i = 0; i < first; i++) els.push(Object.assign(document.createElement("div"), { className: "pcal-c empty" }));
+    for (let d = 1; d <= dim; d++) {
+      const ds = `${calMonth}-${String(d).padStart(2, "0")}`, c = byDate[ds], wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+      const b = document.createElement("button"); b.type = "button"; b.dataset.date = ds;
+      b.className = "pcal-c" + (wd === 0 || wd === 6 ? " we" : "") + (c ? (c.pl > 0 ? " up" : c.pl < 0 ? " dn" : "") : "");
+      const dd = Object.assign(document.createElement("span"), { className: "d", textContent: String(d) }); b.append(dd);
+      const label = c ? `${ds}: ${susd(c.pl)} (${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%), account ${usd(c.equity)}` : `${ds}: no trading data`;
+      b.title = label; b.setAttribute("aria-label", label);
+      if (c) { b.append(Object.assign(document.createElement("span"), { className: "v", textContent: kfmt(c.pl) }),
+        Object.assign(document.createElement("span"), { className: "p", textContent: (c.pct >= 0 ? "+" : "−") + Math.abs(c.pct).toFixed(2) + "%" })); }
+      const show = () => { tip.textContent = label; box.querySelectorAll(".on").forEach(x => x.classList.remove("on")); b.classList.add("on"); };
+      b.addEventListener("mouseenter", show); b.addEventListener("click", show); b.addEventListener("focus", show);
+      els.push(b);
+    }
+    box.replaceChildren(...els);
+  }
+  $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
+  $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
   function renderAcct() {
     const A = acctData(); $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
+    renderCal(A);
     $("ac-title").textContent = lfilter === "intraday" ? "Live paper trading: intraday account" : "Live paper trading: long-term account";
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
