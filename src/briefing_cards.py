@@ -1,0 +1,393 @@
+"""Picture cards (PNG, 1080x1350, phone portrait) and captions for the Telegram briefings.
+
+    render(data) -> PNG bytes       caption(data) -> 2-3 line HTML caption (<= 1024 characters)
+
+`data` is the plain dict from briefing.morning_data() / evening_data(). White background, one accent blue, green for
+gains and red for losses, big numbers, few words. Everything is drawn on one pixel-coordinate canvas (x right, y down)
+plus small matplotlib axes for the fan charts. Raises on bad data: the caller falls back to the text message.
+"""
+from __future__ import annotations
+
+import html
+import io
+import textwrap
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt   # noqa: E402
+from matplotlib.patches import FancyBboxPatch, Rectangle   # noqa: E402
+from matplotlib.ticker import FuncFormatter, MaxNLocator   # noqa: E402
+
+from report import NY   # noqa: E402
+
+W, H, DPI = 1080, 1350, 150
+BLUE, GREEN, RED, AMBER = "#2563EB", "#16A34A", "#DC2626", "#D97706"
+INK, GRAY, LINE, SOFT = "#111827", "#6B7280", "#E5E7EB", "#F3F4F6"
+LABEL = {"long-term": "Long-term", "intraday": "Intraday"}
+NAMES = ("long-term", "intraday")
+MX = 30                      # side margin (px)
+PILLS_MAX = 8                # pills / chips shown per row group before "+k more"
+GAUGE_BAR = 0.95             # score a research idea needs
+OPEN_MIN, CLOSE_MIN = 570, 960   # 09:30 and 16:00 in minutes
+
+
+# ---------- small formatting helpers ----------
+def usd(x, sign=False):
+    return f"{'+' if sign and x > 0 else ''}{'-' if x < 0 else ''}${abs(x):,.2f}"
+
+
+def pct(x, d=2):
+    return f"{x * 100:+.{d}f}%"
+
+
+def tone(x):
+    return GREEN if x >= 0 else RED
+
+
+def day_label(day):
+    return f"{day.day} {day:%b}"
+
+
+def qty(x):
+    return f"{x:,.4f}".rstrip("0").rstrip(".")
+
+
+def cut(s, n):
+    return s if len(s) <= n else s[:n - 1].rstrip() + "…"
+
+
+# ---------- canvas ----------
+class Card:
+    def __init__(self, h=H):
+        self.h = h
+        self.fig = plt.figure(figsize=(W / DPI, h / DPI), dpi=DPI, facecolor="white")
+        self.ax = self.fig.add_axes([0, 0, 1, 1])
+        self.ax.set_xlim(0, W); self.ax.set_ylim(h, 0); self.ax.axis("off")
+        self.r = self.fig.canvas.get_renderer()
+
+    def text(self, x, y, s, size=13, color=INK, weight="normal", ha="left", va="center"):
+        return self.ax.text(x, y, s, fontsize=size, color=color, fontweight=weight, ha=ha, va=va)
+
+    def width(self, s, size, weight="normal"):
+        t = self.text(0, 0, s, size, weight=weight)
+        w = t.get_window_extent(self.r).width
+        t.remove()
+        return w
+
+    def box(self, x, y, w, h, fc=SOFT, ec="none", r=14, lw=1.0):
+        self.ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle=f"round,pad=0,rounding_size={r}", fc=fc, ec=ec, lw=lw))
+
+    def title(self, y, s):
+        self.text(MX, y, s, 17, INK, "bold")
+
+    def pills(self, x, y, items, maxw=W - 2 * MX, h=42, gap=10, size=13):
+        """Flow rounded pills left to right, wrapping at maxw. items: lists of (text, color, weight) parts.
+        Returns the y below the last row."""
+        cx, cy = x, y
+        for parts in items:
+            ws = [self.width(t, size, wt) for t, _, wt in parts]
+            pw = sum(ws) + 8 * (len(parts) - 1) + 28
+            if cx > x and cx + pw > x + maxw:
+                cx, cy = x, cy + h + gap
+            self.box(cx, cy, pw, h, SOFT, r=h / 2)
+            tx = cx + 14
+            for (t, c, wt), w in zip(parts, ws):
+                self.text(tx, cy + h / 2, t, size, c, wt)
+                tx += w + 8
+            cx += pw + gap
+        return cy + h
+
+    def axes(self, x, y, w, h):
+        return self.fig.add_axes([x / W, 1 - (y + h) / self.h, w / W, h / self.h])
+
+    def png(self):
+        buf = io.BytesIO()
+        self.fig.savefig(buf, format="png", dpi=DPI, facecolor="white")
+        plt.close(self.fig)
+        return buf.getvalue()
+
+
+# ---------- shared pieces ----------
+def tiles(c, d, y, chg_label, key):
+    """Two account tiles side by side: value, change (coloured), since start."""
+    w = (W - 2 * MX - 20) / 2
+    for i, name in enumerate(NAMES):
+        a, x = d["accounts"][name], MX + i * (w + 20)
+        c.box(x, y, w, 220, "#F8FAFC", LINE)
+        c.text(x + 24, y + 36, LABEL[name], 16, BLUE, "bold")
+        if a["equity"] is None:
+            c.text(x + 24, y + 105, "no numbers", 22, GRAY)
+            continue
+        c.text(x + 24, y + 105, usd(a["equity"]), 32, INK, "bold")
+        chg = a[key]
+        if chg is None:
+            c.text(x + 24, y + 158, f"{chg_label} n/a", 15, GRAY)
+        else:
+            c.text(x + 24, y + 158, f"{usd(chg[0], True)}  {pct(chg[1])}", 16, tone(chg[0]), "bold")
+        c.text(x + 24, y + 196, f"since start {pct(a['since'])}", 12, GRAY)
+
+
+def header(c, d, word):
+    c.text(MX, 45, word, 22, INK, "bold")
+    c.text(W - MX, 45, day_label(d["day"]), 17, GRAY, ha="right")
+
+
+# ---------- evening ----------
+def fan_chart(c, x, y, w, h, a):
+    ax = c.axes(x + 78, y, w - 90, h - 44)
+    for s in ("top", "right"):
+        ax.spines[s].set_visible(False)
+    for s in ("left", "bottom"):
+        ax.spines[s].set_color(LINE)
+    ax.tick_params(colors=GRAY, labelsize=12, length=0)
+    ax.axhline(0, color=LINE, lw=1, ls=(0, (3, 3)))
+    ys = list(a["path"]) + [0.0]
+    f = a["fan"]
+    if f:
+        ax.fill_between(f["days"], f["lo"], f["hi"], color=BLUE, alpha=0.16, lw=0)
+        ax.plot(f["days"], f["med"], color=BLUE, lw=1.2)
+        ys += f["lo"] + f["hi"]
+    if a["path"]:
+        xs, vals = list(range(len(a["path"]) + 1)), [0.0] + list(a["path"])
+        ax.plot(xs, vals, color=INK, lw=3, solid_capstyle="round")
+        ax.scatter([xs[-1]], [vals[-1]], s=90, color=tone(vals[-1]), zorder=5, edgecolor="white", linewidth=1.5)
+    pad = (max(ys) - min(ys)) * 0.12 or 0.005
+    ax.set_ylim(min(ys) - pad, max(ys) + pad)
+    ax.set_xlim(0, max(f["days"][-1] if f else 0, len(a["path"]), 5))
+    ax.yaxis.set_major_locator(MaxNLocator(3))
+    ax.xaxis.set_major_locator(MaxNLocator(4, integer=True))
+    span = (ax.get_ylim()[1] - ax.get_ylim()[0]) * 100
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v * 100:+.{0 if span > 6 else 1}f}%"))
+
+
+def verdict_text(a):
+    n, v = a["days"], a["verdict"]
+    return {"early": (f"too early to tell ({n} day{'' if n == 1 else 's'})", GRAY), "in line": ("in line with the backtest", GREEN),
+            "above normal": ("above the backtest range", GREEN), "below normal": ("below the backtest range", RED)
+            }.get(v, ("backtest unavailable", GRAY))
+
+
+def evening_backtest(c, d, y):
+    c.title(y, "Matches the backtest?")
+    c.text(MX, y + 32, "shaded: backtest 5th-95th percentile · dark line: live, by trading day", 12, GRAY)
+    w = (W - 2 * MX - 20) / 2
+    for i, name in enumerate(NAMES):
+        a, x = d["accounts"][name], MX + i * (w + 20)
+        c.text(x + 4, y + 78, LABEL[name], 15, BLUE, "bold")
+        if a["equity"] is None:
+            c.text(x + 4, y + 190, "no live numbers", 14, GRAY)
+            continue
+        fan_chart(c, x, y + 105, w, 250, a)
+        s, col = verdict_text(a)
+        c.text(x + 4, y + 385, s, 14, col, "bold")
+    return y + 450
+
+
+def timeline(c, trades, trips, y):
+    """09:30-16:00 axis with a buy (blue up) / sell (dark down) marker per fill and the P/L of each closed round trip."""
+    x0, x1 = 150, W - 50
+    px = lambda t: x0 + (min(max(t.astimezone(NY).hour * 60 + t.astimezone(NY).minute, OPEN_MIN), CLOSE_MIN) - OPEN_MIN) / (CLOSE_MIN - OPEN_MIN) * (x1 - x0)
+    for hh, mm in ((9, 30), (11, 0), (13, 0), (15, 0), (16, 0)):
+        x = x0 + ((hh * 60 + mm) - OPEN_MIN) / (CLOSE_MIN - OPEN_MIN) * (x1 - x0)
+        c.text(x, y, f"{hh}:{mm:02d}", 12, GRAY, ha="center")
+    syms = sorted({t["symbol"] for t in trades}, key=lambda s: -sum(t["symbol"] == s for t in trades))[:3]
+    ry = y + 50
+    for s in syms:
+        c.ax.plot([x0, x1], [ry + 6, ry + 6], color=LINE, lw=1.5, zorder=1)
+        c.text(MX, ry + 6, s, 14, INK, "bold")
+        for t in (t for t in trades if t["symbol"] == s):
+            buy = t["side"] == "buy"
+            c.ax.scatter([px(t["t"])], [ry + 6], marker="^" if buy else "v", s=150, color=BLUE if buy else INK, zorder=3)
+        for sym, pl, t in trips:
+            if sym == s and t:
+                x = px(t)
+                c.text(min(x, x1 - 50), ry - 20, usd(pl, True), 13, tone(pl), "bold", ha="center")
+        ry += 64
+    return ry - 10
+
+
+def evening_trades(c, d, y):
+    c.title(y, "Today's trades")
+    it, lt = d["accounts"]["intraday"], d["accounts"]["long-term"]
+    if not it["trades"] and not lt["trades"]:
+        c.text(MX, y + 50, "no trades today", 16, GRAY)
+        return y + 90
+    y += 42
+    if it["trades"]:
+        c.text(MX, y, "Intraday   ▲ buy  ▼ sell", 13, GRAY)
+        y = timeline(c, it["trades"], it["trips"], y + 34) + 8
+    else:
+        c.text(MX, y, "Intraday: no trades", 14, GRAY)
+        y += 40
+    c.text(MX, y + 12, "Long-term", 13, GRAY)
+    if lt["trades"]:
+        items = [[(t["side"].upper(), BLUE if t["side"] == "buy" else INK, "bold"), (t["symbol"], INK, "bold")] for t in lt["trades"][:PILLS_MAX]]
+        if len(lt["trades"]) > PILLS_MAX:
+            items.append([(f"+{len(lt['trades']) - PILLS_MAX} more", GRAY, "normal")])
+        return c.pills(MX, y + 32, items) + 30
+    c.text(MX + 130, y + 12, "no trades", 14, GRAY)
+    return y + 50
+
+
+def evening_research(c, d, y):
+    c.title(y, "Research today")
+    r = d["research"]
+    top = max(10, r["daily"]["tested"], r["intraday"]["tested"])
+    c.text(285, y + 50, "ideas tested", 13, GRAY)
+    c.text(655, y + 50, f"best score (needs {GAUGE_BAR})", 12, GRAY)
+    ry = y + 115
+    for label, key in (("Daily agent", "daily"), ("Intraday agent", "intraday")):
+        s = r[key]
+        c.text(MX, ry, label, 14, INK, "bold")
+        c.box(285, ry - 10, 280, 20, SOFT, r=10)
+        if s["tested"]:
+            c.box(285, ry - 10, max(20, 280 * s["tested"] / top), 20, BLUE, r=10)
+            c.text(575, ry, str(s["tested"]), 16, INK, "bold")
+        else:
+            c.text(575, ry, "none", 14, GRAY)
+        gx, gw = 655, 370
+        c.box(gx, ry - 10, gw, 20, SOFT, r=10)
+        if s["best"] is not None:
+            frac = min(max(s["best"], 0) / 1.0, 1.0)
+            c.box(gx, ry - 10, max(20, gw * frac), 20, GREEN if s["best"] >= GAUGE_BAR else BLUE, r=10)
+            c.text(gx, ry + 28, f"{s['best']:.2f}", 13, INK, "bold")
+        elif s["tested"]:
+            c.text(gx, ry + 28, "no score", 13, GRAY)
+        c.ax.plot([gx + gw * GAUGE_BAR] * 2, [ry - 16, ry + 16], color=INK, lw=2)
+        ry += 100
+    wc = d["waiting_candidates"]
+    if wc:
+        label = f"{len(wc)} candidate{'' if len(wc) == 1 else 's'} awaiting approval"
+        c.box(MX, ry - 6, c.width(label, 14, "bold") + 36, 44, "#FEF3C7", r=22)
+        c.text(MX + 18, ry + 16, label, 14, AMBER, "bold")
+        ry += 50
+    return ry
+
+
+def evening(c, d):
+    header(c, d, "Evening")
+    tiles(c, d, 80, "today", "today")
+    y = evening_backtest(c, d, 350)
+    y = evening_trades(c, d, y + 10)
+    return evening_research(c, d, y + 25)
+
+
+# ---------- morning ----------
+def risk_bar(c, y, label, used, limit, text):
+    """Bar filled by how much of the limit is used; green below 50%, amber below 80%, red beyond."""
+    frac = min(max(used / limit, 0.0), 1.0)
+    col = GREEN if frac < 0.5 else AMBER if frac < 0.8 else RED
+    c.text(MX, y, label, 13, GRAY)
+    c.box(MX, y + 26, 700, 26, SOFT, r=13)
+    c.box(MX, y + 26, max(26, 700 * frac), 26, col, r=13)
+    c.text(MX + 725, y + 39, text, 15, col, "bold")
+    return y + 86
+
+
+def morning_risk(c, d, y):
+    c.title(y, "Risk")
+    y += 56
+    for name in NAMES:
+        a = d["accounts"][name]
+        if a["equity"] is None:
+            c.text(MX, y, f"{LABEL[name]}: no numbers", 14, GRAY)
+            y += 40
+            continue
+        y = risk_bar(c, y, f"{LABEL[name]} · drawdown from peak (stops at -{a['kill'] * 100:.0f}%)", -a["dd"], a["kill"],
+                     f"{a['dd'] * 100:.1f}% of -{a['kill'] * 100:.0f}%")
+        if a["day_limit"] and a["last"]:
+            f = a["last"][1]
+            y = risk_bar(c, y, f"{LABEL[name]} · last day (limit -{a['day_limit'] * 100:.0f}%)", -f, a["day_limit"],
+                         f"{f * 100:+.1f}% of -{a['day_limit'] * 100:.0f}%")
+    return y
+
+
+def morning_flags(c, d, y):
+    flags = d["flags"]
+    if not flags:
+        c.ax.scatter([MX + 8], [y + 4], s=90, color=GREEN)
+        c.text(MX + 30, y + 4, "All clear", 15, GREEN, "bold")
+        return y + 40
+    for f in flags[:3]:
+        lines = textwrap.wrap(f, 50)[:2]
+        if len(textwrap.wrap(f, 50)) > 2:
+            lines[1] = cut(lines[1] + " …", 50)
+        c.ax.scatter([MX + 8], [y + 4], s=90, color=RED)
+        for k, ln in enumerate(lines):
+            c.text(MX + 30, y + 4 + 30 * k, ln, 14, RED, "bold")
+        y += 30 * len(lines) + 20
+    if len(flags) > 3:
+        c.text(MX + 30, y + 4, f"+{len(flags) - 3} more", 14, GRAY)
+        y += 40
+    return y
+
+
+def morning(c, d):
+    header(c, d, "Morning · before the open")
+    tiles(c, d, 80, "last session", "last")
+    y = 350
+    c.title(y, "Open positions")
+    y += 50
+    for name in NAMES:
+        a = d["accounts"][name]
+        c.text(MX, y + 4, LABEL[name], 13, GRAY)
+        pos = a["positions"][:PILLS_MAX]
+        if not pos:
+            c.text(MX + 130, y + 4, "none", 14, GRAY)
+            y += 56
+            continue
+        items = [[(p["symbol"], INK, "bold"), (qty(p["qty"]), GRAY, "normal"), (usd(p["pl"], True), tone(p["pl"]), "bold")] for p in pos]
+        if len(a["positions"]) > PILLS_MAX:
+            items.append([(f"+{len(a['positions']) - PILLS_MAX} more", GRAY, "normal")])
+        y = c.pills(MX, y + 28, items) + 34
+    y += 24
+    c.title(y, "Filling at the open")
+    y += 50
+    w = d["accounts"]["long-term"]["waiting"][:PILLS_MAX]
+    if w:
+        y = c.pills(MX, y - 8, [[(o.split()[0], BLUE if o.startswith("BUY") else INK, "bold"), (" ".join(o.split()[1:]), INK, "bold")] for o in w]) + 40
+    else:
+        c.text(MX, y + 4, "nothing", 14, GRAY)
+        y += 50
+    y = morning_risk(c, d, y + 16) + 20
+    return morning_flags(c, d, y)
+
+
+def render(d):
+    """PNG bytes. 1080x1350, taller only when the content does not fit (many positions, trades or warnings)."""
+    draw = morning if d["kind"] == "morning" else evening
+    end = draw(Card(3000), d)
+    plt.close("all")
+    c = Card(max(H, int(end) + 40))
+    draw(c, d)
+    return c.png()
+
+
+# ---------- captions ----------
+def change_part(a, key):
+    return "n/a" if a["equity"] is None or a[key] is None else pct(a[key][1], 1)
+
+
+def caption(d):
+    e = html.escape
+    acc = d["accounts"]
+    if d["kind"] == "morning":
+        head = f"<b>Morning {day_label(d['day'])}</b> · " + " · ".join(f"{LABEL[n]} {change_part(acc[n], 'last')}" for n in NAMES) + " (last session)"
+        f = d["flags"]
+        return "\n".join([head, "All clear before the open" if not f else f"{len(f)} warning{'' if len(f) == 1 else 's'} - see the card"])
+    head = f"<b>Evening {day_label(d['day'])}</b> · " + " · ".join(f"{LABEL[n]} {change_part(acc[n], 'today')}" for n in NAMES)
+    vs = {n: acc[n]["verdict"] for n in NAMES if acc[n]["verdict"]}
+    if vs and all(v == "early" for v in vs.values()):
+        line2 = f"Too early to compare with the backtest ({max(acc[n]['days'] for n in vs)} day{'' if max(acc[n]['days'] for n in vs) == 1 else 's'})"
+    elif vs and all(v == "in line" for v in vs.values()):
+        line2 = "In line with the backtest"
+    else:
+        name = {"early": "too early", "in line": "in line", "above normal": "above range", "below normal": "below range", "unavailable": "no backtest"}
+        line2 = "Backtest: " + ", ".join(f"{LABEL[n]} {name[v]}" for n, v in vs.items()) if vs else "Backtest: no live numbers"
+    r = d["research"]
+    n_tr = sum(len(acc[n]["trades"]) for n in NAMES)
+    line3 = f"{n_tr} trade{'' if n_tr == 1 else 's'} · {r['daily']['tested'] + r['intraday']['tested']} ideas tested"
+    if d["waiting_candidates"]:
+        line3 += " · candidate awaiting approval"
+    return "\n".join([head, e(line2), e(line3)])

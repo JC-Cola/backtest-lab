@@ -7,9 +7,12 @@ from __future__ import annotations
 import json
 import os
 import urllib.request
+import uuid
 
 LIMIT = 4000   # Telegram's hard cap is 4096 characters per message
 TIMEOUT = 10
+PHOTO_TIMEOUT = 30
+CAPTION_LIMIT = 1024   # Telegram's cap for a photo caption
 
 
 def split(text, limit=LIMIT):
@@ -46,4 +49,31 @@ def send(text):
         return True
     except Exception as e:
         print(f"telegram send failed: {type(e).__name__}")   # never print the URL: it holds the token
+        return False
+
+
+def multipart(fields, filename, data, boundary):
+    """multipart/form-data body: text `fields` plus one PNG file part named 'photo'."""
+    out = b""
+    for k, v in fields.items():
+        out += f'--{boundary}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+    out += (f'--{boundary}\r\nContent-Disposition: form-data; name="photo"; filename="{filename}"\r\n'
+            f"Content-Type: image/png\r\n\r\n").encode() + data + f"\r\n--{boundary}--\r\n".encode()
+    return out
+
+
+def send_photo(png_bytes, caption=""):
+    """sendPhoto with an HTML caption (cut to Telegram's 1024 characters). False on missing env or any failure."""
+    token, chat = os.environ.get("TELEGRAM_BOT_TOKEN"), os.environ.get("TELEGRAM_CHAT_ID")
+    if not (token and chat):
+        return False
+    try:
+        boundary = uuid.uuid4().hex
+        fields = {"chat_id": chat, "caption": caption[:CAPTION_LIMIT], "parse_mode": "HTML"}
+        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendPhoto", data=multipart(fields, "briefing.png", png_bytes, boundary),
+                                     headers={"Content-Type": f"multipart/form-data; boundary={boundary}"}, method="POST")
+        with urllib.request.urlopen(req, timeout=PHOTO_TIMEOUT) as r:
+            return r.status == 200
+    except Exception as e:
+        print(f"telegram photo failed: {type(e).__name__}")   # never print the URL: it holds the token
         return False
