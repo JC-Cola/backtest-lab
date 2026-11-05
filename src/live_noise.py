@@ -151,7 +151,7 @@ def submit(trading, qty, tif, sym):
     side = OrderSide.BUY if qty > 0 else OrderSide.SELL
     o = trading.submit_order(MarketOrderRequest(symbol=sym, qty=abs(qty), side=side,
                                                 time_in_force=TimeInForce.CLS if tif == "cls" else TimeInForce.DAY,
-                                                client_order_id=f"noise-{sym}-{datetime.now(timezone.utc):%Y%m%d%H%M%S}"))
+                                                client_order_id=f"noise-{sym}-{tif}-{datetime.now(timezone.utc):%Y%m%d%H%M%S%f}"))
     return str(o.id)
 
 
