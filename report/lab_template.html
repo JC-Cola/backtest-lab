@@ -198,6 +198,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .cal-sum .v { font: 600 1rem var(--f-mono); overflow-wrap: anywhere; } .cal-sum .v.pos { color: var(--pos); } .cal-sum .v.neg { color: var(--neg); }
 .cal-sum small { font: 0.68rem var(--f-mono); color: var(--faint); }
 @media (max-width: 600px) { .mainsw { gap: 6px; } .mainsw button { padding: 8px 10px; } .mainsw button b { font-size: 0.9rem; } .mainsw button small { font-size: 0.62rem; } .cal-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.tvbar { display: flex; flex-wrap: wrap; gap: 8px 28px; padding: 12px 14px; align-items: baseline; }
+.tvbar > div { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tvbar .k { font-size: 0.72rem; color: var(--muted); border-bottom: 1px dotted var(--faint); align-self: flex-start; cursor: help; }
+.tvbar .v { font: 600 0.95rem var(--f-mono); color: var(--ink); } .tvbar .v.pos { color: var(--pos); } .tvbar .v.neg { color: var(--neg); }
+.tvbar .acct { font-weight: 600; font-size: 0.95rem; } .tvbar .acct .v { font-size: 0.95rem; color: var(--muted); }
+.calview > * { min-width: 0; max-width: 100%; }
+.tvwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tvtab { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+.tvtab th { text-align: left; font-weight: 500; color: var(--muted); padding: 9px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tvtab td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-family: var(--f-mono); }
+.tvtab tr:last-child td { border-bottom: 0; }
+.tvtab .r { text-align: right; white-space: nowrap; }
+.tvtab td.t { white-space: nowrap; color: var(--muted); } .tvtab td.a { min-width: 340px; color: var(--ink); }
+.tvwrap .bh-empty { padding: 24px 14px; }
 .bh { padding: 12px 12px 8px; }
 .bh-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 16px; }
 .bh-bal { font: 600 1.7rem/1.1 var(--f-mono); color: var(--ink); }
@@ -295,6 +309,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <button role="tab" id="tab-research" aria-selected="false">Research</button>
     <button role="tab" id="tab-backtest" aria-selected="true">Backtest</button>
     <button role="tab" id="tab-calendar" aria-selected="false">P&amp;L calendar</button>
+    <button role="tab" id="tab-balance" aria-selected="false">Balance history</button>
   </div>
   <div class="seg" id="mode" aria-label="How much detail to show">
     <button data-m="simple" aria-pressed="true">Simple</button>
@@ -416,6 +431,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="pcal-tip" id="pcal-tip" aria-live="polite"></div>
   </div>
   <div class="cal-sum" id="cal-sum"></div>
+</main>
+
+<main id="view-balance" class="calview" hidden>
+  <h2 id="bal-title">Balance history · Long-term paper</h2>
+  <div class="panel tvbar" id="tv-bar" aria-label="Account summary"></div>
+  <div class="panel tvwrap"><table class="tvtab" id="tv-tab"><thead><tr><th>Time</th><th class="r">Balance before</th><th class="r">Balance after</th><th class="r">Realized PnL</th><th>Action</th></tr></thead><tbody id="tv-body"></tbody></table><div class="bh-empty" id="tv-empty" hidden>No closed trades yet.</div></div>
 </main>
 
 <main id="view-research" class="research" hidden>
@@ -855,15 +876,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     bt.addEventListener("click", () => { win = bt.dataset.w; try { localStorage.setItem("lab-window", win); } catch (e) {}
       document.querySelectorAll("#window button").forEach(x => x.setAttribute("aria-pressed", String(x === bt))); renderAll(); });
   });
-  const tabs = { research: $("tab-research"), backtest: $("tab-backtest"), calendar: $("tab-calendar") };
+  const tabs = { research: $("tab-research"), backtest: $("tab-backtest"), calendar: $("tab-calendar"), balance: $("tab-balance") };
   let curTab = "backtest";
   function showTab(k) {
     curTab = k;
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar";
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar"; $("view-balance").hidden = k !== "balance";
     $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research";
     if (k === "backtest") renderStrategy();
     if (k === "calendar") renderCal(acctData());
+    if (k === "balance") renderBalance(acctData());
   }
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => showTab(k)));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
@@ -958,7 +980,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
     bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
       document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
-      enterSection(); renderAcct(); renderCal(acctData()); renderParams(); renderAll(); });
+      enterSection(); renderAcct(); renderCal(acctData()); if (curTab === "balance") renderBalance(acctData()); renderParams(); renderAll(); });
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
@@ -1012,6 +1034,35 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   document.querySelectorAll("#bh-rng button").forEach(b => b.addEventListener("click", () => { bhRange = b.dataset.r; renderHistory(acctData()); }));
   let calMonth = null, calKey = null;
+  function renderBalance(A) {
+    const B = A && A.balance_history, nm = lfilter === "intraday" ? "Intraday paper" : "Long-term paper";
+    $("bal-title").textContent = "Balance history · " + nm;
+    const n2 = v => v == null ? "—" : Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + n2(Math.abs(v));
+    const cls = v => v > 0 ? "pos" : v < 0 ? "neg" : "";
+    const cell = (k, v, c, tip) => { const d = document.createElement("div"); const a = document.createElement("span"); a.className = "k"; a.textContent = k; if (tip) a.title = tip;
+      const b = document.createElement("span"); b.className = "v " + (c || ""); b.textContent = v; d.append(a, b); return d; };
+    const bar = $("tv-bar"), body = $("tv-body");
+    body.replaceChildren(); bar.replaceChildren();
+    if (!B) { bar.append(cell("Account", nm)); $("tv-tab").hidden = true; $("tv-empty").hidden = false; return; }
+    const bal = (B.start_balance || 0) + (B.realized || 0);
+    const acct = document.createElement("div"); acct.className = "acct"; const an = document.createElement("span"); an.textContent = nm + " "; const av = document.createElement("span"); av.className = "v"; av.textContent = n2(bal) + " USD"; acct.append(an, av);
+    bar.append(acct,
+      cell("Equity", n2(B.equity), "", "Cash plus the market value of open positions"),
+      cell("Realized PnL", sg(B.realized), cls(B.realized), "Profit or loss locked in by closed trades"),
+      cell("Unrealized PnL", sg(B.unrealized), cls(B.unrealized), "Profit or loss on positions still open"),
+      cell("Account margin", n2(B.margin), "", "Initial margin in use"),
+      cell("Available funds", n2(B.available), "", "Buying power without margin"));
+    const rows = B.rows || [];
+    $("tv-tab").hidden = !rows.length; $("tv-empty").hidden = !!rows.length;
+    for (const r of rows) {
+      const tr = document.createElement("tr");
+      const td = (t, c) => { const e = document.createElement("td"); if (c) e.className = c; e.textContent = t; tr.append(e); return e; };
+      td(r.time, "t"); td(n2(r.balance_before), "r"); td(n2(r.balance_after), "r");
+      td(sg(r.realized_pnl) + " USD", "r " + cls(r.realized_pnl)); td(r.action, "a");
+      body.append(tr);
+    }
+  }
   function renderCal(A) {
     renderHistory(A);
     $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday" : "Long-term") + " account";

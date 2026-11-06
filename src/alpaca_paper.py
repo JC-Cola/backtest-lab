@@ -150,6 +150,73 @@ def account_history(client):
         return None
 
 
+def _fmt_num(x):
+    """Trim trailing zeros: 1.9 -> '1.9', 3.0 -> '3'."""
+    return f"{x:.8f}".rstrip("0").rstrip(".") or "0"
+
+
+def ledger_from_fills(fills, start_balance=START_EQUITY):
+    """TradingView-style balance history from account fills (dicts with time, symbol, side, qty, price).
+    Walks oldest to newest per symbol, tracking signed qty and average price (long and short, partial
+    closes, flips through zero = close then open). Only fills that reduce a position make a row.
+    Returns {"rows": [...newest first...], "realized": total}."""
+    from zoneinfo import ZoneInfo
+    ny, pos, bal, rows = ZoneInfo("America/New_York"), {}, float(start_balance), []
+    for f in sorted(fills, key=lambda f: (f["time"], str(f.get("id", "")))):
+        sym, qty, px = f["symbol"], float(f["qty"]), float(f["price"])
+        signed = qty if f["side"] == "buy" else -qty
+        q, avg = pos.get(sym, (0.0, 0.0))
+        if q == 0 or (q > 0) == (signed > 0):  # opens or adds
+            nq = q + signed
+            pos[sym] = (nq, (abs(q) * avg + abs(signed) * px) / abs(nq))
+            continue
+        closed = min(abs(signed), abs(q))
+        pnl = (px - avg) * closed * (1 if q > 0 else -1)
+        before, bal = bal, bal + pnl
+        t = f["time"]
+        t = datetime.fromisoformat(t.replace("Z", "+00:00")) if isinstance(t, str) else t
+        rows.append({"time": t.astimezone(ny).strftime("%Y-%m-%d %H:%M:%S"), "balance_before": round(before, 2),
+                     "balance_after": round(bal, 2), "realized_pnl": round(pnl, 2),
+                     "action": f"Close {'long' if q > 0 else 'short'} position for symbol {sym} at price {_fmt_num(px)} "
+                               f"for {_fmt_num(closed)} units. Position AVG Price was {_fmt_num(avg)}"})
+        rem = q + signed
+        if abs(abs(signed) - closed) > 1e-12:  # flipped through zero: the rest opens the other way at this price
+            pos[sym] = (rem, px)
+        else:
+            pos[sym] = (rem, avg if abs(rem) > 1e-12 else 0.0)
+            if abs(rem) <= 1e-12:
+                pos[sym] = (0.0, 0.0)
+    rows.reverse()
+    return {"rows": rows, "realized": round(bal - float(start_balance), 2)}
+
+
+def fetch_fills(client):
+    """All FILL account activities, oldest first (REST, paged by id). Raises on error."""
+    out, token = [], None
+    while True:
+        params = {"direction": "asc", "page_size": 100}
+        if token:
+            params["page_token"] = token
+        page = client.get("/account/activities/FILL", params)
+        if not page:
+            break
+        out += [{"id": a["id"], "time": a["transaction_time"], "symbol": a["symbol"], "side": a["side"],
+                 "qty": a["qty"], "price": a["price"]} for a in page]
+        if len(page) < 100:
+            break
+        token = page[-1]["id"]
+    return out
+
+
+def balance_history(client, start_balance=START_EQUITY):
+    """Closed-trade ledger for the Balance history tab. Never raises (None on error)."""
+    try:
+        return ledger_from_fills(fetch_fills(client), start_balance)
+    except Exception as e:
+        print(f"balance history unavailable: {e}", flush=True)
+        return None
+
+
 def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
     """Save a paper account's state for the Strategy Lab page (no trading). The intraday account passes its
     own path and `behind` (symbol -> strategies holding it)."""
@@ -181,6 +248,19 @@ def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
         if hist.get("ALL") and hist["ALL"][-1][0] < now - 3600:  # daily bars lag: end the All line at the live balance
             hist["ALL"].append([now, round(float(a.equity), 2)])
         snap["history"] = hist
+    bh = balance_history(client)
+    if bh is not None:
+        def _f(v):
+            try:
+                return round(float(v), 2)
+            except (TypeError, ValueError):
+                return None
+        # "Available funds": non_marginable_buying_power = what can still be bought without leverage,
+        # the closest match to TradingView's cash-account style number; falls back to cash.
+        bh.update({"unrealized": round(sum(p["pl"] for p in pos), 2), "equity": round(float(a.equity), 2),
+                   "available": _f(getattr(a, "non_marginable_buying_power", None)) if getattr(a, "non_marginable_buying_power", None) is not None else round(float(a.cash), 2),
+                   "margin": _f(getattr(a, "initial_margin", None)), "start_balance": START_EQUITY})
+        snap["balance_history"] = bh
     path.write_text(json.dumps(snap, indent=1))
     print(f"saved account snapshot: equity ${snap['equity']:,.0f}, {len(pos)} positions")
     return snap

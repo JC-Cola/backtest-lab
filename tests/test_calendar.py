@@ -37,3 +37,9 @@ def test_template_has_balance_history_panel():
     t = TPL.read_text()
     for needle in ('id="bh"', "Balance history", "No balance history yet.", "renderHistory", 'data-r="ALL"'):
         assert needle in t
+
+
+def test_template_has_balance_tab():
+    t = TPL.read_text()
+    for needle in ('id="tab-balance"', 'id="view-balance"', "renderBalance", "No closed trades yet.", "Balance before", "Realized PnL"):
+        assert needle in t
