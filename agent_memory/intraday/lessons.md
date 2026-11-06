@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-06. 5948 trials in total: 4729 scored, 1219 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-06. 6004 trials in total: 4777 scored, 1227 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -12,8 +12,8 @@ Updated 2026-11-06. 5948 trials in total: 4729 scored, 1219 rejected, 0 sent to 
 - reward now 0.000 (when found 0.000) | folds [1.304, 1.296, 1.812] | SPY at 11:00: long when gap > p85 and range_pos > p20 and vol_ratio < p90; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.615, 1.209, 1.734] | SPY at 11:00: long when gap > p85 and range_pos > p25; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.615, 1.209, 1.734] | SPY at 11:00: long when gap > p85 and range_pos > p25 and vol_ratio < p99; hold 240 min
+- reward now 0.000 (when found 0.000) | folds [1.615, 1.209, 1.734] | SPY at 11:00: long when gap > p85 and range_pos > p25 and ret_prev_close > p1; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.476, 1.332, 1.643] | SPY at 11:00: long when gap > p85 and range_pos > p25 and vol_ratio < p90; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.218, 1.779, 1.732] | SPY at 11:00: long when gap > p85 and rv_5d > p25 and vol_ratio < p95; hold 240 min
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-06. 5948 trials in total: 4729 scored, 1219 rejected, 0 sent to 
 
 ## Why ideas were rejected
 
-- too few trades: 1219
+- too few trades: 1227
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 11s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 14s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
