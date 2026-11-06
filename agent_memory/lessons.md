@@ -1,24 +1,24 @@
 # What the agent has learned so far
 
-Updated 2026-11-06. 15594 trials in total: 10645 scored, 4949 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-06. 15670 trials in total: 10698 scored, 4972 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
-- reward now 0.235 (when found 0.281) | folds [1.393, 0.599, 1.361] | TLT: buy when credit_trend < p30 and ret_20 < p75 and ret_250 > p25 (only if rv_20_pct < p90); sell when to_month_end > p95 or after 10 days
 - reward now 0.228 (when found 0.246) | folds [0.272, 1.334, 0.887] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
-- reward now 0.226 (when found 0.264) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
-- reward now 0.226 (when found 0.263) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
-- reward now 0.217 (when found 0.225) | folds [0.378, 1.225, 1.01] | IWM: buy when dist_sma_200 < p40 and ret_20 > p80 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
+- reward now 0.227 (when found 0.264) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
+- reward now 0.227 (when found 0.263) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
+- reward now 0.225 (when found 0.281) | folds [1.393, 0.599, 1.361] | TLT: buy when credit_trend < p30 and ret_20 < p75 and ret_250 > p25 (only if rv_20_pct < p90); sell when to_month_end > p95 or after 10 days
+- reward now 0.216 (when found 0.225) | folds [0.378, 1.225, 1.01] | IWM: buy when dist_sma_200 < p40 and ret_20 > p80 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
 - reward now 0.201 (when found 0.374) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
 - reward now 0.201 (when found 0.328) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p30); sell when wr_10 > p70 or after 5 days
 - reward now 0.201 (when found 0.303) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
-- reward now 0.198 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
-- reward now 0.194 (when found 0.204) | folds [0.171, 2.106, 2.141] | BTC-USD: buy when curve < p70 and gap > p40 and rsi_14 > p70 (only if ret_250 > p16); sell when ret_60 > p95 or after 3 days
+- reward now 0.199 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
+- reward now 0.195 (when found 0.200) | folds [2.058, 1.164, 0.453] | SPY: buy when ibs < p10 and ret_20 < p55 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
 
 ## Features that tend to help (learned weights, 1 = average)
 
 - rsi_14: 1.13
-- curve: 1.12
+- curve: 1.11
 - ret_5: 1.08
 - rsi_2: 1.07
 - vix_vs_50: 1.06
@@ -36,11 +36,11 @@ Updated 2026-11-06. 15594 trials in total: 10645 scored, 4949 rejected, 0 sent t
 
 ## Why ideas were rejected
 
-- too few trades: 4949
+- too few trades: 4972
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 181s. Best deflated reward went from 0.235 to 0.235. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 117s. Best deflated reward went from 0.228 to 0.228. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
