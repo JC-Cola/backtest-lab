@@ -1,19 +1,19 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-06. 4456 trials in total: 3515 scored, 941 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-06. 4552 trials in total: 3595 scored, 957 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
+- reward now 0.000 (when found 0.000) | folds [1.633, -0.356, 2.061] | SPY at 11:00: long when ret_prev_close > p85; hold 120 min
 - reward now 0.000 (when found 0.001) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [0.169, 0.701, 1.708] | SPY at 11:00: long when ret_prev_close > p70; hold 120 min
 - reward now 0.000 (when found 0.001) | folds [1.21, 1.561, 2.631] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p35; hold 120 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [1.21, 1.561, 2.631] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p35; hold 120 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [1.21, 1.535, 2.63] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p94 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [1.21, 1.535, 2.63] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p94 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [0.169, 0.701, 1.708] | SPY at 11:00: long when ret_prev_close > p70; hold 120 min
 - reward now 0.000 (when found 0.000) | folds [0.951, 1.677, 2.616] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold 60 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [0.951, 1.677, 2.616] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p30; hold 60 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [0.831, 1.382, 2.791] | QQQ at 10:00: long when ret_open < p99 and ret_open > p90 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [0.831, 1.382, 2.791] | QQQ at 10:00: long when ret_30 < p99 and ret_open > p90 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-06. 4456 trials in total: 3515 scored, 941 rejected, 0 sent to t
 
 ## Why ideas were rejected
 
-- too few trades: 941
+- too few trades: 957
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 8s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 5s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
