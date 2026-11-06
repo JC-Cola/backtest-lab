@@ -1,19 +1,19 @@
 # What the agent has learned so far
 
-Updated 2026-11-06. 14360 trials in total: 9827 scored, 4533 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-06. 14436 trials in total: 9876 scored, 4560 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
 - reward now 0.239 (when found 0.246) | folds [0.272, 1.334, 0.887] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
-- reward now 0.228 (when found 0.264) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
-- reward now 0.228 (when found 0.263) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
+- reward now 0.227 (when found 0.264) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
+- reward now 0.227 (when found 0.263) | folds [1.001, 1.113, 1.381] | GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days
 - reward now 0.211 (when found 0.374) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
 - reward now 0.211 (when found 0.328) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p30); sell when wr_10 > p70 or after 5 days
 - reward now 0.211 (when found 0.303) | folds [0.305, 1.234, 0.983] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
-- reward now 0.198 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
 - reward now 0.198 (when found 0.204) | folds [0.037, 1.245, 1.222] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p60 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
-- reward now 0.196 (when found 0.235) | folds [1.849, 0.967, 1.494] | DIA: buy when dow_next < p60 and ret_5 < p10 and wr_2 < p15 (only if curve < p60); sell when dom_next < p50 or after 3 days
-- reward now 0.196 (when found 0.202) | folds [1.849, 0.967, 1.494] | DIA: buy when dow_next < p75 and ret_5 < p10 and wr_2 < p15 (only if curve < p60); sell when dom_next < p50 or after 3 days
+- reward now 0.197 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
+- reward now 0.194 (when found 0.444) | folds [0.181, 1.204, 1.141] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p60 (only if range_rank_7 > p35); sell when wr_10 > p70 or after 5 days
+- reward now 0.194 (when found 0.380) | folds [0.181, 1.204, 1.141] | IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p60 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-06. 14360 trials in total: 9827 scored, 4533 rejected, 0 sent to
 
 ## Why ideas were rejected
 
-- too few trades: 4533
+- too few trades: 4560
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 98s. Best deflated reward went from 0.239 to 0.239. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 73s. Best deflated reward went from 0.239 to 0.239. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
