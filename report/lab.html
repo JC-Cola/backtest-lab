@@ -1212,7 +1212,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   // LIVE-PURE-END
 
-  const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh", LIVE_EVERY = 15000;
+  const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh", LIVE_EVERY = 5000;
   const LIVE_Q = { lt: "select private.alpaca_live('lt') as d", id: "select private.alpaca_live('id') as d" };
   const BLANK = { start_equity: 25000, equity: 0, cash: 0, last_equity: 0, generated: "1970-01-01T00:00:00+00:00", positions: [], orders: [], calendar: [], history: {}, strategies_by_symbol: {} };
   const SNAP = { lt: D.alpaca, id: D.alpaca_intraday }, LIVE = { lt: null, id: null }, SIG = {};
@@ -1281,7 +1281,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       liveUnsub = liveMcp.watchTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] },
         ev => ev.type === "data" ? onLive(key, ev.result) : onLiveErr(key, ev.error), { refetchInterval: LIVE_EVERY });
     } catch (e) { onLiveErr(key, e); }
-    liveTimer = setInterval(() => livePoll(key), LIVE_EVERY);  // watchTool polls are clamped to ~30 s; this keeps a 15 s cadence while visible
+    liveTimer = setInterval(() => livePoll(key), LIVE_EVERY);  // watchTool polls are clamped to ~30 s; this keeps a 5 s cadence while visible (one call in flight at a time)
   }
   function liveBadge() {
     const b = $("live-badge"), key = liveAcctKey(), s = LIVE[key], A = SNAP[key];
