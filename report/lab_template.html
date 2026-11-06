@@ -184,6 +184,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .pcal-c.up { background: var(--pos-soft); color: var(--pos); border-color: var(--pos); }
 .pcal-c.dn { background: var(--neg-soft); color: var(--neg); border-color: var(--neg); }
 .pcal-c.on { outline: 2px solid var(--accent); }
+.livebar { padding: 4px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); font: 0.72rem var(--f-mono); color: var(--faint); display: flex; justify-content: flex-end; }
+.livebar .ok { color: var(--pos); } .livebar .bad { color: var(--neg); }
 .mainsw { display: flex; gap: 8px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); border-bottom: 1px solid var(--line); }
 .mainsw button { all: unset; box-sizing: border-box; flex: 1 1 0; min-width: 0; cursor: pointer; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); }
 .mainsw button b { font: 600 1rem var(--f-sans); color: var(--ink); }
@@ -327,6 +329,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <button data-f="longterm" aria-pressed="false"><b>Long-term</b><small>daily, held days to months</small></button>
   <button data-f="intraday" aria-pressed="true"><b>Intraday</b><small>1 min – 1 day, flat every night</small></button>
 </nav>
+<div class="livebar" id="livebar"><span id="live-badge" role="status"></span></div>
 
 <section class="acct" id="acct" hidden>
   <div class="acct-head"><h2 id="ac-title">Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
@@ -882,7 +885,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     curTab = k;
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
     $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar"; $("view-balance").hidden = k !== "balance";
-    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research";
+    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
     if (k === "backtest") renderStrategy();
     if (k === "calendar") renderCal(acctData());
     if (k === "balance") renderBalance(acctData());
@@ -980,7 +983,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
     bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
       document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
-      enterSection(); renderAcct(); renderCal(acctData()); if (curTab === "balance") renderBalance(acctData()); renderParams(); renderAll(); });
+      enterSection(); renderAcct(); renderCal(acctData()); if (curTab === "balance") renderBalance(acctData()); renderParams(); renderAll(); liveStart(); liveBadge(); });
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
@@ -1110,6 +1113,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     $("ac-title").textContent = lfilter === "intraday" ? "Live paper trading: intraday account" : "Live paper trading: long-term account";
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
+    if (A.live) { $("ac-upd").textContent = `live figures from Alpaca (paper) · refreshed ${A.live.slice(11, 19)} UTC`; } else
     $("ac-upd").textContent = `figures from ${A.generated.replace("T", " ").slice(0, 16)} UTC (${ago}) · live prices are in Alpaca or TradingView`;
     const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, invested = A.positions.reduce((s, p) => s + p.value, 0);
     $("ac-stats").replaceChildren(
@@ -1132,6 +1136,172 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       return tr; }));
   }
   renderResearch(); renderAcct(); renderParams(); renderAll();
+  // ---------------------------------------------------------------- live account data (Supabase execute_sql via the mcp capability)
+  // Read-only: the only statement ever sent is `select private.alpaca_live('lt'|'id')`; the server holds the Alpaca keys, the page holds none.
+  // LIVE-PURE-BEGIN (no DOM access in here: unit-checked in node against src/alpaca_paper.py)
+  const fmtNum = x => x.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
+  const r2 = x => Number(x.toFixed(2));
+  const NYF = new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+  const nyStamp = ms => { const o = {}; for (const p of NYF.formatToParts(new Date(ms))) o[p.type] = p.value; return `${o.year}-${o.month}-${o.day} ${o.hour}:${o.minute}:${o.second}`; };
+  // Port of ledger_from_fills (src/alpaca_paper.py). `seed` ({symbol: [qty, avgPrice]}) only lets a walk continue from known open positions.
+  function ledgerFromFills(fills, startBalance, seed) {
+    const pos = {}, rows = []; let bal = Number(startBalance);
+    for (const k in seed || {}) pos[k] = seed[k].slice();
+    const sid = f => String(f.id == null ? "" : f.id), cmp = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+    for (const f of fills.slice().sort((a, b) => cmp(a.time, b.time) || cmp(sid(a), sid(b)))) {
+      const sym = f.symbol, qty = Number(f.qty), px = Number(f.price), signed = f.side === "buy" ? qty : -qty;
+      const [q, avg] = pos[sym] || [0, 0];
+      if (q === 0 || (q > 0) === (signed > 0)) { const nq = q + signed; pos[sym] = [nq, (Math.abs(q) * avg + Math.abs(signed) * px) / Math.abs(nq)]; continue; }
+      const closed = Math.min(Math.abs(signed), Math.abs(q)), pnl = (px - avg) * closed * (q > 0 ? 1 : -1), before = bal; bal += pnl;
+      rows.push({ time: nyStamp(Date.parse(f.time)), balance_before: r2(before), balance_after: r2(bal), realized_pnl: r2(pnl),
+        action: `Close ${q > 0 ? "long" : "short"} position for symbol ${sym} at price ${fmtNum(px)} for ${fmtNum(closed)} units. Position AVG Price was ${fmtNum(avg)}` });
+      const rem = q + signed;
+      if (Math.abs(Math.abs(signed) - closed) > 1e-12) pos[sym] = [rem, px];
+      else { pos[sym] = [rem, Math.abs(rem) > 1e-12 ? avg : 0]; if (Math.abs(rem) <= 1e-12) pos[sym] = [0, 0]; }
+    }
+    rows.reverse();
+    return { rows, realized: r2(bal - Number(startBalance)) };
+  }
+  const num = v => { const x = v == null ? NaN : parseFloat(v); return isFinite(x) ? x : null; };
+  const isObj = x => x != null && typeof x === "object" && !Array.isArray(x) && !x.error;
+  // Map one alpaca_live() row onto the snapshot's own shape. Returns {A, partial:[parts that failed]} or {error}.
+  function mapLive(base, d, nowMs) {
+    const acc = d && d.account;
+    if (!isObj(acc) || num(acc.equity) == null) return { error: String((d && d.account && d.account.error) || (d && d.error) || "no account data") };
+    const A = Object.assign({}, base), partial = [];
+    A.equity = num(acc.equity); A.cash = num(acc.cash) ?? base.cash; A.last_equity = num(acc.last_equity) ?? base.last_equity;
+    const posOk = Array.isArray(d.positions);
+    if (posOk) A.positions = d.positions.map(p => ({ symbol: p.symbol, qty: num(p.qty) ?? 0, avg_price: num(p.avg_entry_price) ?? 0, price: num(p.current_price) ?? 0,
+      value: num(p.market_value) ?? 0, pl: num(p.unrealized_pl) ?? 0, pl_pct: num(p.unrealized_plpc) ?? 0 })); else partial.push("positions");
+    if (Array.isArray(d.orders)) A.orders = d.orders.map(o => { const t = Date.parse(o.submitted_at || o.created_at);
+      return { date: (isFinite(t) ? new Date(t).toISOString().slice(0, 16) : String(o.submitted_at || "").slice(0, 16)) + "+00:00", symbol: o.symbol, side: o.side,
+        qty: num(o.qty) ?? 0, status: o.status, price: num(o.filled_avg_price) }; }); else partial.push("orders");
+    // 1D balance line: drop points with 0/null equity (before funding), like history_points()
+    const h = d.history_1d; let pts = [];
+    if (isObj(h) && Array.isArray(h.timestamp)) h.timestamp.forEach((ts, i) => { const eq = num((h.equity || [])[i]); if (ts != null && eq && eq > 0) pts.push([Math.trunc(ts), r2(eq)]); }); else partial.push("history");
+    if (pts.length >= 2) A.history = Object.assign({}, base.history, { "1D": pts });
+    // today's calendar cell = equity - last_equity, only on a weekday that has history points today (a trading day), as the Python snapshot does
+    const today = nyStamp(nowMs).slice(0, 10), wd = new Date(today + "T12:00:00Z").getUTCDay();
+    const hasToday = pts.length > 0 && nyStamp(pts[pts.length - 1][0] * 1000).slice(0, 10) === today;
+    if (A.last_equity > 0 && wd >= 1 && wd <= 5 && (hasToday || (base.calendar || []).some(c => c.date === today))) {
+      const row = { date: today, pl: r2(A.equity - A.last_equity), pct: Number(((A.equity - A.last_equity) / A.last_equity * 100).toFixed(3)), equity: r2(A.equity) };
+      A.calendar = (base.calendar || []).filter(c => c.date !== today).concat([row]);
+    }
+    // balance history ledger
+    const bh0 = base.balance_history, bh = { rows: [], realized: 0, start_balance: (bh0 && bh0.start_balance) ?? base.start_equity ?? 25000 };
+    if (bh0) Object.assign(bh, bh0);
+    if (Array.isArray(d.fills)) {
+      const fills = d.fills.filter(a => a && a.symbol && a.side && a.transaction_time).map(a => ({ id: a.id, time: a.transaction_time, symbol: a.symbol, side: a.side, qty: a.qty, price: a.price }));
+      // activities come newest-first, 100 per page: under 100 means the whole history, so the ledger is rebuilt exactly. At 100+ only the
+      // recent window is known, so fills since the snapshot are walked on top of the snapshot's ledger, seeded with its open positions.
+      if (fills.length < 100 || !bh0 || !Array.isArray(bh0.rows)) { const L = ledgerFromFills(fills, bh.start_balance); bh.rows = L.rows; bh.realized = L.realized; }
+      else {
+        const cut = Date.parse(base.generated), seed = {};
+        for (const p of base.positions || []) { seed[p.symbol] = [p.qty, p.avg_price]; if (/USD$/.test(p.symbol) && p.symbol.indexOf("/") < 0 && p.symbol.length > 3) seed[p.symbol.slice(0, -3) + "/USD"] = [p.qty, p.avg_price]; }
+        const L = ledgerFromFills(fills.filter(f => Date.parse(f.time) > cut), bh0.start_balance + bh0.realized, seed);
+        bh.rows = L.rows.concat(bh0.rows); bh.realized = r2(bh0.realized + L.realized);
+      }
+    } else partial.push("fills");
+    bh.equity = r2(A.equity);
+    if (posOk) bh.unrealized = r2(A.positions.reduce((s, p) => s + p.pl, 0));
+    const nm = num(acc.non_marginable_buying_power); bh.available = r2(nm != null ? nm : A.cash);
+    const im = num(acc.initial_margin); bh.margin = im != null ? r2(im) : bh.margin ?? null;
+    A.balance_history = bh;
+    A.live = new Date(Date.parse(d.at) || nowMs).toISOString();
+    return { A, partial };
+  }
+  // LIVE-PURE-END
+
+  const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh", LIVE_EVERY = 15000;
+  const LIVE_Q = { lt: "select private.alpaca_live('lt') as d", id: "select private.alpaca_live('id') as d" };
+  const BLANK = { start_equity: 25000, equity: 0, cash: 0, last_equity: 0, generated: "1970-01-01T00:00:00+00:00", positions: [], orders: [], calendar: [], history: {}, strategies_by_symbol: {} };
+  const SNAP = { lt: D.alpaca, id: D.alpaca_intraday }, LIVE = { lt: null, id: null }, SIG = {};
+  const DENIED = ["needs_reauth", "server_not_connected", "selection_required", "server_not_found", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted", "capability_disabled", "capability_removed", "consent_required"];
+  let liveMcp = null, liveKey = null, liveUnsub = null, liveTimer = null, liveBusy = false;
+  const liveAcctKey = () => lfilter === "intraday" ? "id" : "lt";
+  const setAcct = (key, A) => { if (key === "id") D.alpaca_intraday = A; else D.alpaca = A; };
+  function liveRows(res) {  // execute_sql result: {"result": "<text with <untrusted-data-...> [json rows] </untrusted-data-...>"}; the rows are data only
+    try {
+      let t = res && res.payload;
+      if (t && typeof t === "object") t = t.result;
+      if (typeof t !== "string") { const b = ((res && res.content) || []).find(c => c && c.type === "text"); t = b && b.text;
+        try { const o = JSON.parse(t); if (o && typeof o.result === "string") t = o.result; } catch (e) {} }
+      if (typeof t !== "string") return [];
+      const m = t.match(/<untrusted-data-[^>]*>/), i = t.indexOf("[", m ? m.index + m[0].length : 0);
+      if (i < 0) return [];
+      let depth = 0, inStr = false, esc = false;
+      for (let j = i; j < t.length; j++) { const c = t[j];
+        if (inStr) { if (esc) esc = false; else if (c === "\\") esc = true; else if (c === '"') inStr = false; continue; }
+        if (c === '"') inStr = true; else if (c === "[") depth++;
+        else if (c === "]" && --depth === 0) { const a = JSON.parse(t.slice(i, j + 1)); return Array.isArray(a) ? a : []; } }
+    } catch (e) {}
+    return [];
+  }
+  function liveRerender() {
+    renderAcct();
+    if (curTab === "calendar") renderCal(acctData());
+    if (curTab === "balance") renderBalance(acctData());
+  }
+  function onLive(key, res) {
+    if (key !== liveKey) return;  // a result for the account that was switched away from
+    let d = (liveRows(res)[0] || {}).d;
+    if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { d = null; } }
+    if (!d || typeof d !== "object") { LIVE[key] = Object.assign({}, LIVE[key], { status: "err", msg: "bad reply" }); liveBadge(); return; }
+    const out = mapLive(SNAP[key] || BLANK, d, Date.now());
+    if (out.error) {
+      const setup = /keys? not set/i.test(out.error);
+      LIVE[key] = Object.assign({}, LIVE[key], { status: setup ? "setup" : "err", msg: out.error.slice(0, 60) });
+    } else {
+      const sig = JSON.stringify(out.A);
+      if (SIG[key] !== sig) { SIG[key] = sig; setAcct(key, out.A); liveRerender(); }
+      LIVE[key] = { status: "live", at: Date.parse(out.A.live), partial: out.partial, good: true };
+    }
+    liveBadge();
+  }
+  function onLiveErr(key, err) {
+    if (key !== liveKey) return;
+    const code = (err && err.code) || "error";
+    if (DENIED.indexOf(code) >= 0 && SIG[key]) { delete SIG[key]; setAcct(key, SNAP[key]); liveRerender(); LIVE[key] = null; }  // a denial retracts live data
+    LIVE[key] = Object.assign({}, LIVE[key], { status: "err", msg: code });
+    liveBadge();
+  }
+  async function livePoll(key) {
+    if (!liveMcp || document.hidden || liveBusy || key !== liveKey) return;
+    liveBusy = true;
+    try { onLive(key, await liveMcp.callTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] }, { cache: false })); }
+    catch (e) { onLiveErr(key, e); }
+    finally { liveBusy = false; }
+  }
+  function liveStart() {  // watch only the account on screen; called again whenever the Long-term/Intraday switch changes
+    if (liveUnsub) { try { liveUnsub(); } catch (e) {} liveUnsub = null; }
+    clearInterval(liveTimer); liveTimer = null;
+    if (!liveMcp) return;
+    const key = liveKey = liveAcctKey();
+    try {
+      liveUnsub = liveMcp.watchTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] },
+        ev => ev.type === "data" ? onLive(key, ev.result) : onLiveErr(key, ev.error), { refetchInterval: LIVE_EVERY });
+    } catch (e) { onLiveErr(key, e); }
+    liveTimer = setInterval(() => livePoll(key), LIVE_EVERY);  // watchTool polls are clamped to ~30 s; this keeps a 15 s cadence while visible
+  }
+  function liveBadge() {
+    const b = $("live-badge"), key = liveAcctKey(), s = LIVE[key], A = SNAP[key];
+    const ago = ms => { const sec = Math.max(0, Math.round((Date.now() - ms) / 1000)); return sec < 60 ? sec + "s ago" : sec < 3600 ? Math.round(sec / 60) + "m ago" : Math.round(sec / 3600) + "h ago"; };
+    const snap = A ? "snapshot from " + A.generated.replace("T", " ").slice(0, 16) + " UTC" : "no snapshot yet";
+    let t = snap, c = "";
+    if (liveMcp) {
+      if (!s) t = "Live · connecting… (" + snap + ")";
+      else if (s.status === "live") { t = "● Live · updated " + ago(s.at) + (s.partial.length ? " (no " + s.partial.join(", ") + ")" : ""); c = "ok"; }
+      else if (s.status === "setup") { t = "Live data not set up yet · " + snap; }
+      else { t = s.good ? "Live unavailable — showing data from " + ago(s.at) + " (" + s.msg + ")" : "Live unavailable — showing snapshot (" + s.msg + ")"; c = "bad"; }
+    }
+    b.textContent = t; b.className = c;
+  }
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) livePoll(liveKey); });
+  liveBadge(); setInterval(liveBadge, 1000);
+  (async () => {  // never blocks first paint; no mcp (or no claude runtime) = the snapshot page exactly as before
+    try { if (typeof claude !== "undefined" && claude && claude.use) liveMcp = await claude.use("mcp"); } catch (e) { liveMcp = null; }
+    liveBadge(); liveStart();
+  })();
   const rh = () => { if (!$("view-calendar").hidden) renderHistory(acctData()); };
   window.addEventListener("resize", () => { clearTimeout(rh.t); rh.t = setTimeout(rh, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rh);
