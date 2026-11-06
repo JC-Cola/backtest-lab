@@ -11,11 +11,13 @@ from __future__ import annotations
 import html
 import io
 import textwrap
+from datetime import datetime
 
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt   # noqa: E402
+import matplotlib.dates as mdates   # noqa: E402
 from matplotlib.patches import FancyBboxPatch, Rectangle   # noqa: E402
 from matplotlib.ticker import FuncFormatter, MaxNLocator   # noqa: E402
 
@@ -362,6 +364,96 @@ def render(d):
     c = Card(max(H, int(end) + 40))
     draw(c, d)
     return c.png()
+
+
+# ---------- balance history (TradingView-style area charts) ----------
+BAL_H = 1080
+NO_HIST = "No balance history yet"
+
+
+def series(pts):
+    """[(New York datetime, equity)] oldest first from [[unix ts, equity], ...]; zero/None values dropped."""
+    out = [(datetime.fromtimestamp(t, NY), float(v)) for t, v in (pts or []) if v]
+    return sorted(out)
+
+
+def area_chart(c, x, y, w, h, pts, base, xfmt, step_hours=None):
+    """Line + soft fill (green when the last point is at/above `base`, else red), dashed line at `base`, $ labels on
+    the right, time labels below. pts: series(); needs >= 2 points (the caller draws the empty message)."""
+    ax = c.axes(x, y, w, h)
+    xs, ys = [mdates.date2num(t) for t, _ in pts], [v for _, v in pts]
+    col = tone(ys[-1] - base)
+    lo, hi = min(ys + [base]), max(ys + [base])
+    pad = (hi - lo) * 0.12 or max(abs(base) * 0.002, 1.0)
+    ax.set_ylim(lo - pad, hi + pad)
+    span = xs[-1] - xs[0]
+    ax.set_xlim(xs[0] - span * 0.025, xs[-1] + span * 0.01)
+    ax.fill_between(xs, ys, lo - pad, color=col, alpha=0.12, lw=0)
+    ax.plot(xs, ys, color=col, lw=2.6, solid_capstyle="round")
+    ax.axhline(base, color=GRAY, lw=1.1, ls=(0, (4, 4)))
+    ax.scatter([xs[-1]], [ys[-1]], s=60, color=col, zorder=5, edgecolor="white", linewidth=1.2, clip_on=False)
+    for sp in ("top", "left", "right"):
+        ax.spines[sp].set_visible(False)
+    ax.spines["bottom"].set_color(LINE)
+    ax.grid(axis="y", color=SOFT, lw=1)
+    ax.set_axisbelow(True)
+    ax.yaxis.tick_right()
+    ax.tick_params(colors=GRAY, labelsize=11, length=0)
+    ax.yaxis.set_major_locator(MaxNLocator(4 if h > 150 else 2))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"${v:,.0f}"))
+    if step_hours:
+        ax.xaxis.set_major_locator(mdates.HourLocator(interval=step_hours, tz=NY))
+    else:
+        ax.xaxis.set_major_locator(MaxNLocator(3))
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: xfmt(mdates.num2date(v, NY))))
+    return col
+
+
+def hour_label(t):
+    return f"{t.hour % 12 or 12}{'AM' if t.hour < 12 else 'PM'}"
+
+
+def balance_panel(c, name, a, y):
+    """One account: name, big balance, today's change, the 1D area chart and the 'since start' strip."""
+    c.text(MX, y + 24, LABEL[name], 17, BLUE, "bold")
+    if a["equity"] is None:
+        c.text(MX, y + 80, "no numbers", 22, GRAY)
+        return
+    c.text(MX, y + 72, usd(a["equity"]), 34, INK, "bold")
+    if a["today"]:
+        c.text(W - MX, y + 62, f"{usd(a['today'][0], True)}  {pct(a['today'][1])}", 18, tone(a["today"][0]), "bold", ha="right")
+        c.text(W - MX, y + 90, "today", 12, GRAY, ha="right")
+    cw = W - 2 * MX - 100   # the $ labels sit in the 100 px to the right of the axes
+    day, allp = series(a["h1d"]), series(a["hall"])
+    if len(day) >= 2:
+        area_chart(c, MX, y + 112, cw, 205, day, a["today_base"] or day[0][1], hour_label, 4)
+    else:
+        c.box(MX, y + 112, cw + 100, 205, "#F8FAFC", LINE)
+        c.text(W / 2, y + 215, NO_HIST, 16, GRAY, ha="center")
+    c.text(MX, y + 374, "Since start", 13, GRAY, "bold")
+    if len(allp) >= 2:
+        base = allp[0][1]
+        chg = allp[-1][1] - base
+        c.text(W - MX, y + 374, f"{usd(chg, True)}  {pct(chg / base)}", 13, tone(chg), "bold", ha="right")
+        area_chart(c, MX, y + 394, cw, 66, allp, base, lambda t: f"{t.day} {t:%b}")
+    else:
+        c.box(MX, y + 394, cw + 100, 66, "#F8FAFC", LINE)
+        c.text(W / 2, y + 427, NO_HIST, 14, GRAY, ha="center")
+
+
+def render_balance(d):
+    """PNG bytes, 1080x1080: Long-term panel above Intraday panel. d from briefing.balance_data()."""
+    c = Card(BAL_H)
+    header(c, d, "Balance history")
+    for i, name in enumerate(NAMES):
+        if i:
+            c.ax.plot([MX, W - MX], [562, 562], color=LINE, lw=1.5)
+        balance_panel(c, name, d["accounts"][name], 85 + i * 495)
+    return c.png()
+
+
+def balance_caption(d):
+    return f"Balance history · {day_label(d['day'])}"
 
 
 # ---------- captions ----------

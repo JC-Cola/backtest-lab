@@ -72,6 +72,66 @@ def test_captions():
     assert "3 warnings" in bc.caption(morning(flags=3))
 
 
+def hist(n=60, drop=False, t0=1793900000):
+    s = -1 if drop else 1
+    return {"1D": [[t0 + 300 * i, 25000 + s * 3 * i] for i in range(n)], "ALL": [[t0 - 86400 * 3 + 86400 * i, 25000 + s * 40 * i] for i in range(3)]}
+
+
+def balance(h=None, lt_eq=25100.0):
+    h = hist() if h is None else h
+    return bf.balance_data(DAY, {"long-term": {"equity": lt_eq, "last_equity": 25000.0, "history": h},
+                                 "intraday": {"equity": 24900.0, "last_equity": 25000.0, "history": hist(drop=True)}})
+
+
+# ---------- balance history image ----------
+@pytest.mark.parametrize("h", [None, {}, {"1D": [], "ALL": []}, {"1D": [[1793900000, 25000.0]], "ALL": [[1793900000, 25000.0]]}, hist(), hist(2)])
+def test_balance_card_renders(h):
+    d = balance(h)
+    assert size(bc.render_balance(d)) == (1080, 1080)
+    assert bc.balance_caption(d) == "Balance history · 4 Nov"
+
+
+def test_balance_card_missing_account():
+    d = bf.balance_data(DAY, {})
+    assert d["accounts"]["long-term"]["equity"] is None and size(bc.render_balance(d)) == (1080, 1080)
+
+
+def test_balance_data_today_change():
+    a = balance()["accounts"]["long-term"]
+    assert a["today"][0] == pytest.approx(100.0) and a["today"][1] == pytest.approx(0.004) and a["since"] == pytest.approx(0.004)
+
+
+def test_balance_cli_sends_one_photo(cli):
+    assert bf.main(["balance"]) == 0
+    assert len(cli["photo"]) == 1 and cli["photo"][0][1].startswith("Balance history") and cli["text"] == []
+
+
+def test_balance_cli_dry_run(cli, monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(bf, "DRY_DIR", tmp_path)
+    assert bf.main(["balance", "--dry-run"]) == 0
+    assert size((tmp_path / "briefing-balance.png").read_bytes()) == (1080, 1080) and cli["photo"] == []
+    assert "Balance history" in capsys.readouterr().out
+
+
+def test_evening_balance_failure_never_breaks_briefing(cli, monkeypatch):
+    monkeypatch.setattr(bf, "gather_balance", lambda now=None: (_ for _ in ()).throw(RuntimeError("boom")))
+    assert bf.main(["evening"]) == 0
+    assert len(cli["photo"]) == 1 and cli["text"] == []
+
+
+def test_evening_text_flag_sends_no_balance(cli):
+    bf.main(["evening", "--text"])
+    assert cli["photo"] == []
+
+
+def test_gather_balance_falls_back_to_snapshots(monkeypatch):
+    for k in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setattr(bf.R, "read_json", lambda p: {"equity": 25100.0, "last_equity": 25000.0, "history": hist()})
+    d = bf.gather_balance()
+    assert d["accounts"]["intraday"]["equity"] == 25100.0 and len(d["accounts"]["long-term"]["h1d"]) >= 60
+
+
 # ---------- telegram.send_photo ----------
 def test_send_photo_noop_without_env(monkeypatch):
     monkeypatch.delenv("TELEGRAM_BOT_TOKEN", raising=False)
@@ -116,6 +176,7 @@ def cli(monkeypatch):
     sent = {"photo": [], "text": []}
     monkeypatch.setattr(bf, "gather_evening", lambda now=None: evening())
     monkeypatch.setattr(bf, "gather_morning", lambda now=None: morning())
+    monkeypatch.setattr(bf, "gather_balance", lambda now=None: balance())
     monkeypatch.setattr(tg, "send_photo", lambda png, cap="": sent["photo"].append((png, cap)) or True)
     monkeypatch.setattr(tg, "send", lambda text: sent["text"].append(text) or True)
     return sent
@@ -123,8 +184,9 @@ def cli(monkeypatch):
 
 def test_default_sends_card_not_text(cli):
     assert bf.main(["evening"]) == 0 and bf.main(["morning", "--force"]) == 0
-    assert len(cli["photo"]) == 2 and cli["text"] == []
+    assert len(cli["photo"]) == 3 and cli["text"] == []    # evening card + balance image, then the morning card
     assert size(cli["photo"][0][0])[0] == 1080 and cli["photo"][0][1].startswith("<b>Evening")
+    assert size(cli["photo"][1][0]) == (1080, 1080) and cli["photo"][1][1] == "Balance history · 4 Nov"
 
 
 def test_text_flag_forces_text(cli):

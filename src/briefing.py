@@ -1,10 +1,11 @@
 """Two short Telegram briefings sent from the GitHub Actions jobs (the Mac may be off).
 
-    python src/briefing.py morning|evening [--dry-run] [--text] [--force]
+    python src/briefing.py morning|evening|balance [--dry-run] [--text] [--force]
 
 morning: ~09:15 New York, before the open. Both paper accounts, open positions, orders waiting for the open, risk
          flags (distance to the agreed limits), new candidates. Two crons (EDT and EST) trigger it; the script only
          sends between 09:00 and 09:40 New York on a trading day, so exactly one of them does. --force skips that.
+balance: just the balance-history picture (also sent as a second photo right after the evening card).
 evening: after the nightly run. Today's trades, best/worst trade, day P/L, "Matches the backtest?" (live N-day
          return against the backtest's rolling N-day returns on the test years) and what the agents tested.
 By default each briefing is ONE picture card (briefing_cards.py) plus a 2-3 line caption; the text message is the
@@ -423,6 +424,59 @@ def gather_evening(now=None):
                         R.read_csv(MEM / "paper_log.csv"), R.read_json(MEM / "candidates.json"), bt, res)
 
 
+def balance_data(day, per):
+    """Plain data for the balance-history picture. per[name] = {equity, last_equity, history ({1D, ALL, ...} or None)}."""
+    out = {}
+    for name in ("long-term", "intraday"):
+        p = per.get(name) or {}
+        eq, le, h = p.get("equity"), p.get("last_equity"), p.get("history") or {}
+        out[name] = {"equity": eq, "today": None if eq is None or not le else (eq - le, eq / le - 1),
+                     "today_base": le or None, "since": None if eq is None else (eq - START) / START,
+                     "h1d": h.get("1D") or [], "hall": h.get("ALL") or []}
+    return {"kind": "balance", "day": day, "accounts": out}
+
+
+def gather_balance(now=None):
+    """Fresh from Alpaca when the account's keys are set (history + equity), else from the snapshot json files."""
+    import alpaca_paper
+    t = now or datetime.now(NY)
+    day, per = t.astimezone(NY).date(), {}
+    for name, kenv, senv, path in ACCOUNTS:
+        snap, p = R.read_json(path) or {}, {}
+        try:
+            c = _client(kenv, senv)
+            if c:
+                a = c.get_account()
+                p = {"equity": float(a.equity), "last_equity": float(a.last_equity), "history": alpaca_paper.account_history(c)}
+        except Exception as ex:
+            print(f"{name}: live balance fetch failed ({type(ex).__name__}), using the snapshot", file=sys.stderr)
+            p = {}
+        if not p.get("history"):
+            p = {**p, "history": snap.get("history")}
+        for k in ("equity", "last_equity"):
+            if p.get(k) is None:
+                p[k] = snap.get(k)
+        hall, now_ts = (p.get("history") or {}).get("ALL"), int(t.timestamp())
+        if hall and p.get("equity") and hall[-1][0] < now_ts - 3600:   # daily bars lag: end the line at the live balance
+            p["history"] = {**p["history"], "ALL": hall + [[now_ts, round(p["equity"], 2)]]}
+        h1d = (p.get("history") or {}).get("1D")
+        if h1d and p.get("equity") and h1d[-1][0] < now_ts - 600:   # the day line ends at the live balance too
+            p["history"] = {**p["history"], "1D": h1d + [[now_ts, round(p["equity"], 2)]]}
+        per[name] = p
+    return balance_data(day, per)
+
+
+def send_balance(data=None):
+    """Render and send the balance-history picture; True when Telegram accepted it. Never raises."""
+    try:
+        import briefing_cards as C
+        data = data or gather_balance()
+        return bool(telegram.send_photo(C.render_balance(data), C.balance_caption(data)))
+    except Exception as ex:
+        print(f"balance image failed: {type(ex).__name__}: {str(ex)[:100]}", file=sys.stderr)
+        return False
+
+
 def make_card(data):
     """(png bytes, caption) for the briefing data, or None when rendering fails (the caller falls back to text)."""
     try:
@@ -435,7 +489,7 @@ def make_card(data):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("which", choices=["morning", "evening"])
+    ap.add_argument("which", choices=["morning", "evening", "balance"])
     ap.add_argument("--dry-run", action="store_true", help="write the PNG to DRY_DIR and print the caption, send nothing")
     ap.add_argument("--text", action="store_true", help="send the old text message instead of the picture card")
     ap.add_argument("--force", action="store_true", help="morning: skip the 09:00-09:40 New York / trading-day gate")
@@ -445,6 +499,8 @@ def main(argv=None):
         if not morning_window(now) or not is_trading_day(now.date()):
             print(f"morning briefing skipped: {now:%Y-%m-%d %H:%M} New York is outside 09:00-09:40 or not a trading day")
             return 0
+    if a.which == "balance":
+        return main_balance(a.dry_run)
     text_fn = text_morning if a.which == "morning" else text_evening
     card = None
     try:
@@ -466,6 +522,25 @@ def main(argv=None):
     if not ok:
         ok = telegram.send(text)
     print("sent" if ok else "not sent (missing TELEGRAM_* env or Telegram error)")
+    if a.which == "evening" and card and ok:
+        print("balance image " + ("sent" if send_balance() else "not sent"))
+    return 0
+
+
+def main_balance(dry_run):
+    try:
+        import briefing_cards as C
+        data = gather_balance()
+        if dry_run:
+            DRY_DIR.mkdir(parents=True, exist_ok=True)
+            out = DRY_DIR / "briefing-balance.png"
+            out.write_bytes(C.render_balance(data))
+            print(f"{out}\n{C.balance_caption(data)}")
+            return 0
+    except Exception as ex:
+        print(f"balance image failed: {type(ex).__name__}: {str(ex)[:100]}", file=sys.stderr)
+        return 1
+    print("sent" if send_balance(data) else "not sent (missing TELEGRAM_* env, Telegram error or render error)")
     return 0
 
 
