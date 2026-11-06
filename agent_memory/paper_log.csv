@@ -35,3 +35,12 @@ logged_at_utc,decision_date,key,name,market,position,close
 2026-11-05T21:45:57+00:00,2026-11-05,AGENT-0552b8a62ee5,Agent: GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when ibs < p70 or after 5 days,GLD,0.0,375.49
 2026-11-05T21:45:57+00:00,2026-11-05,AGENT-91aa20be1dd0,Agent: GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when ibs < p70 or after 5 days,GLD,0.0,375.49
 2026-11-05T21:45:57+00:00,2026-11-05,AGENT-1f3fa69a1f56,Agent: IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p65 (only if range_rank_7 > p40); sell when wr_10 > p70 or after 5 days,IWM,0.0,270.98
+2026-11-06T21:46:20+00:00,2026-11-06,MR-IBS,Internal Bar Strength,SPY,1.0,735.29
+2026-11-06T21:46:20+00:00,2026-11-06,MR-WR,Williams %R,QQQ,1.0,656.1
+2026-11-06T21:46:20+00:00,2026-11-06,CAL-JAN,January Barometer,QQQ,1.0,656.1
+2026-11-06T21:46:20+00:00,2026-11-06,CAL-MIX,Calendar Composite,GLD,0.0,372.52
+2026-11-06T21:46:20+00:00,2026-11-05,TS-TREND,Trend Filter (close > SMA),BTC-USD,1.0,75942.125
+2026-11-06T21:46:20+00:00,2026-11-06,TS-VOL,Vol-Targeted Trend,SPY,0.7522,735.29
+2026-11-06T21:46:20+00:00,2026-11-06,AGENT-b8b37dfe8b0f,Agent: GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days,GLD,0.0,372.52
+2026-11-06T21:46:20+00:00,2026-11-06,AGENT-53904cd1fd6c,Agent: GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days,GLD,0.0,372.52
+2026-11-06T21:46:20+00:00,2026-11-06,AGENT-289762821d8e,Agent: IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days,IWM,0.0,273.67

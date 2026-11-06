@@ -1,17 +1,17 @@
 {
- "generated": "2026-11-05T21:46:11+00:00",
+ "generated": "2026-11-06T21:47:07+00:00",
  "strategies": {
   "MR-IBS": {
    "name": "Internal Bar Strength",
    "market": "SPY",
    "since": "2026-10-16",
-   "decisions": 4,
+   "decisions": 5,
    "scored": 3,
    "paper_return": 0.016624071812406882,
    "holding_return": 0.01510918676398898,
    "days_invested": 2,
    "latest": {
-    "date": "2026-11-05",
+    "date": "2026-11-06",
     "position": 1.0
    }
   },
@@ -19,13 +19,13 @@
    "name": "Williams %R",
    "market": "QQQ",
    "since": "2026-10-16",
-   "decisions": 4,
+   "decisions": 5,
    "scored": 3,
    "paper_return": -0.008202712752937935,
    "holding_return": -0.00790326946161457,
    "days_invested": 3,
    "latest": {
-    "date": "2026-11-05",
+    "date": "2026-11-06",
     "position": 1.0
    }
   },
@@ -33,13 +33,13 @@
    "name": "January Barometer",
    "market": "QQQ",
    "since": "2026-10-16",
-   "decisions": 4,
+   "decisions": 5,
    "scored": 3,
    "paper_return": -0.008202712752937935,
    "holding_return": -0.00790326946161457,
    "days_invested": 3,
    "latest": {
-    "date": "2026-11-05",
+    "date": "2026-11-06",
     "position": 1.0
    }
   },
@@ -47,13 +47,13 @@
    "name": "Calendar Composite",
    "market": "GLD",
    "since": "2026-10-16",
-   "decisions": 4,
+   "decisions": 5,
    "scored": 3,
    "paper_return": 0.0,
    "holding_return": 0.035384207360317,
    "days_invested": 0,
    "latest": {
-    "date": "2026-11-05",
+    "date": "2026-11-06",
     "position": 0.0
    }
   },
@@ -61,13 +61,13 @@
    "name": "Trend Filter (close > SMA)",
    "market": "BTC-USD",
    "since": "2026-10-17",
-   "decisions": 4,
-   "scored": 3,
-   "paper_return": 0.0560607239200821,
-   "holding_return": 0.05710964332602564,
-   "days_invested": 3,
+   "decisions": 5,
+   "scored": 4,
+   "paper_return": -0.002310638201168169,
+   "holding_return": -0.0013196954371861302,
+   "days_invested": 4,
    "latest": {
-    "date": "2026-11-04",
+    "date": "2026-11-05",
     "position": 1.0
    }
   },
@@ -75,14 +75,14 @@
    "name": "Vol-Targeted Trend",
    "market": "SPY",
    "since": "2026-10-16",
-   "decisions": 4,
+   "decisions": 5,
    "scored": 3,
    "paper_return": 0.014804109249914266,
    "holding_return": 0.01510918676398898,
    "days_invested": 3,
    "latest": {
-    "date": "2026-11-05",
-    "position": 0.7471
+    "date": "2026-11-06",
+    "position": 0.7522
    }
   },
   "AGENT-09939fb1d3b6": {
@@ -166,6 +166,48 @@
    "days_invested": 0,
    "latest": {
     "date": "2026-11-05",
+    "position": 0.0
+   }
+  },
+  "AGENT-b8b37dfe8b0f": {
+   "name": "Agent: GLD: buy when dom_next < p5 and range_rank_7 < p75 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days",
+   "market": "GLD",
+   "since": "2026-11-06",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-11-06",
+    "position": 0.0
+   }
+  },
+  "AGENT-53904cd1fd6c": {
+   "name": "Agent: GLD: buy when dom_next < p5 and range_rank_7 < p80 and vix_vs_50 < p70 (only if ret_1 < p85); sell when wr_2 < p50 or after 20 days",
+   "market": "GLD",
+   "since": "2026-11-06",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-11-06",
+    "position": 0.0
+   }
+  },
+  "AGENT-289762821d8e": {
+   "name": "Agent: IWM: buy when ret_20 > p80 and ret_250 < p40 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days",
+   "market": "IWM",
+   "since": "2026-11-06",
+   "decisions": 1,
+   "scored": 0,
+   "paper_return": 0.0,
+   "holding_return": 0.0,
+   "days_invested": 0,
+   "latest": {
+    "date": "2026-11-06",
     "position": 0.0
    }
   }
