@@ -1,21 +1,19 @@
 {
- "generated": "2026-11-06T17:31:29+00:00",
+ "generated": "2026-11-06T18:01:36+00:00",
  "start_equity": 25000.0,
- "equity": 24879.89,
- "cash": 13050.61,
+ "equity": 24832.89,
+ "cash": 24832.89,
  "last_equity": 25086.25,
- "positions": [
-  {
-   "symbol": "SPY",
-   "qty": 16.0,
-   "avg_price": 740.62,
-   "price": 739.33,
-   "value": 11829.28,
-   "pl": -20.64,
-   "pl_pct": -0.00174
-  }
- ],
+ "positions": [],
  "orders": [
+  {
+   "date": "2026-11-06T18:01+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 16.0,
+   "status": "filled",
+   "price": 736.3925
+  },
   {
    "date": "2026-11-06T16:01+00:00",
    "symbol": "QQQ",
@@ -127,14 +125,6 @@
    "qty": 17.0,
    "status": "filled",
    "price": 692.85
-  },
-  {
-   "date": "2026-11-04T18:01+00:00",
-   "symbol": "QQQ",
-   "side": "buy",
-   "qty": 17.0,
-   "status": "filled",
-   "price": 696.409412
   }
  ],
  "strategies_by_symbol": {
@@ -170,9 +160,9 @@
   },
   {
    "date": "2026-11-06",
-   "pl": -206.36,
-   "pct": -0.823,
-   "equity": 24879.89
+   "pl": -253.36,
+   "pct": -1.01,
+   "equity": 24832.89
   }
  ],
  "history": {
@@ -588,6 +578,30 @@
    [
     1793986200,
     24882.29
+   ],
+   [
+    1793986500,
+    24873.81
+   ],
+   [
+    1793986800,
+    24843.57
+   ],
+   [
+    1793987100,
+    24846.61
+   ],
+   [
+    1793987400,
+    24831.25
+   ],
+   [
+    1793987700,
+    24824.69
+   ],
+   [
+    1793988000,
+    24843.33
    ]
   ],
   "1W": [
@@ -826,6 +840,14 @@
    [
     1793986200,
     24882.29
+   ],
+   [
+    1793987100,
+    24846.61
+   ],
+   [
+    1793988000,
+    24843.33
    ]
   ],
   "1M": [
@@ -908,13 +930,27 @@
     25086.25
    ],
    [
-    1793986290,
-    24879.89
+    1793988101,
+    24832.89
    ]
   ]
  },
  "balance_history": {
   "rows": [
+   {
+    "time": "2026-11-06 13:01:35",
+    "balance_before": 24851.04,
+    "balance_after": 24834.16,
+    "realized_pnl": -16.88,
+    "action": "Close long position for symbol SPY at price 736.4 for 4 units. Position AVG Price was 740.62"
+   },
+   {
+    "time": "2026-11-06 13:01:34",
+    "balance_before": 24901.8,
+    "balance_after": 24851.04,
+    "realized_pnl": -50.76,
+    "action": "Close long position for symbol SPY at price 736.39 for 12 units. Position AVG Price was 740.62"
+   },
    {
     "time": "2026-11-06 11:01:41",
     "balance_before": 24909.3,
@@ -1014,11 +1050,11 @@
     "action": "Close long position for symbol QQQ at price 692.85 for 17 units. Position AVG Price was 696.40941176"
    }
   ],
-  "realized": -98.2,
-  "unrealized": -20.64,
-  "equity": 24879.89,
-  "available": 18965.25,
-  "margin": 5914.64,
+  "realized": -165.84,
+  "unrealized": 0,
+  "equity": 24832.89,
+  "available": 24832.89,
+  "margin": 0.0,
   "start_balance": 25000.0
  }
 }
