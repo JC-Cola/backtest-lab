@@ -137,10 +137,41 @@ def test_held_with_zero_state_flattens_held(fake):
     assert fake == [("QQQ", 19, "day")] and ln.load_state(DAY, "QQQ")["moc"] is True
 
 
+class SafetyTrading(FakeTrading):
+    def __init__(self, held, open_orders=()):
+        self.held, self.open, self.cancelled = held, list(open_orders), []
+
+    def get_orders(self, req):
+        return [o for o in self.open if o.symbol in req.symbols]
+
+    def cancel_order_by_id(self, oid):
+        self.cancelled.append(oid)
+        self.open = [o for o in self.open if o.id != oid]
+
+    def get_all_positions(self):
+        class P:
+            def __init__(s, sym, q): s.symbol, s.qty = sym, str(q)
+        return [P(s, q) for s, q in self.held.items() if q]
+
+
 def test_safety_executor(fake):
-    ln.act_safety(FakeTrading(), at(10, 5), "QQQ", 4)
+    ln.act_safety(SafetyTrading({"QQQ": 4}), at(10, 5), "QQQ", 4)
     assert fake[-1] == ("QQQ", -4, "day")
     assert "safety flatten (left over from an earlier day)" in ln.LOG.read_text()
+
+
+def test_safety_cancels_resting_order_first(fake):
+    class O:
+        id, symbol = "lim1", "QQQ"
+    tr = SafetyTrading({"QQQ": -19}, [O()])
+    ln.act_safety(tr, at(9, 31), "QQQ", -19)
+    assert tr.cancelled == ["lim1"] and fake[-1] == ("QQQ", 19, "day")
+
+
+def test_safety_skips_when_resting_order_already_filled(fake):
+    tr = SafetyTrading({"QQQ": 0})
+    ln.act_safety(tr, at(9, 31), "QQQ", -19)
+    assert fake == [] and "already closed by its resting order" in ln.LOG.read_text()
 
 
 # ---------- report ----------

@@ -103,9 +103,12 @@ def account_calendar(client, account):
         h = client.get_portfolio_history(GetPortfolioHistoryRequest(period="3M", timeframe="1D"))
         cal = calendar_from_history(h.timestamp, h.equity, h.profit_loss, h.profit_loss_pct)
         try:
+            from alpaca.trading.requests import GetCalendarRequest
             clock = client.get_clock()
-            if clock.is_open:
-                today = clock.timestamp.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date().isoformat()
+            day = clock.timestamp.astimezone(__import__("zoneinfo").ZoneInfo("America/New_York")).date()
+            today = day.isoformat()
+            # today is a trading day (open now, or already closed: Alpaca adds the day's history bar only later)
+            if clock.is_open or client.get_calendar(GetCalendarRequest(start=day, end=day)):
                 eq, last = float(account.equity), float(account.last_equity)
                 if last > 0:
                     row = {"date": today, "pl": round(eq - last, 2), "pct": round((eq - last) / last * 100, 3), "equity": round(eq, 2)}

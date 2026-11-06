@@ -215,7 +215,24 @@ def held_qty(trading):
     return {p.symbol: int(float(p.qty)) for p in trading.get_all_positions() if p.symbol in SYMBOLS}
 
 
+def cancel_open(trading, sym):
+    """Cancel this symbol's open orders (e.g. a resting break-even limit) so a market close cannot double up."""
+    from alpaca.trading.enums import QueryOrderStatus
+    from alpaca.trading.requests import GetOrdersRequest
+    for o in trading.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[sym])):
+        trading.cancel_order_by_id(o.id)
+        log({"time_ny": datetime.now(NY).strftime("%Y-%m-%d %H:%M:%S"), "symbol": sym, "event": "cancel open order",
+             "order_id": str(o.id), "note": "cancelled before a market close"})
+
+
 def act_safety(trading, now, sym, qty):
+    cancel_open(trading, sym)
+    held = held_qty(trading).get(sym, 0)  # a resting order may have filled meanwhile
+    if not held:
+        log({"time_ny": now.strftime("%Y-%m-%d %H:%M:%S"), "symbol": sym, "event": "safety flatten (left over from an earlier day)",
+             "qty_before": qty, "qty_after": 0, "note": "already closed by its resting order"})
+        return
+    qty = held
     submit(trading, -qty, "day", sym)
     st = load_state(now.date(), sym)
     st["qty"] = 0
