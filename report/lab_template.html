@@ -198,6 +198,19 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .cal-sum .v { font: 600 1rem var(--f-mono); overflow-wrap: anywhere; } .cal-sum .v.pos { color: var(--pos); } .cal-sum .v.neg { color: var(--neg); }
 .cal-sum small { font: 0.68rem var(--f-mono); color: var(--faint); }
 @media (max-width: 600px) { .mainsw { gap: 6px; } .mainsw button { padding: 8px 10px; } .mainsw button b { font-size: 0.9rem; } .mainsw button small { font-size: 0.62rem; } .cal-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.bh { padding: 12px 12px 8px; }
+.bh-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 8px 16px; }
+.bh-bal { font: 600 1.7rem/1.1 var(--f-mono); color: var(--ink); }
+.bh-chg { font: 0.78rem var(--f-mono); color: var(--muted); margin-top: 3px; }
+.bh-chg.pos { color: var(--pos); } .bh-chg.neg { color: var(--neg); }
+.bh-rng { display: flex; gap: 4px; }
+.bh-rng button { background: var(--raised); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 4px 10px; font: 0.72rem var(--f-mono); cursor: pointer; }
+.bh-rng button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.bh-plot { position: relative; margin-top: 8px; }
+.bh-plot svg { display: block; width: 100%; height: 240px; touch-action: pan-y; }
+.bh-plot text { font: 10px var(--f-mono); fill: var(--faint); }
+.bh-tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font: 0.68rem/1.4 var(--f-mono); padding: 4px 7px; border-radius: 3px; white-space: nowrap; z-index: 2; top: 4px; }
+.bh-empty { color: var(--muted); padding: 24px 0; font-size: 0.85rem; }
 .pcal-tip { font: 0.74rem var(--f-mono); color: var(--muted); min-height: 1.3em; margin-top: 6px; }
 @media (max-width: 600px) { .pcal-c { min-height: 44px; padding: 2px 3px; } .pcal-c .p { display: none; } .pcal-c .v { font-size: 0.6rem; } .pcal-grid { gap: 2px; } }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
@@ -392,6 +405,11 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 
 <main id="view-calendar" class="calview" hidden>
   <h2 id="cal-title">P&amp;L calendar · Long-term account</h2>
+  <div class="panel bh" id="bh" aria-label="Balance history">
+    <div class="bh-head"><div><span class="cap">Balance history</span><div class="bh-bal" id="bh-bal"></div><div class="bh-chg" id="bh-chg"></div></div>
+      <div class="bh-rng" id="bh-rng" role="group" aria-label="Range"><button data-r="1D">1D</button><button data-r="1W">1W</button><button data-r="1M">1M</button><button data-r="ALL">All</button></div></div>
+    <div class="bh-plot" id="bh-plot"></div>
+  </div>
   <div class="panel pcal" id="pcal" aria-label="P&amp;L calendar">
     <div class="pcal-top"><div class="pcal-nav"><button id="pcal-prev" aria-label="Previous month">&lsaquo;</button><b id="pcal-month"></b><button id="pcal-next" aria-label="Next month">&rsaquo;</button></div><div class="pcal-sum" id="pcal-sum"></div></div>
     <div class="pcal-grid" id="pcal-grid"></div>
@@ -946,8 +964,56 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
   const kfmt = v => { const a = Math.abs(v), sg = v > 0 ? "+" : v < 0 ? "−" : "";
     return sg + "$" + (a >= 1e6 ? (a / 1e6).toFixed(1) + "m" : a >= 1e4 ? Math.round(a / 1e3) + "k" : a >= 1e3 ? (a / 1e3).toFixed(1) + "k" : Math.round(a)); };
+  // ---- balance history (TradingView-style): inline SVG, no libraries
+  let bhRange = "1D";
+  function renderHistory(A) {
+    const plot = $("bh-plot"), H = A && A.history && A.history[bhRange] || [];
+    document.querySelectorAll("#bh-rng button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === bhRange)));
+    if (!A || H.length < 2) { $("bh-bal").textContent = A ? usd(A.equity, 2) : ""; $("bh-chg").textContent = ""; $("bh-chg").className = "bh-chg";
+      plot.replaceChildren(Object.assign(document.createElement("div"), { className: "bh-empty", textContent: "No balance history yet." })); return; }
+    const NS = "http://www.w3.org/2000/svg", ny = "America/New_York", W = Math.max(280, plot.clientWidth || 600), Ht = 240, L = 6, R = 62, T = 10, B = 22;
+    const first = H[0][1], n = H.length, last = H[n - 1][1], d = last - first, up = d >= 0, col = css(up ? "--pos" : "--neg");
+    const setHead = i => { const v = H[i][1], dv = v - first; $("bh-bal").textContent = usd(v, 2);
+      $("bh-chg").textContent = `${susd(dv)} (${dv > 0 ? "+" : dv < 0 ? "−" : ""}${Math.abs(dv / first * 100).toFixed(2)}%)` + (i === n - 1 ? "" : "  ·  " + fmtT(H[i][0], true)); $("bh-chg").className = "bh-chg " + cls(dv); };
+    const fmtT = (ts, full) => { const o = bhRange === "1D" ? { hour: "numeric", minute: "2-digit" } : bhRange === "ALL" ? { month: "short", day: "numeric", year: "numeric" } : { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
+      if (full && bhRange === "1D") o.month = "short", o.day = "numeric"; return new Date(ts * 1000).toLocaleString("en-US", { ...o, timeZone: ny }); };
+    const short = () => t1 - t0 < 3 * 86400, fmtX = ts => new Date(ts * 1000).toLocaleString("en-US", bhRange === "1D" ? { hour: "numeric", minute: "2-digit", timeZone: ny } : short() && bhRange !== "ALL" ? { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: ny } : bhRange === "ALL" ? { month: "short", year: "2-digit", timeZone: ny } : { month: "short", day: "numeric", timeZone: ny });
+    let lo = Math.min(...H.map(p => p[1]), first), hi = Math.max(...H.map(p => p[1]), first); if (lo === hi) { lo -= 1; hi += 1; }
+    const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+    const t0 = H[0][0], t1 = H[n - 1][0], x = t => L + (W - L - R) * (t - t0) / ((t1 - t0) || 1), y = v => T + (Ht - T - B) * (1 - (v - lo) / (hi - lo));
+    const el = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Ht}`, role: "img", "aria-label": `Balance history ${bhRange}: ${usd(first, 2)} to ${usd(last, 2)}` });
+    const gid = "bhg"; const defs = el("defs", {}), lg = el("linearGradient", { id: gid, x1: 0, y1: 0, x2: 0, y2: 1 });
+    lg.append(el("stop", { offset: "0", "stop-color": col, "stop-opacity": "0.28" }), el("stop", { offset: "1", "stop-color": col, "stop-opacity": "0.02" })); defs.append(lg); svg.append(defs);
+    const money = v => v >= 1e4 ? "$" + Math.round(v).toLocaleString("en-US") : usd(v, 2);
+    niceTicks(lo, hi, 4).forEach(v => { svg.append(el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--line"), "stroke-width": 1 }), el("text", { x: W - R + 6, y: y(v) + 3, "text-anchor": "start" }, money(v))); });
+    // x labels at ~5 evenly spaced times; the label's x is clamped so it never leaves the plot
+    const nl = W < 420 ? 3 : 5; for (let k = 0; k < nl; k++) { const t = t0 + (t1 - t0) * k / (nl - 1); 
+      svg.append(el("text", { x: x(t), y: Ht - 6, "text-anchor": k === 0 ? "start" : k === nl - 1 ? "end" : "middle" }, fmtX(t))); }
+    const pts = H.map(p => x(p[0]).toFixed(1) + "," + y(p[1]).toFixed(1)), line = "M" + pts.join("L");
+    svg.append(el("path", { d: line + `L${x(t1).toFixed(1)},${(Ht - B).toFixed(1)}L${x(t0).toFixed(1)},${(Ht - B).toFixed(1)}Z`, fill: `url(#${gid})` }));
+    svg.append(el("line", { x1: L, x2: W - R, y1: y(first), y2: y(first), stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "4 4" }));
+    svg.append(el("path", { d: line, fill: "none", stroke: col, "stroke-width": 1.8, "stroke-linejoin": "round" }));
+    const dot = el("circle", { cx: x(t1), cy: y(last), r: 3.5, fill: col });
+    const vl = el("line", { y1: T, y2: Ht - B, stroke: css("--muted"), "stroke-width": 1, visibility: "hidden" }), hl = el("line", { x1: L, x2: W - R, stroke: css("--muted"), "stroke-width": 1, "stroke-dasharray": "2 3", visibility: "hidden" });
+    const hd = el("circle", { r: 4, fill: col, stroke: css("--panel"), "stroke-width": 2, visibility: "hidden" });
+    svg.append(vl, hl, dot, hd);
+    const tip = Object.assign(document.createElement("div"), { className: "bh-tip" }); tip.hidden = true;
+    const move = e => { const rc = svg.getBoundingClientRect(), px = (e.clientX - rc.left) * W / rc.width, t = t0 + (px - L) / (W - L - R) * (t1 - t0);
+      let lo2 = 0, hi2 = n - 1; while (lo2 < hi2) { const m = (lo2 + hi2) >> 1; H[m][0] < t ? lo2 = m + 1 : hi2 = m; }
+      const i = lo2 > 0 && Math.abs(H[lo2 - 1][0] - t) < Math.abs(H[lo2][0] - t) ? lo2 - 1 : lo2, cx = x(H[i][0]), cy = y(H[i][1]);
+      vl.setAttribute("x1", cx); vl.setAttribute("x2", cx); hl.setAttribute("y1", cy); hl.setAttribute("y2", cy); hd.setAttribute("cx", cx); hd.setAttribute("cy", cy);
+      [vl, hl, hd].forEach(q => q.setAttribute("visibility", "visible")); dot.setAttribute("visibility", "hidden");
+      tip.hidden = false; tip.textContent = fmtT(H[i][0], true) + "  " + usd(H[i][1], 2);
+      const tw = tip.offsetWidth, pxs = cx / W * rc.width; tip.style.left = Math.max(0, Math.min(rc.width - tw, pxs - tw / 2)) + "px"; setHead(i); };
+    const out = () => { [vl, hl, hd].forEach(q => q.setAttribute("visibility", "hidden")); dot.setAttribute("visibility", "visible"); tip.hidden = true; setHead(n - 1); };
+    svg.addEventListener("pointermove", move); svg.addEventListener("pointerdown", move); svg.addEventListener("pointerleave", out); svg.addEventListener("pointercancel", out);
+    plot.replaceChildren(svg, tip); setHead(n - 1);
+  }
+  document.querySelectorAll("#bh-rng button").forEach(b => b.addEventListener("click", () => { bhRange = b.dataset.r; renderHistory(acctData()); }));
   let calMonth = null, calKey = null;
   function renderCal(A) {
+    renderHistory(A);
     $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday" : "Long-term") + " account";
     if (!A) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
       $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: "No account data yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
@@ -1015,6 +1081,10 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       return tr; }));
   }
   renderResearch(); renderAcct(); renderParams(); renderAll();
+  const rh = () => { if (!$("view-calendar").hidden) renderHistory(acctData()); };
+  window.addEventListener("resize", () => { clearTimeout(rh.t); rh.t = setTimeout(rh, 150); });
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rh);
+  new MutationObserver(rh).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
   let rt; window.addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(renderAll, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", renderAll);
   new MutationObserver(renderAll).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

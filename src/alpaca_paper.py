@@ -121,6 +121,35 @@ def account_calendar(client, account):
         return None
 
 
+def history_points(timestamps, equity):
+    """[[unix_ts, equity], ...] from a portfolio-history series, dropping points with equity 0/None (before funding)."""
+    out = []
+    for i, ts in enumerate(timestamps or []):
+        eq = equity[i] if i < len(equity or []) else None
+        if ts is None or not eq or eq <= 0:
+            continue
+        out.append([int(ts), round(float(eq), 2)])
+    return out
+
+
+HISTORY_RANGES = {"1D": ("1D", "5Min", True), "1W": ("1W", "15Min", False), "1M": ("30D", "1H", False), "ALL": ("1A", "1D", False)}
+
+
+def account_history(client):
+    """Balance history per range for the Strategy Lab chart. Never raises (None on error)."""
+    try:
+        from alpaca.trading.requests import GetPortfolioHistoryRequest
+        out = {}
+        for key, (period, tf, ext) in HISTORY_RANGES.items():
+            kw = {"extended_hours": True} if ext else {}
+            h = client.get_portfolio_history(GetPortfolioHistoryRequest(period=period, timeframe=tf, **kw))
+            out[key] = history_points(h.timestamp, h.equity)
+        return out
+    except Exception as e:
+        print(f"history unavailable: {e}", flush=True)
+        return None
+
+
 def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
     """Save a paper account's state for the Strategy Lab page (no trading). The intraday account passes its
     own path and `behind` (symbol -> strategies holding it)."""
@@ -146,6 +175,12 @@ def snapshot(client, decisions=None, path=SNAPSHOT, behind=None):
     cal = account_calendar(client, a)
     if cal is not None:
         snap["calendar"] = cal
+    hist = account_history(client)
+    if hist is not None:
+        now = int(datetime.now(timezone.utc).timestamp())
+        if hist.get("ALL") and hist["ALL"][-1][0] < now - 3600:  # daily bars lag: end the All line at the live balance
+            hist["ALL"].append([now, round(float(a.equity), 2)])
+        snap["history"] = hist
     path.write_text(json.dumps(snap, indent=1))
     print(f"saved account snapshot: equity ${snap['equity']:,.0f}, {len(pos)} positions")
     return snap

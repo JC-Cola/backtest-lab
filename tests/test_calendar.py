@@ -24,3 +24,16 @@ def test_template_has_calendar_panel():
     t = TPL.read_text()
     for needle in ('id="pcal"', 'id="pcal-prev"', 'id="pcal-next"', "No trading days yet.", "renderCal"):
         assert needle in t
+
+
+def test_history_points_drops_unfunded():
+    from alpaca_paper import history_points
+    assert history_points([1, 2, 3, 4], [0, None, 25000.123, 25010], ) == [[3, 25000.12], [4, 25010.0]]
+    assert history_points(None, None) == []
+    assert history_points([1, 2], [100.0]) == [[1, 100.0]]
+
+
+def test_template_has_balance_history_panel():
+    t = TPL.read_text()
+    for needle in ('id="bh"', "Balance history", "No balance history yet.", "renderHistory", 'data-r="ALL"'):
+        assert needle in t
