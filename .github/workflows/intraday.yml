@@ -31,12 +31,24 @@ jobs:
           ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
           ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
         run: cd src && python live_noise.py --once
+      - name: Telegram fill alerts (both accounts)
+        if: always()
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+          ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          sleep 5   # let market orders fill
+          cd src && python fill_alerts.py || true
       - name: Commit log and state
         if: always()  # a failed run must still save what it already did
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in agent_memory/noise_live.csv agent_memory/noise_state_*.json agent_memory/alpaca_intraday.json; do
+          for f in agent_memory/noise_live.csv agent_memory/noise_state_*.json agent_memory/alpaca_intraday.json agent_memory/fill_alerts.json; do
             [ -e "$f" ] && git add -- "$f"
           done
           git diff --cached --quiet && exit 0

@@ -295,7 +295,9 @@ def test_intraday_workflow():
     assert "schedule:" not in text and "workflow_dispatch" in text  # timer: Supabase pg_cron bl-intraday
     assert "group: backtest-lab-trading" in text and "cancel-in-progress: false" in text and "contents: write" in text
     assert "python live_noise.py --once" in text and "secrets.ALPACA_INTRADAY_API_KEY" in text and "secrets.ALPACA_INTRADAY_SECRET_KEY" in text
-    assert "secrets.ALPACA_API_KEY" not in text
+    # the long-term keys are only for the fill-alert step (read-only fills), never the trading step
+    assert text.count("secrets.ALPACA_API_KEY") == 1 and text.index("secrets.ALPACA_API_KEY") > text.index("python fill_alerts.py") - 600
+    assert "python fill_alerts.py || true" in text and "agent_memory/fill_alerts.json" in text
     assert "if: failure()" in text and "secrets.TELEGRAM_BOT_TOKEN" in text and "secrets.TELEGRAM_CHAT_ID" in text
     assert "github.run_id" in text and text.rindex("if: failure()") > text.index("Commit log and state") and "|| true" in text
     if d:

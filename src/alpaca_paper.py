@@ -201,7 +201,7 @@ def fetch_fills(client):
         if not page:
             break
         out += [{"id": a["id"], "time": a["transaction_time"], "symbol": a["symbol"], "side": a["side"],
-                 "qty": a["qty"], "price": a["price"]} for a in page]
+                 "qty": a["qty"], "price": a["price"], "order_id": a.get("order_id")} for a in page]
         if len(page) < 100:
             break
         token = page[-1]["id"]
