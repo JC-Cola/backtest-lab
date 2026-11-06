@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-06. 2276 trials in total: 1761 scored, 515 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-06. 2422 trials in total: 1881 scored, 541 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -11,9 +11,9 @@ Updated 2026-11-06. 2276 trials in total: 1761 scored, 515 rejected, 0 sent to t
 - reward now 0.000 (when found 0.000) | folds [0.951, 1.677, 2.616] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold 60 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [0.951, 1.677, 2.616] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p30; hold 60 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.000) | folds [1.245, 1.588, 2.474] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p89 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [1.245, 1.728, 2.342] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p90 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [1.245, 1.728, 2.342] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p90 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
 - reward now 0.000 (when found 0.001) | folds [1.21, 1.596, 2.432] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p40; hold 120 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [1.146, 1.596, 2.461] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p45; hold 120 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [1.315, 1.359, 2.357] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold to the close; stop 25 bp, target 1.5R
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,7 +36,7 @@ Updated 2026-11-06. 2276 trials in total: 1761 scored, 515 rejected, 0 sent to t
 
 ## Why ideas were rejected
 
-- too few trades: 515
+- too few trades: 541
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
