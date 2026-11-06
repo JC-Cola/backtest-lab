@@ -40,22 +40,38 @@ def test_first_run_acts_then_repeat_is_a_noop():
 
 def test_late_run_acts_on_latest_point_only():
     a = plan(at(12, 18), {"SPY": st(["10:00"])})
-    assert [(x["kind"], x["point"], x["last"]) for x in a] == [("check", "12:00", False)]
+    assert [(x["kind"], x["point"]) for x in a] == [("check", "12:00")]
 
 
-def test_last_check_flags_close_order():
-    a = plan(at(15, 12), {"SPY": st(["14:00"], qty=10)})
-    assert a == [{"sym": "SPY", "kind": "check", "point": "15:00", "last": True}]
-    assert plan(at(15, 30), {"SPY": st(["15:00"], moc=True)}) == []
+def test_last_check_is_a_plain_check():
+    a = plan(at(15, 12), {"SPY": st(["14:00"], qty=10)}, {"SPY": 10})
+    assert a == [{"sym": "SPY", "kind": "check", "point": "15:00"}]
+    assert plan(at(15, 30), {"SPY": st(["15:00"], qty=10)}, {"SPY": 10}) == []
 
 
-def test_backstop_before_and_after_1550():
-    s = {"SPY": st(["15:00"], qty=7)}  # 15:00 check ran but the close order was not recorded
-    assert plan(at(15, 47), s)[0]["kind"] == "flatten_moc"
-    assert plan(at(15, 52), s)[0]["kind"] == "flatten_market"
-    assert plan(at(16, 1), s) == []
-    assert plan(at(15, 47), {"SPY": st(["15:00"], qty=7, moc=True)}) == []
-    assert plan(at(15, 47), {"SPY": st(["15:00"], qty=0)}) == []
+def test_flatten_at_1556_is_a_market_order_for_the_held_qty():
+    a = plan(at(15, 56), {"SPY": st(["15:00"], qty=-16)}, {"SPY": -16})
+    assert a == [{"sym": "SPY", "kind": "flatten_market", "point": "15:55", "qty": -16}]
+
+
+def test_nothing_after_1600_and_no_double_close():
+    s = {"SPY": st(["15:00"], qty=7)}
+    assert plan(at(16, 1), s, {"SPY": 7}) == []
+    closed = {"SPY": st(["15:00"], qty=0, moc=True)}
+    assert plan(at(15, 57), closed, {}) == []
+    assert not any(x["kind"] == "flatten_market" for x in plan(at(15, 57), closed, {"SPY": 7}))  # order pending: log only
+
+
+def test_held_but_state_zero_at_flatten_closes_held():
+    a = plan(at(15, 56), {"SPY": st(["15:00"], qty=0)}, {"SPY": -19})
+    assert a == [{"sym": "SPY", "kind": "flatten_market", "point": "15:55", "qty": -19}]
+
+
+def test_state_without_held_is_only_logged():
+    a = plan(at(15, 56), {"SPY": st(["15:00"], qty=7)}, {})
+    assert a == [{"sym": "SPY", "kind": "mismatch", "point": "15:55", "held": 0, "state": 7}]
+    b = plan(at(12, 5), {"SPY": st(["12:00"], qty=7)}, {"SPY": 5})
+    assert b == [{"sym": "SPY", "kind": "mismatch", "point": "12:00", "held": 5, "state": 7}]
 
 
 def test_leftover_position_triggers_safety_flatten():
@@ -95,18 +111,33 @@ def fake(tmp_path, monkeypatch):
     return sent
 
 
-def test_last_check_submits_moc_and_marks_state(fake):
-    ln.act_check(FakeTrading(), None, at(15, 5), 0.5, "SPY", "15:00", True)
-    assert fake[0][2] == "day" and fake[1][2] == "cls" and fake[1][1] == -fake[0][1]
+def test_last_check_sends_no_close_order(fake):
+    ln.act_check(FakeTrading(), None, at(15, 5), 0.5, "SPY", "15:00")
+    assert [x[2] for x in fake] == ["day"] and len(fake) == 1
     s = ln.load_state(DAY, "SPY")
-    assert s["qty"] == 0 and s["moc"] is True and s["done"] == ["15:00"]
-    assert plan(at(15, 20), {"SPY": s}) == []
+    assert s["qty"] == fake[0][1] and s["moc"] is False and s["done"] == ["15:00"]
 
 
-def test_backstop_market_and_safety_executors(fake):
+def test_flatten_market_executor_and_no_double_close(fake):
     ln.save_state("SPY", st(["15:00"], qty=9))
-    ln.act_flatten(FakeTrading(), at(15, 52), "SPY", "flatten_market")
-    assert fake == [("SPY", -9, "day")] and ln.load_state(DAY, "SPY")["qty"] == 0
+    ln.act_flatten(FakeTrading(), at(15, 56), "SPY", 9)
+    assert fake == [("SPY", -9, "day")]
+    s = ln.load_state(DAY, "SPY")
+    assert s["qty"] == 0 and s["moc"] is True
+    assert plan(at(15, 57), {"SPY": s}, {"SPY": 0}) == []
+    ln.act_flatten(FakeTrading(), at(15, 57), "SPY", 9)  # repeat run: moc is set, nothing sent
+    assert fake == [("SPY", -9, "day")]
+
+
+def test_held_with_zero_state_flattens_held(fake):
+    ln.save_state("QQQ", st(["15:00"], qty=0))
+    acts = plan(at(15, 56), {"QQQ": ln.load_state(DAY, "QQQ")}, {"QQQ": -19})
+    for x in acts:
+        ln.act_flatten(FakeTrading(), at(15, 56), x["sym"], x["qty"])
+    assert fake == [("QQQ", 19, "day")] and ln.load_state(DAY, "QQQ")["moc"] is True
+
+
+def test_safety_executor(fake):
     ln.act_safety(FakeTrading(), at(10, 5), "QQQ", 4)
     assert fake[-1] == ("QQQ", -4, "day")
     assert "safety flatten (left over from an earlier day)" in ln.LOG.read_text()
@@ -234,6 +265,8 @@ def test_intraday_workflow():
     assert "group: backtest-lab-trading" in text and "cancel-in-progress: false" in text and "contents: write" in text
     assert "python live_noise.py --once" in text and "secrets.ALPACA_INTRADAY_API_KEY" in text and "secrets.ALPACA_INTRADAY_SECRET_KEY" in text
     assert "secrets.ALPACA_API_KEY" not in text
+    assert "if: failure()" in text and "secrets.TELEGRAM_BOT_TOKEN" in text and "secrets.TELEGRAM_CHAT_ID" in text
+    assert "github.run_id" in text and text.rindex("if: failure()") > text.index("Commit log and state") and "|| true" in text
     if d:
         assert d["concurrency"]["cancel-in-progress"] is False and "schedule" not in d[True]
 
@@ -246,6 +279,7 @@ def test_nightly_workflow():
     for s in ("python intraday_data.py SPY QQQ", "python daily.py", "python report.py",
               "gh issue create", "daily-report", "issues: write", "contents: write", "restore-keys", "actions/cache@v4"):
         assert s in text
+    assert "python flat_guard.py" in text and "if: failure()" in text and "secrets.TELEGRAM_CHAT_ID" in text and "github.run_id" in text
     assert text.index("daily.py") < text.index("report.py") < text.index("gh issue create")
     if d:
         assert "rounds" not in d[True]["workflow_dispatch"]["inputs"]
@@ -258,7 +292,37 @@ def test_requirements_cover_imports():
     assert "anthropic" not in req
 
 
-def test_no_safety_flatten_while_close_order_pending():
+def test_no_safety_flatten_after_the_day_was_closed():
     now = at(15, 31)
     acts = ln.plan_once(now, ln.schedule(now), {"SPY": {"qty": 0, "done": ["15:00"], "moc": True}}, {"SPY": -16})
-    assert acts == []
+    assert [a["kind"] for a in acts] == ["mismatch"]
+
+
+# ---------- flat_guard ----------
+def test_flat_guard_messages(monkeypatch):
+    import flat_guard as fg
+    assert fg.message({}, []) is None
+    assert fg.message({"SPY": -16, "QQQ": -19}, []) == ("⚠️ Intraday account is NOT flat after the close: QQQ -19, SPY -16. "
+                                                      "They will be closed at the 9:31 check.")
+    assert "Open orders: buy 3 SPY." in fg.message({}, ["buy 3 SPY"])
+
+
+def test_flat_guard_main_sends_only_when_not_flat():
+    import flat_guard as fg
+    from types import SimpleNamespace as NS
+    sent = []
+
+    class T:
+        def __init__(self, pos):
+            self.pos = pos
+        def get_all_positions(self):
+            return [NS(symbol=s, qty=str(q)) for s, q in self.pos.items()]
+        def get_orders(self, req):
+            return []
+    assert fg.main(T({}), sent.append) is None and sent == []
+    assert "QQQ -19, SPY -16" in fg.main(T({"SPY": -16, "QQQ": -19}), sent.append) and len(sent) == 1
+
+    class Boom(T):
+        def get_all_positions(self):
+            raise RuntimeError("api down")
+    assert fg.main(Boom({}), sent.append) is None and len(sent) == 1  # never raises

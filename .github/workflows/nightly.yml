@@ -51,6 +51,14 @@ jobs:
         run: cd src && python intraday_data.py SPY QQQ
       - name: Nightly run
         run: cd src && python daily.py ${{ inputs.no_orders && '--no-orders' || '' }}
+      - name: Intraday account must be flat after the close (alert only)
+        if: always()
+        env:
+          ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+          ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: cd src && python flat_guard.py || true
       - name: Daily report
         if: always()
         run: cd src && python report.py
@@ -82,6 +90,15 @@ jobs:
             gh issue create --title "Trading report $D" --label daily-report \
               --body "The report could not be built. See the run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           fi
+      - name: Telegram alert on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export MSG="⚠️ nightly run failed at $(TZ=America/New_York date '+%H:%M') New York: $RUN_URL"
+          cd src && python -c "import os, telegram; telegram.send(os.environ['MSG'])" || true
       - name: Evening Telegram briefing
         if: always()
         run: cd src && python briefing.py evening

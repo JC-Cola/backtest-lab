@@ -4,7 +4,8 @@ Rules = the backtest's tuning-year choice (INTRADAY_PLAN.md; lookback 14 days, h
   sigma(m) = average |close(m)/open - 1| at minute m over the last 14 complete sessions
   upper = max(today's open, yesterday's close) x (1 + sigma), lower = min(open, prev close) x (1 - sigma)
   at 10:00, 11:00, ... 15:00 New York: long if price > max(upper, VWAP), short if < min(lower, VWAP), else flat
-  flat at the close (market-on-close order, i.e. the official closing price, like the backtest)
+  flat at the close: a plain market (DAY) order in the run at ~15:56 New York (no market-on-close orders: Alpaca paper
+  let CLS orders expire unfilled). The backtest closes at the official close; this is a few minutes earlier.
 
 Sizing: its own $25k INTRADAY paper account (keys ALPACA_INTRADAY_API_KEY / ALPACA_INTRADAY_SECRET_KEY), FRACTION
 x equity per symbol (default 50%, so SPY + QQQ use the whole account), always flat by the close. The daily
@@ -36,7 +37,7 @@ SNAPSHOT = ROOT / "agent_memory" / "alpaca_intraday.json"
 NY = ZoneInfo("America/New_York")
 SYMBOLS, LOOKBACK = ["SPY", "QQQ"], 14
 CHECKS = [(10, 0), (11, 0), (12, 0), (13, 0), (14, 0), (15, 0)]
-FLATTEN = (15, 46)  # market-on-close orders must be in before 15:50
+FLATTEN = (15, 55)  # plain market order for the close; the cloud run at ~15:56 acts on this point
 FIELDS = ["time_ny", "symbol", "event", "price", "vwap", "upper", "lower", "decision", "qty_before", "qty_after", "order_id", "note"]
 
 
@@ -114,26 +115,29 @@ def save_state(sym, st):
 
 
 def plan_once(now, pts, states, held):
-    """Pure decision for one --once run: a list of actions {sym, kind, point[, last]}.
-    kind: safety (close a position left from an earlier day), check (act on a check point), flatten_moc / flatten_market
-    (backstop at the 15:46 point). A check point is acted on once: the latest past point, only if not already in `done`."""
+    """Pure decision for one --once run: a list of actions {sym, kind, point[, qty]}.
+    kind: safety (close a position left from an earlier day), check (act on a check point), flatten_market (close the
+    day's position with a plain market order at the flatten point, before 16:00), mismatch (account and state disagree:
+    only logged, never traded). A check point is acted on once: the latest past point, only if not already in `done`.
+    State key `moc` means "closed for the day" (kept for compatibility with existing state files)."""
     past = [p for p in pts if p <= now]
+    close = now.replace(hour=16, minute=0, second=0, microsecond=0)
     out = []
     for sym, st in states.items():
-        # shares held but today's state expects none and no close order is pending: left from an earlier day
-        if held.get(sym, 0) and not st.get("qty") and not st.get("moc"):
-            out.append({"sym": sym, "kind": "safety", "point": ""})
-        if not past:
+        h, q, closed = held.get(sym, 0), st.get("qty", 0), st.get("moc")
+        at_flatten = bool(past) and past[-1] == pts[-1]
+        label = f"{past[-1]:%H:%M}" if past else ""
+        if at_flatten and not closed and h and now < close:
+            # the account holds shares (state agrees or not, e.g. a crashed run): close what is really held
+            out.append({"sym": sym, "kind": "flatten_market", "point": label, "qty": h})
             continue
-        label = f"{past[-1]:%H:%M}"
-        if past[-1] == pts[-1]:  # backstop point: only if the 15:00 check did not already send the close order
-            if st.get("qty") and not st.get("moc"):
-                out.append({"sym": sym, "kind": "flatten_moc" if now < now.replace(hour=15, minute=50, second=0, microsecond=0)
-                            else "flatten_market" if now < now.replace(hour=16, minute=0, second=0, microsecond=0) else "none",
-                            "point": label})
-        elif label not in st.get("done", []):
-            out.append({"sym": sym, "kind": "check", "point": label, "last": past[-1] == pts[-2]})
-    return [a for a in out if a["kind"] != "none"]
+        if h and not q and not closed:  # shares held but today's state expects none: left from an earlier day
+            out.append({"sym": sym, "kind": "safety", "point": ""})
+        elif h != q and now < close:
+            out.append({"sym": sym, "kind": "mismatch", "point": label, "held": h, "state": q})
+        if past and not at_flatten and label not in st.get("done", []):
+            out.append({"sym": sym, "kind": "check", "point": label})
+    return out
 
 
 def log(row):
@@ -156,17 +160,7 @@ def submit(trading, qty, tif, sym):
     return str(o.id)
 
 
-def wait_filled(trading, oid, timeout=60):
-    """Wait until an order is no longer open (filled, cancelled or rejected); market orders fill in seconds."""
-    end = time.time() + timeout
-    while time.time() < end:
-        if str(trading.get_order_by_id(oid).status).split(".")[-1].lower() in ("filled", "canceled", "rejected", "expired"):
-            return
-        time.sleep(1)
-    raise RuntimeError(f"order {oid} still open after {timeout}s")
-
-
-def act_check(trading, data_client, now, fraction, sym, point=None, last=False):
+def act_check(trading, data_client, now, fraction, sym, point=None):
     today = now.date()
     sigma, prev_close, last_day = history_bands(data_client, today, sym)
     bars = today_bars(data_client, now, sym)
@@ -193,32 +187,27 @@ def act_check(trading, data_client, now, fraction, sym, point=None, last=False):
          "note": f"bands from {LOOKBACK} sessions to {last_day}; prev close {prev_close:.2f}; open {o:.2f} (IEX)"})
     st["qty"] = target
     st["done"] = sorted(set(st["done"]) | {point or f"{now:%H:%M}"})
-    save_state(sym, st)  # saved before the close order so a repeat run never acts on this point twice
-    if last and target:  # last check: send the market-on-close order now, no separate run needed
-        if oid:  # Alpaca rejects an opposite-side order while the entry is still open ("potential wash trade")
-            wait_filled(trading, oid)
-        oid = submit(trading, -target, "cls", sym)
-        log({"time_ny": stamp, "symbol": sym, "event": "flatten at close", "qty_before": target, "qty_after": 0,
-             "order_id": oid, "note": "market-on-close order, sent with the last check"})
-        st["qty"], st["moc"] = 0, True
-        save_state(sym, st)
-    elif last:
-        st["moc"] = True
-        save_state(sym, st)
+    save_state(sym, st)
 
 
-def act_flatten(trading, now, sym, kind="flatten_moc"):
+def act_flatten(trading, now, sym, qty=None):
+    """Close the day's position with a plain market (DAY) order. qty = shares held (default: the state's qty)."""
     st = load_state(now.date(), sym)
     stamp = now.strftime("%Y-%m-%d %H:%M:%S")
-    if st["qty"] and not st["moc"]:
-        market = kind == "flatten_market"
-        oid = submit(trading, -st["qty"], "day" if market else "cls", sym)
-        log({"time_ny": stamp, "symbol": sym, "event": "flatten at close", "qty_before": st["qty"], "qty_after": 0, "order_id": oid,
-             "note": "plain market order (after 15:50, too late for market-on-close)" if market else "market-on-close order (backstop)"})
-        st["qty"], st["moc"] = 0, not market
+    qty = st["qty"] if qty is None else qty
+    if qty and not st["moc"]:
+        oid = submit(trading, -qty, "day", sym)
+        log({"time_ny": stamp, "symbol": sym, "event": "flatten at close", "qty_before": qty, "qty_after": 0, "order_id": oid,
+             "note": "plain market order"})
+        st["qty"], st["moc"] = 0, True  # moc = closed for the day: a repeat run must not close twice
         save_state(sym, st)
     else:
         log({"time_ny": stamp, "symbol": sym, "event": "flatten at close", "qty_before": 0, "qty_after": 0, "note": "already flat"})
+
+
+def act_mismatch(now, sym, held, state):
+    log({"time_ny": now.strftime("%Y-%m-%d %H:%M:%S"), "symbol": sym, "event": "position mismatch", "qty_before": state,
+         "qty_after": held, "note": f"account holds {held}, state says {state}; no trade"})
 
 
 def held_qty(trading):
@@ -274,9 +263,11 @@ def main():
                 if act["kind"] == "safety":
                     act_safety(trading, now, sym, held[sym])
                 elif act["kind"] == "check":
-                    act_check(trading, data_client, now, a.fraction, sym, act["point"], act["last"])
+                    act_check(trading, data_client, now, a.fraction, sym, act["point"])
+                elif act["kind"] == "mismatch":
+                    act_mismatch(now, sym, act["held"], act["state"])
                 else:
-                    act_flatten(trading, now, sym, act["kind"])
+                    act_flatten(trading, now, sym, act["qty"])
             except Exception as e:
                 print(f"{sym} {act['kind']} failed: {e}", flush=True)
                 failed.append(sym)
@@ -299,11 +290,16 @@ def main():
             print(f"next: {'flatten' if i == len(pts) - 1 else 'check'} at {p:%H:%M:%S} New York (in {wait / 60:.0f} min)", flush=True)
             time.sleep(wait)
         now = datetime.now(NY)
-        for sym in SYMBOLS:
-            if i == len(pts) - 1:
-                act_flatten(trading, now, sym)
-            else:
-                act_check(trading, data_client, now, a.fraction, sym, f"{p:%H:%M}", i == len(CHECKS) - 1)
+        if i == len(pts) - 1:  # same rule as --once: close what the account really holds, market order, before 16:00
+            states = {sym: load_state(now.date(), sym) for sym in SYMBOLS}
+            for act in plan_once(now, pts, states, held_qty(trading)):
+                if act["kind"] == "flatten_market":
+                    act_flatten(trading, now, act["sym"], act["qty"])
+                elif act["kind"] == "mismatch":
+                    act_mismatch(now, act["sym"], act["held"], act["state"])
+        else:
+            for sym in SYMBOLS:
+                act_check(trading, data_client, now, a.fraction, sym, f"{p:%H:%M}")
 
 
 if __name__ == "__main__":

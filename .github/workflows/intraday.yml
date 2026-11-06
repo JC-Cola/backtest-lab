@@ -1,8 +1,10 @@
 name: intraday
-# SPY/QQQ noise-band breakout on the INTRADAY Alpaca paper account. Every 30 minutes on weekdays, 13:01-20:31 UTC,
-# which covers 10:01-15:31 New York in both EST and EDT. live_noise.py --once ignores runs outside the session,
-# acts once per check point, and is safe to run late or twice.
-# Timer: Supabase pg_cron (job bl-intraday) dispatches this workflow; GitHub's own cron dropped runs.
+# SPY/QQQ noise-band breakout on the INTRADAY Alpaca paper account. live_noise.py --once ignores runs outside the
+# session, acts once per check point, and is safe to run late or twice.
+# Checks: runs at :01 and :31 past the hour, 13:01-20:31 UTC on weekdays (covers 10:00-15:00 New York in EST and EDT),
+# dispatched by Supabase pg_cron (job bl-intraday); GitHub's own cron dropped runs.
+# Market close: NO market-on-close orders (Alpaca paper let them expire). The run at 15:56 New York closes the position
+# with a plain market order; its cron is '56 19,20 * * 1-5' UTC (the one that falls at 14:56 NY is a harmless no-op).
 on:
   workflow_dispatch:
 
@@ -44,3 +46,12 @@ jobs:
             sleep 5
           done
           exit 1
+      - name: Telegram alert on failure
+        if: failure()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export MSG="⚠️ intraday run failed at $(TZ=America/New_York date '+%H:%M') New York: $RUN_URL"
+          cd src && python -c "import os, telegram; telegram.send(os.environ['MSG'])" || true
