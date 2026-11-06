@@ -70,4 +70,11 @@ INTRA_456 = {
         "The scanner picks days when buyers already have the upper hand, which should make a breakout more likely to run.",
         ["The scanner was built to pick among thousands of stocks, not to time two index funds.", "Each setup is rare, so there are few trades and a result is easy to get by luck.", "The plain breakout it builds on did not beat random timing."],
         {"setup": ("Setup", "Each is a different daily pattern.", {"breakout_20d": "20-day breakout", "bull_flag": "bull flag", "reclaim_ma20": "reclaim 20-day average", "oversold_bounce": "oversold bounce"})}),
+    # study 8 (INTRADAY_PLAN_8.md)
+    "id_noise_freq": ("ID-NOISE-FREQ", "The Noise-Band Breakout, checked every 5, 15, 30 or 60 minutes instead of only hourly.",
+        ["BANDS  as in study 1: open or previous close, widened by the typical move so far", "CHECK  every 5, 15, 30 or 60 minutes from 10:00", "ENTRY  long above the upper band and VWAP, short below the lower band and VWAP", "EXIT   the next check, or the close"],
+        "Checking more often reacts sooner to a breakout and gets out sooner when it fails, which might mean smaller losses.",
+        ["Each extra check is another chance to flip, and every trade costs 2 bp, so faster checking multiplies costs.", "Faster checks catch more false breakouts, so the win rate falls.", "It must also beat the hourly setting at double costs to count."],
+        {"check": ("Check every", "Shorter means more trades and more cost.", {5: "5 minutes", 15: "15 minutes", 30: "30 minutes", 60: "60 minutes"}),
+         "lookback": ("Days for the typical move", "Longer smooths the band.", {10: "10 days", 14: "14 days"})}),
 }

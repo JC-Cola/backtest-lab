@@ -184,6 +184,20 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .pcal-c.up { background: var(--pos-soft); color: var(--pos); border-color: var(--pos); }
 .pcal-c.dn { background: var(--neg-soft); color: var(--neg); border-color: var(--neg); }
 .pcal-c.on { outline: 2px solid var(--accent); }
+.mainsw { display: flex; gap: 8px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); border-bottom: 1px solid var(--line); }
+.mainsw button { all: unset; box-sizing: border-box; flex: 1 1 0; min-width: 0; cursor: pointer; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); }
+.mainsw button b { font: 600 1rem var(--f-sans); color: var(--ink); }
+.mainsw button small { font: 0.7rem var(--f-mono); color: var(--faint); overflow-wrap: anywhere; }
+.mainsw button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.mainsw button[aria-pressed="true"] b { color: var(--accent); }
+.mainsw button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.calview { padding: 16px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-direction: column; gap: 12px; }
+.calview h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.cal-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.cal-sum > div { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cal-sum .v { font: 600 1rem var(--f-mono); overflow-wrap: anywhere; } .cal-sum .v.pos { color: var(--pos); } .cal-sum .v.neg { color: var(--neg); }
+.cal-sum small { font: 0.68rem var(--f-mono); color: var(--faint); }
+@media (max-width: 600px) { .mainsw { gap: 6px; } .mainsw button { padding: 8px 10px; } .mainsw button b { font-size: 0.9rem; } .mainsw button small { font-size: 0.62rem; } .cal-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pcal-tip { font: 0.74rem var(--f-mono); color: var(--muted); min-height: 1.3em; margin-top: 6px; }
 @media (max-width: 600px) { .pcal-c { min-height: 44px; padding: 2px 3px; } .pcal-c .p { display: none; } .pcal-c .v { font-size: 0.6rem; } .pcal-grid { gap: 2px; } }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
@@ -267,6 +281,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-research" aria-selected="false">Research</button>
     <button role="tab" id="tab-backtest" aria-selected="true">Backtest</button>
+    <button role="tab" id="tab-calendar" aria-selected="false">P&amp;L calendar</button>
   </div>
   <div class="seg" id="mode" aria-label="How much detail to show">
     <button data-m="simple" aria-pressed="true">Simple</button>
@@ -280,14 +295,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="engine" data-pro><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
 </header>
 
+<nav class="mainsw" id="lfilter" aria-label="Which account and strategies to show">
+  <button data-f="longterm" aria-pressed="false"><b>Long-term</b><small>daily, held days to months</small></button>
+  <button data-f="intraday" aria-pressed="true"><b>Intraday</b><small>1 min – 1 day, flat every night</small></button>
+</nav>
+
 <section class="acct" id="acct" hidden>
   <div class="acct-head"><h2 id="ac-title">Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
-  <div class="panel pcal" id="pcal" aria-label="P&amp;L calendar">
-    <div class="pcal-top"><div class="pcal-nav"><button id="pcal-prev" aria-label="Previous month">&lsaquo;</button><b id="pcal-month"></b><button id="pcal-next" aria-label="Next month">&rsaquo;</button></div><div class="pcal-sum" id="pcal-sum"></div></div>
-    <div class="pcal-grid" id="pcal-grid"></div>
-    <div class="pcal-tip" id="pcal-tip" aria-live="polite"></div>
-  </div>
   <div class="acct-tables">
     <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
     <div class="panel tw"><table><thead><tr><th>Recent orders</th><th class="n">Quantity</th><th class="n">Filled at</th><th>Status</th></tr></thead><tbody id="ac-ord"></tbody></table></div>
@@ -296,11 +311,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </section>
 
 <section class="leader" id="leader">
-  <div class="acct-head"><h2>Which strategy is best?</h2>
-    <div class="seg" id="lfilter" aria-label="Which strategies to rank">
-      <button data-f="longterm" aria-pressed="false">Long-term (daily, held days to months)</button>
-      <button data-f="intraday" aria-pressed="true">Intraday (1 min – 1 day, flat every night)</button>
-    </div></div>
+  <div class="acct-head"><h2>Which strategy is best?</h2></div>
   <p class="answer" id="ld-answer"></p>
   <div class="ranks" id="ranks"></div>
   <div class="panel ports" id="ports" hidden>
@@ -377,6 +388,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div style="display:flex;flex-direction:column;gap:6px;min-width:0"><span class="cap">Why it might fail</span><ul class="kills" id="kills"></ul></div>
     <div class="verdict" data-pro><span class="cap">Verdict</span><div><span class="badge" id="v-badge">—</span></div><p id="v-text"></p></div>
   </aside>
+</main>
+
+<main id="view-calendar" class="calview" hidden>
+  <h2 id="cal-title">P&amp;L calendar · Long-term account</h2>
+  <div class="panel pcal" id="pcal" aria-label="P&amp;L calendar">
+    <div class="pcal-top"><div class="pcal-nav"><button id="pcal-prev" aria-label="Previous month">&lsaquo;</button><b id="pcal-month"></b><button id="pcal-next" aria-label="Next month">&rsaquo;</button></div><div class="pcal-sum" id="pcal-sum"></div></div>
+    <div class="pcal-grid" id="pcal-grid"></div>
+    <div class="pcal-tip" id="pcal-tip" aria-live="polite"></div>
+  </div>
+  <div class="cal-sum" id="cal-sum"></div>
 </main>
 
 <main id="view-research" class="research" hidden>
@@ -816,12 +837,17 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     bt.addEventListener("click", () => { win = bt.dataset.w; try { localStorage.setItem("lab-window", win); } catch (e) {}
       document.querySelectorAll("#window button").forEach(x => x.setAttribute("aria-pressed", String(x === bt))); renderAll(); });
   });
-  const tabs = { research: $("tab-research"), backtest: $("tab-backtest") };
-  Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => {
+  const tabs = { research: $("tab-research"), backtest: $("tab-backtest"), calendar: $("tab-calendar") };
+  let curTab = "backtest";
+  function showTab(k) {
+    curTab = k;
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest";
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar";
+    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research";
     if (k === "backtest") renderStrategy();
-  }));
+    if (k === "calendar") renderCal(acctData());
+  }
+  Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => showTab(k)));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
   $("s-gen").textContent = "Results generated " + D.generated.slice(0, 10);
   document.querySelectorAll("#mode button").forEach(bt => {
@@ -914,7 +940,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
     bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
       document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
-      enterSection(); renderAcct(); renderParams(); renderAll(); });
+      enterSection(); renderAcct(); renderCal(acctData()); renderParams(); renderAll(); });
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
@@ -922,9 +948,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     return sg + "$" + (a >= 1e6 ? (a / 1e6).toFixed(1) + "m" : a >= 1e4 ? Math.round(a / 1e3) + "k" : a >= 1e3 ? (a / 1e3).toFixed(1) + "k" : Math.round(a)); };
   let calMonth = null, calKey = null;
   function renderCal(A) {
+    $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday" : "Long-term") + " account";
+    if (!A) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
+      $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: "No account data yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
     const cal = (A.calendar || []).slice().sort((a, b) => a.date < b.date ? -1 : 1), box = $("pcal-grid"), tip = $("pcal-tip");
     tip.textContent = "";
-    if (!cal.length) { $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
+    if (!cal.length) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
       box.replaceChildren(Object.assign(document.createElement("div"), { textContent: "No trading days yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
     const months = [...new Set(cal.map(c => c.date.slice(0, 7)))], key = lfilter;
     if (calKey !== key || !months.includes(calMonth)) { calKey = key; calMonth = months[months.length - 1]; }
@@ -951,12 +980,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       els.push(b);
     }
     box.replaceChildren(...els);
+    const best = cal.reduce((a, c) => c.pl > a.pl ? c : a), worst = cal.reduce((a, c) => c.pl < a.pl ? c : a), tot = A.equity - A.start_equity;
+    const cell = (l, v, s, c) => { const d = document.createElement("div"); d.append(Object.assign(document.createElement("span"), { className: "cap", textContent: l }),
+      Object.assign(document.createElement("span"), { className: "v " + (c || ""), textContent: v }), Object.assign(document.createElement("small"), { textContent: s })); return d; };
+    $("cal-sum").replaceChildren(cell("Account value", usd(A.equity), "started with " + usd(A.start_equity)), cell("Total since start", susd(tot), pct(tot / A.start_equity, 2), cls(tot)),
+      cell("Best day", susd(best.pl), best.date, cls(best.pl)), cell("Worst day", susd(worst.pl), worst.date, cls(worst.pl)));
   }
   $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
   $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
   function renderAcct() {
     const A = acctData(); $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
-    renderCal(A);
     $("ac-title").textContent = lfilter === "intraday" ? "Live paper trading: intraday account" : "Live paper trading: long-term account";
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";

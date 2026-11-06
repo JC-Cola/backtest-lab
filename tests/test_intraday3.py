@@ -6,9 +6,10 @@ import intraday3 as S3
 import intraday4 as S4
 import intraday5 as S5
 import intraday7 as S7
+import intraday8 as S8
 from test_intraday import perturbed, synth
 
-ALL = S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES + S7.STRATEGIES
+ALL = S3.STRATEGIES + S4.STRATEGIES + S5.STRATEGIES + S7.STRATEGIES + S8.STRATEGIES
 
 
 @pytest.mark.parametrize("st", ALL, ids=[s["id"] for s in ALL])
@@ -141,3 +142,28 @@ def test_dts_setup_rules():
     assert S7.setup_flags(d, "oversold_bounce")[31]
     g = np.r_[np.full(6, 100.0), np.linspace(100, 120, 10)[1:], np.full(5, 120.0), z]
     assert S7.setup_flags(g, "bull_flag")[len(g) - 1]
+
+
+def test_noise_check_60_and_30_reproduce_study_1():
+    """Study 8 reuses intraday.noise_breakout unchanged: the study-1 tuned settings give the stored test-year trade counts."""
+    import json
+    f = I.ROOT / "results" / "intraday.json"
+    if not f.exists() or not (I.ROOT / "data" / "intraday").exists():
+        pytest.skip("study-1 results or minute data not available")
+    rows = [r for r in json.loads(f.read_text())["results"] if r["strategy"] == "id_noise_breakout"]
+    for r in rows:
+        D = I.Days(r["asset"])
+        t = I.noise_breakout(D, **r["params"])
+        X = slice(int(D.dates.searchsorted(I.pd.Timestamp(I.OOS_START))), D.n)
+        assert r["params"]["check"] in (30, 60)
+        # the minute files gained the final session's later bars after study 1 ran (979 -> 980 trades), so allow a day's drift
+        assert abs(int(I.in_window(t, X).sum()) - r["oos"]["trades"]) <= 2
+        assert I.sharpe(I.daily_returns(D, t, X)) == pytest.approx(r["oos"]["sharpe"], abs=0.01)
+
+
+def test_noise_check_interval_sets_the_schedule():
+    A = I.Days.from_arrays(*synth())
+    for check in S8.CHECKS:
+        t = I.noise_breakout(A, lookback=10, check=check)
+        # entries are filled at the open after a check close: minute m+1 with (m + 1 - 30) % check == 0 ... or a later flip
+        assert ((t["entry_m"] - 30) % check == 0).all()
