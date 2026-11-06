@@ -14,3 +14,5 @@ time_ny,symbol,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_
 2026-11-04 15:56:20,SPY,manual close,766.38,,,,,16,0,660615e4-c588-4845-ba3d-c8b91b37350c,15:00 check froze while the Mac slept; closed by hand with a market order before the bell
 2026-11-05 15:10:58,QQQ,check,651.84,658.4,697.23,678.01,short,0,-19,6cf74458-719e-4a49-80f7-0d3983181cd7,bands from 14 sessions to 2026-11-04; prev close 691.85; open 683.33 (IEX)
 2026-11-05 15:10:58,QQQ,flatten at close,,,,,,-19,0,374877fc-ffeb-47b8-bbbb-4257a5cacb86,"market-on-close order, sent with the last check"
+2026-11-06 10:01:31,SPY,check,741.05,738.23,736.77,731.22,long,0,16,8e408370-81a3-4c3a-b784-5a7dfc643c0f,bands from 14 sessions to 2026-11-05; prev close 733.13; open 734.85 (IEX)
+2026-11-06 10:01:31,QQQ,check,663.44,660.44,661.12,645.11,long,0,18,2c68cef8-4528-4639-886b-9b572fdada45,bands from 14 sessions to 2026-11-05; prev close 647.77; open 658.42 (IEX)
