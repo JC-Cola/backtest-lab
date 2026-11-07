@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-07. 6912 trials in total: 5540 scored, 1372 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-07. 6968 trials in total: 5585 scored, 1383 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -12,8 +12,8 @@ Updated 2026-11-07. 6912 trials in total: 5540 scored, 1372 rejected, 0 sent to 
 - reward now 0.000 (when found 0.000) | folds [1.703, 0.951, 1.488] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and range_pos > p30; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.22, 1.55, 1.216] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and ret_30 > p15; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.571, 0.817, 1.582] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and range_pos > p20; hold 240 min
+- reward now 0.000 (when found 0.000) | folds [1.73, 1.645, 0.986] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and ret_30 > p30; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.849, 0.569, 1.513] | SPY at 11:00: long when gap > p85 and prev_day_ret < p84 and range_pos > p25; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.628, 1.476, 1.027] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and ret_30 > p20; hold 240 min
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-07. 6912 trials in total: 5540 scored, 1372 rejected, 0 sent to 
 
 ## Why ideas were rejected
 
-- too few trades: 1372
+- too few trades: 1383
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 10s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 15s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
