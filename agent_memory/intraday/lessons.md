@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-07. 6192 trials in total: 4934 scored, 1258 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-07. 6248 trials in total: 4981 scored, 1267 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -10,10 +10,10 @@ Updated 2026-11-07. 6192 trials in total: 4934 scored, 1258 rejected, 0 sent to 
 - reward now 0.000 (when found 0.000) | folds [1.444, 1.339, 1.836] | SPY at 11:00: long when gap > p85 and range_pos > p20 and vol_ratio < p95; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.849, 0.569, 1.513] | SPY at 11:00: long when gap > p85 and prev_day_ret < p84 and range_pos > p25; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.444, 1.176, 1.901] | SPY at 11:00: long when gap > p85 and range_pos > p20 and vol_ratio < p99; hold 240 min
+- reward now 0.000 (when found 0.000) | folds [1.463, 1.366, 1.759] | SPY at 11:00: long when gap > p85 and range_pos > p25 and rv_5d > p25; hold 240 min
+- reward now 0.000 (when found 0.000) | folds [1.462, 0.942, 1.533] | SPY at 11:00: long when gap > p85 and prev_day_ret < p94 and range_pos > p25; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.394, 1.176, 1.878] | SPY at 11:00: long when gap > p85 and range_pos > p20; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.394, 1.176, 1.878] | SPY at 11:00: long when gap > p85 and range_pos > p20 and ret_prev_close > p1; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.304, 1.296, 1.812] | SPY at 11:00: long when gap > p85 and range_pos > p20 and vol_ratio < p90; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.615, 1.209, 1.734] | SPY at 11:00: long when gap > p85 and range_pos > p25; hold 240 min
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-07. 6192 trials in total: 4934 scored, 1258 rejected, 0 sent to 
 
 ## Why ideas were rejected
 
-- too few trades: 1258
+- too few trades: 1267
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 15s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 12s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
