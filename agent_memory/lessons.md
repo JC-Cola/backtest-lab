@@ -1,6 +1,6 @@
 # What the agent has learned so far
 
-Updated 2026-11-08. 18410 trials in total: 12498 scored, 5912 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-08. 18436 trials in total: 12514 scored, 5922 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -13,7 +13,7 @@ Updated 2026-11-08. 18410 trials in total: 12498 scored, 5912 rejected, 0 sent t
 - reward now 0.195 (when found 0.252) | folds [1.393, 0.694, 1.43] | TLT: buy when credit_trend < p30 and ret_20 < p75 and ret_250 > p30 (only if rv_20_pct < p90); sell when to_month_end > p95 or after 10 days
 - reward now 0.194 (when found 0.198) | folds [0.282, 1.289, 0.977] | IWM: buy when dist_sma_200 < p40 and ret_20 > p80 and rsi_2 < p70 (only if range_rank_7 > p40); sell when rsi_2 > p50 or after 5 days
 - reward now 0.191 (when found 0.225) | folds [0.378, 1.225, 1.01] | IWM: buy when dist_sma_200 < p40 and ret_20 > p80 and rsi_2 < p70 (only if range_rank_7 > p40); sell when ret_5 > p50 or after 5 days
-- reward now 0.190 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
+- reward now 0.189 (when found 0.323) | folds [2.086, 1.26, 0.308] | SPY: buy when ibs < p10 and ret_20 < p40 and to_month_end < p90 (only if curve < p90); sell when gap < p30 or after 5 days
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,11 +36,11 @@ Updated 2026-11-08. 18410 trials in total: 12498 scored, 5912 rejected, 0 sent t
 
 ## Why ideas were rejected
 
-- too few trades: 5912
+- too few trades: 5922
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
 
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 222s. Best deflated reward went from 0.252 to 0.252. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 208s. Best deflated reward went from 0.252 to 0.252. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
