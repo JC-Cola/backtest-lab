@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-08. 9820 trials in total: 7881 scored, 1939 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-08. 9846 trials in total: 7903 scored, 1943 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -24,19 +24,19 @@ Updated 2026-11-08. 9820 trials in total: 7881 scored, 1939 rejected, 0 sent to 
 - rv_5d: 1.00
 - gap: 1.00
 - ret_prev_close: 1.00
-- ret_open: 1.00
+- vol_ratio: 1.00
 
 ## Features that tend to hurt
 
 - ret_prev_close: 1.00
-- ret_open: 1.00
 - vol_ratio: 1.00
+- ret_open: 1.00
 - prev_day_ret: 1.00
 - range_pos: 1.00
 
 ## Why ideas were rejected
 
-- too few trades: 1939
+- too few trades: 1943
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
 
