@@ -17,7 +17,9 @@ from pathlib import Path
 
 import candidates
 import live
+import telegram
 from agent import claude_cli
+from agent import proposer_health
 from agent import loop as aloop
 from agent import memory as amem
 from agent import spec as AS
@@ -148,6 +150,8 @@ def main(minutes: float = 20, per_round: int = 10, mem_base=None) -> int:
     end = t0 + minutes * 60
     run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     feed, counts, tried, kinds = Feed(run_id), {}, set(), []
+    if mem_base:   # test runs keep every state file under mem_base
+        proposer_health.PATH = Path(mem_base) / "proposer_health.json"
     ags, off = agents(mem_base), set()
     state, note = "finished", ""
     feed.start()
@@ -174,6 +178,10 @@ def main(minutes: float = 20, per_round: int = 10, mem_base=None) -> int:
             idle = 0 if counts.get(ag["name"], 0) > before else idle + 1
         if len(off) == len(ags):
             state = "failed"
+        try:
+            proposer_health.alert_if_needed(telegram.send)   # one Telegram message per day while the Claude login is refused
+        except Exception as e:
+            print(f"!! health alert failed: {type(e).__name__}")
         try:
             if mem_base:
                 candidates.update(amem.Memory(ags[1]["root"]), imem.IMemory(ags[0]["root"]), path=Path(mem_base) / "candidates.json")

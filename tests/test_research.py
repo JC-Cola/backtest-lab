@@ -94,6 +94,7 @@ def test_on_event_sequence_with_web_review(tmp_path, monkeypatch):
     I2 = {**I1, "time": 30}
     monkeypatch.setattr(claude_cli, "ask", lambda *a, **k: {"specs": [item(I1, "test"), item(I2, "skip")]})
     ev = []
+    monkeypatch.setattr("iagent.platform.precheck", lambda m, s: None)   # 60 synthetic days would fail the trade-count screen
     irun(rounds=1, per_round=2, markets=["QQQ"], quiet=True, mem_root=tmp_path, days={"QQQ": I.Days.from_arrays(*synth(60))}, proposer="web",
          on_event=lambda s, st, status, why, d: ev.append((IS.spec_hash(s), st, status, why, d)))
     h1, h2 = IS.spec_hash(IS.canonical(I1)), IS.spec_hash(IS.canonical(I2))

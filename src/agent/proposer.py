@@ -24,13 +24,15 @@ class EvolutionProposer:
 
     def __init__(self, memory: Memory, seed: int = 0, explore: float = 0.3):
         self.mem, self.rng, self.explore = memory, random.Random(seed + len(memory.trials)), explore
+        self.screen = None   # optional spec -> reason|None; refused specs are resampled, never evaluated or journaled
+        self.screened = 0    # how many candidates the screen refused (for the logs)
 
     def propose(self, k: int, markets: list[str]) -> list[dict]:
         w = self.mem.feature_weights()
         out, hashes = [], set()
         parents = [t["spec"] for t in self.mem.top(20) if t["spec"]["market"] in markets]
         tries = 0
-        while len(out) < k and tries < k * 50:
+        while len(out) < k and tries < k * (50 if self.screen is None else 200):
             tries += 1
             r = self.rng.random()
             if not parents or r < self.explore:
@@ -40,11 +42,15 @@ class EvolutionProposer:
             else:
                 a, b = self.rng.sample(parents, 2)
                 s = self.S.mutate(self.S.crossover(a, b, self.rng), self.rng, w)
+            s = self.S.canonical(s)
             h = self.S.spec_hash(s)
             if h in self.mem.seen or h in hashes:
                 continue
+            if self.screen is not None and self.screen(s):
+                self.screened += 1
+                continue
             hashes.add(h)
-            out.append(self.S.canonical(s))
+            out.append(s)
         return out
 
 

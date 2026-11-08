@@ -10,7 +10,7 @@ import time
 from pathlib import Path
 
 from agent import claude_cli
-from agent.loop import emitter, holdout_outcome, make_proposer, score_detail
+from agent.loop import emitter, holdout_outcome, make_proposer, pre_screen, score_detail
 from iagent import platform as P
 from iagent import spec as S
 from iagent.memory import IMemory
@@ -32,7 +32,13 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
         f"{len(mem.holdout_tests())} held-out tests already used")
     mk = cache if cache is not None else {}
     emit = emitter(on_event)
+    def market(s):
+        if s["market"] not in mk:
+            mk[s["market"]] = P.Market(s["market"], (days or {}).get(s["market"]))
+        return mk[s["market"]]
+
     evo = IEvolutionProposer(mem, seed)
+    evo.screen = lambda s: P.precheck(market(s), s)   # resample specs that cannot pass the trade-count rules
     prop, proposer = make_proposer(proposer, mem, evo, {"claude": IClaudeProposer, "web": IWebResearchProposer})
     spent0 = claude_cli.spent()
     shots = 0
@@ -48,14 +54,13 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
         info = lambda s: {"source": used, "round": rnd, "market": s["market"]} | meta.get(S.spec_hash(s), {})
         for s, why, det in getattr(prop, "skipped", []):
             emit(s, 0, "dead", why, {"source": proposer, "round": rnd, "market": s["market"]} | det)
+        specs = pre_screen(specs, market, P.precheck, mem, used, rnd, emit, S.spec_hash)
         for s in specs:
             emit(s, 0, "busy", "proposed", info(s))
         for s in specs:
             if deadline and time.time() > deadline:
                 break
-            if s["market"] not in mk:
-                mk[s["market"]] = P.Market(s["market"], (days or {}).get(s["market"]))
-            m, h, base = mk[s["market"]], S.spec_hash(s), info(s)
+            m, h, base = market(s), S.spec_hash(s), info(s)
             emit(s, 1, "busy", "backtesting on the tuning years", base)
             res = P.score(m, s, mem.trial_sharpes(s["market"]))
             rec = mem.add({"hash": h, "spec": s, "proposer": used, "round": rnd} | meta.get(h, {}) | res)

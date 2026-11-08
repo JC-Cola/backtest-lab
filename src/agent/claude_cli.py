@@ -11,6 +11,8 @@ import shutil
 import subprocess
 import tempfile
 
+from agent import proposer_health
+
 NO_TOOLS = "Bash Edit Write Read Glob Grep WebFetch WebSearch Agent NotebookEdit"
 WEB_TOOLS = ("WebSearch", "WebFetch")
 WEB_TIMEOUT = 900
@@ -50,13 +52,19 @@ def ask(prompt: str, schema: dict, timeout: int | None = None, allow_web: bool =
     except OSError as e:
         print(f"claude_cli: could not run claude ({e})")
         return None
-    if p.returncode != 0:
-        print(f"claude_cli: exit code {p.returncode}: {(p.stderr or p.stdout).strip()[:120]}")
-        return None
     try:
         out = json.loads(p.stdout)
         assert isinstance(out, dict)
     except (ValueError, AssertionError):
+        out = None
+    if out is not None and proposer_health.is_auth_error(out):
+        proposer_health.record_auth_error(out.get("result"))
+        print(f"claude_cli: login refused ({out.get('api_error_status')}): {proposer_health.scrub(out.get('result'), 80)}")
+        return None
+    if p.returncode != 0:
+        print(f"claude_cli: exit code {p.returncode}: {proposer_health.scrub(p.stderr or p.stdout, 120)}")
+        return None
+    if out is None:
         print("claude_cli: output was not a JSON object")
         return None
     cost = out.get("total_cost_usd")
@@ -69,4 +77,5 @@ def ask(prompt: str, schema: dict, timeout: int | None = None, allow_web: bool =
     if not isinstance(so, dict):
         print("claude_cli: no structured_output in the result")
         return None
+    proposer_health.record_ok()
     return so

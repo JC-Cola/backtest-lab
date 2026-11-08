@@ -22,6 +22,8 @@ env:
   ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
   ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
   CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
   BACKTEST_LIVE_URL: ${{ secrets.BACKTEST_LIVE_URL }}
   BACKTEST_LIVE_KEY: ${{ secrets.BACKTEST_LIVE_KEY }}
   BACKTEST_LIVE_TOKEN: ${{ secrets.BACKTEST_LIVE_TOKEN }}
@@ -62,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in agent_memory/journal.jsonl agent_memory/lessons.md agent_memory/intraday agent_memory/candidates.json; do
+          for f in agent_memory/journal.jsonl agent_memory/lessons.md agent_memory/intraday agent_memory/candidates.json agent_memory/proposer_health.json; do
             [ -e "$f" ] && git add -- "$f"
           done
           git diff --cached --quiet && exit 0

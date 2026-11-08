@@ -39,6 +39,22 @@ def emitter(on_event):
     return emit
 
 
+def pre_screen(specs, market, precheck, mem, used, rnd, emit, spec_hash):
+    """Specs from any proposer that fail the cheap trade-count/coverage check are journaled as rejected WITHOUT being
+    evaluated (no return series, so no daily_sr: they are not trials of the deflated Sharpe) and dropped."""
+    keep = []
+    for s in specs:
+        why = precheck(market(s), s)
+        if not why:
+            keep.append(s)
+            continue
+        why += "; pre-check, not evaluated"
+        mem.add({"hash": spec_hash(s), "spec": s, "proposer": used, "round": rnd, "status": "rejected",
+                 "reason": why, "reward": 0.0})
+        emit(s, 0, "dead", why, {"source": used, "round": rnd, "market": s["market"]})
+    return keep
+
+
 def score_detail(res: dict, base: dict) -> dict:
     """The numbers behind a score outcome, for the live page's hover."""
     keep = {k: res[k] for k in ("reward", "dsr", "fold_sharpes", "trades", "sharpe", "excess_sharpe", "coverage") if k in res}
@@ -65,7 +81,13 @@ def run(rounds=10, per_round=10, markets=None, proposer="evolution", seed=0, qui
     ctx = data.load_context()
     mk = cache if cache is not None else {}
     emit = emitter(on_event)
+    def market(s):
+        if s["market"] not in mk:
+            mk[s["market"]] = P.Market(s["market"], ctx)
+        return mk[s["market"]]
+
     evo = EvolutionProposer(mem, seed)
+    evo.screen = lambda s: P.precheck(market(s), s)   # resample specs that cannot pass the trade-count rules
     prop, proposer = make_proposer(proposer, mem, evo, {"claude": ClaudeProposer, "web": WebResearchProposer})
     spent0 = claude_cli.spent()
     shots = 0
@@ -80,14 +102,13 @@ def run(rounds=10, per_round=10, markets=None, proposer="evolution", seed=0, qui
         info = lambda s: {"source": used, "round": rnd, "market": s["market"]} | meta.get(S.spec_hash(s), {})
         for s, why, det in getattr(prop, "skipped", []):
             emit(s, 0, "dead", why, {"source": proposer, "round": rnd, "market": s["market"]} | det)
+        specs = pre_screen(specs, market, P.precheck, mem, used, rnd, emit, S.spec_hash)
         for s in specs:
             emit(s, 0, "busy", "proposed", info(s))
         for s in specs:
             if deadline and time.time() > deadline:
                 break
-            if s["market"] not in mk:
-                mk[s["market"]] = P.Market(s["market"], ctx)
-            m, h, base = mk[s["market"]], S.spec_hash(s), info(s)
+            m, h, base = market(s), S.spec_hash(s), info(s)
             emit(s, 1, "busy", "backtesting on the tuning years", base)
             res = P.score(m, s, mem.trial_sharpes(s["market"]))
             rec = mem.add({"hash": h, "spec": s, "proposer": used, "round": rnd} | meta.get(h, {}) | res)

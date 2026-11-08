@@ -59,6 +59,20 @@ def coverage(m: Market, s: dict) -> float:
     return float(w.notna().all(axis=1).mean())
 
 
+def precheck(m: Market, s: dict) -> str | None:
+    """Cheap screen BEFORE the evaluation: None when the spec can be evaluated, else the rejection reason. It applies
+    the same coverage and trade-count rules as score() (same positions code, no returns, no look-ahead rebuild), so
+    it only ever refuses specs that score() would reject for those reasons."""
+    cov = coverage(m, s)
+    if cov < MIN_COVERAGE:
+        return f"coverage {cov:.0%} < {MIN_COVERAGE:.0%}"
+    pos = S.positions(s, m.table, m.th)
+    nt, fold_nt = count_trades(pos[m.search]), [count_trades(pos[f]) for f in m.folds]
+    if nt < MIN_TRADES or min(fold_nt) < MIN_FOLD_TRADES:
+        return f"too few trades ({nt}, min per fold {min(fold_nt)})"
+    return None
+
+
 def lookahead_ok(m: Market, s: dict, pos: np.ndarray) -> bool:
     """Recompute the table on data cut off at a few points inside the search window; the
     positions up to each cut must not change. Thresholds stay fixed (search-window only)."""

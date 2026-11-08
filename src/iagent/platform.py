@@ -45,6 +45,19 @@ def coverage(m: Market, s: dict) -> float:
     return float((~np.isnan(w)).all(axis=1).mean())
 
 
+def precheck(m: Market, s: dict) -> str | None:
+    """Cheap screen BEFORE the evaluation (None = evaluate it). Every day where the entry condition holds is exactly
+    one trade, so the trade counts of score() follow from the entry mask alone: no stop/target simulation, no returns."""
+    cov = coverage(m, s)
+    if cov < MIN_COVERAGE:
+        return f"coverage {cov:.0%} < {MIN_COVERAGE:.0%}"
+    d = np.flatnonzero(S.entry_mask(s, m.cube, m.th, m.search))
+    fold_nt = [int(((d >= f.start) & (d < f.stop)).sum()) for f in m.folds]
+    if len(d) < MIN_TRADES or min(fold_nt) < MIN_FOLD_TRADES:
+        return f"too few trades ({len(d)}, min per fold {min(fold_nt)})"
+    return None
+
+
 def _daily(n: int, t: dict, vals: np.ndarray) -> np.ndarray:
     r = np.zeros(n)
     np.add.at(r, t["day"], vals)

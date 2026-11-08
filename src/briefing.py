@@ -27,6 +27,7 @@ import numpy as np
 
 import report as R
 import telegram
+from agent import proposer_health
 from briefing_inputs import intraday_backtest, longterm_backtest, research_line, research_today, safe_bt
 from report import ACCOUNTS, MEM, NY, ROOT, START
 
@@ -411,8 +412,12 @@ def gather_morning(now=None):
     today = (now or datetime.now(NY)).astimezone(NY).date()
     prev = previous_trading_day(today)
     accts, hists = _gather(today)
-    return morning_data(today, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_json(MEM / "candidates.json"),
-                        prev, (ROOT / "reports" / f"{prev}.md").exists())
+    d = morning_data(today, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_json(MEM / "candidates.json"),
+                     prev, (ROOT / "reports" / f"{prev}.md").exists())
+    w = proposer_health.briefing_warning()   # research agents' Claude login refused (401)
+    if w:
+        d["flags"].append(w)
+    return d
 
 
 def gather_evening(now=None):
