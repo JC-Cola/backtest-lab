@@ -5,3 +5,4 @@ __pycache__/
 data/*.csv
 !data/fomc_dates.csv
 data/intraday/
+data/crypto/

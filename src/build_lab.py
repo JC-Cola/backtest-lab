@@ -210,6 +210,31 @@ def build_intraday(book, markets):
             _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)
 
 
+def build_crypto9(book, markets):
+    """Add crypto study 9 (results/crypto9.json "lab": settings' daily series stored by src/crypto9_lab.py, so no price data
+    is needed here) to the Long-term family. Only strategies that made money in their test years are stored."""
+    path = ROOT / "results" / "crypto9.json"
+    if not path.exists():
+        return
+    res = json.loads(path.read_text())
+    lab, by_id = res.get("lab"), {s["id"]: s for s in res["strategies"]}
+    if not lab:
+        return
+    markets.update(lab["markets"])
+    for e in lab["entries"]:
+        st = by_id[e["sid"]]
+        code, plain, signal, edge, kills, pp = lab_text.CRYPTO9[e["sid"]]
+        combos = e["combos"]
+        chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(e["params"]))
+        book.append({"code": code, "id": f"{e['sid']}_{e['asset']}", "name": st["name"], "market": e["market"],
+                     "desc": st["plain"], "family": "Rotation" if e["sid"] == "c9_rotation" else "Trend",
+                     "freq": "Daily, long or flat, crypto trades every day", "source": st["source"],
+                     "signal": signal, "edge": edge, "kills": kills, "plain": plain,
+                     "pparams": {k: {"label": a, "help": h, "values": {_js(v): txt for v, txt in vals.items()}} for k, (a, h, vals) in pp.items()},
+                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key) for k in combos[0]["params"]},
+                     "combos": combos, "chosen": chosen, "ftmo": e["ftmo"], "verdict": e["verdict"], "evidence": e["evidence"]})
+
+
 def _add_intraday(book, markets, res, by_id, days):
     import intraday as I
     pool = sum(1 for r in res["results"] if r.get("coin_flip"))
@@ -404,6 +429,7 @@ def main():
                      "verdict": {"verdict": "AGENT", "reward": round(mem.current_reward(t), 3),
                                  "trials": len(mem.trials)}})
     build_intraday(book, markets)
+    build_crypto9(book, markets)
     rank_book(book, cache)
     for ticker, (df, _, cfg) in cache.items():
         o, c = df.Open.values, df.Close.values

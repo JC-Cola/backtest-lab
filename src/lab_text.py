@@ -78,3 +78,30 @@ INTRA_456 = {
         {"check": ("Check every", "Shorter means more trades and more cost.", {5: "5 minutes", 15: "15 minutes", 30: "30 minutes", 60: "60 minutes"}),
          "lookback": ("Days for the typical move", "Longer smooths the band.", {10: "10 days", 14: "14 days"})}),
 }
+
+# Crypto study 9 (CRYPTO_PLAN_9.md): spot, long or flat only, 0.2% per side. Keyed by strategy id.
+CRYPTO9 = {
+    "c9_donchian": ("CR-DONCH", "Runs eight breakout rules at once (5 to 360 days), each sized to a volatility target, and holds the average of what they say, never more than 100% and never short.",
+        ["LEG N   long when close > the highest close of the prior N days, N = 5, 10, 20, 30, 60, 90, 180, 360", "STOP    trailing stop at the midpoint of the N-day highest and lowest close; it only moves up", "SIZE    each leg min(1, target / 30-day volatility); position = the average of the legs", "TRADE   decide at the 00:00 UTC close, fill at the next open; move only if the target changes by 10 points", "COST    0.2% per side"],
+        "Crypto trends are long and fat: a slow breakout rule stays in the big rallies and a trailing stop exits the big crashes, and volatility sizing shrinks the position when prices get wild.",
+        ["The rule was published on the same coins and years it is tested on, so some hindsight is baked in.", "Fast legs (5 and 10 days) trade often and pay 0.2% each way.", "It earns less than just holding in a market that went up 4 to 8 times, in exchange for smaller drops."],
+        {"target": ("Risk target", "Higher holds more of the coin on average.", {0.25: "25% a year", 0.5: "50% a year", 0.75: "75% a year"}),
+         "legs": ("Which legs", "Slow legs trade less and pay less in fees.", {"all": "all eight (5 to 360 days)", "slow": "five slow legs (30 to 360 days)"})}),
+    "c9_trend": ("CR-TREND", "Holds the coin while its price is above its average of the last 20, 50, 100 or 200 days, and sits in cash otherwise.",
+        ["ENTRY  C_t > SMA(n)", "EXIT   C_t < SMA(n)", "TRADE  decide at the 00:00 UTC close, fill at the next open", "COST   0.2% per side"],
+        "Same idea as the live Bitcoin Trend Filter: big moves in crypto come in waves, so being on the right side of the average avoids most of the crashes.",
+        ["Whipsaws in sideways months each cost 0.4% round trip.", "Picking the best average length after seeing the data is hindsight; only the tuning years are used to pick.", "BTC, ETH and SOL move together, so three markets are less independent than they look."],
+        {"n": ("Length of the average", "Longer reacts more slowly but gives fewer false alarms.", {20: "20 days", 50: "50 days", 100: "100 days", 200: "200 days"})}),
+    "c9_newhigh": ("CR-HIGH", "Buys the day after the coin closes at a 10, 20 or 50-day high, and sells after one day or when the breakout fails.",
+        ["SIGNAL close = the highest close of the last N days", "1D     hold the next day only", "LEVEL  hold until a close below the old high that was broken", "COST   0.2% per side"],
+        "Records pull in momentum traders and stop-orders, so a coin at a new high may keep going for a few days.",
+        ["Trades a lot (20 to 40 times a year), so fees eat most of a small edge.", "Many new highs fail and fall straight back.", "Folklore, not a published result."],
+        {"N": ("Window", "Longer windows are rarer and stronger highs.", {10: "10 days", 20: "20 days", 50: "50 days"}),
+         "hold": ("How long to hold", "The level rule rides the move longer.", {"1d": "one day", "level": "until the breakout fails"})}),
+    "c9_rotation": ("CR-ROT", "Every Sunday night, puts the account into the best one, two or three of BTC, ETH and SOL by recent return, but only coins above their own 50-day average; the rest sits in cash.",
+        ["RANK   Sunday close: coins by return over the last 1, 2 or 4 weeks", "HOLD   the top k, 1/k each, only if C > SMA(50) of that coin, else cash", "TRADE  fill at Monday 00:00 UTC open; hold for the week", "COST   0.2% per side"],
+        "Coins that did best recently tend to keep doing best for a few weeks, and the 50-day filter skips falling coins.",
+        ["Only three coins, which move together, so there is little to rotate between.", "Weekly switching pays fees on every swap.", "Recent winners also mean-revert; the test showed no timing edge over random picks."],
+        {"L": ("Look back", "Longer smooths the ranking.", {1: "1 week", 2: "2 weeks", 4: "4 weeks"}),
+         "k": ("Coins held", "More coins spread the risk.", {1: "1 coin", 2: "2 coins", 3: "3 coins"})}),
+}
