@@ -105,3 +105,13 @@ CRYPTO9 = {
         {"L": ("Look back", "Longer smooths the ranking.", {1: "1 week", 2: "2 weeks", 4: "4 weeks"}),
          "k": ("Coins held", "More coins spread the risk.", {1: "1 coin", 2: "2 coins", 3: "3 coins"})}),
 }
+
+
+CRYPTO10 = {
+    "c10_weekend": ("CR-WKND", "Holds the coin while its price is above its 50 or 150-day average, but does not open a new position on a weekend; it waits for Monday if the signal is still on.",
+        ["ENTRY  C_t > SMA(n), but a fill on Saturday or Sunday waits for Monday if still on", "EXIT   C_t < SMA(n), any day, never delayed", "TRADE  decide at the 00:00 UTC close, fill at the next open", "COST   0.2% per side"],
+        "Weekend crypto moves are thinner and more prone to false breaks, so skipping weekend entries might avoid some whipsaws.",
+        ["The idea came from looking at BTC, ETH and SOL in 2023 and later, so those years cannot confirm it (shown here for viewing only).", "The pre-registered test used ten other coins and pooled their p-values; they move together, so they are less independent than ten.", "A one-day delay can also miss the start of a rally."],
+        {"n": ("Length of the average", "Longer reacts more slowly.", {50: "50 days", 150: "150 days (the live filter)"}),
+         "weekend": ("Weekend entries", "Skipping waits for Monday's open.", {False: "allowed", True: "skipped"})}),
+}

@@ -235,6 +235,29 @@ def build_crypto9(book, markets):
                      "combos": combos, "chosen": chosen, "ftmo": e["ftmo"], "verdict": e["verdict"], "evidence": e["evidence"]})
 
 
+def build_crypto10(book, markets):
+    """Add crypto study 10 (results/crypto10.json "lab") to the Long-term family, same shape as study 9."""
+    path = ROOT / "results" / "crypto10.json"
+    if not path.exists():
+        return
+    lab = json.loads(path.read_text()).get("lab")
+    if not lab:
+        return
+    markets.update(lab["markets"])
+    st = lab["strategy"]
+    for e in lab["entries"]:
+        code, plain, signal, edge, kills, pp = lab_text.CRYPTO10[e["sid"]]
+        combos = e["combos"]
+        chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(e["params"]))
+        book.append({"code": code, "id": f"{e['sid']}_{e['asset']}", "name": st["name"], "market": e["market"],
+                     "desc": st["plain"], "family": "Trend",
+                     "freq": "Daily, long or flat, crypto trades every day", "source": st["source"],
+                     "signal": signal, "edge": edge, "kills": kills, "plain": plain,
+                     "pparams": {k: {"label": a, "help": h, "values": {_js(v): txt for v, txt in vals.items()}} for k, (a, h, vals) in pp.items()},
+                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key) for k in combos[0]["params"]},
+                     "combos": combos, "chosen": chosen, "ftmo": e["ftmo"], "verdict": e["verdict"], "evidence": e["evidence"]})
+
+
 def _add_intraday(book, markets, res, by_id, days):
     import intraday as I
     pool = sum(1 for r in res["results"] if r.get("coin_flip"))
@@ -430,6 +453,7 @@ def main():
                                  "trials": len(mem.trials)}})
     build_intraday(book, markets)
     build_crypto9(book, markets)
+    build_crypto10(book, markets)
     rank_book(book, cache)
     for ticker, (df, _, cfg) in cache.items():
         o, c = df.Open.values, df.Close.values
