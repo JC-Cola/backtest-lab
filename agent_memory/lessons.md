@@ -43,4 +43,4 @@ Updated 2026-11-08. 19524 trials in total: 13219 scored, 6305 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 140s. Best deflated reward went from 0.241 to 0.240. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 147s. Best deflated reward went from 0.240 to 0.240. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
