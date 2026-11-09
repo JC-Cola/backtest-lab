@@ -1,0 +1,1104 @@
+{
+ "label": "System C backtest · TradingAgents · System C · TradingAgents · shadow / not traded",
+ "generated": "2026-11-09T16:00:10+00:00",
+ "tickers": [
+  "SPY",
+  "QQQ",
+  "NVDA"
+ ],
+ "cutoff": "2026-03-31",
+ "cutoff_note": "unverified assumption of the model's knowledge cutoff; dates on or before it may be contaminated",
+ "rules": "entry next open; Buy +20%, Overweight +10%, Hold keep, Underweight -10%, Sell -20% of equity per ticker; cost 0.02% slippage + 0.01% fees per side",
+ "decisions": [
+  {
+   "date": "2026-04-01",
+   "symbol": "NVDA",
+   "rating": "Overweight",
+   "rationale": "Initiate an initial 50% position in NVDA at current market levels (~175.35) to capture fundamental strength while respecting technical consolidation. Set a stop-loss at 164.00 and plan to deploy the remaining 50% upon a definitive close above the 50-day SMA ($182.35) to confirm trend resumption.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-01",
+   "symbol": "QQQ",
+   "rating": "Hold",
+   "rationale": "Maintain current exposure to QQQ while monitoring price action against the 200 SMA ($591.99). Avoid increasing position sizes until the index decisively clears overhead resistance or confirms a structural reversal. Use stop-loss levels near the local low ($557.09) to manage downside risk associated with elevated volatility.",
+   "horizon": null
+  },
+  {
+   "date": "2026-04-01",
+   "symbol": "SPY",
+   "rating": "Hold",
+   "rationale": "Maintain a neutral position as SPY trades in a consolidation range between the $628.785 support level and the 200-day SMA resistance at $655.418. Avoid increasing exposure until the index decisively confirms a trend reversal by closing above the 200-day moving average.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-07",
+   "symbol": "NVDA",
+   "rating": "Hold",
+   "rationale": "Maintain current position without additional exposure until the price resolves its consolidation range. We will reassess for a potential increase on a decisive daily close above the 50-day SMA ($181.89) or look to trim if the support level at $164 is breached. This neutral stance protects capital from near-term whipsaw risk while remaining positioned for potential trend resumption.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-07",
+   "symbol": "QQQ",
+   "rating": "Hold",
+   "rationale": "Maintain current exposure levels as the market remains in a volatile, range-bound consolidation phase. Do not initiate new positions until QQQ clears the $600.00 overhead resistance level, as high volatility ($11.02 ATR) necessitates caution. Monitor price action closely at the 10-day EMA support ($582.05) to assess potential downside risks.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-07",
+   "symbol": "SPY",
+   "rating": "Hold",
+   "rationale": "Maintain neutral exposure to SPY. With the price caught between the 200-day SMA support at $656.39 and the 50-day SMA resistance at $670.44, the current technical setup lacks sufficient conviction for directional moves. Avoid increasing positions until a definitive breakout above $670.44 or a confirmed breakdown below $650.67 occurs.",
+   "horizon": "Short-term"
+  },
+  {
+   "date": "2026-04-10",
+   "symbol": "NVDA",
+   "rating": "Overweight",
+   "rationale": "Initiate an Overweight position to capture NVDA's strong fundamental momentum and recent moving average breakouts. Deploy a standard position size initially, rather than an aggressive 1.5x, to manage risks associated with the stock testing its upper Bollinger Band at $188.20. Hold reserves to add to the position on pullbacks toward the 10-day EMA ($179.67) or 50-day SMA ($181.66).",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-10",
+   "symbol": "QQQ",
+   "rating": "Overweight",
+   "rationale": "Initiate a long position in QQQ with a 5% total portfolio allocation, utilizing a tiered entry strategy to mitigate the risk of buying near resistance. Deploy 2.5% at current market levels (~$610) to capture ongoing momentum, while reserving the remaining 2.5% to add on dips toward the 10-day EMA near $594. Maintain a stop-loss at $587.92 to guard against sharp reversals.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-10",
+   "symbol": "SPY",
+   "rating": "Overweight",
+   "rationale": "We are initiating an Overweight position to capture accelerating bullish momentum. Execute a 0.5x allocation through limit orders on pullbacks toward the 669.60 support level, avoiding aggressive market buys near the 679.77 resistance. Use an ATR-based stop-loss at 649.77 to manage exposure against near-term volatility.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-15",
+   "symbol": "NVDA",
+   "rating": "Hold",
+   "rationale": "Maintain the current NVDA position without adding exposure at current levels. The stock is currently technically overextended, and the current price of $198.416 requires a consolidation phase or a test of the $186.64 support level to improve the risk-to-reward ratio. Do not initiate new longs here; wait for price to either confirm the breakout trend or provide a more favorable entry.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-15",
+   "symbol": "QQQ",
+   "rating": "Overweight",
+   "rationale": "We are initiating an Overweight position to capture strong momentum while mitigating entry risk via limit orders on minor weakness. We will scale into the position at $615.0 with a 5% allocation, employing a wider stop-loss near $595.0 to accommodate the $11.31 ATR and avoid getting shaken out by volatility.",
+   "horizon": "3-6 months"
+  },
+  {
+   "date": "2026-04-15",
+   "symbol": "SPY",
+   "rating": "Overweight",
+   "rationale": "Maintain a favorable bias toward SPY given strong structural momentum and positive MACD indicators, but refrain from full 'Buy' allocation to manage short-term overextension risks. Scale into the position gradually, utilizing intraday volatility to improve entry cost closer to the 10-day EMA support near $675.00 rather than chasing the current $696 breakout.",
+   "horizon": "3-6 months"
+  }
+ ],
+ "clean": {
+  "decisions": 12,
+  "first": "2026-04-01",
+  "last": "2026-04-15",
+  "system": {
+   "total_pct": 2.466,
+   "max_dd_pct": -5.468,
+   "sharpe": 0.555,
+   "trades": 0,
+   "win_rate": null,
+   "days": 152,
+   "equity": 25616.38
+  },
+  "buy_hold_equal": {
+   "total_pct": 7.273,
+   "max_dd_pct": -10.178,
+   "sharpe": 0.843,
+   "trades": 0,
+   "win_rate": null,
+   "days": 152,
+   "equity": 26818.27
+  },
+  "buy_hold_spy": {
+   "total_pct": 13.718,
+   "max_dd_pct": -5.917,
+   "sharpe": 1.621,
+   "trades": 0,
+   "win_rate": null,
+   "days": 152,
+   "equity": 28429.5
+  },
+  "coin_flip": {
+   "trials": 200,
+   "mean_total_pct": 2.411,
+   "median_total_pct": 2.411,
+   "p5_total_pct": 1.089,
+   "p95_total_pct": 3.637,
+   "mean_sharpe": 0.581,
+   "share_of_trials_beating_system": 0.485,
+   "rating_frequencies": {
+    "Buy": 0,
+    "Overweight": 6,
+    "Hold": 6,
+    "Underweight": 0,
+    "Sell": 0
+   }
+  },
+  "equity_curve": [
+   {
+    "date": "2026-04-02",
+    "pl": 74.9,
+    "pct": 0.3,
+    "equity": 25074.9
+   },
+   {
+    "date": "2026-04-06",
+    "pl": 3.63,
+    "pct": 0.014,
+    "equity": 25078.53
+   },
+   {
+    "date": "2026-04-07",
+    "pl": 6.68,
+    "pct": 0.027,
+    "equity": 25085.21
+   },
+   {
+    "date": "2026-04-08",
+    "pl": 57.79,
+    "pct": 0.23,
+    "equity": 25142.99
+   },
+   {
+    "date": "2026-04-09",
+    "pl": 26.57,
+    "pct": 0.106,
+    "equity": 25169.57
+   },
+   {
+    "date": "2026-04-10",
+    "pl": 68.53,
+    "pct": 0.272,
+    "equity": 25238.1
+   },
+   {
+    "date": "2026-04-13",
+    "pl": 73.49,
+    "pct": 0.291,
+    "equity": 25311.59
+   },
+   {
+    "date": "2026-04-14",
+    "pl": 182.11,
+    "pct": 0.719,
+    "equity": 25493.7
+   },
+   {
+    "date": "2026-04-15",
+    "pl": 91.12,
+    "pct": 0.357,
+    "equity": 25584.82
+   },
+   {
+    "date": "2026-04-16",
+    "pl": 11.57,
+    "pct": 0.045,
+    "equity": 25596.39
+   },
+   {
+    "date": "2026-04-17",
+    "pl": 114.65,
+    "pct": 0.448,
+    "equity": 25711.04
+   },
+   {
+    "date": "2026-04-20",
+    "pl": -8.3,
+    "pct": -0.032,
+    "equity": 25702.73
+   },
+   {
+    "date": "2026-04-21",
+    "pl": -59.13,
+    "pct": -0.23,
+    "equity": 25643.61
+   },
+   {
+    "date": "2026-04-22",
+    "pl": 109.24,
+    "pct": 0.426,
+    "equity": 25752.85
+   },
+   {
+    "date": "2026-04-23",
+    "pl": -67.09,
+    "pct": -0.261,
+    "equity": 25685.76
+   },
+   {
+    "date": "2026-04-24",
+    "pl": 197.35,
+    "pct": 0.768,
+    "equity": 25883.12
+   },
+   {
+    "date": "2026-04-27",
+    "pl": 127.13,
+    "pct": 0.491,
+    "equity": 26010.24
+   },
+   {
+    "date": "2026-04-28",
+    "pl": -90.57,
+    "pct": -0.348,
+    "equity": 25919.67
+   },
+   {
+    "date": "2026-04-29",
+    "pl": -40.68,
+    "pct": -0.157,
+    "equity": 25878.99
+   },
+   {
+    "date": "2026-04-30",
+    "pl": -88.62,
+    "pct": -0.342,
+    "equity": 25790.36
+   },
+   {
+    "date": "2026-05-01",
+    "pl": 17.7,
+    "pct": 0.069,
+    "equity": 25808.06
+   },
+   {
+    "date": "2026-05-04",
+    "pl": -14.66,
+    "pct": -0.057,
+    "equity": 25793.4
+   },
+   {
+    "date": "2026-05-05",
+    "pl": 28.86,
+    "pct": 0.112,
+    "equity": 25822.26
+   },
+   {
+    "date": "2026-05-06",
+    "pl": 260.62,
+    "pct": 1.009,
+    "equity": 26082.89
+   },
+   {
+    "date": "2026-05-07",
+    "pl": 41.47,
+    "pct": 0.159,
+    "equity": 26124.35
+   },
+   {
+    "date": "2026-05-08",
+    "pl": 143.68,
+    "pct": 0.55,
+    "equity": 26268.03
+   },
+   {
+    "date": "2026-05-11",
+    "pl": 76.35,
+    "pct": 0.291,
+    "equity": 26344.39
+   },
+   {
+    "date": "2026-05-12",
+    "pl": -9.77,
+    "pct": -0.037,
+    "equity": 26334.62
+   },
+   {
+    "date": "2026-05-13",
+    "pl": 119.64,
+    "pct": 0.454,
+    "equity": 26454.26
+   },
+   {
+    "date": "2026-05-14",
+    "pl": 186.76,
+    "pct": 0.706,
+    "equity": 26641.02
+   },
+   {
+    "date": "2026-05-15",
+    "pl": -229.8,
+    "pct": -0.863,
+    "equity": 26411.22
+   },
+   {
+    "date": "2026-05-18",
+    "pl": -58.13,
+    "pct": -0.22,
+    "equity": 26353.1
+   },
+   {
+    "date": "2026-05-19",
+    "pl": -61.17,
+    "pct": -0.232,
+    "equity": 26291.93
+   },
+   {
+    "date": "2026-05-20",
+    "pl": 117.66,
+    "pct": 0.448,
+    "equity": 26409.59
+   },
+   {
+    "date": "2026-05-21",
+    "pl": -46.39,
+    "pct": -0.176,
+    "equity": 26363.2
+   },
+   {
+    "date": "2026-05-22",
+    "pl": -37.27,
+    "pct": -0.141,
+    "equity": 26325.93
+   },
+   {
+    "date": "2026-05-26",
+    "pl": 64.37,
+    "pct": 0.245,
+    "equity": 26390.3
+   },
+   {
+    "date": "2026-05-27",
+    "pl": -36.74,
+    "pct": -0.139,
+    "equity": 26353.57
+   },
+   {
+    "date": "2026-05-28",
+    "pl": 64.85,
+    "pct": 0.246,
+    "equity": 26418.42
+   },
+   {
+    "date": "2026-05-29",
+    "pl": -26.93,
+    "pct": -0.102,
+    "equity": 26391.49
+   },
+   {
+    "date": "2026-06-01",
+    "pl": 217.97,
+    "pct": 0.826,
+    "equity": 26609.46
+   },
+   {
+    "date": "2026-06-02",
+    "pl": -4.36,
+    "pct": -0.016,
+    "equity": 26605.09
+   },
+   {
+    "date": "2026-06-03",
+    "pl": -145.11,
+    "pct": -0.545,
+    "equity": 26459.99
+   },
+   {
+    "date": "2026-06-04",
+    "pl": 52.48,
+    "pct": 0.198,
+    "equity": 26512.47
+   },
+   {
+    "date": "2026-06-05",
+    "pl": -416.9,
+    "pct": -1.572,
+    "equity": 26095.57
+   },
+   {
+    "date": "2026-06-08",
+    "pl": 103.21,
+    "pct": 0.396,
+    "equity": 26198.79
+   },
+   {
+    "date": "2026-06-09",
+    "pl": -48.74,
+    "pct": -0.186,
+    "equity": 26150.05
+   },
+   {
+    "date": "2026-06-10",
+    "pl": -214.66,
+    "pct": -0.821,
+    "equity": 25935.39
+   },
+   {
+    "date": "2026-06-11",
+    "pl": 207.57,
+    "pct": 0.8,
+    "equity": 26142.96
+   },
+   {
+    "date": "2026-06-12",
+    "pl": 36.99,
+    "pct": 0.141,
+    "equity": 26179.94
+   },
+   {
+    "date": "2026-06-15",
+    "pl": 247.98,
+    "pct": 0.947,
+    "equity": 26427.92
+   },
+   {
+    "date": "2026-06-16",
+    "pl": -148.5,
+    "pct": -0.562,
+    "equity": 26279.42
+   },
+   {
+    "date": "2026-06-17",
+    "pl": -105.42,
+    "pct": -0.401,
+    "equity": 26174.0
+   },
+   {
+    "date": "2026-06-18",
+    "pl": 184.23,
+    "pct": 0.704,
+    "equity": 26358.23
+   },
+   {
+    "date": "2026-06-22",
+    "pl": -49.43,
+    "pct": -0.188,
+    "equity": 26308.8
+   },
+   {
+    "date": "2026-06-23",
+    "pl": -265.91,
+    "pct": -1.011,
+    "equity": 26042.88
+   },
+   {
+    "date": "2026-06-24",
+    "pl": -28.91,
+    "pct": -0.111,
+    "equity": 26013.97
+   },
+   {
+    "date": "2026-06-25",
+    "pl": -19.53,
+    "pct": -0.075,
+    "equity": 25994.44
+   },
+   {
+    "date": "2026-06-26",
+    "pl": -107.22,
+    "pct": -0.412,
+    "equity": 25887.22
+   },
+   {
+    "date": "2026-06-29",
+    "pl": 152.89,
+    "pct": 0.591,
+    "equity": 26040.1
+   },
+   {
+    "date": "2026-06-30",
+    "pl": 146.85,
+    "pct": 0.564,
+    "equity": 26186.96
+   },
+   {
+    "date": "2026-07-01",
+    "pl": -86.71,
+    "pct": -0.331,
+    "equity": 26100.25
+   },
+   {
+    "date": "2026-07-02",
+    "pl": -95.63,
+    "pct": -0.366,
+    "equity": 26004.62
+   },
+   {
+    "date": "2026-07-06",
+    "pl": 76.99,
+    "pct": 0.296,
+    "equity": 26081.61
+   },
+   {
+    "date": "2026-07-07",
+    "pl": -48.71,
+    "pct": -0.187,
+    "equity": 26032.9
+   },
+   {
+    "date": "2026-07-08",
+    "pl": 104.11,
+    "pct": 0.4,
+    "equity": 26137.01
+   },
+   {
+    "date": "2026-07-09",
+    "pl": 53.08,
+    "pct": 0.203,
+    "equity": 26190.09
+   },
+   {
+    "date": "2026-07-10",
+    "pl": 140.08,
+    "pct": 0.535,
+    "equity": 26330.17
+   },
+   {
+    "date": "2026-07-13",
+    "pl": -186.44,
+    "pct": -0.708,
+    "equity": 26143.73
+   },
+   {
+    "date": "2026-07-14",
+    "pl": 162.91,
+    "pct": 0.623,
+    "equity": 26306.64
+   },
+   {
+    "date": "2026-07-15",
+    "pl": 13.19,
+    "pct": 0.05,
+    "equity": 26319.83
+   },
+   {
+    "date": "2026-07-16",
+    "pl": -138.15,
+    "pct": -0.525,
+    "equity": 26181.68
+   },
+   {
+    "date": "2026-07-17",
+    "pl": -138.26,
+    "pct": -0.528,
+    "equity": 26043.42
+   },
+   {
+    "date": "2026-07-20",
+    "pl": 5.38,
+    "pct": 0.021,
+    "equity": 26048.8
+   },
+   {
+    "date": "2026-07-21",
+    "pl": 134.75,
+    "pct": 0.517,
+    "equity": 26183.54
+   },
+   {
+    "date": "2026-07-22",
+    "pl": 51.03,
+    "pct": 0.195,
+    "equity": 26234.57
+   },
+   {
+    "date": "2026-07-23",
+    "pl": -137.75,
+    "pct": -0.525,
+    "equity": 26096.82
+   },
+   {
+    "date": "2026-07-24",
+    "pl": -57.09,
+    "pct": -0.219,
+    "equity": 26039.73
+   },
+   {
+    "date": "2026-07-27",
+    "pl": -158.13,
+    "pct": -0.607,
+    "equity": 25881.6
+   },
+   {
+    "date": "2026-07-28",
+    "pl": -13.6,
+    "pct": -0.053,
+    "equity": 25868.0
+   },
+   {
+    "date": "2026-07-29",
+    "pl": -201.09,
+    "pct": -0.777,
+    "equity": 25666.91
+   },
+   {
+    "date": "2026-07-30",
+    "pl": 208.95,
+    "pct": 0.814,
+    "equity": 25875.86
+   },
+   {
+    "date": "2026-07-31",
+    "pl": 121.19,
+    "pct": 0.468,
+    "equity": 25997.05
+   },
+   {
+    "date": "2026-08-03",
+    "pl": 175.18,
+    "pct": 0.674,
+    "equity": 26172.23
+   },
+   {
+    "date": "2026-08-04",
+    "pl": 226.32,
+    "pct": 0.865,
+    "equity": 26398.55
+   },
+   {
+    "date": "2026-08-05",
+    "pl": 72.84,
+    "pct": 0.276,
+    "equity": 26471.39
+   },
+   {
+    "date": "2026-08-06",
+    "pl": -18.9,
+    "pct": -0.071,
+    "equity": 26452.5
+   },
+   {
+    "date": "2026-08-07",
+    "pl": 124.37,
+    "pct": 0.47,
+    "equity": 26576.87
+   },
+   {
+    "date": "2026-08-10",
+    "pl": -102.87,
+    "pct": -0.387,
+    "equity": 26474.0
+   },
+   {
+    "date": "2026-08-11",
+    "pl": -19.95,
+    "pct": -0.075,
+    "equity": 26454.05
+   },
+   {
+    "date": "2026-08-12",
+    "pl": 124.62,
+    "pct": 0.471,
+    "equity": 26578.67
+   },
+   {
+    "date": "2026-08-13",
+    "pl": 72.31,
+    "pct": 0.272,
+    "equity": 26650.98
+   },
+   {
+    "date": "2026-08-14",
+    "pl": -11.91,
+    "pct": -0.045,
+    "equity": 26639.06
+   },
+   {
+    "date": "2026-08-17",
+    "pl": -20.82,
+    "pct": -0.078,
+    "equity": 26618.24
+   },
+   {
+    "date": "2026-08-18",
+    "pl": -147.15,
+    "pct": -0.553,
+    "equity": 26471.1
+   },
+   {
+    "date": "2026-08-19",
+    "pl": -31.58,
+    "pct": -0.119,
+    "equity": 26439.52
+   },
+   {
+    "date": "2026-08-20",
+    "pl": -55.7,
+    "pct": -0.211,
+    "equity": 26383.82
+   },
+   {
+    "date": "2026-08-21",
+    "pl": -8.91,
+    "pct": -0.034,
+    "equity": 26374.91
+   },
+   {
+    "date": "2026-08-24",
+    "pl": -128.47,
+    "pct": -0.487,
+    "equity": 26246.44
+   },
+   {
+    "date": "2026-08-25",
+    "pl": 93.67,
+    "pct": 0.357,
+    "equity": 26340.1
+   },
+   {
+    "date": "2026-08-26",
+    "pl": -45.9,
+    "pct": -0.174,
+    "equity": 26294.21
+   },
+   {
+    "date": "2026-08-27",
+    "pl": 325.04,
+    "pct": 1.236,
+    "equity": 26619.24
+   },
+   {
+    "date": "2026-08-28",
+    "pl": -177.34,
+    "pct": -0.666,
+    "equity": 26441.9
+   },
+   {
+    "date": "2026-08-31",
+    "pl": 39.7,
+    "pct": 0.15,
+    "equity": 26481.6
+   },
+   {
+    "date": "2026-09-01",
+    "pl": -105.9,
+    "pct": -0.4,
+    "equity": 26375.71
+   },
+   {
+    "date": "2026-09-02",
+    "pl": 120.42,
+    "pct": 0.457,
+    "equity": 26496.13
+   },
+   {
+    "date": "2026-09-03",
+    "pl": 123.41,
+    "pct": 0.466,
+    "equity": 26619.54
+   },
+   {
+    "date": "2026-09-04",
+    "pl": 21.97,
+    "pct": 0.083,
+    "equity": 26641.51
+   },
+   {
+    "date": "2026-09-08",
+    "pl": -85.47,
+    "pct": -0.321,
+    "equity": 26556.04
+   },
+   {
+    "date": "2026-09-09",
+    "pl": -51.66,
+    "pct": -0.195,
+    "equity": 26504.37
+   },
+   {
+    "date": "2026-09-10",
+    "pl": -125.68,
+    "pct": -0.474,
+    "equity": 26378.69
+   },
+   {
+    "date": "2026-09-11",
+    "pl": 48.68,
+    "pct": 0.185,
+    "equity": 26427.38
+   },
+   {
+    "date": "2026-09-14",
+    "pl": -142.74,
+    "pct": -0.54,
+    "equity": 26284.64
+   },
+   {
+    "date": "2026-09-15",
+    "pl": -14.65,
+    "pct": -0.056,
+    "equity": 26269.99
+   },
+   {
+    "date": "2026-09-16",
+    "pl": 13.42,
+    "pct": 0.051,
+    "equity": 26283.41
+   },
+   {
+    "date": "2026-09-17",
+    "pl": 161.36,
+    "pct": 0.614,
+    "equity": 26444.78
+   },
+   {
+    "date": "2026-09-18",
+    "pl": 57.91,
+    "pct": 0.219,
+    "equity": 26502.69
+   },
+   {
+    "date": "2026-09-21",
+    "pl": 201.1,
+    "pct": 0.759,
+    "equity": 26703.78
+   },
+   {
+    "date": "2026-09-22",
+    "pl": 45.99,
+    "pct": 0.172,
+    "equity": 26749.77
+   },
+   {
+    "date": "2026-09-23",
+    "pl": -95.42,
+    "pct": -0.357,
+    "equity": 26654.36
+   },
+   {
+    "date": "2026-09-24",
+    "pl": -16.31,
+    "pct": -0.061,
+    "equity": 26638.05
+   },
+   {
+    "date": "2026-09-25",
+    "pl": 36.73,
+    "pct": 0.138,
+    "equity": 26674.78
+   },
+   {
+    "date": "2026-09-28",
+    "pl": 0.64,
+    "pct": 0.002,
+    "equity": 26675.42
+   },
+   {
+    "date": "2026-09-29",
+    "pl": -23.41,
+    "pct": -0.088,
+    "equity": 26652.01
+   },
+   {
+    "date": "2026-09-30",
+    "pl": 18.76,
+    "pct": 0.07,
+    "equity": 26670.76
+   },
+   {
+    "date": "2026-10-01",
+    "pl": 50.43,
+    "pct": 0.189,
+    "equity": 26721.2
+   },
+   {
+    "date": "2026-10-02",
+    "pl": 97.18,
+    "pct": 0.364,
+    "equity": 26818.38
+   },
+   {
+    "date": "2026-10-05",
+    "pl": 118.62,
+    "pct": 0.442,
+    "equity": 26937.0
+   },
+   {
+    "date": "2026-10-06",
+    "pl": 35.14,
+    "pct": 0.13,
+    "equity": 26972.14
+   },
+   {
+    "date": "2026-10-07",
+    "pl": -40.66,
+    "pct": -0.151,
+    "equity": 26931.48
+   },
+   {
+    "date": "2026-10-08",
+    "pl": -155.78,
+    "pct": -0.578,
+    "equity": 26775.7
+   },
+   {
+    "date": "2026-10-09",
+    "pl": 15.14,
+    "pct": 0.057,
+    "equity": 26790.84
+   },
+   {
+    "date": "2026-10-12",
+    "pl": -66.39,
+    "pct": -0.248,
+    "equity": 26724.45
+   },
+   {
+    "date": "2026-10-13",
+    "pl": 21.38,
+    "pct": 0.08,
+    "equity": 26745.83
+   },
+   {
+    "date": "2026-10-14",
+    "pl": -196.71,
+    "pct": -0.735,
+    "equity": 26549.13
+   },
+   {
+    "date": "2026-10-15",
+    "pl": -54.87,
+    "pct": -0.207,
+    "equity": 26494.26
+   },
+   {
+    "date": "2026-10-16",
+    "pl": -152.19,
+    "pct": -0.574,
+    "equity": 26342.07
+   },
+   {
+    "date": "2026-10-19",
+    "pl": 90.46,
+    "pct": 0.343,
+    "equity": 26432.52
+   },
+   {
+    "date": "2026-10-20",
+    "pl": -2.45,
+    "pct": -0.009,
+    "equity": 26430.07
+   },
+   {
+    "date": "2026-10-21",
+    "pl": 126.26,
+    "pct": 0.478,
+    "equity": 26556.33
+   },
+   {
+    "date": "2026-10-22",
+    "pl": -261.57,
+    "pct": -0.985,
+    "equity": 26294.76
+   },
+   {
+    "date": "2026-10-23",
+    "pl": -33.31,
+    "pct": -0.127,
+    "equity": 26261.46
+   },
+   {
+    "date": "2026-10-26",
+    "pl": 125.6,
+    "pct": 0.478,
+    "equity": 26387.05
+   },
+   {
+    "date": "2026-10-27",
+    "pl": 81.63,
+    "pct": 0.309,
+    "equity": 26468.68
+   },
+   {
+    "date": "2026-10-28",
+    "pl": -9.24,
+    "pct": -0.035,
+    "equity": 26459.44
+   },
+   {
+    "date": "2026-10-29",
+    "pl": -78.49,
+    "pct": -0.297,
+    "equity": 26380.95
+   },
+   {
+    "date": "2026-10-30",
+    "pl": -284.69,
+    "pct": -1.079,
+    "equity": 26096.26
+   },
+   {
+    "date": "2026-11-02",
+    "pl": -89.87,
+    "pct": -0.344,
+    "equity": 26006.39
+   },
+   {
+    "date": "2026-11-03",
+    "pl": 92.96,
+    "pct": 0.357,
+    "equity": 26099.35
+   },
+   {
+    "date": "2026-11-04",
+    "pl": -21.21,
+    "pct": -0.081,
+    "equity": 26078.14
+   },
+   {
+    "date": "2026-11-05",
+    "pl": -580.94,
+    "pct": -2.228,
+    "equity": 25497.2
+   },
+   {
+    "date": "2026-11-06",
+    "pl": 119.19,
+    "pct": 0.467,
+    "equity": 25616.38
+   }
+  ],
+  "trades": [],
+  "open_positions": [
+   {
+    "symbol": "NVDA",
+    "side": "long",
+    "qty": 14.5197,
+    "avg_price": 172.2144,
+    "price": 186.64,
+    "value": 2709.96,
+    "pl": 209.45,
+    "pl_pct": 0.08377,
+    "entry_date": "2026-04-02",
+    "rating": "Overweight",
+    "rationale": "Initiate an initial 50% position in NVDA at current market levels (~175.35) to capture fundamental strength while respecting technical consolidation. Set a stop-loss at 164.00 and plan to deploy the remaining 50% upon a definitive close above the 50-day SMA ($182.35) to confirm trend resumption."
+   },
+   {
+    "symbol": "QQQ",
+    "side": "long",
+    "qty": 4.1409,
+    "avg_price": 609.6019,
+    "price": 656.1,
+    "value": 2716.84,
+    "pl": 192.54,
+    "pl_pct": 0.07628,
+    "entry_date": "2026-04-13",
+    "rating": "Overweight",
+    "rationale": "Initiate a long position in QQQ with a 5% total portfolio allocation, utilizing a tiered entry strategy to mitigate the risk of buying near resistance. Deploy 2.5% at current market levels (~$610) to capture ongoing momentum, while reserving the remaining 2.5% to add on dips toward the 10-day EMA near $594. Maintain a stop-loss at $587.92 to guard against sharp reversals."
+   },
+   {
+    "symbol": "SPY",
+    "side": "long",
+    "qty": 3.7257,
+    "avg_price": 677.5455,
+    "price": 735.29,
+    "value": 2739.47,
+    "pl": 215.14,
+    "pl_pct": 0.08523,
+    "entry_date": "2026-04-13",
+    "rating": "Overweight",
+    "rationale": "We are initiating an Overweight position to capture accelerating bullish momentum. Execute a 0.5x allocation through limit orders on pullbacks toward the 669.60 support level, avoiding aggressive market buys near the 679.77 resistance. Use an ATR-based stop-loss at 649.77 to manage exposure against near-term volatility."
+   }
+  ]
+ },
+ "possibly_contaminated": null,
+ "all_dates": null
+}

@@ -1,0 +1,73 @@
+name: system_ta
+# System C: TradingAgents (multi-agent LLM framework, https://github.com/TauricResearch/TradingAgents) on the Gemini
+# free API tier. Every weekday after the close it rates SPY, QQQ, NVDA + up to 2 news
+# movers (TA_MAX_TICKERS, default 5 in total), places market orders on the dedicated Alpaca PAPER account (ALPACA_TA_*; without
+# the keys it only keeps the shadow ledger), commits agent_memory/system_ta.json and sends ONE Telegram summary.
+# Timer: Supabase pg_cron dispatches this at 21:15 UTC on weekdays (16:15 EST / 17:15 EDT, after the close).
+#
+# Model: Google Gemini free API tier (llm_provider "google"): quick tier gemini-3.5-flash-lite, deep tier gemini-3.1-flash-lite (the Flash models allow only 20 requests/day free).
+# Secret needed: GOOGLE_API_KEY. Free-tier limits are per project and model; src/system_ta.py rate-limits itself under them.
+on:
+  workflow_dispatch:
+    inputs:
+      asof:
+        description: "Date to decide for (YYYY-MM-DD); empty = last finished session"
+        default: ""
+      tickers:
+        description: "Comma-separated tickers; empty = SPY,QQQ,NVDA + news movers"
+        default: ""
+      force:
+        description: "Re-run tickers already decided for that date"
+        type: boolean
+        default: false
+
+concurrency:
+  group: backtest-lab-system-ta
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  TA_TAG: v0.7.1
+  TA_MAX_TICKERS: ${{ vars.TA_MAX_TICKERS || '5' }}
+  GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  ALPACA_DTS_API_KEY: ${{ secrets.ALPACA_DTS_API_KEY }}
+  ALPACA_DTS_SECRET_KEY: ${{ secrets.ALPACA_DTS_SECRET_KEY }}
+  ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+  ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  system-ta:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180   # about 35 model calls per ticker, 5 tickers; measure the first run and tighten
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt "git+https://github.com/TauricResearch/TradingAgents@${TA_TAG}"
+      - name: System C
+        run: |
+          cd src
+          python system_ta.py ${{ inputs.asof && format('--asof {0}', inputs.asof) || '' }} ${{ inputs.tickers && format('--tickers {0}', inputs.tickers) || '' }} ${{ inputs.force && '--force' || '' }} || true
+      - name: Commit the ledger and TradingAgents' decision log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in agent_memory/system_ta.json agent_memory/ta_memory.md; do
+            [ -e "$f" ] && git add -- "$f"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "System C run $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do
+            git pull --rebase --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1

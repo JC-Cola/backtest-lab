@@ -36,6 +36,10 @@ jobs:
         env:
           ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
           ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+          ALPACA_DTS_API_KEY: ${{ secrets.ALPACA_DTS_API_KEY }}
+          ALPACA_DTS_SECRET_KEY: ${{ secrets.ALPACA_DTS_SECRET_KEY }}
+          ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+          ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
