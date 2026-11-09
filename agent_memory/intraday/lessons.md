@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-09. 10833 trials in total: 8836 scored, 1997 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-09. 10851 trials in total: 8849 scored, 2002 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -12,14 +12,14 @@ Updated 2026-11-09. 10833 trials in total: 8836 scored, 1997 rejected, 0 sent to
 - reward now 0.000 (when found 0.000) | folds [1.703, 0.951, 1.488] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and range_pos > p30; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.22, 1.55, 1.216] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and ret_30 > p15; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.571, 0.817, 1.582] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and range_pos > p20; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.73, 1.645, 0.986] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and ret_30 > p30; hold 240 min
-- reward now 0.000 (when found 0.000) | folds [1.849, 0.569, 1.513] | SPY at 11:00: long when gap > p85 and prev_day_ret < p84 and range_pos > p25; hold 240 min
+- reward now 0.000 (when found 0.001) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
 
 ## Features that tend to help (learned weights, 1 = average)
 
 - noise_z: 1.00
-- vwap_dist: 1.00
 - ret_30: 1.00
+- vwap_dist: 1.00
 - prev_day_ibs: 1.00
 - rv_5d: 1.00
 - gap: 1.00
@@ -36,8 +36,8 @@ Updated 2026-11-09. 10833 trials in total: 8836 scored, 1997 rejected, 0 sent to
 
 ## Why ideas were rejected
 
-- too few trades: 1985
-- risk review: 8
+- too few trades: 1986
+- risk review: 12
 - invalid spec: 4
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
@@ -45,4 +45,4 @@ Updated 2026-11-09. 10833 trials in total: 8836 scored, 1997 rejected, 0 sent to
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 53s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 42s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
