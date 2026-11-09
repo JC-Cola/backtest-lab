@@ -1,6 +1,6 @@
 # What the agent has learned so far
 
-Updated 2026-11-09. 20512 trials in total: 14179 scored, 6333 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-09. 20522 trials in total: 14189 scored, 6333 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -44,4 +44,4 @@ Updated 2026-11-09. 20512 trials in total: 14179 scored, 6333 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 105s. Best deflated reward went from 0.232 to 0.232. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 401s. Best deflated reward went from 0.232 to 0.232. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
