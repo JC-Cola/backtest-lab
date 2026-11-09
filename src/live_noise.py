@@ -38,6 +38,10 @@ NY = ZoneInfo("America/New_York")
 SYMBOLS, LOOKBACK = ["SPY", "QQQ"], 14
 CHECKS = [(10, 0), (11, 0), (12, 0), (13, 0), (14, 0), (15, 0)]
 FLATTEN = (15, 55)  # plain market order for the close; the cloud run at ~15:56 acts on this point
+RISK = ROOT / "agent_memory" / "noise_risk.json"
+START_EQUITY = 25000.0
+DAILY_STOP = 0.03   # flatten and stop for the day when equity is this far below the previous close's equity
+KILL_DD = 0.12      # flatten and stop until --rearm when equity is this far below the account's peak equity
 FIELDS = ["time_ny", "symbol", "event", "price", "vwap", "upper", "lower", "decision", "qty_before", "qty_after", "order_id", "note"]
 
 
@@ -241,6 +245,154 @@ def act_safety(trading, now, sym, qty):
          "qty_before": qty, "qty_after": 0, "note": "market order"})
 
 
+# ---------- emergency loss limits (daily stop, drawdown kill switch) ----------
+def risk_action(equity, last_equity, peak, state, today):
+    """Pure risk decision: "ok" | "daily_stop" | "kill" | "halted" | "killed".
+    killed (persisted flag) and kill (equity <= peak x (1 - KILL_DD)) outrank everything; halted = a daily stop already
+    fired on `today` (state["date"]); daily_stop = equity <= last_equity x (1 - DAILY_STOP). A missing, zero or negative
+    equity / last_equity / peak disables the threshold that needs it (no false stop); persisted flags still apply."""
+    state = state or {}
+    pos = lambda x: isinstance(x, (int, float)) and math.isfinite(x) and x > 0
+    if state.get("killed"):
+        return "killed"
+    if pos(equity) and pos(peak) and equity <= peak * (1 - KILL_DD) + 1e-9:
+        return "kill"
+    if state.get("halted_day") and state.get("date") == str(today):
+        return "halted"
+    if pos(equity) and pos(last_equity) and equity <= last_equity * (1 - DAILY_STOP) + 1e-9:
+        return "daily_stop"
+    return "ok"
+
+
+def load_risk():
+    try:
+        r = json.loads(RISK.read_text())
+        return r if isinstance(r, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def save_risk(r):
+    RISK.write_text(json.dumps(r, indent=1, sort_keys=True))
+
+
+def initial_peak(equity):
+    """max(start equity, current equity, highest equity in the account snapshot's calendar/history if present)."""
+    vals = [START_EQUITY, equity or 0]
+    try:
+        d = json.loads(SNAPSHOT.read_text())
+        vals += [c.get("equity") for c in d.get("calendar") or [] if isinstance(c, dict)]
+        for series in (d.get("history") or {}).values():
+            vals += [pt[1] for pt in series if isinstance(pt, (list, tuple)) and len(pt) > 1]
+    except (OSError, ValueError, AttributeError):
+        pass
+    return max(v for v in vals if isinstance(v, (int, float)) and math.isfinite(v))
+
+
+def alert(text):
+    try:
+        import telegram
+        telegram.send(text)
+    except Exception as e:  # an alert must never block the close
+        print(f"alert failed: {type(e).__name__}", flush=True)
+
+
+def risk_flatten(trading, now, why):
+    """Cancel open orders and close what the account really holds, per symbol. Returns the symbols that failed.
+    If an open order cannot be cancelled (already filling) the symbol is skipped this run: never risk a second close."""
+    failed = []
+    stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    for sym in SYMBOLS:
+        try:
+            in_flight = False
+            from alpaca.trading.enums import QueryOrderStatus
+            from alpaca.trading.requests import GetOrdersRequest
+            for o in trading.get_orders(GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[sym])):
+                try:
+                    trading.cancel_order_by_id(o.id)
+                    log({"time_ny": stamp, "symbol": sym, "event": "cancel open order", "order_id": str(o.id), "note": f"cancelled: {why}"})
+                except Exception as e:
+                    in_flight = True
+                    print(f"{sym} cancel {o.id} failed: {e}", flush=True)
+            held = held_qty(trading).get(sym, 0)
+            if in_flight:
+                log({"time_ny": stamp, "symbol": sym, "event": "risk flatten", "qty_before": held, "note": "order in flight; retry next run"})
+                continue
+            oid = submit(trading, -held, "day", sym) if held else ""
+            log({"time_ny": stamp, "symbol": sym, "event": "risk flatten", "qty_before": held, "qty_after": 0, "order_id": oid,
+                 "note": f"{why}; market order" if held else f"{why}; already flat"})
+            st = load_state(now.date(), sym)
+            st["qty"], st["moc"] = 0, True
+            save_state(sym, st)
+        except Exception as e:
+            print(f"{sym} risk flatten failed: {e}", flush=True)
+            failed.append(sym)
+    return failed
+
+
+def risk_step(trading, now, pts):
+    """Run before planning. Returns (proceed, failed): proceed False = no checks/entries this run (positions are
+    flattened here if the limits fired or leftovers exist)."""
+    today = now.date()
+    rs = load_risk()
+    try:
+        acct = trading.get_account()
+        equity = float(acct.equity)
+        last = float(getattr(acct, "last_equity", 0) or 0)
+    except Exception as e:
+        print(f"risk: account read failed ({type(e).__name__}); persisted flags only", flush=True)
+        equity = last = None
+    before = dict(rs)
+    if "peak" not in rs:
+        rs["peak"] = initial_peak(equity)
+    if equity:
+        rs["peak"] = max(rs["peak"], equity)
+    act = risk_action(equity, last, rs["peak"], rs, today)
+    stamp = now.strftime("%Y-%m-%d %H:%M:%S")
+    failed = []
+    if act in ("daily_stop", "kill"):
+        kill = act == "kill"
+        why = "kill switch" if kill else "daily loss stop"
+        failed = risk_flatten(trading, now, why)
+        ref = rs["peak"] if kill else last
+        pct = (equity / ref - 1) * 100
+        base = {"time": stamp, "equity": round(equity, 2)}
+        if kill:
+            rs.update(killed=True, kill_time=stamp, kill_equity=round(equity, 2), kill_peak=round(rs["peak"], 2))
+        else:
+            past = [p for p in pts if p <= now]
+            rs.update(halt_logged=f"{past[-1]:%H:%M}" if past else "", date=str(today), halted_day=True, reason=why, last_equity=round(last, 2), **base)
+        save_risk(rs)  # before the alert: a crash must not make the next run alert again
+        log({"time_ny": stamp, "symbol": ",".join(SYMBOLS), "event": why, "note": f"equity {equity:.2f} vs {'peak' if kill else 'last equity'} {ref:.2f} ({pct:+.1f}%)"})
+        if kill:
+            alert(f"\U0001F6D1 Intraday KILL SWITCH: \u2212{abs(pct):.1f}% from peak (${equity:,.0f} vs peak ${ref:,.0f}). Trading stopped until restarted.")
+        else:
+            alert(f"\U0001F6D1 Intraday daily loss stop: \u2212{abs(pct):.1f}% today (${equity:,.0f} vs ${last:,.0f}). Positions closed; trading resumes tomorrow.")
+        return False, failed
+    if act in ("halted", "killed"):
+        if held_qty(trading):  # positions must never be stranded, whatever the state
+            failed = risk_flatten(trading, now, "leftover position while " + ("halted" if act == "halted" else "killed"))
+        if act == "halted":
+            past = [p for p in pts if p <= now]
+            label = f"{past[-1]:%H:%M}" if past else ""
+            if rs.get("halt_logged") != label:
+                rs["halt_logged"] = label
+                log({"time_ny": stamp, "event": "halted (daily loss stop)", "note": "no entries today; resumes next session"})
+    if rs != before:
+        save_risk(rs)
+    return act == "ok", failed
+
+
+def rearm(trading, now):
+    rs = load_risk()
+    equity = float(trading.get_account().equity)
+    for k in ("killed", "kill_time", "kill_equity", "kill_peak"):
+        rs.pop(k, None)
+    rs["peak"] = equity
+    save_risk(rs)
+    log({"time_ny": now.strftime("%Y-%m-%d %H:%M:%S"), "event": "rearm", "note": f"kill switch cleared; peak reset to {equity:.2f}"})
+
+
 def snapshot(trading):
     """The intraday account's state for the Strategy Lab page."""
     import alpaca_paper
@@ -261,19 +413,28 @@ def schedule(now):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--once", action="store_true")
+    ap.add_argument("--rearm", action="store_true", help="clear the kill switch and reset the peak equity to the current equity")
     ap.add_argument("--fraction", type=float, default=0.5)
     ap.add_argument("--until", default=None, help="stop after this New York time, HH:MM")
     a = ap.parse_args()
     trading, data_client = clients()
+    if a.rearm:
+        rearm(trading, datetime.now(NY))
+        return
     if not trading.get_clock().is_open:
         print("market is closed; nothing to do")
         return
     now = datetime.now(NY)
     pts = schedule(now)
     if a.once:
+        proceed, failed = risk_step(trading, now, pts)
+        if not proceed:
+            snapshot(trading)
+            if failed:
+                raise SystemExit(f"failed: {', '.join(failed)}")
+            return
         states = {sym: load_state(now.date(), sym) for sym in SYMBOLS}
         held = held_qty(trading)
-        failed = []
         for act in plan_once(now, pts, states, held):
             sym = act["sym"]
             try:  # one symbol failing must not stop the other one
@@ -307,6 +468,8 @@ def main():
             print(f"next: {'flatten' if i == len(pts) - 1 else 'check'} at {p:%H:%M:%S} New York (in {wait / 60:.0f} min)", flush=True)
             time.sleep(wait)
         now = datetime.now(NY)
+        if not risk_step(trading, now, pts)[0]:
+            continue
         if i == len(pts) - 1:  # same rule as --once: close what the account really holds, market order, before 16:00
             states = {sym: load_state(now.date(), sym) for sym in SYMBOLS}
             for act in plan_once(now, pts, states, held_qty(trading)):

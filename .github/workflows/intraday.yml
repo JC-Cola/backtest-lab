@@ -5,8 +5,15 @@ name: intraday
 # dispatched by Supabase pg_cron (job bl-intraday); GitHub's own cron dropped runs.
 # Market close: NO market-on-close orders (Alpaca paper let them expire). The run at 15:56 New York closes the position
 # with a plain market order; its cron is '56 19,20 * * 1-5' UTC (the one that falls at 14:56 NY is a harmless no-op).
+# Risk limits (live_noise.py): daily loss stop 3%, drawdown kill switch 12% from peak; state in agent_memory/noise_risk.json.
+# Re-arm after a kill switch: run this workflow manually with rearm = true (runs --rearm instead of the normal check).
 on:
   workflow_dispatch:
+    inputs:
+      rearm:
+        description: "Clear the kill switch and reset the peak equity to the current equity"
+        type: boolean
+        default: false
 
 concurrency:
   group: backtest-lab-trading
@@ -26,7 +33,14 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
+      - name: Re-arm kill switch
+        if: github.event.inputs.rearm == 'true'
+        env:
+          ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+          ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+        run: cd src && python live_noise.py --rearm
       - name: Intraday check
+        if: github.event.inputs.rearm != 'true'
         env:
           ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
           ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
@@ -50,7 +64,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in agent_memory/noise_live.csv agent_memory/noise_state_*.json agent_memory/alpaca_intraday.json agent_memory/fill_alerts.json; do
+          for f in agent_memory/noise_live.csv agent_memory/noise_state_*.json agent_memory/noise_risk.json agent_memory/alpaca_intraday.json agent_memory/fill_alerts.json; do
             [ -e "$f" ] && git add -- "$f"
           done
           git diff --cached --quiet && exit 0
