@@ -19,6 +19,8 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta, timezone
 
+import alpaca_keys
+
 BARS_URL = "https://data.alpaca.markets/v2/stocks/bars"
 NEWS_URL = "https://data.alpaca.markets/v1beta1/news"
 MARKET = "SPY"
@@ -33,7 +35,8 @@ RELVOL_DAYS = 20
 
 
 def _keys(key, secret):
-    key, secret = key or os.environ.get("ALPACA_API_KEY"), secret or os.environ.get("ALPACA_SECRET_KEY")
+    if not (key and secret):
+        key, secret = alpaca_keys.data_keys()
     if not (key and secret):
         raise RuntimeError("no Alpaca keys")
     return {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}

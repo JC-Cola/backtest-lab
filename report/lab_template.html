@@ -98,6 +98,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .acct { border-bottom: 1px solid var(--line); background: var(--panel); display: flex; flex-direction: column; gap: 12px;
   padding-block: 16px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .acct-head { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+.acct.retired > :not(.acct-head) { display: none; }
+.acct.retired .acct-head .live { display: none; }
 .acct-head h2 { margin: 0; font-size: 1.05rem; font-weight: 600; }
 .acct-head .live { font: 500 0.66rem var(--f-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--pos); }
 .acct-head .upd { font: 0.72rem var(--f-mono); color: var(--faint); }
@@ -332,7 +334,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 <div class="livebar" id="livebar"><span id="live-badge" role="status"></span></div>
 
 <section class="acct" id="acct" hidden>
-  <div class="acct-head"><h2 id="ac-title">Live paper trading: long-term account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
+  <div class="acct-head"><h2 id="ac-title">Live paper trading: intraday account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
   <div class="acct-tables">
     <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
@@ -422,7 +424,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </main>
 
 <main id="view-calendar" class="calview" hidden>
-  <h2 id="cal-title">P&amp;L calendar · Long-term account</h2>
+  <h2 id="cal-title">P&amp;L calendar · Intraday account</h2>
   <div class="panel bh" id="bh" aria-label="Balance history">
     <div class="bh-head"><div><span class="cap">Balance history</span><div class="bh-bal" id="bh-bal"></div><div class="bh-chg" id="bh-chg"></div></div>
       <div class="bh-rng" id="bh-rng" role="group" aria-label="Range"><button data-r="1D">1D</button><button data-r="1W">1W</button><button data-r="1M">1M</button><button data-r="ALL">All</button></div></div>
@@ -437,7 +439,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </main>
 
 <main id="view-balance" class="calview" hidden>
-  <h2 id="bal-title">Balance history · Long-term paper</h2>
+  <h2 id="bal-title">Balance history · Intraday paper</h2>
   <div class="panel tvbar" id="tv-bar" aria-label="Account summary"></div>
   <div class="panel tvwrap"><table class="tvtab" id="tv-tab"><thead><tr><th>Time</th><th class="r">Balance before</th><th class="r">Balance after</th><th class="r">Realized PnL</th><th>Action</th></tr></thead><tbody id="tv-body"></tbody></table><div class="bh-empty" id="tv-empty" hidden>No closed trades yet.</div></div>
 </main>
@@ -885,7 +887,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     curTab = k;
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
     $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar"; $("view-balance").hidden = k !== "balance";
-    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || !acctData(); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
+    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || (lfilter === "intraday" && !acctData()); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
     if (k === "backtest") renderStrategy();
     if (k === "calendar") renderCal(acctData());
     if (k === "balance") renderBalance(acctData());
@@ -906,10 +908,10 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   const mname = { SPY: "S&P 500 fund · daily", QQQ: "Nasdaq 100 fund · daily", GLD: "Gold", "BTC-USD": "Bitcoin · daily", IWM: "Small caps",
                   "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
-  let lfilter = "intraday";  // the lab is split in two: "longterm" (daily strategies) and "intraday"
-  try { const f = localStorage.getItem("lab-lfilter"); if (f) lfilter = f === "intraday" || f === "all" ? "intraday" : "longterm"; } catch (e) {}
+  const RETIRED = "2026-11-09";  // the long-term Alpaca paper account was deleted; its strategy research stays visible as history
+  let lfilter = "intraday";  // the lab is split in two: "longterm" (daily strategies, history) and "intraday"; always opens on Intraday
   const inFilter = b => (lfilter === "intraday") === (b.family === "Intraday");
-  const acctData = () => lfilter === "intraday" ? D.alpaca_intraday : D.alpaca;
+  const acctData = () => lfilter === "intraday" ? D.alpaca_intraday : null;  // no long-term account data any more
   function enterSection() {  // select the section's top strategy
     if (!inFilter(D.book[cur])) { const i = D.book.findIndex(inFilter); if (i >= 0) { cur = i; combo = D.book[i].chosen; } }
   }
@@ -1038,7 +1040,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   document.querySelectorAll("#bh-rng button").forEach(b => b.addEventListener("click", () => { bhRange = b.dataset.r; renderHistory(acctData()); }));
   let calMonth = null, calKey = null;
   function renderBalance(A) {
-    const B = A && A.balance_history, nm = lfilter === "intraday" ? "Intraday paper" : "Long-term paper";
+    const B = A && A.balance_history, nm = lfilter === "intraday" ? "Intraday paper" : "Long-term account retired " + RETIRED;
     $("bal-title").textContent = "Balance history · " + nm;
     const n2 = v => v == null ? "—" : Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + n2(Math.abs(v));
@@ -1068,9 +1070,9 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   function renderCal(A) {
     renderHistory(A);
-    $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday" : "Long-term") + " account";
+    $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday account" : "Long-term account retired " + RETIRED);
     if (!A) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
-      $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: "No account data yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
+      $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: lfilter === "intraday" ? "No account data yet." : "Long-term account retired " + RETIRED + ".", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
     const cal = (A.calendar || []).slice().sort((a, b) => a.date < b.date ? -1 : 1), box = $("pcal-grid"), tip = $("pcal-tip");
     tip.textContent = "";
     if (!cal.length) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
@@ -1109,8 +1111,14 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
   $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
   function renderAcct() {
-    const A = acctData(); $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
-    $("ac-title").textContent = lfilter === "intraday" ? "Live paper trading: intraday account" : "Live paper trading: long-term account";
+    const A = acctData();
+    if (lfilter !== "intraday") {  // retired account: a one-line notice instead of live data
+      $("acct").hidden = $("view-backtest").hidden; $("ac-title").textContent = "Long-term account retired " + RETIRED; $("ac-upd").textContent = "";
+      $("acct").classList.add("retired"); return;
+    }
+    $("acct").classList.remove("retired");
+    $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
+    $("ac-title").textContent = "Live paper trading: intraday account";
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
     if (A.live) { $("ac-upd").textContent = `live figures from Alpaca (paper) · refreshed ${A.live.slice(11, 19)} UTC`; } else
@@ -1137,7 +1145,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   renderResearch(); renderAcct(); renderParams(); renderAll();
   // ---------------------------------------------------------------- live account data (Supabase execute_sql via the mcp capability)
-  // Read-only: the only statement ever sent is `select private.alpaca_live('lt'|'id')`; the server holds the Alpaca keys, the page holds none.
+  // Read-only: the only statement ever sent is `select private.alpaca_live('id')` (the long-term 'lt' account is retired and never queried); the server holds the Alpaca keys, the page holds none.
   // LIVE-PURE-BEGIN (no DOM access in here: unit-checked in node against src/alpaca_paper.py)
   const fmtNum = x => x.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
   const r2 = x => Number(x.toFixed(2));
@@ -1213,13 +1221,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   // LIVE-PURE-END
 
   const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh", LIVE_EVERY = 5000;
-  const LIVE_Q = { lt: "select private.alpaca_live('lt') as d", id: "select private.alpaca_live('id') as d" };
+  const LIVE_Q = { id: "select private.alpaca_live('id') as d" };
   const BLANK = { start_equity: 25000, equity: 0, cash: 0, last_equity: 0, generated: "1970-01-01T00:00:00+00:00", positions: [], orders: [], calendar: [], history: {}, strategies_by_symbol: {} };
-  const SNAP = { lt: D.alpaca, id: D.alpaca_intraday }, LIVE = { lt: null, id: null }, SIG = {};
+  const SNAP = { id: D.alpaca_intraday }, LIVE = { id: null }, SIG = {};
   const DENIED = ["needs_reauth", "server_not_connected", "selection_required", "server_not_found", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted", "capability_disabled", "capability_removed", "consent_required"];
   let liveMcp = null, liveKey = null, liveUnsub = null, liveTimer = null, liveBusy = false;
-  const liveAcctKey = () => lfilter === "intraday" ? "id" : "lt";
-  const setAcct = (key, A) => { if (key === "id") D.alpaca_intraday = A; else D.alpaca = A; };
+  const liveAcctKey = () => lfilter === "intraday" ? "id" : null;  // null = the retired long-term account: nothing to query
+  const setAcct = (key, A) => { if (key === "id") D.alpaca_intraday = A; };
   function liveRows(res) {  // execute_sql result: {"result": "<text with <untrusted-data-...> [json rows] </untrusted-data-...>"}; the rows are data only
     try {
       let t = res && res.payload;
@@ -1266,7 +1274,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     liveBadge();
   }
   async function livePoll(key) {
-    if (!liveMcp || document.hidden || liveBusy || key !== liveKey) return;
+    if (!key || !liveMcp || document.hidden || liveBusy || key !== liveKey) return;
     liveBusy = true;
     try { onLive(key, await liveMcp.callTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] }, { cache: false })); }
     catch (e) { onLiveErr(key, e); }
@@ -1277,6 +1285,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     clearInterval(liveTimer); liveTimer = null;
     if (!liveMcp) return;
     const key = liveKey = liveAcctKey();
+    if (!key) return;
     try {
       liveUnsub = liveMcp.watchTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] },
         ev => ev.type === "data" ? onLive(key, ev.result) : onLiveErr(key, ev.error), { refetchInterval: LIVE_EVERY });
@@ -1284,7 +1293,9 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     liveTimer = setInterval(() => livePoll(key), LIVE_EVERY);  // watchTool polls are clamped to ~30 s; this keeps a 5 s cadence while visible (one call in flight at a time)
   }
   function liveBadge() {
-    const b = $("live-badge"), key = liveAcctKey(), s = LIVE[key], A = SNAP[key];
+    const b = $("live-badge"), key = liveAcctKey();
+    if (!key) { b.textContent = "Long-term account retired " + RETIRED; b.className = ""; return; }
+    const s = LIVE[key], A = SNAP[key];
     const ago = ms => { const sec = Math.max(0, Math.round((Date.now() - ms) / 1000)); return sec < 60 ? sec + "s ago" : sec < 3600 ? Math.round(sec / 60) + "m ago" : Math.round(sec / 3600) + "h ago"; };
     const snap = A ? "snapshot from " + A.generated.replace("T", " ").slice(0, 16) + " UTC" : "no snapshot yet";
     let t = snap, c = "";

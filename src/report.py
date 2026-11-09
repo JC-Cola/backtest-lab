@@ -1,11 +1,10 @@
-"""Daily trading report (markdown) for both Alpaca paper accounts: reports/YYYY-MM-DD.md plus reports/README.md.
+"""Daily trading report (markdown) for the intraday Alpaca paper account (the long-term account was retired 2026-11-09): reports/YYYY-MM-DD.md plus reports/README.md.
 
     python src/report.py [YYYY-MM-DD]     # default: today, New York date
 
 Pure functions build the text from plain data (so they are testable); thin fetchers call Alpaca with each account's
 keys and fall back to the saved snapshot json when keys are missing or a call fails. All times are New York time.
-Orders are fetched from 4 days back, because a long-term order sent last evening fills at today's open; the
-trades list uses each order's FILL time, the problems list uses its submit time.
+Orders are fetched from 4 days back; the trades list uses each order's FILL time, the problems list uses its submit time.
 """
 from __future__ import annotations
 
@@ -26,8 +25,7 @@ START = 25_000.0
 CHECK_HOURS = [10, 11, 12, 13, 14, 15]
 OPEN_STATUSES = {"new", "accepted", "pending_new", "held", "partially_filled", "pending_replace", "accepted_for_bidding", "calculated"}
 BAD_STATUSES = {"rejected", "canceled", "expired", "suspended"}
-ACCOUNTS = [("long-term", "ALPACA_API_KEY", "ALPACA_SECRET_KEY", MEM / "alpaca_account.json"),
-            ("intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", MEM / "alpaca_intraday.json")]
+ACCOUNTS = [("intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", MEM / "alpaca_intraday.json")]
 
 
 # ---------- formatting ----------
@@ -55,10 +53,6 @@ def table(head, rows):
     esc = lambda c: str(c).replace("|", "/")
     return "\n".join(["| " + " | ".join(head) + " |", "|" + "---|" * len(head)] +
                      ["| " + " | ".join(esc(c) for c in r) + " |" for r in rows]) + "\n"
-
-
-def norm(sym):
-    return (sym or "").replace("/", "").replace("-", "")  # BTC/USD (Alpaca) == BTC-USD (paper log)
 
 
 # ---------- input shaping ----------
@@ -165,31 +159,6 @@ def intraday_why(o, rows):
     return "close-out at the close" if "flatten" in ev else ev
 
 
-def latest_in(paper_rows):
-    """symbol (no slash) -> names of strategies whose latest logged decision is 'in' (agent ideas are not traded)."""
-    last = {}
-    for r in paper_rows:
-        if r["key"].startswith("AGENT-"):
-            continue
-        if r["key"] not in last or r["decision_date"] > last[r["key"]]["decision_date"]:
-            last[r["key"]] = r
-    out = {}
-    for r in last.values():
-        if float(r["position"]) > 0:
-            out.setdefault(norm(r["market"]), []).append(r["name"])
-    return out
-
-
-def longterm_why(o, order_rows, ins):
-    bits = []
-    r = next((r for r in order_rows if o.get("id") and r.get("order_id") == o["id"]), None)
-    if r:
-        bits.append(f"sent {r['sent_at_utc'][:16].replace('T', ' ')} UTC as {r['tif']}, target ${num(r['target_usd'], 0)}")
-    names = ins.get(norm(o["symbol"]))
-    bits.append("strategies in: " + ", ".join(names) if names else "no strategy currently in this symbol")
-    return "; ".join(bits)
-
-
 def trades(acct, day, why):
     fl = filled_on(acct.get("orders", []), day)
     if not fl:
@@ -204,24 +173,6 @@ def checks_table(rows):
     return table(["Time (NY)", "Symbol", "Decision", "Price", "Upper", "Lower", "VWAP"],
                  [[r["time_ny"][11:16], r["symbol"], r.get("decision") or r.get("event", ""), r.get("price", ""), r.get("upper", ""),
                    r.get("lower", ""), r.get("vwap", "")] for r in rows])
-
-
-def waiting(acct, order_rows, day):
-    t = ""
-    op = [o for o in acct.get("orders", []) if o.get("status") in OPEN_STATUSES]
-    if op:
-        t += "Open at Alpaca:\n\n" + table(["Symbol", "Side", "Qty", "Status"], [[o["symbol"], o["side"], num(o["qty"], 4).rstrip("0").rstrip("."), o["status"]] for o in op]) + "\n"
-    tonight = []
-    for r in order_rows:
-        try:
-            sent = datetime.fromisoformat(r["sent_at_utc"]).astimezone(NY)
-        except (KeyError, ValueError):
-            continue
-        if sent.date() == day:
-            tonight.append([sent.strftime("%H:%M"), r["symbol"], r["side"], r["qty"], r["tif"], r["status"].replace("OrderStatus.", "")])
-    if tonight:
-        t += "Sent tonight (alpaca_orders.csv):\n\n" + table(["Time (NY)", "Symbol", "Side", "Qty", "Type", "Status when sent"], tonight)
-    return t or "None.\n"
 
 
 def problems(day, accts, noise_rows):
@@ -255,51 +206,46 @@ def last_session(text):
     return m.group(1).strip() if m else ""
 
 
-def research(daily_text, intra_text, cands):
-    t = ""
-    for label, txt in (("Daily agent", daily_text), ("Intraday agent", intra_text)):
-        p = last_session(txt)
-        t += f"- **{label}, last session:** {p or 'no notes yet'}\n"
-    cost = [m.group(0) for m in (re.search(r"Claude CLI cost[^.$]*\$[\d.]+", x or "") for x in (last_session(daily_text), last_session(intra_text))) if m]
-    t += f"- **Claude CLI cost:** {'; '.join(cost) if cost else 'not reported in these notes'}\n"
-    wait = [c for c in (cands or {}).get("candidates", []) if c.get("status") == "awaiting approval"]
+def research(intra_text, cands):
+    p = last_session(intra_text)
+    t = f"- **Intraday agent, last session:** {p or 'no notes yet'}\n"
+    m = re.search(r"Claude CLI cost[^.$]*\$[\d.]+", p)
+    t += f"- **Claude CLI cost:** {m.group(0) if m else 'not reported in these notes'}\n"
+    wait = [c for c in (cands or {}).get("candidates", []) if c.get("status") == "awaiting approval" and c.get("account") == "intraday"]
     t += "- **Candidates awaiting approval:** " + ("None yet.\n" if not wait else "\n" + "".join(
         f"  - {c['account']}: {c['description']} (held-out Sharpe at 2x costs {c['sharpe_2x_cost']})\n" for c in wait))
     return t
 
 
-def build(day, accts, noise_rows, order_rows, paper_rows, daily_lessons, intra_lessons, cands):
-    lt, it = accts["long-term"], accts["intraday"]
+def build(day, accts, noise_rows, intra_lessons, cands):
+    it = accts["intraday"]
     day_noise = [r for r in noise_rows if r["time_ny"].startswith(str(day))]
-    ins = latest_in(paper_rows)
-    pl = lambda a: day_pl(a)
-    head = f"<!-- pl: long-term={'' if pl(lt) is None else round(pl(lt), 2)} intraday={'' if pl(it) is None else round(pl(it), 2)} -->\n"
+    pl = day_pl(it)
+    head = f"<!-- pl: intraday={'' if pl is None else round(pl, 2)} -->\n"
     prob = problems(day, accts, noise_rows)
-    return (head + f"# Trading report {day} ({day:%A})\n\nAll times are New York time. Paper money only.\n\n"
-            "## 1. Summary\n\n" + summary("long-term", lt) + "\n" + summary("intraday", it) +
-            "\n## 2. Trades today\n\n### Long-term account\n\n" + trades(lt, day, lambda o: longterm_why(o, order_rows, ins)) +
-            "\n### Intraday account\n\n" + trades(it, day, lambda o: intraday_why(o, day_noise)) +
+    return (head + f"# Trading report {day} ({day:%A})\n\nAll times are New York time. Paper money only. "
+            "The long-term account was retired 2026-11-09; only the intraday account is traded.\n\n"
+            "## 1. Summary\n\n" + summary("intraday", it) +
+            "\n## 2. Trades today\n\n" + trades(it, day, lambda o: intraday_why(o, day_noise)) +
             "\n## 3. Intraday checks today\n\n" + checks_table(day_noise) +
-            "\n## 4. Orders waiting for tomorrow's open (long-term)\n\n" + waiting(lt, order_rows, day) +
-            "\n## 5. Problems\n\n" + ("".join(f"- {p}\n" for p in prob) if prob else "None.\n") +
-            "\n## 6. Research\n\n" + research(daily_lessons, intra_lessons, cands))
+            "\n## 4. Problems\n\n" + ("".join(f"- {p}\n" for p in prob) if prob else "None.\n") +
+            "\n## 5. Research\n\n" + research(intra_lessons, cands))
 
 
 def index(out_dir):
-    """Rewrite README.md: one line per report, newest first, with both accounts' day P/L."""
+    """Rewrite README.md: one line per report, newest first, with the intraday day P/L."""
     lines = []
     for f in sorted(Path(out_dir).glob("????-??-??.md"), reverse=True):
-        m = re.search(r"<!-- pl: long-term=(\S*) intraday=(\S*) -->", f.read_text())
+        m = re.search(r"<!-- pl: (?:long-term=\S* )?intraday=(\S*) -->", f.read_text())
         s = lambda v: "n/a" if not v else usd(float(v), True)
-        lines.append(f"- [{f.stem}]({f.name}): long-term {s(m and m.group(1))}, intraday {s(m and m.group(2))}")
-    (Path(out_dir) / "README.md").write_text("# Daily trading reports\n\nNewest first. Day P/L per paper account.\n\n" + "\n".join(lines) + "\n")
+        lines.append(f"- [{f.stem}]({f.name}): intraday {s(m and m.group(1))}")
+    (Path(out_dir) / "README.md").write_text("# Daily trading reports\n\nNewest first. Day P/L of the intraday paper account.\n\n" + "\n".join(lines) + "\n")
 
 
 def main(date_str=None):
     day = date.fromisoformat(date_str) if date_str else datetime.now(NY).date()
     accts = {n: get_account(n, k, s, p, day) for n, k, s, p in ACCOUNTS}
-    text = build(day, accts, read_csv(MEM / "noise_live.csv"), read_csv(MEM / "alpaca_orders.csv"), read_csv(MEM / "paper_log.csv"),
-                 (MEM / "lessons.md").read_text() if (MEM / "lessons.md").exists() else "",
+    text = build(day, accts, read_csv(MEM / "noise_live.csv"),
                  (MEM / "intraday" / "lessons.md").read_text() if (MEM / "intraday" / "lessons.md").exists() else "",
                  read_json(MEM / "candidates.json"))
     OUT.mkdir(exist_ok=True)

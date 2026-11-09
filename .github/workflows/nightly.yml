@@ -1,12 +1,13 @@
 name: nightly
-# After the US close, weekdays 21:45 UTC (16:45 EST / 17:45 EDT): paper decisions, long-term account orders,
-# Strategy Lab page, then the daily report as a commit and an issue. The self-improving agents run in research.yml.
+# After the US close, weekdays 21:45 UTC (16:45 EST / 17:45 EDT): minute-data refresh, Strategy Lab page, news shadow test,
+# fill alerts, flat guard, then the daily report as a commit and an issue. The long-term account was retired 2026-11-09:
+# no long-term orders are placed any more. Market DATA uses alpaca_keys.data_keys() (intraday key first). The self-improving agents run in research.yml.
 # Timer: Supabase pg_cron (job bl-nightly) dispatches this workflow; GitHub's own cron dropped runs.
 on:
   workflow_dispatch:
     inputs:
       no_orders:
-        description: "Test run: do not place long-term account orders"
+        description: "Deprecated and ignored (the long-term account was retired); kept so an old dispatch payload still works"
         type: boolean
         default: false
 
@@ -19,10 +20,12 @@ permissions:
   issues: write
 
 env:
-  ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
-  ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
   ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
   ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  ALPACA_DTS_API_KEY: ${{ secrets.ALPACA_DTS_API_KEY }}
+  ALPACA_DTS_SECRET_KEY: ${{ secrets.ALPACA_DTS_SECRET_KEY }}
+  ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+  ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
   TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
   TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
@@ -49,8 +52,8 @@ jobs:
         run: find data -maxdepth 1 -name '*.csv' ! -name fomc_dates.csv -delete
       - name: Refresh minute data (the data/ cache saved by this job is what research.yml restores)
         run: cd src && python intraday_data.py SPY QQQ
-      - name: Nightly run
-        run: cd src && python daily.py ${{ inputs.no_orders && '--no-orders' || '' }}
+      - name: Strategy Lab build (candidates + page; no orders are placed)
+        run: cd src && python daily.py
       - uses: actions/setup-node@v4
         if: always()
         with:
@@ -65,7 +68,7 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
         timeout-minutes: 25   # scan ~30 s + up to 15 Claude reviews (hard cap 10 min inside the script)
         run: cd src && python news_shadow.py || true
-      - name: Telegram fill alerts (both accounts)
+      - name: Telegram fill alerts (Alpaca paper accounts)
         if: always()
         run: |
           sleep 5   # let market orders fill

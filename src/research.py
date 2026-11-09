@@ -1,5 +1,6 @@
-"""Research that never stops: the job behind research.yml (every 30 minutes). Alternates the intraday and long-term
-self-learning agents for a time budget; ideas come from the evolution proposer, from Claude (lessons files, at most
+"""Research that never stops: the job behind research.yml (every 30 minutes). Runs the self-learning agents listed in
+AGENTS for a time budget (since 2026-11-09 only the intraday agent: the long-term account was retired, its agent's code
+is kept and comes back by adding "long-term" to AGENTS); ideas come from the evolution proposer, from Claude (lessons files, at most
 every 2 hours per agent) and from Claude doing web research (at most every 6 hours per agent). Every idea is streamed
 to the live table (live.py) while it is tested; the live page shows only what is running now.
 
@@ -30,6 +31,7 @@ from iagent import spec as IS
 CLAUDE_EVERY, WEB_EVERY = 2 * 3600, 6 * 3600      # seconds between Claude / web rounds, per agent
 LABEL = {"evolution": "Evolution", "claude": "Claude", "web": "Web research"}
 KEEP_S, BEAT_S, BATCH_S, BACKOFF_S = 120, 20, 2, 30
+AGENTS = ["intraday"]   # which self-learning agents run; ["intraday", "long-term"] restores the long-term one
 
 
 class Feed:
@@ -114,13 +116,15 @@ def last_ts(root: Path, proposer: str) -> float | None:
     return best
 
 
-def agents(base: Path | None):
-    """The two self-learning agents, intraday first."""
+def agents(base: Path | None, enabled=None):
+    """The enabled self-learning agents (default AGENTS), intraday first."""
     root = lambda default, sub="": (Path(base) / sub) if base else default
-    return [
+    every = [
         {"name": "intraday", "run": iloop.run, "S": IS, "root": root(imem.ROOT, "intraday"), "cache": {}},
         {"name": "long-term", "run": aloop.run, "S": AS, "root": root(amem.ROOT), "cache": {}},
     ]
+    on = AGENTS if enabled is None else enabled
+    return [a for a in every if a["name"] in on]
 
 
 def pick(ag: dict, tried: set, remaining: float) -> str:
@@ -157,7 +161,7 @@ def main(minutes: float = 20, per_round: int = 10, mem_base=None) -> int:
     feed.start()
     try:
         i = idle = 0
-        while time.time() < end and len(off) < len(ags) and idle < 2 * len(ags):
+        while time.time() < end and len(off) < len(ags) and idle < max(4, 2 * len(ags)):
             ag = ags[i % len(ags)]
             i += 1
             if ag["name"] in off:
@@ -184,13 +188,16 @@ def main(minutes: float = 20, per_round: int = 10, mem_base=None) -> int:
             print(f"!! health alert failed: {type(e).__name__}")
         try:
             if mem_base:
-                candidates.update(amem.Memory(ags[1]["root"]), imem.IMemory(ags[0]["root"]), path=Path(mem_base) / "candidates.json")
+                by = {a["name"]: a for a in ags}
+                candidates.update(amem.Memory(by["long-term"]["root"] if "long-term" in by else Path(mem_base)),
+                                  imem.IMemory(by["intraday"]["root"] if "intraday" in by else Path(mem_base) / "intraday"),
+                                  path=Path(mem_base) / "candidates.json")
             else:
                 candidates.update()
         except Exception as e:
             print(f"!! candidates failed: {type(e).__name__}: {e}")
-        note = (f"{sum(counts.values())} ideas tested ({counts.get('long-term', 0)} long-term, "
-                f"{counts.get('intraday', 0)} intraday) in {(time.time() - t0) / 60:.0f} min"
+        note = (f"{sum(counts.values())} ideas tested ({', '.join(f'{counts.get(a['name'], 0)} {a['name']}' for a in ags)}) "
+                f"in {(time.time() - t0) / 60:.0f} min"
                 + (f"; rounds: {', '.join(k for k in kinds if not k.endswith(':evolution'))}" if any(
                     not k.endswith(":evolution") for k in kinds) else "") + (f"; off: {', '.join(sorted(off))}" if off else ""))
     except BaseException as e:

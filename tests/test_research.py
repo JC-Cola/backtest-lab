@@ -126,11 +126,14 @@ def test_research_main_with_fake_loops(tmp_path, monkeypatch):
 
     monkeypatch.setattr(research.aloop, "run", fake(spec))
     monkeypatch.setattr(research.iloop, "run", fake(ispec))
+    assert research.AGENTS == ["intraday"]                      # the long-term agent is switched off (retired account)
+    assert [a["name"] for a in research.agents(tmp_path)] == ["intraday"]
+    assert [a["name"] for a in research.agents(tmp_path, ["intraday", "long-term"])] == ["intraday", "long-term"]   # code kept, flag restores it
     assert research.main(0.01, mem_base=tmp_path) == 0
-    assert kinds[:2] == ["evolution", "evolution"]
+    assert kinds[:2] == ["evolution", "evolution"] and len(kinds) >= 2   # only the intraday fake ran, and it kept the whole budget
     assert puts[0][0]["state"] == "running" and puts[-1][0]["state"] == "finished"
     rows = [r for _, ids in puts for r in ids]
-    assert {r["account"] for r in rows} == {"intraday", "long-term"} and rows[-1]["stage"] == 1 and rows[-1]["source"] == "Evolution"
+    assert {r["account"] for r in rows} == {"intraday"} and rows[-1]["stage"] == 1 and rows[-1]["source"] == "Evolution"
     assert all(r["run_id"] == puts[0][0]["run_id"] for r in rows)
 
 
@@ -141,7 +144,7 @@ def test_workflow_and_page():
               "timeout-minutes: 40", "actions/cache/restore@v4", "restore-keys", "claude-code", "python research.py --minutes"):
         assert s in text
     assert "backtest-lab-trading" not in text
-    for n in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "BACKTEST_LIVE_URL", "BACKTEST_LIVE_KEY", "BACKTEST_LIVE_TOKEN"):
+    for n in ("ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", "CLAUDE_CODE_OAUTH_TOKEN", "BACKTEST_LIVE_URL", "BACKTEST_LIVE_KEY", "BACKTEST_LIVE_TOKEN"):
         assert f"secrets.{n}" in text
     try:
         import yaml

@@ -65,7 +65,7 @@ def test_fetch_builds_request_with_headers():
 def test_morning_card_and_text_with_headlines(monkeypatch):
     d = {"kind": "morning", "day": datetime(2026, 11, 9).date(), "flags": [], "waiting_candidates": [],
          "accounts": {n: {"equity": 25000.0, "note": "", "last": (10.0, 0.001), "positions": [], "since": 0.0, "waiting": [],
-                          "dd": 0.01, "kill": 0.2, "day_limit": 0.03, "risk": "r"} for n in ("long-term", "intraday")},
+                          "dd": 0.01, "kill": 0.12, "day_limit": 0.03, "risk": "r"} for n in ("intraday",)},
          "headlines": [{"tag": "NVDA", "headline": "A very long headline " * 8, "ts": ""}, {"tag": "MKT", "headline": "Short", "ts": ""}]}
     png = bc.render(d)
     assert png[:4] == b"\x89PNG"
@@ -77,7 +77,7 @@ def test_morning_card_and_text_with_headlines(monkeypatch):
 def test_gather_morning_survives_news_error(monkeypatch):
     import news_feed
     monkeypatch.setattr(news_feed, "headlines", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
-    monkeypatch.setattr(bf, "_gather", lambda day: ({n: {"equity": 1.0, "last_equity": 1.0, "positions": []} for n in ("long-term", "intraday")},
+    monkeypatch.setattr(bf, "_gather", lambda day: ({n: {"equity": 1.0, "last_equity": 1.0, "positions": []} for n in ("intraday",)},
                                                     {}))
     monkeypatch.setattr(bf.proposer_health, "briefing_warning", lambda: None)
     d = bf.gather_morning(datetime(2026, 11, 9, 14, 15, tzinfo=timezone.utc))
@@ -217,8 +217,8 @@ def test_messages_and_summary_line(tmp_path):
 
 def test_evening_caption_and_text_include_shadow_line():
     d = {"kind": "evening", "day": datetime(2026, 11, 9).date(), "shadow_line": "Shadow news rules (not traded): x",
-         "research": {"daily": {"tested": 1}, "intraday": {"tested": 1}}, "waiting_candidates": [],
-         "accounts": {n: {"equity": 1.0, "today": (1.0, 0.01), "verdict": "early", "days": 1, "trades": []} for n in ("long-term", "intraday")}}
+         "research": {"intraday": {"tested": 1}}, "waiting_candidates": [],
+         "accounts": {n: {"equity": 1.0, "today": (1.0, 0.01), "verdict": "early", "days": 1, "trades": []} for n in ("intraday",)}}
     assert "Shadow news rules" in bc.caption(d)
 
 

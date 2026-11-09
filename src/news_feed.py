@@ -2,8 +2,8 @@
 
     python news_feed.py           # print what the morning card would show (sends nothing)
 
-Queries (1) SPY, QQQ, NVDA + the long-term account's holdings and (2) market-wide news, dedupes, prefers symbols we
-hold or trade, then newest first. Never raises: any failure gives []. Keys: ALPACA_API_KEY / ALPACA_SECRET_KEY.
+Queries (1) SPY, QQQ, NVDA + the intraday account's holdings and (2) market-wide news, dedupes, prefers symbols we
+hold or trade, then newest first. Never raises: any failure gives []. Keys: alpaca_keys.data_keys() (intraday key first).
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
+import alpaca_keys
 from report import MEM, read_json
 
 URL = "https://data.alpaca.markets/v1beta1/news"
@@ -25,15 +26,16 @@ TIMEOUT = 15
 
 
 def held_symbols(positions=None):
-    """Symbols of the long-term holdings: from `positions` (briefing data) or agent_memory/alpaca_account.json."""
+    """Symbols of the intraday holdings: from `positions` (briefing data) or agent_memory/alpaca_intraday.json."""
     if positions is None:
-        positions = (read_json(MEM / "alpaca_account.json") or {}).get("positions", [])
+        positions = (read_json(MEM / "alpaca_intraday.json") or {}).get("positions", [])
     return [str(p["symbol"]).replace("/", "") for p in positions if p.get("symbol")]
 
 
 def fetch(symbols, start, limit=50, key=None, secret=None, urlopen=urllib.request.urlopen, end=None):
     """One News API call: articles (newest first). symbols=None means market-wide. Raises on HTTP/network errors."""
-    key, secret = key or os.environ.get("ALPACA_API_KEY"), secret or os.environ.get("ALPACA_SECRET_KEY")
+    if not (key and secret):
+        key, secret = alpaca_keys.data_keys()
     if not (key and secret):
         raise RuntimeError("no Alpaca keys")
     q = {"start": start.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "limit": limit, "sort": "desc"}

@@ -1,10 +1,10 @@
-"""Telegram message for every FILL on both Alpaca paper accounts (open / add / reduce / close / flip).
+"""Telegram message for every FILL on the Alpaca paper accounts in ACCOUNTS (open / add / reduce / close / flip).
 
     python fill_alerts.py [--dry-run] [--init]
       --dry-run  print the messages; send nothing and save nothing
       --init     only mark the current fills as seen (no messages)
 
-Keys: ALPACA_API_KEY / ALPACA_SECRET_KEY (long-term), ALPACA_INTRADAY_API_KEY / ALPACA_INTRADAY_SECRET_KEY (intraday),
+Keys: one pair per account in ACCOUNTS (ALPACA_INTRADAY_* for intraday, more can be added),
 TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID. State: agent_memory/fill_alerts.json {account: {"id", "time"}} = last fill seen.
 An account with no entry yet is initialised silently (old fills are never sent). A message that fails to send is
 not marked seen, so the next run retries it. The job never fails: errors are printed without secrets, exit code 0.
@@ -23,8 +23,11 @@ from alpaca_paper import START_EQUITY, fetch_fills, ledger_from_fills
 STATE = Path(__file__).resolve().parent.parent / "agent_memory" / "fill_alerts.json"
 MAX_MESSAGES = 20
 NY = ZoneInfo("America/New_York")
-ACCOUNTS = [("longterm", "Long-term", "ALPACA_API_KEY", "ALPACA_SECRET_KEY"),
-            ("intraday", "Intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY")]
+# One line per account: (state key, label, key env var, secret env var). Add a line to cover another paper account.
+# The long-term account (ALPACA_API_KEY) was retired 2026-11-09 and is no longer alerted.
+ACCOUNTS = [("intraday", "Intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"),
+            ("ta", "System C (TradingAgents)", "ALPACA_TA_API_KEY", "ALPACA_TA_SECRET_KEY"),
+            ("dts", "System B (day-trader-skill)", "ALPACA_DTS_API_KEY", "ALPACA_DTS_SECRET_KEY")]
 EPS = 1e-9
 
 

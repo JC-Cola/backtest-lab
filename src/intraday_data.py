@@ -10,13 +10,17 @@ from pathlib import Path
 
 import pandas as pd
 
+import alpaca_keys
+
 DIR = Path(__file__).resolve().parent.parent / "data" / "intraday"
 NY = "America/New_York"
 
 
 def _client(crypto):
     from alpaca.data.historical import CryptoHistoricalDataClient, StockHistoricalDataClient
-    k, s = os.environ["ALPACA_API_KEY"], os.environ["ALPACA_SECRET_KEY"]
+    k, s = alpaca_keys.data_keys()
+    if not (k and s):
+        raise RuntimeError("no Alpaca data keys (ALPACA_INTRADAY_* / ALPACA_DTS_* / ALPACA_TA_* / ALPACA_*)")
     return CryptoHistoricalDataClient(k, s) if crypto else StockHistoricalDataClient(k, s)
 
 

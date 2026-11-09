@@ -402,7 +402,7 @@ def test_morning_text_and_card_show_gappers_and_survive_errors(monkeypatch):
     import briefing_cards as bc
     d = {"kind": "morning", "day": date(2026, 11, 9), "flags": [], "waiting_candidates": [], "headlines": [],
          "accounts": {n: {"equity": 25000.0, "note": "", "last": (10.0, 0.001), "positions": [], "since": 0.0, "waiting": [],
-                          "dd": 0.01, "kill": 0.2, "day_limit": 0.03, "risk": "r"} for n in ("long-term", "intraday")},
+                          "dd": 0.01, "kill": 0.12, "day_limit": 0.03, "risk": "r"} for n in ("intraday",)},
          "gappers": [{"symbol": "LITE", "gap": 0.119, "price": 602.0, "pm_vol": 54_000, "headline": "Bernstein adjusts target " * 5}]}
     t = bf.text_morning(d)
     assert "Gappers with news" in t and "LITE +11.9%" in t and "54K" in t
@@ -411,7 +411,7 @@ def test_morning_text_and_card_show_gappers_and_survive_errors(monkeypatch):
     assert "Gappers" not in bf.text_morning(d) and bc.render(d)[:4] == b"\x89PNG"
     import news_gappers
     monkeypatch.setattr(news_gappers, "gappers_now", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom")))
-    monkeypatch.setattr(bf, "_gather", lambda day: ({n: {"equity": 1.0, "last_equity": 1.0, "positions": []} for n in ("long-term", "intraday")}, {}))
+    monkeypatch.setattr(bf, "_gather", lambda day: ({n: {"equity": 1.0, "last_equity": 1.0, "positions": []} for n in ("intraday",)}, {}))
     monkeypatch.setattr(bf.proposer_health, "briefing_warning", lambda: None)
     assert bf.gather_morning(datetime(2026, 11, 9, 14, 15, tzinfo=timezone.utc))["gappers"] == []
 
@@ -422,4 +422,4 @@ def test_workflows_have_claude_cli_keys_and_timeout():
     n = (wf / "nightly.yml").read_text()
     assert "@anthropic-ai/claude-code" in n and "CLAUDE_CODE_OAUTH_TOKEN" in n and n.index("claude-code") < n.index("python news_shadow.py")
     assert "timeout-minutes: 25" in n
-    assert "ALPACA_API_KEY" in (wf / "morning.yml").read_text()
+    assert "ALPACA_INTRADAY_API_KEY" in (wf / "morning.yml").read_text()

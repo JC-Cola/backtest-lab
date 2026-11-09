@@ -24,6 +24,7 @@ import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
 
+import alpaca_keys
 from report import MEM
 
 CACHE = MEM / "universe.csv"
@@ -61,7 +62,8 @@ def nasdaq100(urlopen=urllib.request.urlopen):
 
 def alpaca_tradable(key=None, secret=None, urlopen=urllib.request.urlopen):
     """Symbols with tradable and shortable and easy_to_borrow all true. Raises on HTTP errors / missing keys."""
-    key, secret = key or os.environ.get("ALPACA_API_KEY"), secret or os.environ.get("ALPACA_SECRET_KEY")
+    if not (key and secret):
+        key, secret = alpaca_keys.data_keys()
     if not (key and secret):
         raise RuntimeError("no Alpaca keys")
     rows = json.loads(_get(ASSETS_URL, {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret}, urlopen))

@@ -2,12 +2,13 @@
 
     python src/briefing.py morning|evening|balance [--dry-run] [--text] [--force]
 
-morning: ~09:15 New York, before the open. Both paper accounts, open positions, orders waiting for the open, risk
-         flags (distance to the agreed limits), new candidates. Two crons (EDT and EST) trigger it; the script only
+morning: ~09:15 New York, before the open. The intraday paper account (plus System B / System C columns when their
+         snapshot files agent_memory/system_dts.json / system_ta.json exist), open positions, risk
+         flags (distance to the agreed limits), new candidates. The long-term account was retired 2026-11-09. Two crons (EDT and EST) trigger it; the script only
          sends between 09:00 and 09:40 New York on a trading day, so exactly one of them does. --force skips that.
 balance: just the balance-history picture (also sent as a second photo right after the evening card).
 evening: after the nightly run. Today's trades, best/worst trade, day P/L, "Matches the backtest?" (live N-day
-         return against the backtest's rolling N-day returns on the test years) and what the agents tested.
+         return against the backtest's rolling N-day returns on the test years) and what the intraday agent tested.
 By default each briefing is ONE picture card (briefing_cards.py) plus a 2-3 line caption; the text message is the
 fallback when rendering fails, or with --text. --dry-run writes the PNG to DRY_DIR and prints the caption (or the
 text) instead of sending. morning_data()/evening_data() turn plain inputs into one plain dict that both the text
@@ -28,12 +29,15 @@ import numpy as np
 import report as R
 import telegram
 from agent import proposer_health
-from briefing_inputs import intraday_backtest, longterm_backtest, research_line, research_today, safe_bt
+import alpaca_keys
+from briefing_inputs import intraday_backtest, research_line, research_today, safe_bt
 from news_gappers import fmt_vol
 from report import ACCOUNTS, MEM, NY, ROOT, START
 
-LABEL = {"long-term": "Long-term", "intraday": "Intraday"}
-KILL = {"long-term": 0.20, "intraday": 0.12}   # agreed kill switches: drawdown from the account's peak
+LABEL = {"intraday": "Intraday", "system-b": "System B", "system-c": "System C"}
+# Shadow systems shown next to the intraday account when their snapshot file exists (graceful when missing).
+EXTRAS = [("system-b", MEM / "system_dts.json"), ("system-c", MEM / "system_ta.json")]
+KILL = {"intraday": 0.12}                      # agreed kill switch: drawdown from the account's peak
 DAILY_LIMIT = {"intraday": 0.03}               # agreed daily loss limit (intraday account only)
 FTMO_DAILY, FTMO_TOTAL = 0.05, 0.10            # FTMO reference limits
 GATE = (time(9, 0), time(9, 40))
@@ -58,6 +62,29 @@ def _client(kenv, senv):
     return TradingClient(key, secret, paper=True) if key and secret else None
 
 
+def snapshot_account(path):
+    """Plain account dict from a System B / System C snapshot json, or None when the file is missing/unusable.
+    Positions are normalised to symbol/qty/pl; day figures need last_equity (else the change shows n/a)."""
+    snap = R.read_json(path)
+    if not isinstance(snap, dict) or not isinstance(snap.get("equity"), (int, float)):
+        return None
+    pos = [{"symbol": str(p.get("symbol", "?")), "qty": float(p.get("qty") or 0), "pl": float(p.get("pl", p.get("unrealized_pl")) or 0),
+            "avg_price": p.get("avg_price"), "price": p.get("price")} for p in snap.get("positions") or [] if isinstance(p, dict)]
+    cal = [c["equity"] for c in snap.get("calendar") or [] if isinstance(c, dict) and c.get("equity")]
+    return {"ok": True, "equity": float(snap["equity"]), "cash": snap.get("cash"), "last_equity": snap.get("last_equity"),
+            "positions": pos, "orders": [], "note": "", "calendar_equity": cal, "history": snap.get("history")}
+
+
+def extra_accounts(extras=None):
+    """{name: account dict} for the shadow systems whose snapshot file exists."""
+    out = {}
+    for name, path in extras or EXTRAS:
+        a = snapshot_account(path)
+        if a:
+            out[name] = a
+    return out
+
+
 def get_history(kenv, senv):
     """Non-zero daily equity points (oldest first) of the account's portfolio history; [] on any failure.
     Alpaca's date labels are ambiguous (the newest point was the previous close, not the live value, when checked),
@@ -72,10 +99,11 @@ def get_history(kenv, senv):
 
 
 def trading_days(start, end):
-    """Trading dates in [start, end] from the Alpaca calendar (long-term keys); None when unavailable."""
+    """Trading dates in [start, end] from the Alpaca calendar (any working data key); None when unavailable."""
     try:
+        from alpaca.trading.client import TradingClient
         from alpaca.trading.requests import GetCalendarRequest
-        c = _client("ALPACA_API_KEY", "ALPACA_SECRET_KEY")
+        c = TradingClient(*alpaca_keys.data_keys(), paper=True)
         return [d.date for d in c.get_calendar(GetCalendarRequest(start=start, end=end))]
     except Exception:
         return None
@@ -172,7 +200,8 @@ def acct_head(name, d, chg_label, chg):
 
 
 def waiting_candidates(cands):
-    return [c for c in (cands or {}).get("candidates", []) if c.get("status") == "awaiting approval"]
+    """Candidates awaiting approval; the retired long-term agent's are not offered any more."""
+    return [c for c in (cands or {}).get("candidates", []) if c.get("status") == "awaiting approval" and c.get("account") != "long-term"]
 
 
 # ---------- morning ----------
@@ -184,34 +213,32 @@ def morning_flags(it, accts, prev_day, noise_rows, prev_report_exists):
             flags.append(f"Missed intraday checks on {prev_day}: " + "; ".join(mc))
         if not prev_report_exists:
             flags.append(f"No nightly report found for {prev_day} (nightly run may have failed)")
-    return flags + [f"{LABEL[n]}: {accts[n]['note'][:90]}" for n in ("long-term", "intraday") if accts[n].get("note")]
+    return flags + [f"{LABEL[n]}: {accts[n]['note'][:90]}" for n in ("intraday",) if accts[n].get("note")]
 
 
 def morning_data(today, accts, hists, noise_rows, cands, prev_day=None, prev_report_exists=True):
-    """Everything the morning text and card show, as plain data."""
+    """Everything the morning text and card show, as plain data. accts: {"intraday": ..., optional "system-b"/"system-c"}."""
     out = {}
-    for name in ("long-term", "intraday"):
-        a, h = accts[name], hists.get(name, [])
+    for name, a in accts.items():
+        h = hists.get(name, [])
         eq = a.get("equity")
         s = last_session(h, a.get("last_equity"))
+        mine = name in KILL
         out[name] = {"equity": eq, "note": a.get("note", ""), "last": s, "positions": a.get("positions", []),
-                     "since": None if eq is None else (eq - START) / START, "waiting": waiting_orders(a) if name == "long-term" else [],
-                     "dd": None if eq is None else drawdown(h, eq), "kill": KILL[name],
-                     "day_limit": DAILY_LIMIT.get(name), "risk": risk_line(name, eq, h, a.get("last_equity"))}
+                     "since": None if eq is None else (eq - START) / START, "waiting": [],
+                     "dd": None if eq is None or not mine else drawdown(h, eq), "kill": KILL.get(name),
+                     "day_limit": DAILY_LIMIT.get(name), "risk": risk_line(name, eq, h, a.get("last_equity")) if mine else ""}
     flags = morning_flags(accts["intraday"], accts, prev_day, noise_rows, prev_report_exists)
     return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": [], "gappers": []}
 
 
 def text_morning(d):
     L = [f"{b('Morning ' + str(d['day']))} (before the open)"]
-    for name in ("long-term", "intraday"):
-        a = d["accounts"][name]
+    for name, a in d["accounts"].items():
         L.append(acct_head(name, a, "last session", a["last"]))
         if a["equity"] is not None:
             L.append(f"  Positions: {e(pos_text(a))}")
-        if name == "long-term":
-            L.append("  Waiting for the open: " + (e(", ".join(a["waiting"])) if a["waiting"] else "nothing"))
-    L += ["", b("Risk")] + ["  " + e(d["accounts"][n]["risk"]) for n in ("long-term", "intraday")]
+    L += ["", b("Risk")] + ["  " + e(a["risk"]) for a in d["accounts"].values() if a["risk"]]
     L += [f"  ⚠️ {e(f)}" for f in d["flags"]] or ["  No flags."]
     wc = d["waiting_candidates"]
     L += ["", b("Candidates") + (": none awaiting approval" if not wc else f": {len(wc)} awaiting approval")]
@@ -268,25 +295,13 @@ def best_worst(items):
     return f"Best {hi[0]} {R.usd(hi[1], True)}" + ("" if hi is lo else f" | Worst {lo[0]} {R.usd(lo[1], True)}")
 
 
-def short_why(o, name, order_rows, day_noise, ins):
-    if name == "intraday":
-        return R.intraday_why(o, day_noise).split(":")[0]
-    w = R.longterm_why(o, order_rows, ins)
-    m = re.search(r"strategies in: (.*)", w)
-    return m.group(1)[:30] if m else "no strategy in"
-
-
-def trade_data(name, a, day, order_rows, day_noise, ins):
-    """{'trades': every fill of the day, 'trips': closed round trips (intraday), 'best_worst': text or None}."""
+def trade_data(name, a, day, day_noise):
+    """{'trades': every fill of the day, 'trips': closed round trips, 'best_worst': text or None} (intraday account)."""
     fl = R.filled_on(a.get("orders", []), day)
     trades = [{"t": o["filled"], "time": R.hhmm(o["filled"]), "side": o["side"], "qty": o["filled_qty"], "symbol": o["symbol"],
-               "price": o["price"], "why": short_why(o, name, order_rows, day_noise, ins)} for o in fl]
-    trips = round_trips_at(fl) if name == "intraday" else []
-    if name == "intraday":
-        bw = best_worst([(s, v) for s, v, _ in trips])
-    else:
-        bw = best_worst([(p["symbol"], p.get("day_pl")) for p in a.get("positions", [])])
-    return {"trades": trades, "trips": trips, "best_worst": bw}
+               "price": o["price"], "why": R.intraday_why(o, day_noise).split(":")[0]} for o in fl]
+    trips = round_trips_at(fl)
+    return {"trades": trades, "trips": trips, "best_worst": best_worst([(s, v) for s, v, _ in trips])}
 
 
 def trade_lines(d):
@@ -366,39 +381,37 @@ def backtest_line(name, n, ret, bt):
     return f"{lab}: {n} days {R.pct(ret)} vs backtest {R.pct(lo)} to {R.pct(hi)} (5th-95th), at {p:.0f}th pct: {v}"
 
 
-def evening_data(day, accts, hists, noise_rows, order_rows, paper_rows, cands, bt, research):
-    """Everything the evening text and card show, as plain data."""
-    ins = R.latest_in(paper_rows)
+def evening_data(day, accts, hists, noise_rows, cands, bt, research):
+    """Everything the evening text and card show, as plain data (trades and the backtest comparison are intraday only)."""
     day_noise = [r for r in noise_rows if r["time_ny"].startswith(str(day))]
     out = {}
-    for name in ("long-term", "intraday"):
-        a, eq = accts[name], accts[name].get("equity")
+    for name, a in accts.items():
+        eq = a.get("equity")
         pl = R.day_pl(a)
-        n, ret = live_stats(hists.get(name, []), eq) if eq is not None else (0, 0.0)
+        mine = name == "intraday"
+        n, ret = live_stats(hists.get(name, []), eq) if eq is not None and mine else (0, 0.0)
         out[name] = {"equity": eq, "note": a.get("note", ""), "since": None if eq is None else (eq - START) / START,
                      "today": None if pl is None else (pl, pl / a["last_equity"]),
-                     **trade_data(name, a, day, order_rows, day_noise, ins),
-                     "days": n, "ret": ret, "path": live_path(hists.get(name, []), eq) if eq is not None else [],
-                     "fan": fan(bt.get(name), n), "verdict": verdict(n, ret, bt.get(name)) if eq is not None else None,
-                     "bt_line": None if eq is None else backtest_line(name, n, ret, bt.get(name))}
+                     **(trade_data(name, a, day, day_noise) if mine else {"trades": [], "trips": [], "best_worst": None}),
+                     "days": n, "ret": ret, "path": live_path(hists.get(name, []), eq) if eq is not None and mine else [],
+                     "fan": fan(bt.get(name), n) if mine else None,
+                     "verdict": verdict(n, ret, bt.get(name)) if eq is not None and mine else None,
+                     "bt_line": backtest_line(name, n, ret, bt.get(name)) if eq is not None and mine else None}
     return {"kind": "evening", "day": day, "accounts": out, "research": research, "waiting_candidates": waiting_candidates(cands),
             "shadow_line": None}
 
 
 def text_evening(d):
     L = [f"{b('Evening ' + str(d['day']))}"]
-    for name in ("long-term", "intraday"):
-        a = d["accounts"][name]
+    for name, a in d["accounts"].items():
         L.append(acct_head(name, a, "today", a["today"]))
         if a["note"]:
             L.append(f"  ⚠️ {e(a['note'][:90])}")
-        L += trade_lines(a)
-    L += ["", b("Matches the backtest?")]
-    for name in ("long-term", "intraday"):
-        a = d["accounts"][name]
-        L.append("  " + e(a["bt_line"] if a["bt_line"] else f"{LABEL[name]}: live numbers unavailable"))
-    L += ["", b("Research")]
-    L += ["  " + e(research_line("Daily agent", d["research"]["daily"])), "  " + e(research_line("Intraday agent", d["research"]["intraday"]))]
+        if name == "intraday":
+            L += trade_lines(a)
+    a = d["accounts"]["intraday"]
+    L += ["", b("Matches the backtest?"), "  " + e(a["bt_line"] if a["bt_line"] else f"{LABEL['intraday']}: live numbers unavailable")]
+    L += ["", b("Research"), "  " + e(research_line("Intraday agent", d["research"]["intraday"]))]
     wc = d["waiting_candidates"]
     L.append(f"  Candidates awaiting approval: {len(wc) if wc else 'none'}")
     if d.get("shadow_line"):
@@ -414,6 +427,8 @@ def build_evening(*args, **kw):
 def _gather(day):
     accts = {n: R.get_account(n, k, s, p, day) for n, k, s, p in ACCOUNTS}
     hists = {n: get_history(k, s) for n, k, s, p in ACCOUNTS}
+    for n, a in extra_accounts().items():   # System B / C: snapshot files only, no keys
+        accts[n], hists[n] = a, a.get("calendar_equity") or []
     return accts, hists
 
 
@@ -433,7 +448,7 @@ def gather_morning(now=None):
         print(f"gappers failed: {type(ex).__name__}", file=sys.stderr)
     try:   # headlines are a bonus: a news error must never break the briefing
         import news_feed
-        d["headlines"] = news_feed.headlines(accts["long-term"].get("positions"))
+        d["headlines"] = news_feed.headlines(accts["intraday"].get("positions"))
     except Exception as ex:
         print(f"headlines failed: {type(ex).__name__}", file=sys.stderr)
     return d
@@ -442,10 +457,9 @@ def gather_morning(now=None):
 def gather_evening(now=None):
     day = (now or datetime.now(NY)).astimezone(NY).date()
     accts, hists = _gather(day)
-    bt = {"long-term": safe_bt(longterm_backtest), "intraday": safe_bt(intraday_backtest)}
-    res = {"daily": research_today(MEM / "journal.jsonl", day), "intraday": research_today(MEM / "intraday" / "journal.jsonl", day)}
-    d = evening_data(day, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_csv(MEM / "alpaca_orders.csv"),
-                     R.read_csv(MEM / "paper_log.csv"), R.read_json(MEM / "candidates.json"), bt, res)
+    bt = {"intraday": safe_bt(intraday_backtest)}
+    res = {"intraday": research_today(MEM / "intraday" / "journal.jsonl", day)}
+    d = evening_data(day, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_json(MEM / "candidates.json"), bt, res)
     try:   # shadow news rules (not traded): shown only on a night when a hypothetical trade closed
         import news_shadow
         d["shadow_line"] = news_shadow.evening_line(day)
@@ -457,7 +471,7 @@ def gather_evening(now=None):
 def balance_data(day, per):
     """Plain data for the balance-history picture. per[name] = {equity, last_equity, history ({1D, ALL, ...} or None)}."""
     out = {}
-    for name in ("long-term", "intraday"):
+    for name in per:
         p = per.get(name) or {}
         eq, le, h = p.get("equity"), p.get("last_equity"), p.get("history") or {}
         out[name] = {"equity": eq, "today": None if eq is None or not le else (eq - le, eq / le - 1),
@@ -493,6 +507,8 @@ def gather_balance(now=None):
         if h1d and p.get("equity") and h1d[-1][0] < now_ts - 600:   # the day line ends at the live balance too
             p["history"] = {**p["history"], "1D": h1d + [[now_ts, round(p["equity"], 2)]]}
         per[name] = p
+    for name, a in extra_accounts().items():   # System B / C: their own snapshot, no live fetch
+        per[name] = {"equity": a["equity"], "last_equity": a.get("last_equity"), "history": a.get("history")}
     return balance_data(day, per)
 
 

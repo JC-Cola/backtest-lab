@@ -9,9 +9,10 @@ import briefing_cards as bc
 import telegram as tg
 from test_briefing import CAND, DAY, PREV, Resp, acct, order, window
 
-RES = {"daily": {"tested": 5, "scored": 3, "best": 0.31, "holdout": 0},
-       "intraday": {"tested": 3, "scored": 2, "best": 0.97, "holdout": 1}}
-NO_RES = {k: {"tested": 0, "scored": 0, "best": None, "holdout": 0} for k in ("daily", "intraday")}
+RES = {"intraday": {"tested": 3, "scored": 2, "best": 0.97, "holdout": 1}}
+NO_RES = {"intraday": {"tested": 0, "scored": 0, "best": None, "holdout": 0}}
+SYS_B = {"ok": True, "equity": 25210.0, "cash": 0, "last_equity": 25100.0, "note": "", "orders": [],
+         "positions": [{"symbol": "NVDA", "qty": 3.0, "pl": 12.5}], "calendar_equity": [25000.0, 25100.0], "history": None}
 
 
 def size(png):
@@ -19,28 +20,32 @@ def size(png):
     return struct.unpack(">II", png[16:24])
 
 
-def evening(trades=True, days=7, bt=True, res=RES, cands=CAND, lt_eq=25100.0):
+def evening(trades=True, days=7, bt=True, res=RES, cands=CAND, extras=False):
     its = [order("SPY", "buy", 16, 767.0, (10, 5)), order("SPY", "sell", 16, 768.0, (15, 56)),
            order("QQQ", "sell", 5, 500.0, (11, 0)), order("QQQ", "buy", 5, 497.0, (13, 30))] if trades else []
-    lts = [order(s, "buy" if i % 2 else "sell", 1, 100.0, (9, 30)) for i, s in enumerate("ABCDEFGHIJ")] if trades else []
     hist = [25000.0] + [25000.0 + 20 * i for i in range(1, days)]
-    b = {"long-term": window(), "intraday": window(sd=0.003)} if bt else {"long-term": None, "intraday": None}
-    return bf.evening_data(DAY, {"long-term": acct(lt_eq, 25000, orders=lts), "intraday": acct(25040, 25000, orders=its)},
-                           {"long-term": hist, "intraday": hist}, [], [], [], cands, b, res)
+    accts, hists = {"intraday": acct(25040, 25000, orders=its)}, {"intraday": hist}
+    if extras:
+        accts |= {"system-b": SYS_B, "system-c": {**SYS_B, "equity": 24900.0}}
+        hists |= {"system-b": [25000.0], "system-c": [25000.0]}
+    return bf.evening_data(DAY, accts, hists, [], cands, {"intraday": window(sd=0.003) if bt else None}, res)
 
 
-def morning(positions=2, waiting=2, flags=1):
+def morning(positions=2, flags=1, extras=False):
     pos = [{"symbol": f"S{i}", "qty": 1.5 + i, "pl": 10.0 * (1 if i % 2 else -1)} for i in range(positions)]
-    orders = [{"symbol": f"W{i}", "side": "buy", "qty": 3, "status": "accepted"} for i in range(waiting)]
-    accts = {"long-term": acct(25500, 25400, pos, orders), "intraday": acct(24800, 24900, note="x" * 200 if flags else "")}
-    d = bf.morning_data(DAY, accts, {"long-term": [25000.0, 25400.0], "intraday": [25000.0, 24900.0]}, [], CAND, PREV, flags < 2)
+    accts = {"intraday": acct(24800, 24900, pos, note="x" * 200 if flags else "")}
+    hists = {"intraday": [25000.0, 24900.0]}
+    if extras:
+        accts |= {"system-b": SYS_B, "system-c": {**SYS_B, "positions": [], "last_equity": None}}
+        hists |= {"system-b": [25000.0, 25100.0], "system-c": []}
+    d = bf.morning_data(DAY, accts, hists, [], CAND, PREV, flags < 2)
     d["flags"] = [f"warning number {i} " + "long text " * 12 for i in range(flags)]
     return d
 
 
 @pytest.mark.parametrize("data", [
     evening(), evening(trades=False, days=1, bt=False, res=NO_RES, cands={}), evening(days=4), evening(days=40),
-    morning(), morning(positions=0, waiting=0, flags=0), morning(positions=12, waiting=12, flags=6)])
+    evening(extras=True), morning(), morning(positions=0, flags=0), morning(positions=12, flags=6), morning(extras=True)])
 def test_cards_render_png(data):
     w, h = size(bc.render(data))
     assert w == 1080 and 1350 <= h <= 1800          # taller than 1350 only when the content needs it
@@ -52,20 +57,21 @@ def test_card_without_account_numbers():
     d["accounts"]["intraday"].update(equity=None, today=None, since=None, verdict=None, path=[], fan=None)
     assert size(bc.render(d))[0] == 1080
     m = morning()
-    m["accounts"]["long-term"].update(equity=None, last=None, since=None, dd=None)
+    m["accounts"]["intraday"].update(equity=None, last=None, since=None, dd=None)
     assert size(bc.render(m))[0] == 1080
 
 
 def test_data_feeds_text_and_card():
     d = evening()
-    assert d["accounts"]["long-term"]["days"] == 7 and d["accounts"]["long-term"]["fan"]["days"][0] == 0
+    assert list(d["accounts"]) == ["intraday"] and d["accounts"]["intraday"]["days"] == 7 and d["accounts"]["intraday"]["fan"]["days"][0] == 0
     assert [t[0] for t in d["accounts"]["intraday"]["trips"]] == ["QQQ", "SPY"]
-    assert "Long-term" in bf.text_evening(d) and bf.build_morning(DAY, {"long-term": acct(1, 1), "intraday": acct(1, 1)}, {}, [], {})
+    assert "Long-term" not in bf.text_evening(d) and bf.build_morning(DAY, {"intraday": acct(1, 1)}, {}, [], {})
 
 
 def test_captions():
     cap = bc.caption(evening(days=1)).splitlines()
-    assert cap[0] == "<b>Evening 4 Nov</b> · Long-term +0.4% · Intraday +0.2%" and "Too early" in cap[1] and cap[2].startswith("14 trades · 8 ideas tested")
+    assert cap[0] == "<b>Evening 4 Nov</b> · Intraday +0.2%" and "Too early" in cap[1] and cap[2].startswith("4 trades · 3 ideas tested")
+    assert bc.caption(evening(extras=True)).splitlines()[0] == "<b>Evening 4 Nov</b> · Intraday +0.2% · System B +0.4% · System C -0.8%"
     assert "candidate awaiting approval" in cap[2]
     assert bc.caption(evening(days=7)).splitlines()[1].startswith(("In line", "Backtest:"))
     assert bc.caption(morning(flags=0)).splitlines()[1] == "All clear before the open"
@@ -77,28 +83,35 @@ def hist(n=60, drop=False, t0=1793900000):
     return {"1D": [[t0 + 300 * i, 25000 + s * 3 * i] for i in range(n)], "ALL": [[t0 - 86400 * 3 + 86400 * i, 25000 + s * 40 * i] for i in range(3)]}
 
 
-def balance(h=None, lt_eq=25100.0):
-    h = hist() if h is None else h
-    return bf.balance_data(DAY, {"long-term": {"equity": lt_eq, "last_equity": 25000.0, "history": h},
-                                 "intraday": {"equity": 24900.0, "last_equity": 25000.0, "history": hist(drop=True)}})
+def balance(h=None, extras=False):
+    h = hist(drop=True) if h is None else h
+    per = {"intraday": {"equity": 24900.0, "last_equity": 25000.0, "history": h}}
+    if extras:
+        per["system-b"] = {"equity": 25100.0, "last_equity": 25000.0, "history": hist()}
+    return bf.balance_data(DAY, per)
 
 
 # ---------- balance history image ----------
 @pytest.mark.parametrize("h", [None, {}, {"1D": [], "ALL": []}, {"1D": [[1793900000, 25000.0]], "ALL": [[1793900000, 25000.0]]}, hist(), hist(2)])
 def test_balance_card_renders(h):
     d = balance(h)
-    assert size(bc.render_balance(d)) == (1080, 1080)
+    assert size(bc.render_balance(d)) == (1080, 585)      # one panel: Intraday only
     assert bc.balance_caption(d) == "Balance history · 4 Nov"
 
 
+def test_balance_card_with_system_panels():
+    d = balance(extras=True)
+    assert list(d["accounts"]) == ["intraday", "system-b"] and size(bc.render_balance(d)) == (1080, 1080)
+
+
 def test_balance_card_missing_account():
-    d = bf.balance_data(DAY, {})
-    assert d["accounts"]["long-term"]["equity"] is None and size(bc.render_balance(d)) == (1080, 1080)
+    d = bf.balance_data(DAY, {"intraday": {}})
+    assert d["accounts"]["intraday"]["equity"] is None and size(bc.render_balance(d))[0] == 1080
 
 
 def test_balance_data_today_change():
-    a = balance()["accounts"]["long-term"]
-    assert a["today"][0] == pytest.approx(100.0) and a["today"][1] == pytest.approx(0.004) and a["since"] == pytest.approx(0.004)
+    a = balance()["accounts"]["intraday"]
+    assert a["today"][0] == pytest.approx(-100.0) and a["today"][1] == pytest.approx(-0.004) and a["since"] == pytest.approx(-0.004)
 
 
 def test_balance_cli_sends_one_photo(cli):
@@ -109,7 +122,7 @@ def test_balance_cli_sends_one_photo(cli):
 def test_balance_cli_dry_run(cli, monkeypatch, tmp_path, capsys):
     monkeypatch.setattr(bf, "DRY_DIR", tmp_path)
     assert bf.main(["balance", "--dry-run"]) == 0
-    assert size((tmp_path / "briefing-balance.png").read_bytes()) == (1080, 1080) and cli["photo"] == []
+    assert size((tmp_path / "briefing-balance.png").read_bytes())[0] == 1080 and cli["photo"] == []
     assert "Balance history" in capsys.readouterr().out
 
 
@@ -129,7 +142,8 @@ def test_gather_balance_falls_back_to_snapshots(monkeypatch):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setattr(bf.R, "read_json", lambda p: {"equity": 25100.0, "last_equity": 25000.0, "history": hist()})
     d = bf.gather_balance()
-    assert d["accounts"]["intraday"]["equity"] == 25100.0 and len(d["accounts"]["long-term"]["h1d"]) >= 60
+    assert list(d["accounts"]) == ["intraday", "system-b", "system-c"]   # the patched read_json serves every snapshot file
+    assert d["accounts"]["intraday"]["equity"] == 25100.0 and len(d["accounts"]["intraday"]["h1d"]) >= 60
 
 
 # ---------- telegram.send_photo ----------
@@ -186,7 +200,7 @@ def test_default_sends_card_not_text(cli):
     assert bf.main(["evening"]) == 0 and bf.main(["morning", "--force"]) == 0
     assert len(cli["photo"]) == 3 and cli["text"] == []    # evening card + balance image, then the morning card
     assert size(cli["photo"][0][0])[0] == 1080 and cli["photo"][0][1].startswith("<b>Evening")
-    assert size(cli["photo"][1][0]) == (1080, 1080) and cli["photo"][1][1] == "Balance history · 4 Nov"
+    assert size(cli["photo"][1][0]) == (1080, 585) and cli["photo"][1][1] == "Balance history · 4 Nov"
 
 
 def test_text_flag_forces_text(cli):

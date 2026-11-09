@@ -204,9 +204,9 @@ CAND = {"candidates": [{"account": "intraday", "description": "rule X", "sharpe_
                        {"account": "long-term", "description": "rule Y", "sharpe_2x_cost": 0.1, "status": "not better than what is traded now"}]}
 
 
-def build(accts=None, noise=None, orders=None, paper=None, cands=None):
-    accts = accts or {"long-term": acct(), "intraday": acct()}
-    return rp.build(DAY, accts, full_rows() if noise is None else noise, orders or [], paper or [], LESSONS, LESSONS, cands)
+def build(accts=None, noise=None, cands=None):
+    accts = accts or {"intraday": acct()}
+    return rp.build(DAY, accts, full_rows() if noise is None else noise, LESSONS, cands)
 
 
 def test_report_trades_and_why():
@@ -214,39 +214,30 @@ def test_report_trades_and_why():
     rows[0] = nrow("10:00:20", "SPY", "long", oid="abc", price="506", up="505")
     rows.append(nrow("15:46:00", "SPY", "", event="flatten at close", oid="moc"))
     it = acct(orders=[order(id="abc"), order(id="moc", side="sell", filled=t(16, 0), price=508.0)])
-    lt = acct(orders=[order(id="L1", symbol="QQQ", filled=t(9, 30), price=700.0)])
-    paper = [{"key": "A", "name": "Williams %R", "market": "QQQ", "position": "1.0", "decision_date": "2026-11-02"},
-             {"key": "B", "name": "Old", "market": "QQQ", "position": "1.0", "decision_date": "2026-11-01"},
-             {"key": "B", "name": "Old", "market": "QQQ", "position": "0.0", "decision_date": "2026-11-02"}]
-    orows = [{"sent_at_utc": "2026-11-02T21:45:00+00:00", "symbol": "QQQ", "side": "buy", "qty": "5", "tif": "opg", "target_usd": "3500",
-              "order_id": "L1", "status": "OrderStatus.ACCEPTED"}]
-    md = build({"long-term": lt, "intraday": it}, rows, orows, paper)
+    md = build({"intraday": it}, rows)
     assert "long: price 506 vs upper 505, lower 495, VWAP 499" in md
-    assert "close-out at the close" in md
-    assert "strategies in: Williams %R" in md and "Old" not in md.split("Why")[1].split("##")[0]
-    assert "16:00" in md and "09:30" in md
+    assert "close-out at the close" in md and "16:00" in md
     assert "+$100.00 (+0.40%)" in md
+    assert "long-term" in md.lower() and "retired 2026-11-09" in md
+    assert "Long-term account" not in md and "Orders waiting" not in md   # no long-term sections any more
 
 
-def test_report_checks_waiting_and_none_cases():
+def test_report_checks_and_none_cases():
     md = build()
     assert "| 10:00 | SPY | flat |" in md          # flat decisions are visible
     sec = lambda n: md.split(f"## {n}.")[1].split("\n## ")[0]
-    assert sec(5).strip().endswith("None.") and sec(2).count("None.") == 2 and sec(4).strip().endswith("None.")
-    assert "None yet." in sec(6) and "Claude CLI cost this session: $0.42" in sec(6)
-    lt = acct(orders=[order(status="accepted", filled=None, filled_qty=0)])
-    orows = [{"sent_at_utc": "2026-11-03T21:45:00+00:00", "symbol": "SPY", "side": "sell", "qty": "1", "tif": "opg", "target_usd": "0", "order_id": "z",
-              "status": "OrderStatus.ACCEPTED"}]
-    md = build({"long-term": lt, "intraday": acct()}, orders=orows, cands=CAND)
-    assert "Open at Alpaca" in md and "16:45" in md and "rule X" in md and "rule Y" not in md
+    assert sec(4).strip().endswith("None.") and sec(2).count("None.") == 1
+    assert "None yet." in sec(5) and "Claude CLI cost this session: $0.42" in sec(5) and "Daily agent" not in md
+    md = build(cands=CAND)
+    assert "rule X" in md and "rule Y" not in md
 
 
 def test_report_problems():
     rows = [r for r in full_rows() if not (r["symbol"] == "QQQ" and r["time_ny"][11:13] == "12")]
     it = acct(positions=[{"symbol": "SPY", "qty": 3.0, "avg_price": 1, "price": 1, "pl": 0}],
               orders=[order(status="rejected", filled_qty=0, filled=None)], note="ALPACA_INTRADAY_API_KEY not set; using the snapshot")
-    md = build({"long-term": acct(), "intraday": it}, rows)
-    p = md.split("## 5. Problems")[1].split("## 6.")[0]
+    md = build({"intraday": it}, rows)
+    p = md.split("## 4. Problems")[1].split("## 5.")[0]
     assert "no 12:00 check logged for QQQ" in p and "was rejected" in p and "still holding 3 SPY" in p and "not set" in p
     assert "None." not in p
     assert "no log rows today" in rp.problems(DAY, {"intraday": acct()}, [])[0]
@@ -255,10 +246,12 @@ def test_report_problems():
 def test_last_session_and_index(tmp_path):
     assert rp.last_session(LESSONS).startswith("30 rounds") and "Other" not in rp.last_session(LESSONS)
     (tmp_path / "2026-11-02.md").write_text("<!-- pl: long-term=1.5 intraday= -->\n")
-    (tmp_path / "2026-11-03.md").write_text("<!-- pl: long-term=-2.0 intraday=4.25 -->\n")
+    (tmp_path / "2026-11-03.md").write_text("<!-- pl: long-term=-2.0 intraday=4.25 -->\n")   # old two-account format still reads
+    (tmp_path / "2026-11-09.md").write_text("<!-- pl: intraday=7.5 -->\n")
     rp.index(tmp_path)
     lines = (tmp_path / "README.md").read_text().splitlines()
-    assert lines[-2].startswith("- [2026-11-03]") and "intraday +$4.25" in lines[-2] and "long-term -$2.00" in lines[-2]
+    assert lines[-3].startswith("- [2026-11-09]") and "intraday +$7.50" in lines[-3]
+    assert lines[-2].startswith("- [2026-11-03]") and "intraday +$4.25" in lines[-2] and "long-term" not in lines[-2]
     assert "intraday n/a" in lines[-1]
 
 
@@ -270,10 +263,13 @@ def test_main_without_keys_uses_snapshots(tmp_path, monkeypatch):
     (mem / "s.json").write_text(json.dumps(snap))
     monkeypatch.setattr(rp, "MEM", mem)
     monkeypatch.setattr(rp, "OUT", tmp_path / "reports")
-    monkeypatch.setattr(rp, "ACCOUNTS", [("long-term", "NOPE_K", "NOPE_S", mem / "s.json"), ("intraday", "NOPE_K2", "NOPE_S2", mem / "missing.json")])
+    monkeypatch.setattr(rp, "ACCOUNTS", [("intraday", "NOPE_K", "NOPE_S", mem / "s.json")])
     md = rp.main("2026-11-03")
     assert (tmp_path / "reports" / "2026-11-03.md").exists() and (tmp_path / "reports" / "README.md").exists()
-    assert "using the snapshot saved" in md and "no snapshot file either" in md and "| SPY | buy | 2 |" in md
+    assert "using the snapshot saved" in md and "| SPY | buy | 2 |" in md
+    monkeypatch.setattr(rp, "ACCOUNTS", [("intraday", "NOPE_K", "NOPE_S", mem / "missing.json")])
+    assert "no snapshot file either" in rp.main("2026-11-03")
+    assert [a[0] for a in __import__("report").ACCOUNTS] == ["intraday"]
 
 
 # ---------- workflows ----------
@@ -295,8 +291,7 @@ def test_intraday_workflow():
     assert "schedule:" not in text and "workflow_dispatch" in text  # timer: Supabase pg_cron bl-intraday
     assert "group: backtest-lab-trading" in text and "cancel-in-progress: false" in text and "contents: write" in text
     assert "python live_noise.py --once" in text and "secrets.ALPACA_INTRADAY_API_KEY" in text and "secrets.ALPACA_INTRADAY_SECRET_KEY" in text
-    # the long-term keys are only for the fill-alert step (read-only fills), never the trading step
-    assert text.count("secrets.ALPACA_API_KEY") == 1 and text.index("secrets.ALPACA_API_KEY") > text.index("python fill_alerts.py") - 600
+    assert "secrets.ALPACA_API_KEY" not in text and "secrets.ALPACA_SECRET_KEY" not in text   # the long-term account is retired
     assert "python fill_alerts.py || true" in text and "agent_memory/fill_alerts.json" in text
     assert "if: failure()" in text and "secrets.TELEGRAM_BOT_TOKEN" in text and "secrets.TELEGRAM_CHAT_ID" in text
     assert "github.run_id" in text and text.rindex("if: failure()") > text.index("Commit log and state") and "|| true" in text
@@ -307,8 +302,10 @@ def test_intraday_workflow():
 def test_nightly_workflow():
     text, d = load_wf("nightly.yml")
     assert "schedule:" not in text and "workflow_dispatch" in text and "group: backtest-lab-trading" in text
-    for name in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"):
+    for name in ("ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", "ALPACA_DTS_API_KEY", "ALPACA_TA_API_KEY"):
         assert f"secrets.{name}" in text
+    assert "secrets.ALPACA_API_KEY" not in text and "secrets.ALPACA_SECRET_KEY" not in text   # the long-term account is retired
+    assert "--no-orders" not in text and "breakeven" not in text and "alpaca_paper" not in text   # nothing places long-term orders
     for s in ("python intraday_data.py SPY QQQ", "python daily.py", "python report.py",
               "gh issue create", "daily-report", "issues: write", "contents: write", "restore-keys", "actions/cache@v4"):
         assert s in text
@@ -359,3 +356,9 @@ def test_flat_guard_main_sends_only_when_not_flat():
         def get_all_positions(self):
             raise RuntimeError("api down")
     assert fg.main(Boom({}), sent.append) is None and len(sent) == 1  # never raises
+
+
+def test_daily_places_no_orders_and_fill_alerts_drop_longterm():
+    import daily, fill_alerts
+    assert not hasattr(daily, "alpaca_paper") and not hasattr(daily, "paper") and "--no-orders" not in Path(daily.__file__).read_text()
+    assert [a[0] for a in fill_alerts.ACCOUNTS][0] == "intraday" and all(a[2] != "ALPACA_API_KEY" for a in fill_alerts.ACCOUNTS)

@@ -88,8 +88,6 @@ def test_risk_line_distances():
     assert "DD -4.0%" in line and "8.0 pts to kill (-12%)" in line
     assert "last day -3.0%" in line and "0.0 pts to -3%" in line   # at the daily limit
     assert "FTMO ref" in line and "2.0 / 6.0 pts left" in line
-    lt = bf.risk_line("long-term", 24000.0, [25000.0], 25000.0)
-    assert "16.0 pts to kill (-20%)" in lt and "last day" not in lt
 
 
 NOISE = [{"time_ny": f"2026-11-03 {h}:00:20", "symbol": s, "event": "check", "decision": "flat"}
@@ -111,17 +109,12 @@ CAND = {"candidates": [{"account": "intraday", "description": "buy <dips> early"
 
 
 def test_morning_lines_and_flags():
-    lt = acct(25500, 25400, [{"symbol": "QQQ", "qty": 48, "pl": 120.5}],
-              [{"symbol": "SPY", "side": "buy", "qty": 10, "status": "accepted"},
-               {"symbol": "QQQ", "side": "buy", "qty": 5, "status": "filled"}])
     it = acct(24400, 24800, [{"symbol": "SPY", "qty": 3, "pl": -5.0}])
-    txt = bf.build_morning(DAY, {"long-term": lt, "intraday": it}, {"long-term": [25000.0, 25400.0], "intraday": [25000.0, 24800.0]},
-                           NOISE, CAND, PREV, prev_report_exists=False)
+    txt = bf.build_morning(DAY, {"intraday": it}, {"intraday": [25000.0, 24800.0]}, NOISE, CAND, PREV, prev_report_exists=False)
     assert "<b>Morning 2026-11-04</b>" in txt
-    assert "Long-term</b> $25,500.00 | last session +$400.00 (+1.60%) | since start +2.00%" in txt
-    assert "QQQ 48 (+$120.50)" in txt
-    assert "Waiting for the open: BUY 10 SPY" in txt and "QQQ 5" not in txt.split("Waiting")[1].split("\n")[0]
-    assert "last session -$200.00" in txt and "since start -2.40%" in txt
+    assert "long-term" not in txt.lower() and "Waiting for the open" not in txt
+    assert "last session -$200.00" in txt
+    assert "since start -2.40%" in txt and "SPY 3 (-$5.00)" in txt
     assert "Intraday still holds 3 SPY" in txt
     assert "Missed intraday checks on 2026-11-03: QQQ 13:00; SPY 13:00" in txt
     assert "No nightly report found for 2026-11-03" in txt
@@ -129,11 +122,37 @@ def test_morning_lines_and_flags():
     assert len(txt) < 1800
 
 
+def test_retired_longterm_candidates_are_not_offered():
+    c = {"candidates": [{"account": "long-term", "description": "old", "status": "awaiting approval"},
+                        {"account": "intraday", "description": "new", "status": "awaiting approval"}]}
+    assert [x["description"] for x in bf.waiting_candidates(c)] == ["new"]
+
+
 def test_morning_clean_day_has_no_flags():
     ok_noise = [{"time_ny": f"2026-11-03 {h}:00:20", "symbol": s, "event": "check", "decision": "flat"}
                 for s in ("SPY", "QQQ") for h in (10, 11, 12, 13, 14, 15)]
-    txt = bf.build_morning(DAY, {"long-term": acct(25000, 25000), "intraday": acct(25000, 25000)}, {}, ok_noise, {"candidates": []}, PREV)
+    txt = bf.build_morning(DAY, {"intraday": acct(25000, 25000)}, {}, ok_noise, {"candidates": []}, PREV)
     assert "No flags." in txt and "⚠️" not in txt and "none awaiting approval" in txt
+
+
+def test_snapshot_accounts_graceful_and_shown(tmp_path, monkeypatch):
+    missing = tmp_path / "nope.json"
+    b, c = tmp_path / "b.json", tmp_path / "c.json"
+    b.write_text('{"equity": 25200.0, "last_equity": 25000.0, "positions": [{"symbol": "NVDA", "qty": 3, "unrealized_pl": 12.5}], '
+                 '"calendar": [{"date": "2026-11-03", "equity": 25000.0}]}')
+    c.write_text("not json")
+    assert bf.snapshot_account(missing) is None and bf.snapshot_account(c) is None
+    ex = bf.extra_accounts([("system-b", b), ("system-c", c), ("x", missing)])
+    assert list(ex) == ["system-b"] and ex["system-b"]["positions"][0]["pl"] == 12.5
+    assert bf.extra_accounts([("system-b", missing)]) == {}
+    accts = {"intraday": acct(25040, 25000), "system-b": ex["system-b"]}
+    d = bf.morning_data(DAY, accts, {"intraday": [25000.0], "system-b": ex["system-b"]["calendar_equity"]}, [], {}, PREV)
+    assert d["accounts"]["system-b"]["kill"] is None and d["accounts"]["system-b"]["risk"] == ""
+    txt = bf.text_morning(d)
+    assert "System B</b> $25,200.00" in txt and "NVDA 3 (+$12.50)" in txt
+    assert txt.count("DD ") == 1                       # the risk lines are the intraday account's only
+    e = bf.evening_data(DAY, accts, {"intraday": [25000.0]}, [], {}, {"intraday": None}, NO_RES)
+    assert e["accounts"]["system-b"]["trades"] == [] and "System B</b> $25,200.00" in bf.text_evening(e)
 
 
 # ---------- evening ----------
@@ -161,9 +180,9 @@ def test_backtest_verdicts():
     bt = window()
     assert "too early to tell (3 days)" in bf.backtest_line("intraday", 3, 0.5, bt)
     assert "too early to tell (1 day)" in bf.backtest_line("intraday", 1, 0.0, bt)
-    assert "in line" in bf.backtest_line("long-term", 10, 0.004, bt)
-    assert "below normal" in bf.backtest_line("long-term", 10, -0.2, bt)
-    assert "above normal" in bf.backtest_line("long-term", 10, 0.2, bt)
+    assert "in line" in bf.backtest_line("intraday", 10, 0.004, bt)
+    assert "below normal" in bf.backtest_line("intraday", 10, -0.2, bt)
+    assert "above normal" in bf.backtest_line("intraday", 10, 0.2, bt)
     assert "backtest unavailable" in bf.backtest_line("intraday", 10, 0.01, None)
     w = bf.window_returns([0.01, 0.01, -0.01], 2)
     assert w == pytest.approx([1.01 * 1.01 - 1, 1.01 * 0.99 - 1]) and len(bf.window_returns([0.1], 2)) == 0
@@ -190,43 +209,39 @@ def test_research_today(tmp_path):
     assert "no ideas tested" in bf.research_line("X", bf.research_today(tmp_path / "none", DAY))
 
 
+NO_RES = {"intraday": {"tested": 0, "scored": 0, "best": None, "holdout": 0}}
+
+
 def test_evening_text():
     it_orders = [order("SPY", "buy", 16, 767.0, (12, 5), "a"), order("SPY", "sell", 16, 766.0, (15, 56), "b")]
     noise = [{"time_ny": "2026-11-04 12:00:20", "symbol": "SPY", "event": "check", "decision": "long", "price": "767", "upper": "766", "lower": "760", "vwap": "765", "order_id": "a"}]
-    lt = acct(25100, 25000, [{"symbol": "QQQ", "qty": 5, "pl": 9, "day_pl": 12.0}, {"symbol": "BTCUSD", "qty": 1, "pl": 0, "day_pl": -4.0}],
-              [order("QQQ", "buy", 5, 500.0, (9, 30))])
     it = acct(24984, 25000, orders=it_orders)
-    res = {"daily": {"tested": 5, "scored": 3, "best": 0.31, "holdout": 0}, "intraday": {"tested": 0, "scored": 0, "best": None, "holdout": 0}}
-    txt = bf.build_evening(DAY, {"long-term": lt, "intraday": it}, {"long-term": [25000.0] * 1, "intraday": []}, noise, [], [],
-                           CAND, {"long-term": window(), "intraday": None}, res)
-    assert "today +$100.00 (+0.40%)" in txt and "today -$16.00 (-0.06%)" in txt
-    assert "09:30 BUY 5 QQQ @ $500.00" in txt and "12:05 BUY 16 SPY @ $767.00 (long)" in txt and "15:56 SELL 16 SPY" in txt
-    assert "Best QQQ +$12.00 | Worst BTCUSD -$4.00" in txt and "Best SPY -$16.00" in txt
-    assert "Long-term: too early to tell (1 day)" in txt
+    res = {"intraday": {"tested": 4, "scored": 2, "best": 0.31, "holdout": 0}}
+    txt = bf.build_evening(DAY, {"intraday": it}, {"intraday": []}, noise, CAND, {"intraday": None}, res)
+    assert "today -$16.00 (-0.06%)" in txt and "Long-term" not in txt and "Daily agent" not in txt
+    assert "12:05 BUY 16 SPY @ $767.00 (long)" in txt and "15:56 SELL 16 SPY" in txt and "Best SPY -$16.00" in txt
     assert "Intraday: too early to tell (1 day)" in txt
-    assert "Daily agent: 5 tested, 3 scored, best score 0.310, 0 held-out shots" in txt
-    assert "Intraday agent: no ideas tested today" in txt and "Candidates awaiting approval: 1" in txt
+    assert "Intraday agent: 4 tested, 2 scored, best score 0.310, 0 held-out shots" in txt and "Candidates awaiting approval: 1" in txt
     assert len(txt) < 1800
 
 
 def test_evening_verdict_in_text_and_trade_overflow():
     many = [order("SPY", "buy", 1, 100.0, (10, i)) for i in range(8)]
     hist = [25000.0] + [25000.0 + 10 * i for i in range(1, 8)]            # 7 live days after the start
-    txt = bf.build_evening(DAY, {"long-term": acct(25070, 25060), "intraday": acct(25070, 25060, orders=many)},
-                           {"long-term": hist, "intraday": hist}, [], [], [], {}, {"long-term": window(), "intraday": window(mean=0.0, sd=0.0002)},
-                           {"daily": bf.research_today("/nonexistent", DAY), "intraday": bf.research_today("/nonexistent", DAY)})
+    txt = bf.build_evening(DAY, {"intraday": acct(25070, 25060, orders=many)}, {"intraday": hist}, [], {},
+                           {"intraday": window(mean=0.0, sd=0.0002)}, {"intraday": bf.research_today("/nonexistent", DAY)})
     assert "+2 more" in txt
-    assert "Long-term: 7 days +0.28% vs backtest" in txt and "in line" in txt
-    assert "above normal" in txt.split("Intraday: 7 days")[1]              # tight intraday backtest: +0.28% is far above it
+    assert "Intraday: 7 days +0.28% vs backtest" in txt and "above normal" in txt   # tight backtest: +0.28% is far above it
 
 
 def test_workflows_wiring():
     wf = bf.ROOT / ".github" / "workflows"
     m = (wf / "morning.yml").read_text()
     assert "schedule:" not in m and "inputs.force != 'false'" in m and "workflow_dispatch:" in m and "group: backtest-lab-briefing" in m
-    for k in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY",
+    for k in ("ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", "ALPACA_DTS_API_KEY", "ALPACA_TA_API_KEY",
               "TELEGRAM_BOT_TOKEN", "TELEGRAM_CHAT_ID"):
         assert f"{k}: ${{{{ secrets.{k} }}}}" in m
+    assert "secrets.ALPACA_API_KEY" not in m          # the retired long-term account is not a dependency
     assert "cd src && python briefing.py morning" in m
     n = (wf / "nightly.yml").read_text()
     assert n.rstrip().endswith("if: always()\n        run: cd src && python briefing.py evening")

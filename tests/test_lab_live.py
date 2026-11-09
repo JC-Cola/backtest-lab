@@ -44,3 +44,10 @@ def test_js_ledger_matches_python():
                           "price": str(round(rnd.uniform(50, 800), 2))})
         py = ledger_from_fills(fills, 25000.0)
         assert _js_ledger(fills, 25000.0) == py
+
+
+def test_template_long_term_account_is_retired():
+    t = TPL.read_text()
+    assert "alpaca_live('lt')" not in t and 'lt: "select' not in t          # the retired account is never queried
+    assert "Long-term account retired" in t and 'const RETIRED = "2026-11-09"' in t
+    assert 'let lfilter = "intraday"' in t and 'getItem("lab-lfilter")' not in t   # always opens on Intraday
