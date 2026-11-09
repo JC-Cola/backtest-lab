@@ -325,6 +325,29 @@ def morning_flags(c, d, y):
     return y
 
 
+NEWS_WRAP = 55   # characters per headline line at 14 pt
+
+
+def morning_news(c, d, y):
+    """Compact headlines (tag chip + up to 2 lines each, no URLs). Draws nothing when there are none."""
+    items = d.get("headlines") or []
+    if not items:
+        return y
+    c.title(y, "Headlines")
+    y += 44
+    for it in items[:5]:
+        lines = textwrap.wrap(it["headline"], NEWS_WRAP)
+        if len(lines) > 2:
+            lines = [lines[0], cut(" ".join(lines[1:]), NEWS_WRAP)]
+        tag = cut(it["tag"].replace("USD", ""), 5)
+        c.box(MX, y - 12, 74, 26, SOFT, r=13)
+        c.text(MX + 37, y + 1, tag, 11, BLUE, "bold", ha="center")
+        for k, ln in enumerate(lines):
+            c.text(MX + 92, y + 1 + 31 * k, ln, 14, INK)
+        y += 31 * len(lines) + 14
+    return y
+
+
 def morning(c, d):
     header(c, d, "Morning · before the open")
     tiles(c, d, 80, "last session", "last")
@@ -353,7 +376,8 @@ def morning(c, d):
         c.text(MX, y + 4, "nothing", 14, GRAY)
         y += 50
     y = morning_risk(c, d, y + 16) + 20
-    return morning_flags(c, d, y)
+    y = morning_flags(c, d, y)
+    return morning_news(c, d, y + 14)
 
 
 def render(d):
@@ -482,4 +506,7 @@ def caption(d):
     line3 = f"{n_tr} trade{'' if n_tr == 1 else 's'} · {r['daily']['tested'] + r['intraday']['tested']} ideas tested"
     if d["waiting_candidates"]:
         line3 += " · candidate awaiting approval"
-    return "\n".join([head, e(line2), e(line3)])
+    lines = [head, e(line2), e(line3)]
+    if d.get("shadow_line"):
+        lines.append(e(d["shadow_line"])[:600])
+    return "\n".join(lines)

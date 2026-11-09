@@ -51,6 +51,9 @@ jobs:
         run: cd src && python intraday_data.py SPY QQQ
       - name: Nightly run
         run: cd src && python daily.py ${{ inputs.no_orders && '--no-orders' || '' }}
+      - name: Shadow news-rule test (hypothetical trades only, no orders)
+        if: always()
+        run: cd src && python news_shadow.py || true
       - name: Telegram fill alerts (both accounts)
         if: always()
         run: |

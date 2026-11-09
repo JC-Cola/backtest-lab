@@ -198,7 +198,7 @@ def morning_data(today, accts, hists, noise_rows, cands, prev_day=None, prev_rep
                      "dd": None if eq is None else drawdown(h, eq), "kill": KILL[name],
                      "day_limit": DAILY_LIMIT.get(name), "risk": risk_line(name, eq, h, a.get("last_equity"))}
     flags = morning_flags(accts["intraday"], accts, prev_day, noise_rows, prev_report_exists)
-    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands)}
+    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": []}
 
 
 def text_morning(d):
@@ -215,6 +215,8 @@ def text_morning(d):
     wc = d["waiting_candidates"]
     L += ["", b("Candidates") + (": none awaiting approval" if not wc else f": {len(wc)} awaiting approval")]
     L += [f"  {e(c['account'])}: {e(c['description'][:80])}" for c in wc[:3]]
+    if d.get("headlines"):
+        L += ["", b("Headlines")] + [f"  {e(h['tag'])}: {e(h['headline'][:110])}" for h in d["headlines"]]
     return "\n".join(L)
 
 
@@ -375,7 +377,8 @@ def evening_data(day, accts, hists, noise_rows, order_rows, paper_rows, cands, b
                      "days": n, "ret": ret, "path": live_path(hists.get(name, []), eq) if eq is not None else [],
                      "fan": fan(bt.get(name), n), "verdict": verdict(n, ret, bt.get(name)) if eq is not None else None,
                      "bt_line": None if eq is None else backtest_line(name, n, ret, bt.get(name))}
-    return {"kind": "evening", "day": day, "accounts": out, "research": research, "waiting_candidates": waiting_candidates(cands)}
+    return {"kind": "evening", "day": day, "accounts": out, "research": research, "waiting_candidates": waiting_candidates(cands),
+            "shadow_line": None}
 
 
 def text_evening(d):
@@ -394,6 +397,8 @@ def text_evening(d):
     L += ["  " + e(research_line("Daily agent", d["research"]["daily"])), "  " + e(research_line("Intraday agent", d["research"]["intraday"]))]
     wc = d["waiting_candidates"]
     L.append(f"  Candidates awaiting approval: {len(wc) if wc else 'none'}")
+    if d.get("shadow_line"):
+        L += ["", e(d["shadow_line"])]
     return "\n".join(L)
 
 
@@ -417,6 +422,11 @@ def gather_morning(now=None):
     w = proposer_health.briefing_warning()   # research agents' Claude login refused (401)
     if w:
         d["flags"].append(w)
+    try:   # headlines are a bonus: a news error must never break the briefing
+        import news_feed
+        d["headlines"] = news_feed.headlines(accts["long-term"].get("positions"))
+    except Exception as ex:
+        print(f"headlines failed: {type(ex).__name__}", file=sys.stderr)
     return d
 
 
@@ -425,8 +435,14 @@ def gather_evening(now=None):
     accts, hists = _gather(day)
     bt = {"long-term": safe_bt(longterm_backtest), "intraday": safe_bt(intraday_backtest)}
     res = {"daily": research_today(MEM / "journal.jsonl", day), "intraday": research_today(MEM / "intraday" / "journal.jsonl", day)}
-    return evening_data(day, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_csv(MEM / "alpaca_orders.csv"),
-                        R.read_csv(MEM / "paper_log.csv"), R.read_json(MEM / "candidates.json"), bt, res)
+    d = evening_data(day, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_csv(MEM / "alpaca_orders.csv"),
+                     R.read_csv(MEM / "paper_log.csv"), R.read_json(MEM / "candidates.json"), bt, res)
+    try:   # shadow news rules (not traded): shown only on a night when a hypothetical trade closed
+        import news_shadow
+        d["shadow_line"] = news_shadow.evening_line(day)
+    except Exception as ex:
+        print(f"shadow line failed: {type(ex).__name__}", file=sys.stderr)
+    return d
 
 
 def balance_data(day, per):

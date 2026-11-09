@@ -180,6 +180,9 @@ def test_journal_hashes_still_valid():
         pytest.skip("no journal")
     for line in j.read_text().splitlines():
         r = json.loads(line)
+        if r.get("spec") is None:  # an invalid proposal (e.g. from Claude) is journaled as rejected with its raw text only
+            assert r.get("status") == "rejected" and "raw" in r
+            continue
         S.validate(r["spec"])
         assert S.spec_hash(r["spec"]) == r["hash"]
 
