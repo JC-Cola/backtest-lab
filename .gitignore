@@ -7,3 +7,4 @@ data/*.csv
 data/intraday/
 data/crypto/
 data/news/
+data/dts/
