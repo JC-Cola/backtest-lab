@@ -414,6 +414,8 @@ def text_evening(d):
     L += ["", b("Research"), "  " + e(research_line("Intraday agent", d["research"]["intraday"]))]
     wc = d["waiting_candidates"]
     L.append(f"  Candidates awaiting approval: {len(wc) if wc else 'none'}")
+    if d.get("reconcile_line"):
+        L += ["", e(d["reconcile_line"])]
     if d.get("shadow_line"):
         L += ["", e(d["shadow_line"])]
     return "\n".join(L)
@@ -460,6 +462,11 @@ def gather_evening(now=None):
     bt = {"intraday": safe_bt(intraday_backtest)}
     res = {"intraday": research_today(MEM / "intraday" / "journal.jsonl", day)}
     d = evening_data(day, accts, hists, R.read_csv(MEM / "noise_live.csv"), R.read_json(MEM / "candidates.json"), bt, res)
+    try:   # live vs backtest (reconcile.py, run by nightly.yml before this briefing); skipped silently when missing
+        import reconcile
+        d["reconcile_line"] = reconcile.briefing_line(day)
+    except Exception as ex:
+        print(f"reconcile line failed: {type(ex).__name__}", file=sys.stderr)
     try:   # shadow news rules (not traded): shown only on a night when a hypothetical trade closed
         import news_shadow
         d["shadow_line"] = news_shadow.evening_line(day)

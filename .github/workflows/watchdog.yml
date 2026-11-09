@@ -1,0 +1,51 @@
+name: watchdog
+# Dead-man's switch, independent of Supabase: GitHub's OWN cron checks that the Supabase-dispatched jobs (intraday,
+# morning, nightly, research) are still being started and not failing repeatedly, and sends ONE Telegram message if not.
+# GitHub's schedule is best-effort (runs are sometimes delayed or dropped); that is acceptable for a watchdog because
+# it fires every 20 min, so a dropped tick is covered by the next one. Checks and throttle: src/watchdog.py.
+# State (agent_memory/watchdog.json: last alert time per problem, 3 h throttle) is committed only after an alert.
+on:
+  schedule:
+    - cron: "*/20 13-22 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  GITHUB_TOKEN: ${{ github.token }}
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Check the cloud jobs
+        run: cd src && python watchdog.py
+      - name: Commit throttle state (only changes after an alert)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          [ -e agent_memory/watchdog.json ] && git add -- agent_memory/watchdog.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Watchdog alert state"
+          for i in 1 2 3; do
+            git pull --rebase --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1

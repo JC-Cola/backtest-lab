@@ -505,6 +505,8 @@ def caption(d):
     if d["waiting_candidates"]:
         line3 += " · candidate awaiting approval"
     lines = [head, e(line2), e(line3)]
+    if d.get("reconcile_line"):
+        lines.append(e(d["reconcile_line"]))
     if d.get("shadow_line"):
         lines.append(e(d["shadow_line"])[:600])
     return "\n".join(lines)

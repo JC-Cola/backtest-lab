@@ -35,7 +35,18 @@ DISCOVERY, LOCKBOX = ["SPY", "QQQ"], ["IWM", "DIA"]
 # ---------------------------------------------------------------- data as a day x minute matrix
 class Days:
     def __init__(self, symbol: str):
-        df = intraday_data.load(symbol)
+        self._from_frame(intraday_data.load(symbol))
+        self.symbol = symbol
+
+    @classmethod
+    def from_frame(cls, df):
+        """Same matrix build as the cached loader, from any minute-bar frame (open/high/low/close/volume, bar-start NY index)."""
+        self = cls.__new__(cls)
+        self._from_frame(df)
+        self.symbol = None
+        return self
+
+    def _from_frame(self, df):
         day = df.index.normalize().tz_localize(None)
         m = (df.index.hour * 60 + df.index.minute - 570).values
         dates = pd.DatetimeIndex(sorted(set(day)))
@@ -55,7 +66,6 @@ class Days:
         L = np.where(np.isnan(mats["low"]), O, mats["low"])
         V = np.nan_to_num(mats["volume"])
         self._derive(dates[keep], O[keep], H[keep], L[keep], C[keep], V[keep], last[keep])
-        self.symbol = symbol
 
     @classmethod
     def from_arrays(cls, dates, O, H, L, C, V, last):
@@ -180,23 +190,37 @@ def vwap_trend(D, bar=5):
     return _trades(rows)
 
 
-def noise_breakout(D, lookback=14, check=30):
+def noise_checks(check=30):
+    """Decision minute indices (bar m is decided on its close): 29, 89, ... for check=60 = the 09:59, 10:59 ... bars."""
+    return [m for m in range(29, 389) if (m + 1 - 30) % check == 0]
+
+
+def noise_decisions(D, d, lookback=14, check=30, minutes=None):
+    """The noise-band decisions of session d, in order: [(m, side, price, vwap, upper, lower)], side +1/-1/0.
+    Shared by noise_breakout and the live-vs-backtest reconciliation (reconcile.py) so both use one rule."""
     move = np.abs(D.C / D.O[:, :1] - 1)
+    sig = move[d - lookback:d].mean(axis=0)
+    up = max(D.O[d, 0], D.prev_close[d]) * (1 + sig)
+    dn = min(D.O[d, 0], D.prev_close[d]) * (1 - sig)
+    end = D.last[d] + 1
+    out = []
+    for m in (noise_checks(check) if minutes is None else minutes):   # `minutes`: any bar indices (reconcile.py)
+        if m >= end - 1:
+            break
+        p, vw = D.C[d, m], D.vwap[d, m]
+        cur = 1.0 if p > max(up[m], vw) else (-1.0 if p < min(dn[m], vw) else 0.0)
+        out.append((m, cur, p, vw, up[m], dn[m]))
+    return out
+
+
+def noise_breakout(D, lookback=14, check=30):
     rows = []
-    checks = [m for m in range(29, 389) if (m + 1 - 30) % check == 0]
     for d in range(lookback + 1, D.n):
-        sig = move[d - lookback:d].mean(axis=0)
-        up = max(D.O[d, 0], D.prev_close[d]) * (1 + sig)
-        dn = min(D.O[d, 0], D.prev_close[d]) * (1 - sig)
+        decs = noise_decisions(D, d, lookback, check)
         end = D.last[d] + 1
         side = np.zeros(end)
-        cur = 0.0
-        for i, m in enumerate(checks):
-            if m >= end - 1:
-                break
-            p, vw = D.C[d, m], D.vwap[d, m]
-            cur = 1.0 if p > max(up[m], vw) else (-1.0 if p < min(dn[m], vw) else 0.0)
-            nxt = checks[i + 1] if i + 1 < len(checks) and checks[i + 1] < end - 1 else end - 1
+        for i, (m, cur, *_) in enumerate(decs):
+            nxt = decs[i + 1][0] if i + 1 < len(decs) else end - 1
             side[m + 1: nxt + 1] = cur
         rows += runs_to_trades(D, d, side)
     return _trades(rows)
