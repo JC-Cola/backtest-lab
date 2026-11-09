@@ -1,6 +1,6 @@
 # What the agent has learned so far
 
-Updated 2026-11-09. 20180 trials in total: 13856 scored, 6324 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-09. 20198 trials in total: 13872 scored, 6326 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -17,7 +17,7 @@ Updated 2026-11-09. 20180 trials in total: 13856 scored, 6324 rejected, 0 sent t
 
 ## Features that tend to help (learned weights, 1 = average)
 
-- rsi_14: 1.11
+- rsi_14: 1.10
 - curve: 1.10
 - rsi_2: 1.07
 - ret_5: 1.07
@@ -36,7 +36,7 @@ Updated 2026-11-09. 20180 trials in total: 13856 scored, 6324 rejected, 0 sent t
 
 ## Why ideas were rejected
 
-- too few trades: 6319
+- too few trades: 6321
 - risk review: 5
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
@@ -44,4 +44,4 @@ Updated 2026-11-09. 20180 trials in total: 13856 scored, 6324 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 421s. Best deflated reward went from 0.235 to 0.235. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 287s. Best deflated reward went from 0.235 to 0.235. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
