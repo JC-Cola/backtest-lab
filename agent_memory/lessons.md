@@ -1,6 +1,6 @@
 # What the agent has learned so far
 
-Updated 2026-11-09. 20246 trials in total: 13916 scored, 6330 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-09. 20264 trials in total: 13933 scored, 6331 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -29,14 +29,14 @@ Updated 2026-11-09. 20246 trials in total: 13916 scored, 6330 rejected, 0 sent t
 ## Features that tend to hurt
 
 - rv_20_pct: 0.96
-- dist_sma_50: 0.95
+- dist_sma_50: 0.96
 - dist_sma_200: 0.95
 - down_streak: 0.94
 - vix_ratio: 0.93
 
 ## Why ideas were rejected
 
-- too few trades: 6322
+- too few trades: 6323
 - risk review: 8
 
 ## Held-out tests (one shot each; BH-corrected together with the 486 earlier hunt tests on the same years)
@@ -44,4 +44,4 @@ Updated 2026-11-09. 20246 trials in total: 13916 scored, 6330 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 225s. Best deflated reward went from 0.235 to 0.235. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 8 ideas with the claude proposer in 239s. Best deflated reward went from 0.235 to 0.235. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0. Claude CLI cost this session: $0.14.
