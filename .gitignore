@@ -6,3 +6,4 @@ data/*.csv
 !data/fomc_dates.csv
 data/intraday/
 data/crypto/
+data/news/

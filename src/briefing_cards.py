@@ -21,6 +21,7 @@ import matplotlib.dates as mdates   # noqa: E402
 from matplotlib.patches import FancyBboxPatch, Rectangle   # noqa: E402
 from matplotlib.ticker import FuncFormatter, MaxNLocator   # noqa: E402
 
+from news_gappers import fmt_vol   # noqa: E402
 from report import NY   # noqa: E402
 
 W, H, DPI = 1080, 1350, 150
@@ -348,6 +349,22 @@ def morning_news(c, d, y):
     return y
 
 
+def morning_gappers(c, d, y):
+    """Top pre-market gappers with news (symbol chip, gap, volume, one headline line). Draws nothing when there are none."""
+    items = d.get("gappers") or []
+    if not items:
+        return y
+    c.title(y, "Gappers with news")
+    y += 44
+    for g in items[:5]:
+        c.box(MX, y - 12, 74, 26, SOFT, r=13)
+        c.text(MX + 37, y + 1, cut(g["symbol"], 5), 11, BLUE, "bold", ha="center")
+        c.text(MX + 92, y + 1, f"{g['gap'] * 100:+.1f}%  ·  pre-market vol {fmt_vol(g['pm_vol'])}", 14, tone(g["gap"]), "bold")
+        c.text(MX + 92, y + 32, cut(g["headline"], NEWS_WRAP + 5), 14, INK)
+        y += 31 * 2 + 14
+    return y
+
+
 def morning(c, d):
     header(c, d, "Morning · before the open")
     tiles(c, d, 80, "last session", "last")
@@ -377,6 +394,7 @@ def morning(c, d):
         y += 50
     y = morning_risk(c, d, y + 16) + 20
     y = morning_flags(c, d, y)
+    y = morning_gappers(c, d, y + 14)
     return morning_news(c, d, y + 14)
 
 

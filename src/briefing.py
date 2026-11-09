@@ -29,6 +29,7 @@ import report as R
 import telegram
 from agent import proposer_health
 from briefing_inputs import intraday_backtest, longterm_backtest, research_line, research_today, safe_bt
+from news_gappers import fmt_vol
 from report import ACCOUNTS, MEM, NY, ROOT, START
 
 LABEL = {"long-term": "Long-term", "intraday": "Intraday"}
@@ -198,7 +199,7 @@ def morning_data(today, accts, hists, noise_rows, cands, prev_day=None, prev_rep
                      "dd": None if eq is None else drawdown(h, eq), "kill": KILL[name],
                      "day_limit": DAILY_LIMIT.get(name), "risk": risk_line(name, eq, h, a.get("last_equity"))}
     flags = morning_flags(accts["intraday"], accts, prev_day, noise_rows, prev_report_exists)
-    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": []}
+    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": [], "gappers": []}
 
 
 def text_morning(d):
@@ -215,6 +216,9 @@ def text_morning(d):
     wc = d["waiting_candidates"]
     L += ["", b("Candidates") + (": none awaiting approval" if not wc else f": {len(wc)} awaiting approval")]
     L += [f"  {e(c['account'])}: {e(c['description'][:80])}" for c in wc[:3]]
+    if d.get("gappers"):
+        L += ["", b("Gappers with news") + " (pre-market, not traded)"]
+        L += [f"  {e(g['symbol'])} {g['gap'] * 100:+.1f}% · vol {fmt_vol(g['pm_vol'])} · {e(g['headline'][:90])}" for g in d["gappers"]]
     if d.get("headlines"):
         L += ["", b("Headlines")] + [f"  {e(h['tag'])}: {e(h['headline'][:110])}" for h in d["headlines"]]
     return "\n".join(L)
@@ -422,6 +426,11 @@ def gather_morning(now=None):
     w = proposer_health.briefing_warning()   # research agents' Claude login refused (401)
     if w:
         d["flags"].append(w)
+    try:   # pre-market gappers with news (universe scan; shown only)
+        import news_gappers
+        d["gappers"] = news_gappers.gappers_now(now)
+    except Exception as ex:
+        print(f"gappers failed: {type(ex).__name__}", file=sys.stderr)
     try:   # headlines are a bonus: a news error must never break the briefing
         import news_feed
         d["headlines"] = news_feed.headlines(accts["long-term"].get("positions"))

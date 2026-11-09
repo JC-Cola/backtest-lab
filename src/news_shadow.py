@@ -1,69 +1,51 @@
 """Live SHADOW test of news rules: hypothetical trades only, NO orders are ever placed (not traded).
 
-    python news_shadow.py [--dry-run] [--asof YYYY-MM-DD]
+    python news_shadow.py [--dry-run] [--asof YYYY-MM-DD] [--no-llm] [--max-reviews N] [--report]
 
-Run nightly after the close. For a watchlist it looks for today's "news shock": |close-to-close return| >= 2 x the
-trailing 60-day daily volatility AND at least one news article for that symbol between 16:00 ET the previous
-session and 16:00 ET today. Each shock opens 4 hypothetical trades: momentum (follow the move) and reversal
-(fade it), each held 1 and 5 trading days; entry at the next session's open, exit at the open h sessions after
+Run nightly after the close over the whole universe (S&P 500 + Nasdaq-100, ~500 liquid shortable stocks; universe.py).
+A "news shock" = |close-to-close return| >= 2 x the trailing 60-day daily volatility AND at least one news article for
+the symbol between 16:00 ET the previous session and 16:00 ET today (market-wide news fetched once, mapped to symbols).
+Each shock records day-trader-skill style extras (relative volume, gap, SPY move, beta, abnormal move); shocks are
+ranked by |abnormal move| x relative volume and only the top CAP per night are kept. Each kept shock gets a
+TradingAgents-style LLM review (news_review.py). Each shock opens hypothetical trades: momentum (follow the move) and
+reversal (fade it), plus an "llm" rule that follows the risk manager (continue = momentum side, reverse = reversal side,
+unclear = no trade), each held 1 and 5 trading days; entry at the next session's open, exit at the open h sessions after
 entry, 0.05% cost per side. State: agent_memory/news_shadow.json. Each night it also fills entries/exits from daily
-bars (Alpaca stock bars), so re-running is idempotent. Telegram: one message per new shock.
+bars, so re-running is idempotent. Telegram: one short message per night.
 """
 from __future__ import annotations
 
 import argparse
+import html
 import json
-import os
 import statistics
 import sys
-import urllib.parse
-import urllib.request
+import time as _time
 from datetime import date, datetime, time, timedelta, timezone
 
 import news_feed
+import news_scan
 import telegram
 from report import MEM, NY
 
 PATH = MEM / "news_shadow.json"
-WATCH = ["NVDA", "AAPL", "MSFT", "AMZN", "GOOGL", "META", "TSLA", "AMD", "NFLX", "AVGO", "SPY", "QQQ"]
+MARKET = news_scan.MARKET   # SPY: used for the market move and beta, never scanned as a shock itself
+CAP = 15                    # keep at most this many shocks per night (best by |abnormal move| x relative volume)
+MIN_PRICE = 5.0             # day-trader-skill's penny-stock floor
+LLM = "llm"
 VOL_DAYS = 60
 MIN_RETURNS = 40
 MULT = 2.0
 HOLDS = (1, 5)
 RULES = ("momentum", "reversal")
+ALL_RULES = RULES + (LLM,)
 COST = 0.0005          # per side
-BARS_URL = "https://data.alpaca.markets/v2/stocks/bars"
 TAG = "shadow / not traded"
 MINUS = "−"
 
 
 # ---------- prices ----------
-def fetch_bars(symbols, start, end, key=None, secret=None, urlopen=urllib.request.urlopen):
-    """{symbol: [(date 'YYYY-MM-DD', open, close), ...]} daily bars (split-adjusted), oldest first. Tries SIP, then IEX."""
-    key, secret = key or os.environ.get("ALPACA_API_KEY"), secret or os.environ.get("ALPACA_SECRET_KEY")
-    if not (key and secret):
-        raise RuntimeError("no Alpaca keys")
-    last = None
-    for feed in ("sip", "iex"):
-        try:
-            out, token = {}, None
-            while True:
-                q = {"symbols": ",".join(symbols), "timeframe": "1Day", "start": str(start), "end": str(end + timedelta(days=1)),
-                     "limit": 10000, "adjustment": "split", "feed": feed}
-                if token:
-                    q["page_token"] = token
-                req = urllib.request.Request(f"{BARS_URL}?{urllib.parse.urlencode(q)}",
-                                             headers={"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": secret})
-                with urlopen(req, timeout=30) as r:
-                    j = json.load(r)
-                for sym, rows in (j.get("bars") or {}).items():
-                    out.setdefault(sym, []).extend((b["t"][:10], float(b["o"]), float(b["c"])) for b in rows)
-                token = j.get("next_page_token")
-                if not token:
-                    return {k: sorted(set(v)) for k, v in out.items()}
-        except Exception as ex:
-            last = ex
-    raise last
+fetch_bars = news_scan.fetch_bars   # batched multi-symbol daily bars: {sym: [(date, open, close, volume)]}
 
 
 # ---------- detection ----------
@@ -125,11 +107,22 @@ def trade_id(sym, day, rule, hold):
     return f"{sym}|{day}|{rule}|{hold}d"
 
 
+def llm_rule(shock):
+    """The side the LLM risk manager would take: 'momentum' (continue), 'reversal' (reverse) or None (unclear / no review)."""
+    r = shock.get("review") or {}
+    return {"continue": "momentum", "reverse": "reversal"}.get(r.get("direction")) if r.get("status") == "ok" else None
+
+
 def new_trades(shock):
-    return [{"id": trade_id(shock["symbol"], shock["date"], rule, h), "symbol": shock["symbol"], "signal_date": shock["date"],
-             "rule": rule, "hold": h, "side": side_for(rule, shock["ret"]), "status": "pending",
-             "entry_date": None, "entry_px": None, "exit_date": None, "exit_px": None, "pnl_pct": None}
-            for rule in RULES for h in HOLDS]
+    def mk(rule, h, side):
+        return {"id": trade_id(shock["symbol"], shock["date"], rule, h), "symbol": shock["symbol"], "signal_date": shock["date"],
+                "rule": rule, "hold": h, "side": side, "status": "pending",
+                "entry_date": None, "entry_px": None, "exit_date": None, "exit_px": None, "pnl_pct": None}
+    out = [mk(rule, h, side_for(rule, shock["ret"])) for rule in RULES for h in HOLDS]
+    follow = llm_rule(shock)
+    if follow:
+        out += [mk(LLM, h, side_for(follow, shock["ret"])) for h in HOLDS]
+    return out
 
 
 def pnl_pct(side, entry, exit_, cost=COST):
@@ -170,17 +163,15 @@ def save_state(state, path=PATH):
     path.write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
 
 
-def run(state, bars, day, news_fn):
-    """One nightly pass. Records new shocks of `day` (+ their 4 hypothetical trades), then settles all trades.
-    news_fn(sym, prev_day, day) -> [headline]. Returns the list of NEW shocks (for the Telegram message)."""
-    new = []
-    have = {s["id"] for s in state["shocks"]}
-    for sym in WATCH:
-        sh = detect_shock(bars.get(sym, []), day)
-        if not sh:
-            continue
-        sid = f"{sym}|{day}"
-        if sid in have:
+def candidates(bars, day, news_fn, symbols):
+    """Every shock of `day` over `symbols` that also has news, as full records (with extras), best first.
+    news_fn(sym, prev_day, day) -> [headline]; a lookup that raises skips that symbol."""
+    mkt = bars.get(MARKET)
+    out = []
+    for sym in symbols:
+        rows = bars.get(sym, [])
+        sh = detect_shock(rows, day)
+        if not sh or rows[[r[0] for r in rows].index(day)][2] < MIN_PRICE:
             continue
         try:
             heads = news_fn(sym, sh["prev"], day)
@@ -189,11 +180,33 @@ def run(state, bars, day, news_fn):
             continue
         if not heads:
             continue
-        rec = {"id": sid, "symbol": sym, "date": day, "ret": round(sh["ret"], 6), "vol": round(sh["vol"], 6),
-               "mult": round(sh["mult"], 3), "headlines": heads}
-        state["shocks"].append(rec)
-        new.append(rec)
-        state["started"] = state["started"] or day
+        rec = {"id": f"{sym}|{day}", "symbol": sym, "date": day, "ret": round(sh["ret"], 6), "vol": round(sh["vol"], 6),
+               "mult": round(sh["mult"], 3), "headlines": heads, **news_scan.features(rows, day, sh["ret"], mkt)}
+        rec["abn_mult"] = round(abs(rec["abn"]) / sh["vol"], 2)
+        rec["score"] = round(news_scan.rank_score(rec), 5)
+        out.append(rec)
+    out.sort(key=lambda r: (-r["score"], r["symbol"]))
+    return out
+
+
+def run(state, bars, day, news_fn, review_fn=None, symbols=None, cap=CAP):
+    """One nightly pass. Records new shocks of `day` (top `cap` by score; shocks already recorded for the day count
+    against the cap, so re-runs add nothing), reviews them, opens their hypothetical trades, then settles all trades.
+    news_fn(sym, prev_day, day) -> [headline], or None to skip detection (settle only).
+    review_fn(new_records_best_first) -> {id: review dict} (optional). Returns the list of NEW shocks, best first."""
+    new = []
+    have = {s["id"] for s in state["shocks"]}
+    if news_fn is not None:
+        symbols = symbols or [s for s in bars if s != MARKET]
+        room = cap - sum(s["date"] == day for s in state["shocks"])
+        new = [r for r in candidates(bars, day, news_fn, symbols) if r["id"] not in have][:max(0, room)]
+        if new and review_fn:
+            reviews = review_fn(new) or {}
+            for r in new:
+                r["review"] = reviews.get(r["id"]) or {"status": "no review"}
+        state["shocks"].extend(new)
+        if new:
+            state["started"] = state["started"] or day
     ids = {t["id"] for t in state["trades"]}
     for sh in state["shocks"]:   # also heals a shock whose trades were lost mid-run
         for t in new_trades(sh):
@@ -223,6 +236,33 @@ def shock_message(sh):
             f"({'buy' if rules['reversal'] == 'long' else 'short'}), 1 and 5 days")
 
 
+def shock_line(sh):
+    """One short Telegram line: 'NVDA −6.2% (abn −5.1%) · 3.4× vol · earnings · LLM reverse 0.70'."""
+    parts = [f"{sh['symbol']} {fmt_pct(sh['ret'] * 100)}"]
+    if sh.get("abn") is not None and sh.get("spy_ret") is not None:
+        parts[0] += f" (abn {fmt_pct(sh['abn'] * 100)})"
+    if sh.get("relvol"):
+        parts.append(f"{sh['relvol']:.1f}× vol")
+    r = sh.get("review") or {}
+    if r.get("status") == "ok":
+        parts += [r["catalyst"].replace("_", " "), f"LLM {r['direction']} {r['confidence']:.2f}"]
+    elif "review" in sh:
+        parts.append("no review")
+    return html.escape(" · ".join(parts))
+
+
+def nightly_message(new, day, n_universe=None, max_lines=8):
+    """The one message per night: a header and the top shocks (<= max_lines lines)."""
+    top = new[:max_lines]
+    head = f"📰 News shocks {day} · {len(new)} kept" + (f" of ~{n_universe} stocks" if n_universe else "") + f" · {TAG}"
+    more = [f"+{len(new) - len(top)} more"] if len(new) > len(top) else []
+    return "\n".join([head] + [shock_line(s) for s in top] + more)
+
+
+def _avg(xs):
+    return sum(xs) / len(xs)
+
+
 def summary_line(state, day=None):
     """'Shadow news rules (since <date>, not traded): momentum 1d +0.8% avg over 4 trades, ...' or None.
     With `day`, only when some trade closed that day."""
@@ -230,12 +270,53 @@ def summary_line(state, day=None):
     if not closed or (day and not any(t["exit_date"] == str(day) for t in closed)):
         return None
     parts = []
-    for rule in RULES:
+    for rule in ALL_RULES:
         for h in HOLDS:
             xs = [t["pnl_pct"] for t in closed if t["rule"] == rule and t["hold"] == h]
             if xs:
-                parts.append(f"{rule} {h}d {fmt_pct(sum(xs) / len(xs))} avg over {len(xs)} trade{'' if len(xs) == 1 else 's'}")
+                parts.append(f"{rule} {h}d {fmt_pct(_avg(xs))} avg over {len(xs)} trade{'' if len(xs) == 1 else 's'}")
     return f"Shadow news rules (since {state['started']}, {TAG}): " + " · ".join(parts)
+
+
+def conf_bucket(review):
+    if not review or review.get("status") != "ok":
+        return "no review"
+    c = review["confidence"]
+    return "conf <0.5" if c < 0.5 else "conf 0.5-0.7" if c < 0.7 else "conf >=0.7"
+
+
+def breakdowns(state):
+    """Closed-trade results grouped three ways, each {group: {'rule Nd': (n, avg pnl %)}}:
+    'rule' (one group, all shocks), 'catalyst' (LLM-classified type) and 'confidence' (LLM confidence bucket of the
+    shock; the plain rules are listed next to the llm rule for the same shocks, so the comparison is like for like)."""
+    shocks = {s["id"]: s for s in state["shocks"]}
+    groups = {"rule": {}, "catalyst": {}, "confidence": {}}
+    for t in state["trades"]:
+        if t["status"] != "closed":
+            continue
+        sh = shocks.get(f"{t['symbol']}|{t['signal_date']}", {})
+        rv = sh.get("review") or {}
+        label = f"{t['rule']} {t['hold']}d"
+        keys = [("rule", "all shocks")]
+        if rv.get("status") == "ok":
+            keys.append(("catalyst", rv["catalyst"]))
+        keys.append(("confidence", conf_bucket(rv)))
+        for kind, g in keys:
+            groups[kind].setdefault(g, {}).setdefault(label, []).append(t["pnl_pct"])
+    return {k: {g: {lab: (len(v), _avg(v)) for lab, v in sorted(d.items())} for g, d in sorted(gs.items())}
+            for k, gs in groups.items()}
+
+
+def breakdown_text(state):
+    b = breakdowns(state)
+    if not any(b.values()):
+        return "No closed shadow trades yet."
+    L = []
+    for kind in ("rule", "catalyst", "confidence"):
+        L.append(f"By {kind}:")
+        for g, d in b[kind].items():
+            L.append(f"  {g}: " + " · ".join(f"{lab} {fmt_pct(avg)} (n={n})" for lab, (n, avg) in d.items()))
+    return "\n".join(L)
 
 
 def evening_line(day=None, path=PATH):
@@ -253,25 +334,60 @@ def last_session(today, bars):
 
 
 def main(argv=None):
+    import news_review
+    import universe
+    from agent import claude_cli
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true", help="print what would be recorded; write and send nothing")
     ap.add_argument("--asof", help="treat this date as 'today' (YYYY-MM-DD)")
+    ap.add_argument("--no-llm", action="store_true", help="skip the LLM review")
+    ap.add_argument("--max-reviews", type=int, default=news_review.MAX_CALLS, help="cap on Claude calls tonight")
+    ap.add_argument("--report", action="store_true", help="print the aggregate results by rule / catalyst / confidence and exit")
     a = ap.parse_args(argv)
-    today = date.fromisoformat(a.asof) if a.asof else datetime.now(NY).date()
+    if a.report:
+        print(breakdown_text(load_state()))
+        return 0
+    now = datetime.now(NY)
+    today = date.fromisoformat(a.asof) if a.asof else now.date()
+    if not a.asof and now.time() < time(16, 15):
+        today -= timedelta(days=1)   # today's session is not finished: never score a partial bar
+    t0 = _time.monotonic()
+    syms, usrc = universe.load(today, refresh=True, write=not a.dry_run)
+    print(f"universe: {len(syms)} symbols ({usrc})")
     try:
-        bars = fetch_bars(WATCH, today - timedelta(days=130), today)
+        bars = fetch_bars(sorted({*syms, MARKET}), today - timedelta(days=130), today)
     except Exception as ex:
         print(f"news_shadow: price bars unavailable ({type(ex).__name__}: {str(ex)[:80]})", file=sys.stderr)
         return 0
+    t1 = _time.monotonic()
     day = last_session(today, bars)
     if day != str(today):
         print(f"{today} has no daily bar yet/not a session; using last session {day} for detection")
     state = load_state()
-    new = run(state, bars, day, shock_headlines) if day else []
+    news_fn, nart = None, 0
+    if day:
+        dates = sorted({b[0] for b in bars.get(MARKET, []) if b[0] < day})
+        if dates:
+            start, end = news_window(dates[-1], day)
+            try:
+                arts = news_scan.fetch_news_window(start, end)
+                nmap = news_scan.news_by_symbol(arts, syms, start, end)
+                nart, news_fn = len(arts), (lambda sym, prev, d: nmap.get(sym, []))
+            except Exception as ex:
+                print(f"news_shadow: market news unavailable ({type(ex).__name__}: {str(ex)[:80]}); no new shocks tonight", file=sys.stderr)
+    t2 = _time.monotonic()
+    review_fn = None if a.no_llm else (lambda recs: news_review.review_all(recs, max_calls=a.max_reviews))
+    new = run(state, bars, day, news_fn, review_fn, syms) if day else []
+    t3 = _time.monotonic()
+    print(f"timing: bars {t1 - t0:.0f}s ({len(bars)} symbols), news {t2 - t1:.0f}s ({nart} articles), detect+review {t3 - t2:.0f}s"
+          + ("" if a.no_llm else f"; Claude reported cost ${claude_cli.spent():.2f}"))
     print(f"{TAG}: {len(new)} new shock(s) for {day}; trades: " +
           ", ".join(f"{k} {sum(t['status'] == k for t in state['trades'])}" for k in ("pending", "open", "closed")))
     for sh in new:
-        print(shock_message(sh))
+        print(shock_line(sh), "|", sh["headlines"][0][:90])
+        r = sh.get("review") or {}
+        if r.get("status") == "ok":
+            print(f"     bull: {r['bull']}\n     bear: {r['bear']}\n     risk mgr: {r['direction']} ({r['confidence']}) {r['rationale']}")
         for t in (t for t in state["trades"] if t["id"].startswith(sh["id"] + "|")):
             print(f"   {t['rule']} {t['hold']}d {t['side']}")
     line = summary_line(state)
@@ -280,8 +396,8 @@ def main(argv=None):
     if a.dry_run:
         return 0
     save_state(state)
-    if new:  # one message per night, however many shocks (a busy day can have 7+)
-        telegram.send("\n\n".join(shock_message(sh) for sh in new)[:3900])
+    if new:  # one message per night, however many shocks
+        telegram.send(nightly_message(new, day, len(syms)))
     return 0
 
 

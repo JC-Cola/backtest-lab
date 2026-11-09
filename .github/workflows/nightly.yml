@@ -51,8 +51,19 @@ jobs:
         run: cd src && python intraday_data.py SPY QQQ
       - name: Nightly run
         run: cd src && python daily.py ${{ inputs.no_orders && '--no-orders' || '' }}
-      - name: Shadow news-rule test (hypothetical trades only, no orders)
+      - uses: actions/setup-node@v4
         if: always()
+        with:
+          node-version: "20"
+      - name: Claude Code CLI (LLM review of news shocks; the scan still runs without it)
+        if: always()
+        continue-on-error: true
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Shadow news-rule test (S&P 500 + Nasdaq-100 scan + LLM review; hypothetical trades only, no orders)
+        if: always()
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        timeout-minutes: 25   # scan ~30 s + up to 15 Claude reviews (hard cap 10 min inside the script)
         run: cd src && python news_shadow.py || true
       - name: Telegram fill alerts (both accounts)
         if: always()
