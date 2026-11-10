@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-09. 13273 trials in total: 11252 scored, 2021 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-10. 13360 trials in total: 11337 scored, 2023 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -12,8 +12,8 @@ Updated 2026-11-09. 13273 trials in total: 11252 scored, 2021 rejected, 0 sent t
 - reward now 0.000 (when found 0.000) | folds [1.703, 0.951, 1.488] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and range_pos > p30; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.22, 1.55, 1.216] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and ret_30 > p15; hold 240 min
 - reward now 0.000 (when found 0.000) | folds [1.571, 0.817, 1.582] | SPY at 11:00: long when gap > p85 and prev_day_ret < p89 and range_pos > p20; hold 240 min
-- reward now 0.000 (when found 0.001) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_30 > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
-- reward now 0.000 (when found 0.000) | folds [1.21, 1.535, 2.822] | QQQ at 10:00: long when ret_open > p90 and rv_5d < p95 and vol_ratio > p30; hold 120 min; stop 25 bp, target 1.5R
+- reward now 0.000 (when found 0.000) | folds [1.73, 1.645, 0.986] | SPY at 11:00: long when gap > p85 and prev_day_ret < p99 and ret_30 > p30; hold 240 min
+- reward now 0.000 (when found 0.000) | folds [1.849, 0.569, 1.513] | SPY at 11:00: long when gap > p85 and prev_day_ret < p84 and range_pos > p25; hold 240 min
 
 ## Features that tend to help (learned weights, 1 = average)
 
@@ -36,7 +36,7 @@ Updated 2026-11-09. 13273 trials in total: 11252 scored, 2021 rejected, 0 sent t
 
 ## Why ideas were rejected
 
-- too few trades: 2000
+- too few trades: 2002
 - risk review: 17
 - invalid spec: 4
 
@@ -45,4 +45,4 @@ Updated 2026-11-09. 13273 trials in total: 11252 scored, 2021 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 66s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 128s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
