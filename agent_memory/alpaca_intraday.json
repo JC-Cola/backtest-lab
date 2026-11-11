@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-11T17:31:31+00:00",
+ "generated": "2026-11-11T18:01:37+00:00",
  "start_equity": 25000.0,
- "equity": 25065.32,
+ "equity": 25060.29,
  "cash": 12568.47,
  "last_equity": 25054.5,
  "positions": [
@@ -9,13 +9,21 @@
    "symbol": "QQQ",
    "qty": 18.0,
    "avg_price": 693.668333,
-   "price": 694.2697,
-   "value": 12496.8546,
-   "pl": 10.824606,
-   "pl_pct": 0.00087
+   "price": 693.99,
+   "value": 12491.82,
+   "pl": 5.790006,
+   "pl_pct": 0.00046
   }
  ],
  "orders": [
+  {
+   "date": "2026-11-11T18:01+00:00",
+   "symbol": "QQQ",
+   "side": "sell",
+   "qty": 18.0,
+   "status": "new",
+   "price": null
+  },
   {
    "date": "2026-11-11T17:01+00:00",
    "symbol": "QQQ",
@@ -127,14 +135,6 @@
    "qty": 16.0,
    "status": "expired",
    "price": null
-  },
-  {
-   "date": "2026-11-05T20:07+00:00",
-   "symbol": "SPY",
-   "side": "sell",
-   "qty": 16.0,
-   "status": "filled",
-   "price": 737.249375
   }
  ],
  "strategies_by_symbol": {
@@ -188,9 +188,9 @@
   },
   {
    "date": "2026-11-11",
-   "pl": 10.82,
-   "pct": 0.043,
-   "equity": 25065.32
+   "pl": 5.79,
+   "pct": 0.023,
+   "equity": 25060.29
   }
  ],
  "history": {
@@ -606,6 +606,30 @@
    [
     1794418200,
     25060.65
+   ],
+   [
+    1794418500,
+    25068.84
+   ],
+   [
+    1794418800,
+    25069.29
+   ],
+   [
+    1794419100,
+    25063.08
+   ],
+   [
+    1794419400,
+    25064.43
+   ],
+   [
+    1794419700,
+    25065.82
+   ],
+   [
+    1794420000,
+    25060.29
    ]
   ],
   "1W": [
@@ -1092,6 +1116,14 @@
    [
     1794418200,
     25060.65
+   ],
+   [
+    1794419100,
+    25063.08
+   ],
+   [
+    1794420000,
+    25060.29
    ]
   ],
   "1M": [
@@ -1270,13 +1302,20 @@
     25054.5
    ],
    [
-    1794418295,
-    25065.32
+    1794420107,
+    25060.29
    ]
   ]
  },
  "balance_history": {
   "rows": [
+   {
+    "time": "2026-11-11 13:01:39",
+    "balance_before": 25056.79,
+    "balance_after": 25061.32,
+    "realized_pnl": 4.53,
+    "action": "Close long position for symbol QQQ at price 693.92 for 18 units. Position AVG Price was 693.66833333"
+   },
    {
     "time": "2026-11-09 15:56:33",
     "balance_before": 24975.3,
@@ -1411,11 +1450,11 @@
     "action": "Close long position for symbol QQQ at price 692.85 for 17 units. Position AVG Price was 696.40941176"
    }
   ],
-  "realized": 56.79,
-  "unrealized": 10.82,
-  "equity": 25065.32,
-  "available": 18816.89,
-  "margin": 6248.43,
+  "realized": 61.32,
+  "unrealized": 5.79,
+  "equity": 25060.29,
+  "available": 18814.38,
+  "margin": 6245.91,
   "start_balance": 25000.0
  }
 }
