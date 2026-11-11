@@ -1,0 +1,72 @@
+name: system_dts
+# System B: day-trader-skill pipeline (vendored in third_party/day_trader_skill) run in parallel with our system.
+# Each dispatch is ONE idempotent check (src/system_dts.py run): the first one at/after 10:15 New York scans (15-min
+# opening range) and enters, every check manages open positions (bracket legs, flat by 15:55 with a plain market order).
+# With ALPACA_DTS_API_KEY / ALPACA_DTS_SECRET_KEY it trades the dedicated Alpaca PAPER account (paper=True only); without
+# them it keeps the shadow ledger (simulated fills, 0.02% slippage + 0.01% fees a side). Commits agent_memory/system_dts.json.
+# Dispatch (Supabase pg_cron), weekdays, UTC. Runs outside the session (before 9:30 or after 16:30 New York) do nothing,
+# so one schedule covers EST and EDT:
+#   every 15 min, 14:15-20:45 UTC:   '15,30,45 14 * * 1-5'  '0,15,30,45 15-20 * * 1-5'
+#     (the 10:15 New York scan is the 14:15 run in EDT and the 15:15 run in EST; the other one only manages)
+#   flat-by 15:55 New York:          '55 19,20 * * 1-5'   (19:55 UTC in EDT, 20:55 UTC in EST; the other is a no-op)
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: backtest-lab-system-dts
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  ALPACA_DTS_API_KEY: ${{ secrets.ALPACA_DTS_API_KEY }}
+  ALPACA_DTS_SECRET_KEY: ${{ secrets.ALPACA_DTS_SECRET_KEY }}
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+  ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
+  SEC_USER_AGENT: backtest-lab research JC-Cola@users.noreply.github.com
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  system-dts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: System B check
+        run: cd src && python system_dts.py run
+      - name: Telegram fill alerts (System B account)
+        if: always()
+        run: |
+          sleep 3
+          cd src && python fill_alerts.py || true
+      - name: Commit the ledger
+        if: always()  # a failed run must still save what it already did
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for f in agent_memory/system_dts.json agent_memory/dts_universe.txt agent_memory/fill_alerts.json; do
+            [ -e "$f" ] && git add -- "$f"
+          done
+          git diff --cached --quiet && exit 0
+          git commit -q -m "System B run $(TZ=America/New_York date '+%Y-%m-%d %H:%M') New York"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1
+      - name: Telegram alert on failure
+        if: failure()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export MSG="⚠️ System B run failed at $(TZ=America/New_York date '+%H:%M') New York: $RUN_URL"
+          cd src && python -c "import os, telegram; telegram.send(os.environ['MSG'])" || true

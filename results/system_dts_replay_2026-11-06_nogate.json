@@ -1,0 +1,761 @@
+{
+ "system": "day-trader-skill (System B)",
+ "start_equity": 25000.0,
+ "cash": 24577.3259,
+ "equity": 24577.33,
+ "last_equity": 25000.0,
+ "positions": [],
+ "trades": [
+  {
+   "id": "2026-11-06-AMD",
+   "symbol": "AMD",
+   "side": "long",
+   "qty": 13,
+   "entry_time": "2026-11-06 10:15",
+   "entry_price": 449.6099,
+   "entry_ref": 449.52,
+   "exit_time": "2026-11-06 10:26",
+   "exit_price": 443.6912,
+   "exit_ref": 443.78,
+   "stop": 443.78,
+   "target": 461.0,
+   "fees": 1.1613,
+   "pnl": -78.1,
+   "pnl_pct": -1.336,
+   "r": -1.047,
+   "reason": "stop",
+   "date": "2026-11-06",
+   "exit_utc": "2026-11-06T15:26+00:00",
+   "odds": {
+    "p_target": 0.1634,
+    "p_stop": 0.4964,
+    "p_neither": 0.3402,
+    "p_green": 0.4172,
+    "avg_R": -0.0,
+    "lean": -0.0857,
+    "hist_n": 35,
+    "hist_avg_R": -0.005,
+    "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 16.3 % vs stop first 49.6 %).",
+    "seed": 19
+   },
+   "gates": {
+    "news": {
+     "reasons": [],
+     "flags": [],
+     "items": 0
+    },
+    "risk": "risk PASS: max loss $74.62 at the stop, position cap"
+   },
+   "trigger": {
+    "time": "09:50",
+    "price": 456.69,
+    "pct_over": 0.67,
+    "or_high": 453.64,
+    "or_low": 433.93
+   }
+  },
+  {
+   "id": "2026-11-06-AAOI",
+   "symbol": "AAOI",
+   "side": "long",
+   "qty": 55,
+   "entry_time": "2026-11-06 10:15",
+   "entry_price": 49.5799,
+   "entry_ref": 49.57,
+   "exit_time": "2026-11-06 10:35",
+   "exit_price": 47.3005,
+   "exit_ref": 47.31,
+   "stop": 47.31,
+   "target": 54.09,
+   "fees": 0.5329,
+   "pnl": -125.9,
+   "pnl_pct": -4.617,
+   "r": -1.013,
+   "reason": "stop",
+   "date": "2026-11-06",
+   "exit_utc": "2026-11-06T15:35+00:00",
+   "odds": {
+    "p_target": 0.01,
+    "p_stop": 0.2206,
+    "p_neither": 0.7694,
+    "p_green": 0.4416,
+    "avg_R": -0.091,
+    "lean": -0.29,
+    "hist_n": 31,
+    "hist_avg_R": -0.21,
+    "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 4 % (target first 1.0 % vs stop first 22.1 %).",
+    "seed": 19
+   },
+   "gates": {
+    "news": {
+     "reasons": [],
+     "flags": [
+      "earnings"
+     ],
+     "items": 9
+    },
+    "risk": "risk PASS: max loss $124.30 at the stop, max loss"
+   },
+   "trigger": {
+    "time": "09:50",
+    "price": 51.04,
+    "pct_over": 3.15,
+    "or_high": 49.48,
+    "or_low": 45.15
+   }
+  },
+  {
+   "id": "2026-11-06-AFRM",
+   "symbol": "AFRM",
+   "side": "long",
+   "qty": 59,
+   "entry_time": "2026-11-06 10:15",
+   "entry_price": 69.5139,
+   "entry_ref": 69.5,
+   "exit_time": "2026-11-06 10:42",
+   "exit_price": 67.3765,
+   "exit_ref": 67.39,
+   "stop": 67.39,
+   "target": 73.72,
+   "fees": 0.8076,
+   "pnl": -126.91,
+   "pnl_pct": -3.094,
+   "r": -1.019,
+   "reason": "stop",
+   "date": "2026-11-06",
+   "exit_utc": "2026-11-06T15:42+00:00",
+   "odds": {
+    "p_target": 0.0027,
+    "p_stop": 0.174,
+    "p_neither": 0.8233,
+    "p_green": 0.4499,
+    "avg_R": -0.078,
+    "lean": -0.3181,
+    "hist_n": 29,
+    "hist_avg_R": -0.011,
+    "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 2 % (target first 0.3 % vs stop first 17.4 %).",
+    "seed": 19
+   },
+   "gates": {
+    "news": {
+     "reasons": [],
+     "flags": [
+      "earnings"
+     ],
+     "items": 10
+    },
+    "risk": "risk PASS: max loss $124.49 at the stop, max loss"
+   },
+   "trigger": {
+    "time": "09:50",
+    "price": 71.1,
+    "pct_over": 3.38,
+    "or_high": 68.77,
+    "or_low": 66.02
+   }
+  },
+  {
+   "id": "2026-11-06-ALNY",
+   "symbol": "ALNY",
+   "side": "long",
+   "qty": 38,
+   "entry_time": "2026-11-06 10:15",
+   "entry_price": 158.8018,
+   "entry_ref": 158.77,
+   "exit_time": "2026-11-06 15:55",
+   "exit_price": 156.4187,
+   "exit_ref": 156.45,
+   "stop": 155.52,
+   "target": 165.27,
+   "fees": 1.1978,
+   "pnl": -91.76,
+   "pnl_pct": -1.521,
+   "r": -0.743,
+   "reason": "flat by 15:55",
+   "date": "2026-11-06",
+   "exit_utc": "2026-11-06T20:55+00:00",
+   "odds": {
+    "p_target": 0.0357,
+    "p_stop": 0.2798,
+    "p_neither": 0.6845,
+    "p_green": 0.4564,
+    "avg_R": -0.032,
+    "lean": -0.2202,
+    "hist_n": 36,
+    "hist_avg_R": -0.106,
+    "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 11 % (target first 3.6 % vs stop first 28.0 %).",
+    "seed": 19
+   },
+   "gates": {
+    "news": {
+     "reasons": [],
+     "flags": [],
+     "items": 1
+    },
+    "risk": "risk PASS: max loss $123.50 at the stop, max loss"
+   },
+   "trigger": {
+    "time": "09:50",
+    "price": 157.31,
+    "pct_over": 0.36,
+    "or_high": 156.75,
+    "or_low": 154.3
+   }
+  }
+ ],
+ "orders": [
+  {
+   "date": "2026-11-06T15:15+00:00",
+   "symbol": "AAOI",
+   "side": "buy",
+   "qty": 55.0,
+   "status": "filled",
+   "price": 49.5799
+  },
+  {
+   "date": "2026-11-06T15:15+00:00",
+   "symbol": "AFRM",
+   "side": "buy",
+   "qty": 59.0,
+   "status": "filled",
+   "price": 69.5139
+  },
+  {
+   "date": "2026-11-06T15:15+00:00",
+   "symbol": "ALNY",
+   "side": "buy",
+   "qty": 38.0,
+   "status": "filled",
+   "price": 158.8018
+  },
+  {
+   "date": "2026-11-06T15:15+00:00",
+   "symbol": "AMD",
+   "side": "buy",
+   "qty": 13.0,
+   "status": "filled",
+   "price": 449.6099
+  },
+  {
+   "date": "2026-11-06T15:26+00:00",
+   "symbol": "AMD",
+   "side": "sell",
+   "qty": 13.0,
+   "status": "filled",
+   "price": 443.6912
+  },
+  {
+   "date": "2026-11-06T15:35+00:00",
+   "symbol": "AAOI",
+   "side": "sell",
+   "qty": 55.0,
+   "status": "filled",
+   "price": 47.3005
+  },
+  {
+   "date": "2026-11-06T15:42+00:00",
+   "symbol": "AFRM",
+   "side": "sell",
+   "qty": 59.0,
+   "status": "filled",
+   "price": 67.3765
+  },
+  {
+   "date": "2026-11-06T20:55+00:00",
+   "symbol": "ALNY",
+   "side": "sell",
+   "qty": 38.0,
+   "status": "filled",
+   "price": 156.4187
+  }
+ ],
+ "curve": [
+  [
+   1793978100,
+   24994.39
+  ],
+  [
+   1793979000,
+   24794.49
+  ],
+  [
+   1793979900,
+   24597.35
+  ],
+  [
+   1793980800,
+   24617.49
+  ],
+  [
+   1793981700,
+   24610.65
+  ],
+  [
+   1793982600,
+   24619.01
+  ],
+  [
+   1793983500,
+   24595.83
+  ],
+  [
+   1793984400,
+   24597.54
+  ],
+  [
+   1793985300,
+   24577.97
+  ],
+  [
+   1793986200,
+   24586.33
+  ],
+  [
+   1793987100,
+   24589.75
+  ],
+  [
+   1793988000,
+   24582.34
+  ],
+  [
+   1793988900,
+   24595.45
+  ],
+  [
+   1793989800,
+   24607.99
+  ],
+  [
+   1793990700,
+   24587.47
+  ],
+  [
+   1793991600,
+   24587.09
+  ],
+  [
+   1793992500,
+   24574.36
+  ],
+  [
+   1793993400,
+   24558.59
+  ],
+  [
+   1793994300,
+   24574.93
+  ],
+  [
+   1793995200,
+   24567.14
+  ],
+  [
+   1793996100,
+   24560.87
+  ],
+  [
+   1793997000,
+   24579.11
+  ],
+  [
+   1793997900,
+   24561.25
+  ],
+  [
+   1793998800,
+   24577.33
+  ]
+ ],
+ "days": {
+  "2026-11-06": {
+   "scan": {
+    "status": "done",
+    "at": "10:15",
+    "universe": 5933,
+    "counts": {
+     "requested": 5933,
+     "fetched": 5933,
+     "unusable": 3056,
+     "illiquid": 997,
+     "scanned": 1880,
+     "candidates": 1499,
+     "confirmed": 300,
+     "unconfirmed": 1199,
+     "hits": 213
+    },
+    "failed": 0,
+    "hits": [
+     "AAOI",
+     "AFRM",
+     "ALNY",
+     "AMD",
+     "AMGN",
+     "AU",
+     "AXTI",
+     "BA",
+     "BAC",
+     "BBY",
+     "BE",
+     "BMNR",
+     "BNY",
+     "BP",
+     "BURL",
+     "C",
+     "CBRS",
+     "CCL",
+     "CDE",
+     "CMI",
+     "CNH",
+     "COF",
+     "COHR",
+     "COIN",
+     "COP",
+     "CRCL",
+     "CRH",
+     "CRWV",
+     "CVNA",
+     "CVS",
+     "CVX",
+     "DAL",
+     "DDOG",
+     "DE",
+     "DHI",
+     "DVN",
+     "ECHO",
+     "EOG",
+     "EQIX",
+     "FANG",
+     "FIX",
+     "FN",
+     "FSLR",
+     "GE",
+     "GS",
+     "HAL",
+     "HON",
+     "HONA",
+     "HOOD",
+     "HSBC",
+     "IBM",
+     "ILMN",
+     "IONQ",
+     "IREN",
+     "JNJ",
+     "JPM",
+     "KLAC",
+     "LITE",
+     "LLY",
+     "LNG"
+    ],
+    "seconds": 319.9,
+    "evaluated": 4,
+    "taken": 4
+   },
+   "decisions": [
+    {
+     "symbol": "AAOI",
+     "price": 51.04,
+     "breakout_at": "9:50 AM",
+     "pct_over": 3.15,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 9
+     },
+     "plan": {
+      "entry": 49.57,
+      "stop": 47.31,
+      "target": 54.09,
+      "risk_per_share": 2.26,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.01,
+      "p_stop": 0.2206,
+      "p_neither": 0.7694,
+      "p_green": 0.4416,
+      "avg_R": -0.091,
+      "lean": -0.29,
+      "hist_n": 31,
+      "hist_avg_R": -0.21,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 4 % (target first 1.0 % vs stop first 22.1 %).",
+      "seed": 19
+     },
+     "status": "taken",
+     "qty": 55,
+     "fill": 49.5799,
+     "reason": "risk PASS: max loss $124.30 at the stop, max loss"
+    },
+    {
+     "symbol": "AFRM",
+     "price": 71.1,
+     "breakout_at": "9:50 AM",
+     "pct_over": 3.38,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 10
+     },
+     "plan": {
+      "entry": 69.5,
+      "stop": 67.39,
+      "target": 73.72,
+      "risk_per_share": 2.11,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0027,
+      "p_stop": 0.174,
+      "p_neither": 0.8233,
+      "p_green": 0.4499,
+      "avg_R": -0.078,
+      "lean": -0.3181,
+      "hist_n": 29,
+      "hist_avg_R": -0.011,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 2 % (target first 0.3 % vs stop first 17.4 %).",
+      "seed": 19
+     },
+     "status": "taken",
+     "qty": 59,
+     "fill": 69.5139,
+     "reason": "risk PASS: max loss $124.49 at the stop, max loss"
+    },
+    {
+     "symbol": "ALNY",
+     "price": 157.31,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.36,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 158.77,
+      "stop": 155.52,
+      "target": 165.27,
+      "risk_per_share": 3.25,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0357,
+      "p_stop": 0.2798,
+      "p_neither": 0.6845,
+      "p_green": 0.4564,
+      "avg_R": -0.032,
+      "lean": -0.2202,
+      "hist_n": 36,
+      "hist_avg_R": -0.106,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 11 % (target first 3.6 % vs stop first 28.0 %).",
+      "seed": 19
+     },
+     "status": "taken",
+     "qty": 38,
+     "fill": 158.8018,
+     "reason": "risk PASS: max loss $123.50 at the stop, max loss"
+    },
+    {
+     "symbol": "AMD",
+     "price": 456.69,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.67,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 449.52,
+      "stop": 443.78,
+      "target": 461.0,
+      "risk_per_share": 5.74,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1634,
+      "p_stop": 0.4964,
+      "p_neither": 0.3402,
+      "p_green": 0.4172,
+      "avg_R": -0.0,
+      "lean": -0.0857,
+      "hist_n": 35,
+      "hist_avg_R": -0.005,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 16.3 % vs stop first 49.6 %).",
+      "seed": 19
+     },
+     "status": "taken",
+     "qty": 13,
+     "fill": 449.6099,
+     "reason": "risk PASS: max loss $74.62 at the stop, position cap"
+    }
+   ],
+   "telegram": 0
+  }
+ },
+ "universe_refreshed": "2026-11-06",
+ "generated": "2026-11-06T21:00+00:00",
+ "calendar": [
+  {
+   "date": "2026-11-06",
+   "pl": -422.67,
+   "pct": -1.69,
+   "equity": 24577.33
+  }
+ ],
+ "balance_history": {
+  "rows": [
+   {
+    "time": "2026-11-06 15:26:00",
+    "balance_before": 25000.0,
+    "balance_after": 24921.9,
+    "realized_pnl": -78.1,
+    "action": "Close long position for symbol AMD at price 443.69 for 13 units. Position AVG Price was 449.610 (stop)"
+   },
+   {
+    "time": "2026-11-06 15:35:00",
+    "balance_before": 24921.9,
+    "balance_after": 24796.0,
+    "realized_pnl": -125.9,
+    "action": "Close long position for symbol AAOI at price 47.30 for 55 units. Position AVG Price was 49.580 (stop)"
+   },
+   {
+    "time": "2026-11-06 15:42:00",
+    "balance_before": 24796.0,
+    "balance_after": 24669.09,
+    "realized_pnl": -126.91,
+    "action": "Close long position for symbol AFRM at price 67.38 for 59 units. Position AVG Price was 69.514 (stop)"
+   },
+   {
+    "time": "2026-11-06 20:55:00",
+    "balance_before": 24669.09,
+    "balance_after": 24577.33,
+    "realized_pnl": -91.76,
+    "action": "Close long position for symbol ALNY at price 156.42 for 38 units. Position AVG Price was 158.802 (flat by 15:55)"
+   }
+  ],
+  "realized": -422.67,
+  "unrealized": 0,
+  "equity": 24577.33,
+  "available": 24577.33,
+  "margin": 0.0,
+  "start_balance": 25000.0
+ },
+ "history": {
+  "1D": [
+   [
+    1793978100,
+    24994.39
+   ],
+   [
+    1793979000,
+    24794.49
+   ],
+   [
+    1793979900,
+    24597.35
+   ],
+   [
+    1793980800,
+    24617.49
+   ],
+   [
+    1793981700,
+    24610.65
+   ],
+   [
+    1793982600,
+    24619.01
+   ],
+   [
+    1793983500,
+    24595.83
+   ],
+   [
+    1793984400,
+    24597.54
+   ],
+   [
+    1793985300,
+    24577.97
+   ],
+   [
+    1793986200,
+    24586.33
+   ],
+   [
+    1793987100,
+    24589.75
+   ],
+   [
+    1793988000,
+    24582.34
+   ],
+   [
+    1793988900,
+    24595.45
+   ],
+   [
+    1793989800,
+    24607.99
+   ],
+   [
+    1793990700,
+    24587.47
+   ],
+   [
+    1793991600,
+    24587.09
+   ],
+   [
+    1793992500,
+    24574.36
+   ],
+   [
+    1793993400,
+    24558.59
+   ],
+   [
+    1793994300,
+    24574.93
+   ],
+   [
+    1793995200,
+    24567.14
+   ],
+   [
+    1793996100,
+    24560.87
+   ],
+   [
+    1793997000,
+    24579.11
+   ],
+   [
+    1793997900,
+    24561.25
+   ],
+   [
+    1793998800,
+    24577.33
+   ]
+  ],
+  "ALL": [
+   [
+    1793998800,
+    24577.33
+   ]
+  ]
+ }
+}
