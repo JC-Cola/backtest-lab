@@ -5,7 +5,7 @@ Rating -> target position (fraction of the shadow account's equity, per ticker; 
     Buy          +20%  (long, full slot)
     Overweight   +10%  (long, half slot)
     Hold          keep the current position unchanged (flat stays flat)
-    Underweight    0%  (no position: TradingAgents writes it as "trim an existing holding", not "bet against")
+    Underweight  -10%  (short, half slot; Josh 2026-11-11: "underweight means open a short")
     Sell         -20%  (short, full slot)
 A ticker that drops off the watchlist gets a target of 0 (exit at the next open). Re-deciding to a different target
 closes the old position and opens the new one (flip / resize / exit), each side paying 0.02% slippage + 0.01% fees.
@@ -20,7 +20,7 @@ SLOT = 0.20
 SLIPPAGE = 0.0002
 FEES = 0.0001
 LABEL = "System C · TradingAgents · shadow / not traded"
-TARGETS = {"Buy": SLOT, "Overweight": SLOT / 2, "Hold": None, "Underweight": 0.0, "Sell": -SLOT}
+TARGETS = {"Buy": SLOT, "Overweight": SLOT / 2, "Hold": None, "Underweight": -SLOT / 2, "Sell": -SLOT}
 MINUS = "−"
 
 

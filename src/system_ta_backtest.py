@@ -137,7 +137,7 @@ def build(decisions, bars, tickers, cutoff, trials=200, seed=7):
     early = [d for d in decisions if d["date"] <= cutoff]
     return {"label": "System C backtest · TradingAgents · " + L.LABEL, "generated": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "tickers": tickers, "cutoff": cutoff, "cutoff_note": "unverified assumption of the model's knowledge cutoff; dates on or before it may be contaminated",
-            "rules": "entry next open; Buy +20%, Overweight +10%, Hold keep, Underweight 0% (no position), Sell -20% of equity per ticker; "
+            "rules": "entry next open; Buy +20%, Overweight +10%, Hold keep, Underweight -10%, Sell -20% of equity per ticker; "
                      "cost 0.02% slippage + 0.01% fees per side",
             "decisions": [{k: d[k] for k in ("date", "symbol", "rating", "rationale", "horizon")} for d in decisions],
             "clean": evaluate(clean, bars, tickers, trials, seed),
