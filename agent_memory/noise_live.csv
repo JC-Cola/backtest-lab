@@ -60,3 +60,5 @@ time_ny,symbol,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_
 2026-11-11 12:01:30,QQQ,check,693.61,688.9,693.3,668.86,long,0,18,bddd787f-a220-4e5e-82ba-a862dc0dd70e,bands from 14 sessions to 2026-11-10; prev close 674.81; open 687.24 (IEX)
 2026-11-11 13:01:27,SPY,check,761.35,758.32,761.67,745.06,flat,0,0,,bands from 14 sessions to 2026-11-10; prev close 749.96; open 756.72 (IEX)
 2026-11-11 13:01:27,QQQ,check,694.01,690.13,694.31,667.87,flat,18,0,391df7a7-1f75-4c98-9b8f-aa86e23f2043,bands from 14 sessions to 2026-11-10; prev close 674.81; open 687.24 (IEX)
+2026-11-11 14:01:28,SPY,check,762.07,758.86,762.04,744.69,long,0,16,aeeab5e5-7bc7-4784-9b91-981bd3bffcfe,bands from 14 sessions to 2026-11-10; prev close 749.96; open 756.72 (IEX)
+2026-11-11 14:01:28,QQQ,check,694.59,691.0,694.57,667.61,long,0,18,fe7a0010-dd5e-4eb5-b91a-3443f4f1dc19,bands from 14 sessions to 2026-11-10; prev close 674.81; open 687.24 (IEX)
