@@ -70,7 +70,7 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -q -m "Intraday run $(TZ=America/New_York date '+%Y-%m-%d %H:%M') New York"
           for i in 1 2 3; do
-            git pull --rebase --autostash -q && git push -q && exit 0
+            git pull --rebase -X theirs --autostash -q && git push -q && exit 0
             sleep 5
           done
           exit 1

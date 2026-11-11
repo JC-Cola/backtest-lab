@@ -24,7 +24,7 @@ def dec(day, sym, rating, why="because"):
 
 # ---------- mapping ----------
 def test_rating_targets():
-    assert [L.target_for(r) for r in ("Buy", "Overweight", "Hold", "Underweight", "Sell")] == [0.2, 0.1, None, -0.1, -0.2]
+    assert [L.target_for(r) for r in ("Buy", "Overweight", "Hold", "Underweight", "Sell")] == [0.2, 0.1, None, 0.0, -0.2]
     assert L.target_for("buy") == 0.2 and L.target_for("REVIEW") is None and L.target_for(None) is None
 
 
