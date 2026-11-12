@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-12. 19638 trials in total: 17496 scored, 2142 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-12. 19661 trials in total: 17516 scored, 2145 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -37,7 +37,7 @@ Updated 2026-11-12. 19638 trials in total: 17496 scored, 2142 rejected, 0 sent t
 ## Why ideas were rejected
 
 - too few trades: 2077
-- risk review: 54
+- risk review: 57
 - invalid spec: 11
 
 ## Held-out tests (one shot each; BH-corrected together with the 40 earlier hunt tests on the same years)
@@ -45,4 +45,4 @@ Updated 2026-11-12. 19638 trials in total: 17496 scored, 2142 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 352s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 8 ideas with the web proposer in 715s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0. Claude CLI cost this session: $2.15.
