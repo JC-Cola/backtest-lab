@@ -52,7 +52,8 @@ class AlpacaPaper:
                 raise NoKeys("ALPACA_DTS_API_KEY / ALPACA_DTS_SECRET_KEY not set")
             from alpaca.trading.client import TradingClient
             client = TradingClient(key, secret, paper=True)          # paper only: never paper=False
-        base = str(getattr(client, "_base_url", ""))
+        raw = getattr(client, "_base_url", "")
+        base = str(getattr(raw, "value", raw))  # alpaca-py stores a BaseURL enum; its .value is the URL
         if PAPER_HOST not in base:
             raise RuntimeError("refusing to run: the trading client is not the Alpaca PAPER endpoint (%r)" % base)
         self.client, self.wait, self.sleep = client, wait, sleep

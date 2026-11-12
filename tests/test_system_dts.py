@@ -340,3 +340,12 @@ def test_broker_records_a_bracket_leg_fill(env, monkeypatch):
     S.run_once(env.state, dt.datetime(2026, 11, 6, 16, 30), w, None, env.path, br)
     (t,) = env.state["trades"]
     assert t["reason"] == "stop" and t["exit_price"] == 99.95 and not env.state["positions"]
+
+
+def test_broker_accepts_real_alpaca_paper_client(monkeypatch):
+    """alpaca-py keeps _base_url as a BaseURL enum, not a string: the paper check must read its value."""
+    from alpaca.trading.client import TradingClient
+    monkeypatch.setenv("ALPACA_DTS_API_KEY", "PKTESTKEY000000000000")
+    monkeypatch.setenv("ALPACA_DTS_SECRET_KEY", "testsecret")
+    b = dts_broker.AlpacaPaper()
+    assert isinstance(b.client, TradingClient)
