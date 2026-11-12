@@ -154,8 +154,14 @@ def scan_and_enter(state, day, T_et, T_utc, data, notify, path, broker):
                                        CFG["min_volume"], confirm, CFG["max_confirm"])
     dv = {}
     for h in hits:
-        bars = s.session_bars(stage1[h["symbol"]], day, cutoff)
-        dv[h["symbol"]] = sum(b["v"] * b["c"] for b in bars)
+        # Yahoo's spark (stage 1) has closes only, no volume -> rank by the confirmed v8 chart (cached, has volume)
+        series = stage1[h["symbol"]]
+        try:
+            series = confirm(h["symbol"])
+        except Exception:  # noqa: BLE001 - fall back to stage 1 (volume 0) rather than drop the hit
+            pass
+        bars = s.session_bars(series, day, cutoff)
+        dv[h["symbol"]] = sum((b.get("v") or 0) * (b.get("c") or 0) for b in bars)
     ranked = sorted(hits, key=lambda h: -dv[h["symbol"]])      # most traded first, like the scanner's own daily list
     rec["scan"] = {"status": "done", "at": cutoff.strftime("%H:%M"), "universe": len(symbols), "counts": counts,
                    "failed": len(failed) + len(failed2), "hits": [h["symbol"] for h in ranked][:60],
