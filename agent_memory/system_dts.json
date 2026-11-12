@@ -1,0 +1,1484 @@
+{
+ "system": "day-trader-skill (System B)",
+ "start_equity": 25000.0,
+ "cash": 25000.0,
+ "equity": 25000.0,
+ "last_equity": 25000.0,
+ "positions": [],
+ "trades": [],
+ "orders": [],
+ "curve": [],
+ "days": {
+  "2026-11-12": {
+   "scan": {
+    "status": "done",
+    "at": "10:15",
+    "universe": 5928,
+    "counts": {
+     "requested": 5928,
+     "fetched": 5928,
+     "unusable": 3357,
+     "illiquid": 845,
+     "scanned": 1726,
+     "candidates": 870,
+     "confirmed": 300,
+     "unconfirmed": 570,
+     "hits": 111
+    },
+    "failed": 0,
+    "hits": [
+     "APLD",
+     "BBIO",
+     "BKNG",
+     "BROS",
+     "BURL",
+     "CCI",
+     "CCJ",
+     "CIFR",
+     "CLSK",
+     "CSCO",
+     "DELL",
+     "DIS",
+     "EMR",
+     "ENS",
+     "ETSY",
+     "EXPE",
+     "FTAI",
+     "HLT",
+     "HONA",
+     "HUT",
+     "IBP",
+     "ISRG",
+     "LII",
+     "LUV",
+     "MDB",
+     "MOD",
+     "NRG",
+     "NTAP",
+     "ODFL",
+     "P",
+     "PSX",
+     "QCOM",
+     "RBLX",
+     "RCL",
+     "RIOT",
+     "RKT",
+     "ROK",
+     "SANM",
+     "SE",
+     "SHOP",
+     "SNAP",
+     "STX",
+     "SYF",
+     "TJX",
+     "TMDX",
+     "TOST",
+     "TXG",
+     "VG",
+     "VRT",
+     "VST",
+     "WMB",
+     "WULF",
+     "XYL",
+     "ABNB",
+     "AEIS",
+     "AMZN",
+     "AXTI",
+     "CLS",
+     "DOCN",
+     "GEV"
+    ],
+    "seconds": 226.4,
+    "evaluated": 20,
+    "taken": 0
+   },
+   "decisions": [
+    {
+     "symbol": "APLD",
+     "price": 17.11,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.06,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 9
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $16.80 (opening-range midpoint) is at or above the entry $16.38: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "BBIO",
+     "price": 80.26,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.04,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 1
+     },
+     "plan": {
+      "entry": 80.2,
+      "stop": 79.56,
+      "target": 81.48,
+      "risk_per_share": 0.64,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.2506,
+      "p_stop": 0.6509,
+      "p_neither": 0.0985,
+      "p_green": 0.3232,
+      "avg_R": -0.105,
+      "lean": -0.0554,
+      "hist_n": 30,
+      "hist_avg_R": -0.011,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 28 % (target first 25.1 % vs stop first 65.1 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 28 % (target first 25.1 % vs stop first 65.1 %)."
+    },
+    {
+     "symbol": "BKNG",
+     "price": 162.97,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.31,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 3
+     },
+     "plan": {
+      "entry": 164.93,
+      "stop": 160.73,
+      "target": 173.33,
+      "risk_per_share": 4.2,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0008,
+      "p_stop": 0.0896,
+      "p_neither": 0.9096,
+      "p_green": 0.4287,
+      "avg_R": -0.094,
+      "lean": -0.3245,
+      "hist_n": 23,
+      "hist_avg_R": -0.223,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 1 % (target first 0.1 % vs stop first 9.0 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 1 % (target first 0.1 % vs stop first 9.0 %)."
+    },
+    {
+     "symbol": "BROS",
+     "price": 35.41,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.88,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $34.86 (opening-range midpoint) is at or above the entry $34.84: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "BURL",
+     "price": 253.64,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.37,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 253.94,
+      "stop": 249.86,
+      "target": 262.1,
+      "risk_per_share": 4.08,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.058,
+      "p_stop": 0.3177,
+      "p_neither": 0.6243,
+      "p_green": 0.4886,
+      "avg_R": 0.033,
+      "lean": -0.179,
+      "hist_n": 26,
+      "hist_avg_R": 0.235,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 15 % (target first 5.8 % vs stop first 31.8 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 15 % (target first 5.8 % vs stop first 31.8 %)."
+    },
+    {
+     "symbol": "CCI",
+     "price": 89.78,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.46,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 89.36,
+      "stop": 88.97,
+      "target": 90.14,
+      "risk_per_share": 0.39,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3854,
+      "p_stop": 0.6117,
+      "p_neither": 0.0029,
+      "p_green": 0.3881,
+      "avg_R": 0.161,
+      "lean": 0.0532,
+      "hist_n": 32,
+      "hist_avg_R": -0.19,
+      "verdict": "Leans toward the target: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 39 % (target first 38.5 % vs stop first 61.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "history average R -0.190 over 32 past triggers is negative"
+    },
+    {
+     "symbol": "CCJ",
+     "price": 72.18,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.01,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 6
+     },
+     "plan": {
+      "entry": 71.8,
+      "stop": 71.69,
+      "target": 72.02,
+      "risk_per_share": 0.11,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3244,
+      "p_stop": 0.6756,
+      "p_neither": 0.0,
+      "p_green": 0.3244,
+      "avg_R": -0.027,
+      "lean": -0.0089,
+      "hist_n": 34,
+      "hist_avg_R": -0.261,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 32 % (target first 32.4 % vs stop first 67.6 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 32 % (target first 32.4 % vs stop first 67.6 %)."
+    },
+    {
+     "symbol": "CIFR",
+     "price": 7.01,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.68,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 3
+     },
+     "plan": {
+      "entry": 6.86,
+      "stop": 6.74,
+      "target": 7.1,
+      "risk_per_share": 0.12,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3215,
+      "p_stop": 0.6336,
+      "p_neither": 0.0449,
+      "p_green": 0.3552,
+      "avg_R": 0.032,
+      "lean": 0.0033,
+      "hist_n": 30,
+      "hist_avg_R": -0.076,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 34 % (target first 32.1 % vs stop first 63.4 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 34 % (target first 32.1 % vs stop first 63.4 %)."
+    },
+    {
+     "symbol": "CLSK",
+     "price": 6.83,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.15,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 6.73,
+      "stop": 6.64,
+      "target": 6.91,
+      "risk_per_share": 0.09,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3522,
+      "p_stop": 0.6165,
+      "p_neither": 0.0313,
+      "p_green": 0.3753,
+      "avg_R": 0.103,
+      "lean": 0.0302,
+      "hist_n": 32,
+      "hist_avg_R": 0.213,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 36 % (target first 35.2 % vs stop first 61.7 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 36 % (target first 35.2 % vs stop first 61.7 %)."
+    },
+    {
+     "symbol": "CSCO",
+     "price": 100.72,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.12,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 15
+     },
+     "plan": {
+      "entry": 100.59,
+      "stop": 100.0,
+      "target": 101.77,
+      "risk_per_share": 0.59,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.2204,
+      "p_stop": 0.6088,
+      "p_neither": 0.1708,
+      "p_green": 0.3483,
+      "avg_R": -0.084,
+      "lean": -0.0675,
+      "hist_n": 34,
+      "hist_avg_R": -0.227,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 27 % (target first 22.0 % vs stop first 60.9 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 27 % (target first 22.0 % vs stop first 60.9 %)."
+    },
+    {
+     "symbol": "DELL",
+     "price": 359.97,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.02,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 10
+     },
+     "plan": {
+      "entry": 354.42,
+      "stop": 347.54,
+      "target": 368.18,
+      "risk_per_share": 6.88,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.083,
+      "p_stop": 0.4731,
+      "p_neither": 0.4439,
+      "p_green": 0.3725,
+      "avg_R": -0.163,
+      "lean": -0.1841,
+      "hist_n": 27,
+      "hist_avg_R": -0.051,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 15 % (target first 8.3 % vs stop first 47.3 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 15 % (target first 8.3 % vs stop first 47.3 %)."
+    },
+    {
+     "symbol": "DIS",
+     "price": 120.32,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.16,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 4
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $119.78 (opening-range midpoint) is at or above the entry $119.46: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "EMR",
+     "price": 167.83,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.02,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 168.22,
+      "stop": 166.66,
+      "target": 171.34,
+      "risk_per_share": 1.56,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1516,
+      "p_stop": 0.3968,
+      "p_neither": 0.4516,
+      "p_green": 0.4778,
+      "avg_R": 0.106,
+      "lean": -0.0569,
+      "hist_n": 33,
+      "hist_avg_R": 0.154,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 28 % (target first 15.2 % vs stop first 39.7 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 28 % (target first 15.2 % vs stop first 39.7 %)."
+    },
+    {
+     "symbol": "ENS",
+     "price": 156.15,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.49,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 7
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $150.68 (opening-range midpoint) is at or above the entry $150.42: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "ETSY",
+     "price": 88.85,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.02,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 89.57,
+      "stop": 88.18,
+      "target": 92.35,
+      "risk_per_share": 1.39,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1057,
+      "p_stop": 0.4633,
+      "p_neither": 0.431,
+      "p_green": 0.4002,
+      "avg_R": -0.086,
+      "lean": -0.1476,
+      "hist_n": 32,
+      "hist_avg_R": -0.038,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 19 % (target first 10.6 % vs stop first 46.3 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 19 % (target first 10.6 % vs stop first 46.3 %)."
+    },
+    {
+     "symbol": "EXPE",
+     "price": 264.85,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.7,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 267.1,
+      "stop": 261.76,
+      "target": 277.78,
+      "risk_per_share": 5.34,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0442,
+      "p_stop": 0.3412,
+      "p_neither": 0.6146,
+      "p_green": 0.4521,
+      "avg_R": -0.051,
+      "lean": -0.2186,
+      "hist_n": 26,
+      "hist_avg_R": 0.187,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 11 % (target first 4.4 % vs stop first 34.1 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 11 % (target first 4.4 % vs stop first 34.1 %)."
+    },
+    {
+     "symbol": "FTAI",
+     "price": 189.79,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.4,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 188.47,
+      "stop": 187.84,
+      "target": 189.73,
+      "risk_per_share": 0.63,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3023,
+      "p_stop": 0.6977,
+      "p_neither": 0.0,
+      "p_green": 0.3023,
+      "avg_R": -0.093,
+      "lean": -0.031,
+      "hist_n": 28,
+      "hist_avg_R": -0.129,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 30 % (target first 30.2 % vs stop first 69.8 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 30 % (target first 30.2 % vs stop first 69.8 %)."
+    },
+    {
+     "symbol": "HLT",
+     "price": 378.67,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.06,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $377.38 (opening-range midpoint) is at or above the entry $377.26: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "HONA",
+     "price": 170.48,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.09,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 2
+     },
+     "plan": {
+      "entry": 169.84,
+      "stop": 169.04,
+      "target": 171.44,
+      "risk_per_share": 0.8,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3678,
+      "p_stop": 0.6319,
+      "p_neither": 0.0003,
+      "p_green": 0.3679,
+      "avg_R": 0.104,
+      "lean": 0.0346,
+      "hist_n": 37,
+      "hist_avg_R": 0.094,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 37 % (target first 36.8 % vs stop first 63.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 37 % (target first 36.8 % vs stop first 63.2 %)."
+    },
+    {
+     "symbol": "HUT",
+     "price": 61.21,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.89,
+     "dollar_volume": 0,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 58.88,
+      "stop": 58.61,
+      "target": 59.42,
+      "risk_per_share": 0.27,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3502,
+      "p_stop": 0.6498,
+      "p_neither": 0.0,
+      "p_green": 0.3502,
+      "avg_R": 0.051,
+      "lean": 0.0169,
+      "hist_n": 31,
+      "hist_avg_R": 0.025,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 35 % (target first 35.0 % vs stop first 65.0 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 35 % (target first 35.0 % vs stop first 65.0 %)."
+    }
+   ],
+   "telegram": 0
+  }
+ },
+ "universe_refreshed": "2026-11-12",
+ "calendar": [
+  {
+   "date": "2026-11-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  }
+ ],
+ "history": {
+  "1D": [
+   [
+    1794474000,
+    25000.0
+   ],
+   [
+    1794474300,
+    25000.0
+   ],
+   [
+    1794474600,
+    25000.0
+   ],
+   [
+    1794474900,
+    25000.0
+   ],
+   [
+    1794475200,
+    25000.0
+   ],
+   [
+    1794475500,
+    25000.0
+   ],
+   [
+    1794475800,
+    25000.0
+   ],
+   [
+    1794476100,
+    25000.0
+   ],
+   [
+    1794476400,
+    25000.0
+   ],
+   [
+    1794476700,
+    25000.0
+   ],
+   [
+    1794477000,
+    25000.0
+   ],
+   [
+    1794477300,
+    25000.0
+   ],
+   [
+    1794477600,
+    25000.0
+   ],
+   [
+    1794477900,
+    25000.0
+   ],
+   [
+    1794478200,
+    25000.0
+   ],
+   [
+    1794478500,
+    25000.0
+   ],
+   [
+    1794478800,
+    25000.0
+   ],
+   [
+    1794479100,
+    25000.0
+   ],
+   [
+    1794479400,
+    25000.0
+   ],
+   [
+    1794479700,
+    25000.0
+   ],
+   [
+    1794480000,
+    25000.0
+   ],
+   [
+    1794480300,
+    25000.0
+   ],
+   [
+    1794480600,
+    25000.0
+   ],
+   [
+    1794480900,
+    25000.0
+   ],
+   [
+    1794481200,
+    25000.0
+   ],
+   [
+    1794481500,
+    25000.0
+   ],
+   [
+    1794481800,
+    25000.0
+   ],
+   [
+    1794482100,
+    25000.0
+   ],
+   [
+    1794482400,
+    25000.0
+   ],
+   [
+    1794482700,
+    25000.0
+   ],
+   [
+    1794483000,
+    25000.0
+   ],
+   [
+    1794483300,
+    25000.0
+   ],
+   [
+    1794483600,
+    25000.0
+   ],
+   [
+    1794483900,
+    25000.0
+   ],
+   [
+    1794484200,
+    25000.0
+   ],
+   [
+    1794484500,
+    25000.0
+   ],
+   [
+    1794484800,
+    25000.0
+   ],
+   [
+    1794485100,
+    25000.0
+   ],
+   [
+    1794485400,
+    25000.0
+   ],
+   [
+    1794485700,
+    25000.0
+   ],
+   [
+    1794486000,
+    25000.0
+   ],
+   [
+    1794486300,
+    25000.0
+   ],
+   [
+    1794486600,
+    25000.0
+   ],
+   [
+    1794486900,
+    25000.0
+   ],
+   [
+    1794487200,
+    25000.0
+   ],
+   [
+    1794487500,
+    25000.0
+   ],
+   [
+    1794487800,
+    25000.0
+   ],
+   [
+    1794488100,
+    25000.0
+   ],
+   [
+    1794488400,
+    25000.0
+   ],
+   [
+    1794488700,
+    25000.0
+   ],
+   [
+    1794489000,
+    25000.0
+   ],
+   [
+    1794489300,
+    25000.0
+   ],
+   [
+    1794489600,
+    25000.0
+   ],
+   [
+    1794489900,
+    25000.0
+   ],
+   [
+    1794490200,
+    25000.0
+   ],
+   [
+    1794490500,
+    25000.0
+   ],
+   [
+    1794490800,
+    25000.0
+   ],
+   [
+    1794491100,
+    25000.0
+   ],
+   [
+    1794491400,
+    25000.0
+   ],
+   [
+    1794491700,
+    25000.0
+   ],
+   [
+    1794492000,
+    25000.0
+   ],
+   [
+    1794492300,
+    25000.0
+   ],
+   [
+    1794492600,
+    25000.0
+   ],
+   [
+    1794492900,
+    25000.0
+   ],
+   [
+    1794493200,
+    25000.0
+   ],
+   [
+    1794493500,
+    25000.0
+   ],
+   [
+    1794493800,
+    25000.0
+   ],
+   [
+    1794494100,
+    25000.0
+   ],
+   [
+    1794494400,
+    25000.0
+   ],
+   [
+    1794494700,
+    25000.0
+   ],
+   [
+    1794495000,
+    25000.0
+   ],
+   [
+    1794495300,
+    25000.0
+   ],
+   [
+    1794495600,
+    25000.0
+   ],
+   [
+    1794495900,
+    25000.0
+   ],
+   [
+    1794496200,
+    25000.0
+   ],
+   [
+    1794496500,
+    25000.0
+   ],
+   [
+    1794496800,
+    25000.0
+   ]
+  ],
+  "1W": [
+   [
+    1794237300,
+    25000.0
+   ],
+   [
+    1794238200,
+    25000.0
+   ],
+   [
+    1794239100,
+    25000.0
+   ],
+   [
+    1794240000,
+    25000.0
+   ],
+   [
+    1794240900,
+    25000.0
+   ],
+   [
+    1794241800,
+    25000.0
+   ],
+   [
+    1794242700,
+    25000.0
+   ],
+   [
+    1794243600,
+    25000.0
+   ],
+   [
+    1794244500,
+    25000.0
+   ],
+   [
+    1794245400,
+    25000.0
+   ],
+   [
+    1794246300,
+    25000.0
+   ],
+   [
+    1794247200,
+    25000.0
+   ],
+   [
+    1794248100,
+    25000.0
+   ],
+   [
+    1794249000,
+    25000.0
+   ],
+   [
+    1794249900,
+    25000.0
+   ],
+   [
+    1794250800,
+    25000.0
+   ],
+   [
+    1794251700,
+    25000.0
+   ],
+   [
+    1794252600,
+    25000.0
+   ],
+   [
+    1794253500,
+    25000.0
+   ],
+   [
+    1794254400,
+    25000.0
+   ],
+   [
+    1794255300,
+    25000.0
+   ],
+   [
+    1794256200,
+    25000.0
+   ],
+   [
+    1794257100,
+    25000.0
+   ],
+   [
+    1794258000,
+    25000.0
+   ],
+   [
+    1794321000,
+    25000.0
+   ],
+   [
+    1794321900,
+    25000.0
+   ],
+   [
+    1794322800,
+    25000.0
+   ],
+   [
+    1794323700,
+    25000.0
+   ],
+   [
+    1794324600,
+    25000.0
+   ],
+   [
+    1794325500,
+    25000.0
+   ],
+   [
+    1794326400,
+    25000.0
+   ],
+   [
+    1794327300,
+    25000.0
+   ],
+   [
+    1794328200,
+    25000.0
+   ],
+   [
+    1794329100,
+    25000.0
+   ],
+   [
+    1794330000,
+    25000.0
+   ],
+   [
+    1794330900,
+    25000.0
+   ],
+   [
+    1794331800,
+    25000.0
+   ],
+   [
+    1794332700,
+    25000.0
+   ],
+   [
+    1794333600,
+    25000.0
+   ],
+   [
+    1794334500,
+    25000.0
+   ],
+   [
+    1794335400,
+    25000.0
+   ],
+   [
+    1794336300,
+    25000.0
+   ],
+   [
+    1794337200,
+    25000.0
+   ],
+   [
+    1794338100,
+    25000.0
+   ],
+   [
+    1794339000,
+    25000.0
+   ],
+   [
+    1794339900,
+    25000.0
+   ],
+   [
+    1794340800,
+    25000.0
+   ],
+   [
+    1794341700,
+    25000.0
+   ],
+   [
+    1794342600,
+    25000.0
+   ],
+   [
+    1794343500,
+    25000.0
+   ],
+   [
+    1794344400,
+    25000.0
+   ],
+   [
+    1794407400,
+    25000.0
+   ],
+   [
+    1794408300,
+    25000.0
+   ],
+   [
+    1794409200,
+    25000.0
+   ],
+   [
+    1794410100,
+    25000.0
+   ],
+   [
+    1794411000,
+    25000.0
+   ],
+   [
+    1794411900,
+    25000.0
+   ],
+   [
+    1794412800,
+    25000.0
+   ],
+   [
+    1794413700,
+    25000.0
+   ],
+   [
+    1794414600,
+    25000.0
+   ],
+   [
+    1794415500,
+    25000.0
+   ],
+   [
+    1794416400,
+    25000.0
+   ],
+   [
+    1794417300,
+    25000.0
+   ],
+   [
+    1794418200,
+    25000.0
+   ],
+   [
+    1794419100,
+    25000.0
+   ],
+   [
+    1794420000,
+    25000.0
+   ],
+   [
+    1794420900,
+    25000.0
+   ],
+   [
+    1794421800,
+    25000.0
+   ],
+   [
+    1794422700,
+    25000.0
+   ],
+   [
+    1794423600,
+    25000.0
+   ],
+   [
+    1794424500,
+    25000.0
+   ],
+   [
+    1794425400,
+    25000.0
+   ],
+   [
+    1794426300,
+    25000.0
+   ],
+   [
+    1794427200,
+    25000.0
+   ],
+   [
+    1794428100,
+    25000.0
+   ],
+   [
+    1794429000,
+    25000.0
+   ],
+   [
+    1794429900,
+    25000.0
+   ],
+   [
+    1794430800,
+    25000.0
+   ],
+   [
+    1794493800,
+    25000.0
+   ],
+   [
+    1794494700,
+    25000.0
+   ],
+   [
+    1794495600,
+    25000.0
+   ],
+   [
+    1794496500,
+    25000.0
+   ]
+  ],
+  "1M": [
+   [
+    1794238200,
+    25000.0
+   ],
+   [
+    1794241800,
+    25000.0
+   ],
+   [
+    1794245400,
+    25000.0
+   ],
+   [
+    1794249000,
+    25000.0
+   ],
+   [
+    1794252600,
+    25000.0
+   ],
+   [
+    1794256200,
+    25000.0
+   ],
+   [
+    1794321000,
+    25000.0
+   ],
+   [
+    1794324600,
+    25000.0
+   ],
+   [
+    1794328200,
+    25000.0
+   ],
+   [
+    1794331800,
+    25000.0
+   ],
+   [
+    1794335400,
+    25000.0
+   ],
+   [
+    1794339000,
+    25000.0
+   ],
+   [
+    1794342600,
+    25000.0
+   ],
+   [
+    1794407400,
+    25000.0
+   ],
+   [
+    1794411000,
+    25000.0
+   ],
+   [
+    1794414600,
+    25000.0
+   ],
+   [
+    1794418200,
+    25000.0
+   ],
+   [
+    1794421800,
+    25000.0
+   ],
+   [
+    1794425400,
+    25000.0
+   ],
+   [
+    1794429000,
+    25000.0
+   ],
+   [
+    1794493800,
+    25000.0
+   ]
+  ],
+  "ALL": [
+   [
+    1794013200,
+    25000.0
+   ],
+   [
+    1794272400,
+    25000.0
+   ],
+   [
+    1794358800,
+    25000.0
+   ],
+   [
+    1794445200,
+    25000.0
+   ],
+   [
+    1794496896,
+    25000.0
+   ]
+  ]
+ },
+ "balance_history": {
+  "rows": [],
+  "realized": 0.0,
+  "unrealized": 0,
+  "equity": 25000.0,
+  "available": 25000.0,
+  "margin": 0.0,
+  "start_balance": 25000.0
+ },
+ "generated": "2026-11-12T15:17+00:00",
+ "source": "alpaca-paper"
+}

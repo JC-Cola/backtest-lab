@@ -1330,6 +1330,7 @@ CRL|Charles River Laboratories International, Inc. Common Stock
 CRM|Salesforce, Inc. Common Stock
 CRMD|CorMedix Inc. - Common Stock
 CRML|Critical Metals Corp. - Ordinary Shares
+CRMN|Skyline Builders Group Holding Limited - Class A Ordinary Shares
 CRMT|America's Car-Mart, Inc. - Common Stock
 CRNC|Cerence Inc. - Common Stock
 CRNT|Ceragon Networks Ltd. - Ordinary Shares
@@ -2917,7 +2918,6 @@ KALU|Kaiser Aluminum Corporation - Common Stock
 KAPA|Kairos Pharma, Ltd. Common Stock
 KARD|Kardigan, Inc. - Common Stock
 KARO|Karooooo Ltd. - Ordinary shares
-KAZR|Skyline Builders Group Holding Limited - Class A Ordinary Shares
 KB|KB Financial Group Inc
 KBDC|Kayne Anderson BDC, Inc. Common Stock
 KBH|KB Home Common Stock
@@ -2977,7 +2977,6 @@ KN|Knowles Corporation Common Stock
 KNDI|Kandi Technologies Group, Inc. - Ordinary Shares
 KNF|Knife Riv Holding Co. Common Stock
 KNOP|KNOT Offshore Partners LP Common Units representing Limited Partner Interests
-KNRX|KNOREX LTD. Class A Ordinary Shares
 KNSA|Kiniksa Pharmaceuticals International, plc - Class A Ordinary Shares
 KNSL|Kinsale Capital Group, Inc. Common Stock
 KNTK|Kinetik Holdings Inc. Class A Common Stock
@@ -3863,7 +3862,6 @@ NXT|Nextpower Inc. - Common Stock
 NXTC|NextCure, Inc. - Common Stock
 NXTS|Nexentis Technologies Inc. - Common Stock
 NXTT|Next Technology Holding Inc. - Ordinary Shares
-NXXT|NextNRG, Inc. - Common Stock
 NYAX|Nayax Ltd. - Ordinary Shares
 NYC|American Strategic Investment Co. Class A Common Stock
 NYT|New York Times Company (The) Common Stock
