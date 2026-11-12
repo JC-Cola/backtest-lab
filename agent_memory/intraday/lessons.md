@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-12. 19173 trials in total: 17043 scored, 2130 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-12. 19201 trials in total: 17071 scored, 2130 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -45,4 +45,4 @@ Updated 2026-11-12. 19173 trials in total: 17043 scored, 2130 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 276s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 268s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
