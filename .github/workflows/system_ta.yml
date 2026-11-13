@@ -61,7 +61,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          for f in agent_memory/system_ta.json agent_memory/ta_memory.md; do
+          for f in agent_memory/system_ta.json agent_memory/ta_memory.md agent_memory/system_ta_plans.json; do
             [ -e "$f" ] && git add -- "$f"
           done
           git diff --cached --quiet && exit 0

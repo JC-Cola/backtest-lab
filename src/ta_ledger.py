@@ -160,17 +160,29 @@ def stance(rating):
 
 def nightly_message(day, results, equity=None, total_pl_pct=None):
     """results: [{symbol, rating|None, rationale, horizon, note}]. One header line + one rationale line per ticker."""
-    heads = [f"{r['symbol']} {str(r['rating']).upper()}" if r.get("rating") else f"{r['symbol']} no decision" for r in results]
+    heads = [f"{r['symbol']} {str(r['rating']).upper()}" if r.get("rating") else f"{r['symbol']} no decision" for r in results if not r.get("plan_event")]
     head = f"🅲 TradingAgents {day} · " + " · ".join(heads)
     if equity is not None:
         head += f" · shadow ${equity:,.0f}" + (f" ({total_pl_pct:+.1f}%)".replace("-", MINUS) if total_pl_pct is not None else "")
     lines = [html.escape(head)]
     for r in results:
+        if r.get("plan_event"):
+            continue
         if r.get("rating"):
             hz = f" · horizon {r['horizon']}" if r.get("horizon") else ""
             lines.append(html.escape(f"{r['symbol']} {r['rating']} → {stance(r['rating'])}{hz}: {one_line(r.get('rationale'))}"))
+            if r.get("plan_line"):
+                lines.append("   " + html.escape(r["plan_line"]))
         else:
             lines.append(html.escape(f"{r['symbol']}: no decision ({r.get('note') or 'failed'})"))
+    skipped = [f"{r['symbol']}: {w}" for r in results for w in r.get("not_executed") or []]
+    if skipped:
+        lines.append("Not executed:")
+        lines += [html.escape("  " + x) for x in skipped]
+    orders = [r["note"] for r in results if r.get("plan_event")]
+    if orders:
+        lines.append("Stop/target orders:")
+        lines += [html.escape("  " + x) for x in orders]
     lines.append("shadow / not traded")
     return "\n".join(lines)
 

@@ -1,0 +1,51 @@
+name: system_ta_monitor
+# System C plan monitor (PAPER account, no model calls): scale-in triggers, plan exits, expiry, and "every open position has its
+# stop live". Runs in ~10-30 s. Timer: Supabase pg_cron dispatches this every 5 minutes, 14:30-21:00 UTC on weekdays
+# (US market hours in winter/EST; shift one hour earlier in summer/EDT). The script exits at once when the market is closed.
+# State: agent_memory/system_ta_plans.json (committed only when it changed). Telegram only when an order is placed/cancelled.
+on:
+  workflow_dispatch:
+
+# its own group: never queued behind (or cancelling) the nightly run; two monitor runs never overlap, a late one waits
+concurrency:
+  group: backtest-lab-system-ta-monitor
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  ALPACA_DTS_API_KEY: ${{ secrets.ALPACA_DTS_API_KEY }}
+  ALPACA_DTS_SECRET_KEY: ${{ secrets.ALPACA_DTS_SECRET_KEY }}
+  ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+  ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install alpaca-py
+      - name: Monitor
+        run: cd src && python ta_monitor.py
+      - name: Commit the plan state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          [ -e agent_memory/system_ta_plans.json ] && git add -- agent_memory/system_ta_plans.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "System C monitor $(date -u '+%Y-%m-%d %H:%M') UTC"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1

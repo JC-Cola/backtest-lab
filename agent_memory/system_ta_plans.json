@@ -1,0 +1,235 @@
+{
+ "plans": {
+  "GPN": {
+   "date": "2026-11-12",
+   "decision_id": "2026-11-12|GPN",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": {
+    "at": "2026-11-13T15:06:32+00:00",
+    "ids": [
+     "5876731b-0c73-46fa-b033-bf0c68f687e8"
+    ],
+    "qty": 28,
+    "stop": 77.63,
+    "tp": null
+   },
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 0.5,
+    "not_executed": [
+     "scale-in near $87.09: initial entry already uses the 0.5x allowed"
+    ],
+    "notes": [
+     "high volatility",
+     "mispriced forward valuation"
+    ],
+    "rating": "Overweight",
+    "ref_price": 90.41,
+    "scale_in": [],
+    "side": "long",
+    "stop": 77.63,
+    "stop_type": "sma",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "NBIS": {
+   "date": "2026-11-12",
+   "decision_id": "2026-11-12|NBIS",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": {
+    "at": "2026-11-13T15:06:32+00:00",
+    "ids": [
+     "96c99bf8-3b4f-4615-984d-718ccd2313f5"
+    ],
+    "qty": 19,
+    "stop": 110.0,
+    "tp": null
+   },
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 1.0,
+    "not_executed": [],
+    "notes": [
+     "Monitor quarterly CapEx efficiency as the primary indicator for long-term thesis viability."
+    ],
+    "rating": "Overweight",
+    "ref_price": 113.6676,
+    "scale_in": [
+     {
+      "condition": "above",
+      "price": 118.94,
+      "size_x": 0.5,
+      "valid_days": 10
+     }
+    ],
+    "side": "long",
+    "stop": 110.0,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [
+    {
+     "condition": "above",
+     "expires": "2026-11-26",
+     "last_bar": null,
+     "price": 118.94,
+     "size_x": 0.5,
+     "state": "pending",
+     "streak": 0,
+     "valid_days": 10
+    }
+   ],
+   "status": "active"
+  },
+  "NVDA": {
+   "date": "2026-11-12",
+   "decision_id": "2026-11-12|NVDA",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": {
+    "at": "2026-11-13T15:06:32+00:00",
+    "ids": [
+     "a64bfe69-790f-4cad-b297-cdd4f323e29f"
+    ],
+    "qty": 15,
+    "stop": 146.49,
+    "tp": null
+   },
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "scale-in above $175 size 1x clipped to the 0.5x left in the slot",
+     "scale-in near $165 size 1x clipped to the 0.5x left in the slot"
+    ],
+    "notes": [
+     "oversold RSI",
+     "current leadership uncertainty"
+    ],
+    "rating": "Overweight",
+    "ref_price": 162.3119,
+    "scale_in": [
+     {
+      "condition": "above",
+      "price": 175.0,
+      "size_x": 0.5,
+      "valid_days": 10
+     },
+     {
+      "condition": "near",
+      "price": 165.0,
+      "size_x": 0.5,
+      "valid_days": 10
+     }
+    ],
+    "side": "long",
+    "stop": 146.49,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [
+    {
+     "condition": "above",
+     "expires": "2026-11-26",
+     "last_bar": null,
+     "price": 175.0,
+     "size_x": 0.5,
+     "state": "pending",
+     "streak": 0,
+     "valid_days": 10
+    },
+    {
+     "condition": "near",
+     "expires": "2026-11-26",
+     "last_bar": null,
+     "price": 165.0,
+     "size_x": 0.5,
+     "state": "pending",
+     "streak": 0,
+     "valid_days": 10
+    }
+   ],
+   "status": "active"
+  },
+  "QQQ": {
+   "date": "2026-11-12",
+   "decision_id": "2026-11-12|QQQ",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "$680.93 is a 'reduce risk if it fails' hedge, not a stop: watched as an exit trigger instead",
+     "exit below $680.93 is already triggered at $679.04: skipped"
+    ],
+    "notes": [
+     "awaiting a clearer technical breakout",
+     "QQQ confirms a sustained move above the 50-day SMA to signal renewed bullish momentum"
+    ],
+    "rating": "Hold",
+    "ref_price": 679.04,
+    "scale_in": [],
+    "side": "long",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "SPY": {
+   "date": "2026-11-12",
+   "decision_id": "2026-11-12|SPY",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "no stop in the paragraph"
+    ],
+    "notes": [
+     "elevated ATR of 10.94",
+     "wait for technical confirmation",
+     "volatility stabilizes and a directional trend emerges"
+    ],
+    "rating": "Hold",
+    "ref_price": 752.81,
+    "scale_in": [],
+    "side": "long",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  }
+ }
+}

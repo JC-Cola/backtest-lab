@@ -24,6 +24,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import ta_ledger as L
+import ta_plan
 
 ROOT = Path(__file__).resolve().parents[1]
 MEM = ROOT / "agent_memory"
@@ -171,7 +172,7 @@ def save_state(state, path=PATH):
     Path(path).write_text(json.dumps(state, indent=1, ensure_ascii=False) + "\n")
 
 
-def apply_ledger(state, bars, broker=None, day=None, stamp=None):
+def apply_ledger(state, bars, broker=None, day=None, stamp=None, plan_ctx=None):
     """Shadow replay always (state['shadow']); with a paper broker the top-level ledger is the account's real state and
     tonight's orders are placed first. Broker trouble never loses the shadow ledger."""
     import ta_broker
@@ -187,8 +188,22 @@ def apply_ledger(state, bars, broker=None, day=None, stamp=None):
         history = [d for d in state["decisions"] if d["date"] < str(day)]
         prices = {d["symbol"]: bars[d["symbol"]][str(day)][2] for d in night if str(day) in bars.get(d["symbol"], {})}
         equity = float(broker.get_account().equity)
-        orders = ta_broker.plan_orders(night, history, ta_broker.held_qty(broker), prices, equity, ta_broker.shortable_fn(broker))
+        orders = ta_broker.plan_orders(night, history, ta_broker.held_qty(broker), prices, equity, ta_broker.shortable_fn(broker),
+                                       sizes=(plan_ctx or {}).get("sizes"))
+        released = set()
+        if plan_ctx:   # stops of positions we are about to reduce/close/flip must be gone (and confirmed) before the order
+            try:
+                import ta_monitor
+                released = ta_monitor.release(broker, plan_ctx["state"], orders)
+            except Exception as ex:
+                print(f"system_ta: plan release failed ({type(ex).__name__}): {scrub(ex)}", file=sys.stderr)
         rows = ta_broker.place(broker, orders, stamp or str(day))
+        if plan_ctx:   # then stops / targets for what is held now (new entries get theirs from the monitor after the fill)
+            try:
+                import ta_monitor
+                plan_ctx["events"] = ta_monitor.protect_all(broker, plan_ctx["state"], skip=released)
+            except Exception as ex:
+                print(f"system_ta: plan protection failed ({type(ex).__name__}): {scrub(ex)}", file=sys.stderr)
         state["orders_log"] = (state.get("orders_log", []) + [{"date": str(day), **r} for r in rows])[-200:]
         snap = ta_broker.snapshot(broker)
         by = {}
@@ -311,7 +326,7 @@ def session_day(now=None, asof=None):
 
 
 # ---------- the nightly pass ----------
-def run(state, day, tickers, decide, bars_fn, force=False, send=None, broker=None):
+def run(state, day, tickers, decide, bars_fn, force=False, send=None, broker=None, plan_fn=None, plans_path=None):
     """One night: decide each ticker (skipping ones already decided for `day` unless force), update the ledger.
     Returns (results for the message, alert kind or None)."""
     day, results, alert, t0 = str(day), [], None, time.monotonic()
@@ -346,10 +361,31 @@ def run(state, day, tickers, decide, bars_fn, force=False, send=None, broker=Non
     new_exits = rotation_exits(state, tickers, day)
     state["decisions"] += new_exits
     bars = bars_fn(sorted({d["symbol"] for d in state["decisions"]} | {"SPY"}))
-    apply_ledger(state, bars, broker, day, datetime.now(timezone.utc).strftime("%Y%m%d%H%M"))
+    plan_ctx = None
+    if broker is not None and plan_fn is not None:   # trading plans: one model call per NEW decision, stored by decision id
+        try:
+            import ta_broker
+            import ta_monitor
+            pstate = ta_monitor.load(plans_path or ta_monitor.PLANS)
+            night = [d for d in state["decisions"] if d["date"] == day and d.get("source") == "ta"]
+            closes = {d["symbol"]: bars[d["symbol"]][day][2] for d in night if day in bars.get(d["symbol"], {})}
+            plans, sizes = ta_monitor.nightly(broker, pstate, night, closes, plan_fn, ta_broker.held_qty(broker))
+            plan_ctx = {"state": pstate, "sizes": sizes, "plans": plans, "events": []}
+            for r in results:
+                if r.get("symbol") in plans:
+                    r["plan_line"], r["not_executed"] = ta_plan.plan_line(r["symbol"], plans[r["symbol"]]), plans[r["symbol"]]["not_executed"]
+        except Exception as ex:
+            print(f"system_ta: plan step failed ({type(ex).__name__}): {scrub(ex)}", file=sys.stderr)
+    apply_ledger(state, bars, broker, day, datetime.now(timezone.utc).strftime("%Y%m%d%H%M"), plan_ctx=plan_ctx)
+    if plan_ctx:
+        ta_monitor.save(plan_ctx["state"], plans_path or ta_monitor.PLANS)
+        state["plans"] = {k: v["plan"] for k, v in plan_ctx["state"]["plans"].items()}
+        state["plan_events"] = plan_ctx["events"]
+        for e in plan_ctx["events"]:
+            results.append({"symbol": "orders", "note": e, "plan_event": True})
     state["started"] = state.get("started") or (state["decisions"][0]["date"] if state["decisions"] else None)
     state["runs"] = [r for r in state["runs"] if r["date"] != day][-120:] + [{
-        "date": day, "tickers": {r["symbol"]: r.get("rating") or "no decision" for r in results},
+        "date": day, "tickers": {r["symbol"]: r.get("rating") or "no decision" for r in results if not r.get("plan_event")},
         "calls": calls, "seconds": round(time.monotonic() - t0)}]
     h = state.setdefault("health", {})
     if alert:
@@ -419,8 +455,9 @@ def main(argv=None, decide=None, send=None, bars_fn=None, broker=None):
             kind = classify(ex)
             print(f"system_ta: cannot start TradingAgents ({kind}): {scrub(ex)}", file=sys.stderr)
             decide = lambda tk, d, _ex=ex: (_ for _ in ()).throw(_ex)
+    plan_fn = (lambda t, r, ref, h: ta_plan.build(t, r, ref, h)) if broker and os.environ.get("GOOGLE_API_KEY") else None
     try:
-        results, alert = run(state, day, wl, decide, bars_fn, force=a.force, send=send, broker=broker)
+        results, alert = run(state, day, wl, decide, bars_fn, force=a.force, send=send, broker=broker, plan_fn=plan_fn)
     except Exception as ex:   # never crash the workflow
         print(f"system_ta: run failed ({type(ex).__name__}): {scrub(ex)}", file=sys.stderr)
         return 0
