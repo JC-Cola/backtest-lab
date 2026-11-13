@@ -5,6 +5,10 @@ name: system_ta_monitor
 # State: agent_memory/system_ta_plans.json (committed only when it changed). Telegram only when an order is placed/cancelled.
 on:
   workflow_dispatch:
+  # Stand-in timer until the Supabase pg_cron job is added (GitHub's cron can drop or delay runs; the monitor is
+  # idempotent and exits at once outside market hours, so an extra or missed tick is harmless).
+  schedule:
+    - cron: "*/5 13-21 * * 1-5"
 
 # its own group: never queued behind (or cancelling) the nightly run; two monitor runs never overlap, a late one waits
 concurrency:
