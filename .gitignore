@@ -16,3 +16,4 @@ data/qlib/
 reports/cards/
 data/finrl16/
 .venv-finrl/
+logs/
