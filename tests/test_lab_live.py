@@ -46,8 +46,11 @@ def test_js_ledger_matches_python():
         assert _js_ledger(fills, 25000.0) == py
 
 
-def test_template_long_term_account_is_retired():
+def test_template_three_accounts_live_and_no_long_term():
     t = TPL.read_text()
-    assert "alpaca_live('lt')" not in t and 'lt: "select' not in t          # the retired account is never queried
-    assert "Long-term account retired" in t and 'const RETIRED = "2026-11-09"' in t
-    assert 'let lfilter = "intraday"' in t and 'getItem("lab-lfilter")' not in t   # always opens on Intraday
+    for acct in ("id", "dts", "ta"):
+        assert f"select private.alpaca_live('{acct}') as d" in t
+    assert "alpaca_live('lt')" not in t and 'lt: "select' not in t          # long-term is gone and never queried
+    assert "RETIRED" not in t and "Long-term" not in t and 'data-f="longterm"' not in t
+    assert "Live data not set up yet" in t
+    assert "LIVE_EVERY" not in t and "liveEvery" in t and "15000" in t and "5000" in t   # 5 s for one account, 15 s in Compare

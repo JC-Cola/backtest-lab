@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Backtest Strategy Lab</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,8 +28,6 @@
 body { background: var(--bg); color: var(--ink); font: 13px/1.5 var(--f-sans); }
 [hidden] { display: none !important; }
 body.simple [data-pro], body:not(.simple) [data-simple] { display: none !important; }
-.paperline { padding: 10px 14px; font-size: 0.85rem; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; border-color: var(--accent); }
-.paperline .cap { color: var(--accent); }
 .verdict-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
 .verdict-card p { margin: 0; font-size: 0.95rem; max-width: 75ch; }
 .stats.s4 .stat:nth-child(4n) { border-right: 0; }
@@ -87,7 +86,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .rk .who b { display: block; font-weight: 600; font-size: 0.88rem; }
 .rk .who span { font-size: 0.74rem; color: var(--muted); }
 .rk .chips2 { display: flex; flex-wrap: wrap; gap: 4px; }
-.ck { font: 500 0.66rem var(--f-mono); padding: 3px 6px; border-radius: 3px; background: var(--raised); color: var(--muted); border: 1px solid var(--line); white-space: nowrap; }
+.ck { font: 500 0.66rem var(--f-mono); padding: 3px 6px; border-radius: 3px; background: var(--raised); color: var(--muted); border: 1px solid var(--line); max-width: 100%; overflow-wrap: anywhere; }
 .ck.yes { color: var(--pos); border-color: color-mix(in srgb, var(--pos) 40%, var(--line)); }
 .ck.no { color: var(--faint); text-decoration: line-through; }
 .ck.warnc { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 40%, var(--line)); }
@@ -188,7 +187,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .pcal-c.on { outline: 2px solid var(--accent); }
 .livebar { padding: 4px max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px)); font: 0.72rem var(--f-mono); color: var(--faint); display: flex; justify-content: flex-end; }
 .livebar .ok { color: var(--pos); } .livebar .bad { color: var(--neg); }
-.mainsw { display: flex; gap: 8px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); border-bottom: 1px solid var(--line); }
+.mainsw { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--bg); border-bottom: 1px solid var(--line); }
 .mainsw button { all: unset; box-sizing: border-box; flex: 1 1 0; min-width: 0; cursor: pointer; display: flex; flex-direction: column; gap: 2px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--muted); }
 .mainsw button b { font: 600 1rem var(--f-sans); color: var(--ink); }
 .mainsw button small { font: 0.7rem var(--f-mono); color: var(--faint); overflow-wrap: anywhere; }
@@ -304,6 +303,25 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   .two { grid-template-columns: minmax(0, 1fr); }
   .engine { margin-left: 0; }
 }
+.sysinfo { padding: 0; }
+.sysinfo .ph { padding: 9px 12px 6px; }
+.sysinfo .sline { margin: 0; padding: 0 12px 8px; font-size: 0.8rem; color: var(--muted); }
+.dec > div { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 0.8rem; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 2px 10px; align-items: baseline; }
+.dec b.sym { font: 600 0.78rem var(--f-mono); }
+.dec .rt { font: 500 0.66rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 3px; background: var(--raised); color: var(--muted); border: 1px solid var(--line); }
+.dec .rt.buy { color: var(--pos); border-color: var(--pos); } .dec .rt.sell { color: var(--neg); border-color: var(--neg); }
+.dec .tx { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+.dec .tx small { display: block; color: var(--faint); font-size: 0.7rem; margin-top: 1px; }
+@media (max-width: 600px) { .dec > div { grid-template-columns: auto minmax(0, 1fr); } .dec .tx { grid-column: 1 / -1; } }
+.cmp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+.cmp-card { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c, var(--accent)); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cmp-card h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
+.cmp-card .sub { font: 0.68rem var(--f-mono); color: var(--faint); }
+.cmp-card .big { font: 600 1.4rem/1.1 var(--f-mono); }
+.cmp-key { display: flex; flex-wrap: wrap; gap: 4px 14px; font: 0.7rem var(--f-mono); color: var(--muted); }
+.cmp-key i { display: inline-block; width: 12px; height: 3px; vertical-align: 3px; margin-right: 5px; }
+.cmp-bars { display: flex; flex-direction: column; gap: 8px; }
+.cmp-bars h3 { margin: 6px 0 0; font-size: 0.9rem; font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -327,20 +345,23 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="engine" data-pro><span><span class="dot">●</span> Engine local</span><span>Sample <b id="e-sample">—</b></span><span>Bars <b id="e-bars">—</b></span><span>Cost <b id="e-cost">—</b></span></div>
 </header>
 
-<nav class="mainsw" id="lfilter" aria-label="Which account and strategies to show">
-  <button data-f="longterm" aria-pressed="false"><b>Long-term</b><small>daily, held days to months</small></button>
-  <button data-f="intraday" aria-pressed="true"><b>Intraday</b><small>1 min – 1 day, flat every night</small></button>
+<nav class="mainsw" id="lfilter" aria-label="Which account to show">
+  <button data-f="intraday" aria-pressed="true"><b>Ours · Intraday</b><small>hourly checks, flat by 15:56</small></button>
+  <button data-f="dts" aria-pressed="false"><b>System B · day-trader-skill</b><small>scans ~5,900 stocks at 10:15, flat by 15:55</small></button>
+  <button data-f="ta" aria-pressed="false"><b>System C · TradingAgents</b><small>AI analysts decide after the close, holds overnight</small></button>
+  <button data-f="compare" aria-pressed="false"><b>Compare</b><small>all three side by side</small></button>
 </nav>
 <div class="livebar" id="livebar"><span id="live-badge" role="status"></span></div>
 
 <section class="acct" id="acct" hidden>
-  <div class="acct-head"><h2 id="ac-title">Live paper trading: intraday account</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
+  <div class="acct-head"><h2 id="ac-title">Live paper trading</h2><span class="live">● paper money, not real</span><span class="upd" id="ac-upd"></span></div>
   <div class="panel"><div class="stats" id="ac-stats"></div></div>
   <div class="acct-tables">
-    <div class="panel tw"><table><thead><tr><th>Holding</th><th>Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
+    <div class="panel tw"><table><thead><tr><th>Holding</th><th id="ac-th2">Which strategies hold it</th><th class="n">Quantity</th><th class="n">Bought at</th><th class="n">Now</th><th class="n">Profit / loss</th></tr></thead><tbody id="ac-pos"></tbody></table></div>
     <div class="panel tw"><table><thead><tr><th>Recent orders</th><th class="n">Quantity</th><th class="n">Filled at</th><th>Status</th></tr></thead><tbody id="ac-ord"></tbody></table></div>
   </div>
-  <p class="note">Each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed after the close and fill at the next open (Bitcoin straight away). The panel refreshes every time the nightly run works.</p>
+  <div class="panel sysinfo" id="sysinfo" hidden></div>
+  <p class="note" id="ac-note"></p>
 </section>
 
 <section class="leader" id="leader">
@@ -352,7 +373,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="tw"><table><thead><tr><th>Portfolio</th><th class="n">Test years Sharpe</th><th class="n">At 2× costs</th><th class="n">Beat random</th><th class="n">Best FTMO pass rate</th><th>Verdict</th></tr></thead><tbody id="ports-body"></tbody></table></div>
     <p class="ftmo-note">Members are picked from 2016–2020 results only. This test was added after the individual results were seen, so treat it as a lead, not proof.</p>
   </div>
-  <p class="rule">How the ranking works: +2 if it held up on data nobody had looked at (intraday: IWM and DIA), +1 if it held up on extra markets it was never tuned on (intraday: passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (daily strategies 2017 on; Bitcoin and intraday 2021 on), after costs. Intraday strategies are flat every night. <span id="hidden-note"></span></p>
+  <p class="rule">The strategy rankings, book and backtests below are the research behind Ours · Intraday. How the ranking works: +2 if it held up on data nobody had looked at (IWM and DIA), +1 if it held up on extra markets it was never tuned on (passed after allowing for every test), −1 if it makes fewer than 5 decisions a year (too few to tell skill from luck). Ties go to whichever beat more random traders. Money figures are for the test years (2021 on), after costs. Intraday strategies are flat every night. <span id="hidden-note"></span></p>
 </section>
 
 
@@ -368,13 +389,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       <p id="h-desc">—</p>
       <div class="meta" id="h-meta" data-pro></div>
     </div>
-    <div class="panel paperline" id="paperline"></div>
     <div class="panel verdict-card" data-simple><span class="cap">Verdict</span><p id="s-verdict"></p></div>
     <div class="panel ftmo" id="ftmo" hidden>
       <div class="ph"><span class="cap">FTMO 2-Step challenge: how often would it pass?</span><span class="r" id="ftmo-r"></span></div>
       <p class="ftmo-say" id="ftmo-say"></p>
       <div class="tw"><table><thead><tr><th>Position size</th><th class="n">Passed both phases</th><th class="n">Broke the 5% daily loss</th><th class="n">Broke the 10% max loss</th><th class="n">Still going after a year</th><th class="n">Typical days to pass</th></tr></thead><tbody id="ftmo-body"></tbody></table></div>
-      <p class="ftmo-note">Replayed from every start day of the test years (daily strategies 2017 on, Bitcoin and intraday 2021 on) with the ★ settings. Rules: +10% then +5%, never more than 5% down in a day (checked against the worst moment of each day) or 10% in total, at least 4 trading days. Picking a size after seeing this table is hindsight.</p>
+      <p class="ftmo-note">Replayed from every start day of the test years (2021 on) with the ★ settings. Rules: +10% then +5%, never more than 5% down in a day (checked against the worst moment of each day) or 10% in total, at least 4 trading days. Picking a size after seeing this table is hindsight.</p>
     </div>
     <div class="panel" data-simple><div class="stats s4" id="s-stats"></div></div>
     <div class="panel" data-pro><div class="stats" id="stats"></div></div>
@@ -444,26 +464,36 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="panel tvwrap"><table class="tvtab" id="tv-tab"><thead><tr><th>Time</th><th class="r">Balance before</th><th class="r">Balance after</th><th class="r">Realized PnL</th><th>Action</th></tr></thead><tbody id="tv-body"></tbody></table><div class="bh-empty" id="tv-empty" hidden>No closed trades yet.</div></div>
 </main>
 
+<main id="view-compare" class="calview" hidden>
+  <h2>Compare · all three accounts</h2>
+  <section id="cmp-a" class="calview" style="padding:0" hidden>
+    <div class="cmp-cards" id="cmp-cards"></div>
+    <div class="panel bh" aria-label="Balance since each account started">
+      <div class="bh-head"><div><span class="cap">Balance since each account started</span></div><div class="cmp-key" id="cmp-key"></div></div>
+      <div class="bh-plot" id="cmp-plot"></div>
+    </div>
+  </section>
+  <section id="cmp-b" class="calview" style="padding:0" hidden>
+    <div class="panel tvwrap"><table class="tvtab" id="cmp-days"></table></div>
+    <p class="note">Each account's profit or loss per trading day (equity change since the previous close). Ours · Intraday started 2026-11-03, System B and System C later.</p>
+  </section>
+  <section id="cmp-c" class="calview" style="padding:0" hidden><div class="cmp-bars" id="cmp-bars"></div></section>
+</main>
+
 <main id="view-research" class="research" hidden>
   <h2>Research log</h2>
   <p id="r-intro"></p>
-  <div class="panel"><div class="stats rstats" id="r-stats"></div></div>
-  <span class="cap">The agent's best ideas, re-scored against every trial run so far</span>
-  <div class="panel ideas"><table><thead><tr><th>Idea</th><th style="text-align:right">Score now</th><th style="text-align:right">When found</th><th style="text-align:right">Sharpe by period (tuning years)</th></tr></thead><tbody id="r-ideas"></tbody></table></div>
-  <span class="cap">Intraday agent: same search on SPY and QQQ minute bars</span>
+  <span class="cap">The intraday agent searches SPY and QQQ minute bars</span>
   <div class="panel"><div class="stats rstats" id="ri-stats"></div></div>
   <span class="cap">The intraday agent's best ideas, re-scored against every trial run so far</span>
   <div class="panel ideas"><table><thead><tr><th>Idea</th><th style="text-align:right">Score now</th><th style="text-align:right">When found</th><th style="text-align:right">Sharpe by period (tuning years)</th></tr></thead><tbody id="ri-ideas"></tbody></table></div>
   <span class="cap">New strategies awaiting your approval</span>
   <div class="panel ideas"><table><thead><tr><th>Account</th><th>Rule</th><th style="text-align:right">Held-out Sharpe</th><th style="text-align:right">At 2x costs</th><th>Beats current?</th><th>Status</th></tr></thead><tbody id="r-cands"></tbody></table></div>
   <p class="note" id="r-cands-note"></p>
-  <span class="cap">Paper trading: decisions written down before the outcome existed</span>
-  <div class="panel ideas"><table><thead><tr><th>Strategy</th><th>Market</th><th>Since</th><th style="text-align:right">Days scored</th><th style="text-align:right">Paper result</th><th style="text-align:right">Just holding</th><th>Latest decision</th></tr></thead><tbody id="r-paper"></tbody></table></div>
-  <p class="note" id="r-paper-note"></p>
   <p class="note">A score of 0.95 is needed before an idea gets its one shot at the held-out years. Scores fall as the agent tries more ideas, because more tries make a lucky result more likely.</p>
 </main>
 
-<footer class="status"><span>Daily prices · Yahoo Finance</span><span>Decide at close, fill at next open</span><span>Costs applied on every number</span><span id="s-gen">—</span></footer>
+<footer class="status"><span>Intraday research · SPY and QQQ minute bars</span><span>Live accounts · Alpaca paper</span><span>Costs applied on every number</span><span id="s-gen">—</span></footer>
 
 <script id="lab" type="application/json">/*LAB*/</script>
 <script>
@@ -599,7 +629,6 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   function renderBook() {
     const box = $("book"); box.replaceChildren();
     D.book.forEach((b, i) => {
-      if (!inFilter(b)) return;
       const w = windowSeries(b, b.chosen), st = stats(w.r, w.mk.ann);
       const btn = document.createElement("button"); btn.className = "card" + (b.rank === 1 ? " best" : ""); btn.setAttribute("aria-pressed", String(i === cur));
       const code = document.createElement("span"); code.className = "cd"; code.textContent = `#${b.rank}${b.rank === 1 ? " BEST" : ""} · ${b.market}`;
@@ -755,14 +784,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       yy.appendChild(row); });
     renderRight(b, st, bh);
     renderSimple(b, w, st, bh, expo);
-    renderPaperLine(b);
     renderFtmo(b);
   }
   function renderSimple(b, w, st, bh, expo) {
     $("h-desc").textContent = simple() ? b.plain : b.desc;
     $("eq-title").textContent = simple() ? "What $10,000 became" : "Equity curve";
-    const name = { SPY: "the S&P 500 fund", QQQ: "the Nasdaq 100 fund", GLD: "gold", "BTC-USD": "Bitcoin",
-                   "SPY-1m": "the S&P 500 fund", "QQQ-1m": "the Nasdaq 100 fund" }[b.market] || b.market;
+    const name = { "SPY-1m": "the S&P 500 fund", "QQQ-1m": "the Nasdaq 100 fund" }[b.market] || b.market;
     $("s-stats").replaceChildren(
       tile("$10,000 became", money(1e4 * (1 + st.total)), "just holding: " + money(1e4 * (1 + bh.total))),
       tile("Per year", sgn(st.cagr), "just holding: " + sgn(bh.cagr), cls(st.cagr)),
@@ -780,7 +807,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     }[v.verdict] || "";
     const body = {
       PASS: " It beat random trading even after allowing for every strategy tested.",
-      WEAK: ` It beat ${pct(1 - (v.p ?? 1), 0)} of 2,000 random traders, which looks good alone, but after testing ${v.pool || D.research.hunt_tests} strategy-market pairs a few results this good always show up by chance.`,
+      WEAK: ` It beat ${pct(1 - (v.p ?? 1), 0)} of 2,000 random traders, which looks good alone, but after testing ${v.pool} strategy-market pairs a few results this good always show up by chance.`,
       FAIL: " It did no better than buying and selling on random days.",
       NOTEST: " Its timing is fixed, so it can't be compared with random traders; it shows how the market behaves at that time of day.",
       AGENT: " The self-learning agent found it, but it has not yet earned a test on unseen years, so treat these numbers as a sketch.",
@@ -815,7 +842,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     badge.textContent = label[0]; badge.className = "badge " + label[1];
     const txt = {
       PASS: "Beat random trading after allowing for every test, and held up on markets it was never searched on.",
-      WEAK: `Beat ${pct(1 - (v.p ?? 1), 1)} of random traders, but across ${v.pool || D.research.hunt_tests} tests a few results this good appear by luck. Not tradeable on this evidence.`,
+      WEAK: `Beat ${pct(1 - (v.p ?? 1), 1)} of random traders, but across ${v.pool} tests a few results this good appear by luck. Not tradeable on this evidence.`,
       FAIL: "No better than random timing on the test years. Nothing to trade here.",
       NOTEST: "Its timing is fixed (every day at the same moment), so it can't be compared with random traders. It is here as a benchmark.",
       AGENT: "Still being searched. It needs a deflated score of 0.95 before it gets one shot at the held-out years, then paper trading.",
@@ -838,40 +865,23 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
        [r.median_days_to_pass == null ? "—" : Math.round(r.median_days_to_pass) + " days", "n"]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
       return tr; }));
   }
-  function paperFor(key) { return (D.paper.strategies || {})[key]; }
-  function renderPaperLine(b) {
-    const box = $("paperline"), pk = b.code === "AGENT" ? "AGENT-" + b.id.replace("agent_", "") : b.code, pr = paperFor(pk);
-    box.replaceChildren(Object.assign(document.createElement("span"), { className: "cap", textContent: "Paper trading" }));
-    if (!pr) { box.append("Not paper traded yet."); return; }
-    const pos = pr.latest.position > 0 ? "in the market" : "in cash";
-    if (!pr.scored) box.append(`Started ${pr.since}. The first decision (${pos}) is waiting for the next trading day to be scored.`);
-    else box.append(`Since ${pr.since}: ${sgn(pr.paper_return, 2)} over ${pr.scored} trading day${pr.scored > 1 ? "s" : ""} (just holding: ${sgn(pr.holding_return, 2)}). Latest decision: ${pos}. Too few days to mean anything yet.`);
-  }
   function renderResearch() {
-    const R = D.research;
-    const PS = D.paper.strategies || {};
-    $("r-paper").replaceChildren(...Object.entries(PS).map(([k, p]) => { const tr = document.createElement("tr");
-      [[p.name.length > 70 ? p.name.slice(0, 68) + "…" : p.name, ""], [p.market, ""], [p.since, ""], [String(p.scored), "n"],
-       [p.scored ? sgn(p.paper_return, 2) : "—", "n " + (p.scored ? cls(p.paper_return) : "")], [p.scored ? sgn(p.holding_return, 2) : "—", "n"],
-       [`${p.latest.date}: ${p.latest.position > 0 ? "in" : "cash"}`, ""]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
-      return tr; }));
-    $("r-paper-note").textContent = Object.keys(PS).length ? `Updated ${D.paper.generated.slice(0, 10)}. Each decision is scored from the next day's open to the one after, with costs. Paper results need many months before they say anything.` : "No paper trades yet.";
-    $("r-intro").textContent = `The hunt tested ${R.hunt_strategies} strategies (${R.hunt_tests} strategy × market tests) and none passed. The self-improving agent keeps searching: it proposes ideas, scores them on the tuning years only, and remembers every result between sessions.`;
-    const fill = (R, st, ideas) => {
+    $("r-intro").textContent = "The intraday agent keeps searching: it proposes ideas, scores them on the tuning years only, and remembers every result between sessions. Nothing here trades until you approve it.";
+    const tile4 = (R, st, ideas) => {
       $(st).replaceChildren(tile("Agent trials", R.trials, "all sessions"), tile("Scored", R.scored, "passed the data checks"),
         tile("Rejected", R.rejected, "coverage, trades, look-ahead"), tile("Held-out shots", R.holdout_shots, R.holdout_pass + " passed"));
       $(ideas).replaceChildren(...R.top.map(t => { const tr = document.createElement("tr");
         [[t.desc, ""], [f2(t.now), "n"], [f2(t.found), "n"], [t.folds.map(f2).join(" · "), "n"]].forEach(([v, c]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: c })));
         return tr; }));
     };
-    fill(R, "r-stats", "r-ideas");
-    fill(D.research_intraday, "ri-stats", "ri-ideas");
+    tile4(D.research_intraday, "ri-stats", "ri-ideas");
     const C = D.candidates || { candidates: [], benchmarks: {} }, bm = C.benchmarks || {};
+    C.candidates = (C.candidates || []).filter(c => !/long/i.test(c.account || ""));
     $("r-cands").replaceChildren(...(C.candidates.length ? C.candidates.map(c => { const tr = document.createElement("tr");
       [[c.account, ""], [c.description, ""], [f2(c.sharpe), "n"], [f2(c.sharpe_2x_cost), "n"], [c.better ? "Yes" : "No", ""], [c.status, ""]]
         .forEach(([v, k]) => tr.appendChild(Object.assign(document.createElement("td"), { textContent: v, className: k })));
       return tr; }) : [Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="6">None yet: no idea has passed its one-shot held-out test.</td>' })]));
-    $("r-cands-note").textContent = `Nothing trades until you approve it. An idea is better if its held-out Sharpe at 2x costs beats what the account trades now (long-term ${f2(bm["long-term"])}, intraday ${f2(bm.intraday)}).`;
+    $("r-cands-note").textContent = `Nothing trades until you approve it. An idea is better if its held-out Sharpe at 2x costs beats what the account trades now (intraday ${f2(bm.intraday)}).`;
   }
 
   // ---------------------------------------------------------------- wiring
@@ -883,14 +893,22 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   });
   const tabs = { research: $("tab-research"), backtest: $("tab-backtest"), calendar: $("tab-calendar"), balance: $("tab-balance") };
   let curTab = "backtest";
-  function showTab(k) {
-    curTab = k;
+  function showTab(k) { curTab = k; applyViews(); }
+  // One place decides what is on screen from the tab (Research / Backtest / P&L calendar / Balance history) and the account switch.
+  function applyViews() {
+    const k = curTab, cmp = lfilter === "compare", ours = lfilter === "intraday";
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
-    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest"; $("view-calendar").hidden = k !== "calendar"; $("view-balance").hidden = k !== "balance";
-    $("leader").hidden = k !== "backtest"; $("acct").hidden = k !== "backtest" || (lfilter === "intraday" && !acctData()); $("window").hidden = k !== "backtest"; $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
-    if (k === "backtest") renderStrategy();
-    if (k === "calendar") renderCal(acctData());
-    if (k === "balance") renderBalance(acctData());
+    $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest" || !ours;
+    $("view-calendar").hidden = k !== "calendar" || cmp; $("view-balance").hidden = k !== "balance" || cmp;
+    $("view-compare").hidden = !cmp || k === "research";
+    $("cmp-a").hidden = k !== "backtest"; $("cmp-b").hidden = k !== "calendar"; $("cmp-c").hidden = k !== "balance";
+    $("leader").hidden = k !== "backtest" || !ours; $("window").hidden = k !== "backtest" || !ours;
+    $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
+    renderAcct();
+    if (k === "backtest" && ours) { renderParams(); renderAll(); }
+    if (k === "calendar" && !cmp) renderCal(acctData());
+    if (k === "balance" && !cmp) renderBalance(acctData());
+    if (cmp && k !== "research") renderCompare();
   }
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => showTab(k)));
   $("reset").addEventListener("click", () => { combo = S().chosen; updateParams(); renderStrategy(); });
@@ -906,20 +924,20 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const mk = D.markets[b.market], c = b.combos[b.chosen], a = mk.dates.findIndex(d => d >= mk.oos_start);
     return [stats(c.r.slice(a).map(v => v ?? 0), mk.ann), stats(mk.bench.slice(a).map(v => v ?? 0), mk.ann)];
   }
-  const mname = { SPY: "S&P 500 fund · daily", QQQ: "Nasdaq 100 fund · daily", GLD: "Gold", "BTC-USD": "Bitcoin · daily", IWM: "Small caps",
-                  "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
-  const RETIRED = "2026-11-09";  // the long-term Alpaca paper account was deleted; its strategy research stays visible as history
-  let lfilter = "intraday";  // the lab is split in two: "longterm" (daily strategies, history) and "intraday"; always opens on Intraday
-  const inFilter = b => (lfilter === "intraday") === (b.family === "Intraday");
-  const acctData = () => lfilter === "intraday" ? D.alpaca_intraday : null;  // no long-term account data any more
-  function enterSection() {  // select the section's top strategy
-    if (!inFilter(D.book[cur])) { const i = D.book.findIndex(inFilter); if (i >= 0) { cur = i; combo = D.book[i].chosen; } }
-  }
-  enterSection();
+  const mname = { "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
+  // The three live accounts. `f` is the switch value (and the localStorage value), `key` the server account id.
+  const ACC = [
+    { f: "intraday", key: "id", nm: "Ours · Intraday", short: "Ours", sub: "hourly checks, flat by 15:56", color: "--accent", snap: "alpaca_intraday" },
+    { f: "dts", key: "dts", nm: "System B · day-trader-skill", short: "B", sub: "scans ~5,900 stocks at 10:15, flat by 15:55", color: "--amber", snap: "system_b" },
+    { f: "ta", key: "ta", nm: "System C · TradingAgents", short: "C", sub: "AI analysts decide after the close, holds overnight", color: "--agent", snap: "system_c" }];
+  const ACCF = Object.fromEntries(ACC.map(a => [a.f, a]));
+  let lfilter = "intraday";  // "intraday" (ours) | "dts" | "ta" | "compare"; the old "longterm" value (and anything unknown) opens on Ours
+  try { const f = localStorage.getItem("lab-lfilter"); if (f === "compare" || ACCF[f]) lfilter = f; } catch (e) {}
+  const acctData = () => lfilter === "compare" ? null : D[ACCF[lfilter].snap];
   function renderPorts() {
     const H = D.hidden || [];
     $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years are shown; ${H.length} that lost money are hidden: ${H.join(", ")}.` : "";
-    const P = (D.portfolios || []).filter(p => lfilter === "intraday" || p.name.startsWith("Both")), box = $("ports");
+    const P = D.portfolios || [], box = $("ports");
     box.hidden = !P.length;
     const label = { id_noise_breakout: "Noise-Band Breakout", id_orb: "Opening Range Breakout", id_gap_fade: "Gap Fade", id_vwap_trend: "VWAP Trend",
       id_intraday_momentum: "Intraday Momentum", id_halfhour_periodicity: "Same Half-Hour" };
@@ -939,26 +957,20 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     renderPorts();
     let shownRank = 0;
     D.book.forEach((b, i) => {
-      if (!inFilter(b)) return;
       shownRank++;
       const e = b.evidence, [st, bh] = testStats(b);
       const row = document.createElement("button"); row.className = "rk" + (shownRank === 1 ? " best" : ""); row.setAttribute("aria-pressed", String(i === cur));
       const n = Object.assign(document.createElement("span"), { className: "n", textContent: "#" + shownRank });
       const who = document.createElement("span"); who.className = "who";
       const nm = document.createElement("b"); nm.textContent = b.name;
-      if (shownRank === 1) nm.appendChild(Object.assign(document.createElement("span"), { className: "bestbadge", textContent: b.family === "Intraday" ? "Best intraday" : "Best so far" }));
+      if (shownRank === 1) nm.appendChild(Object.assign(document.createElement("span"), { className: "bestbadge", textContent: "Best intraday" }));
       who.append(nm, Object.assign(document.createElement("span"), { textContent: mname[b.market] || b.market }));
       const ch = document.createElement("span"); ch.className = "chips2";
       const chip = (t, c) => ch.appendChild(Object.assign(document.createElement("span"), { className: "ck " + c, textContent: t }));
       if (!e.tested) chip(b.verdict.verdict === "NOTEST" ? "benchmark: same time every day, no random comparison" : "not tested on unseen years yet", "warnc");
       else {
-        if (b.family === "Intraday") {
-          chip("passed after allowing for every test", e.lockbox ? "yes" : "no");
-          chip("held up on IWM & DIA", e.fresh ? "yes" : "no");
-        } else {
-          chip("held up on fresh data", e.fresh ? "yes" : "no");
-          chip("held up on extra markets", e.lockbox ? "yes" : "no");
-        }
+        chip("passed after allowing for every test", e.lockbox ? "yes" : "no");
+        chip("held up on IWM & DIA", e.fresh ? "yes" : "no");
         chip(e.beat >= 0.9995 ? "beat all 2,000 random traders" : `beat ${pct(e.beat, e.beat >= 0.99 ? 1 : 0)} of random traders`, e.beat >= 0.95 ? "yes" : "");
       }
       if (e.few) chip(`only ${e.per_year} decisions a year`, "warnc");
@@ -970,22 +982,18 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         $("h-name").scrollIntoView({ behavior: "smooth", block: "start" }); });
       box.appendChild(row);
     });
-    const shown = D.book.filter(inFilter), best = shown[0] || D.book[0], [st, bh] = testStats(best);
+    const best = D.book[0], [st, bh] = testStats(best);
     const a = $("ld-answer"); a.replaceChildren();
     a.append(Object.assign(document.createElement("b"), { textContent: `${best.name} on the ${mname[best.market] || best.market}` }),
-      best.family === "Intraday"
-        ? ` did best of the intraday strategies: it beat ${best.evidence.beat >= 0.9995 ? "all 2,000" : pct(best.evidence.beat, 1) + " of"} random traders on 2021–2026 and made ${sgn(st.cagr)} a year after costs (holding: ${sgn(bh.cagr)}). `
-          + (best.verdict.lockbox ? "It also held up on IWM and DIA." : "But it lost money on IWM and DIA, markets it was never tuned on, so it is not confirmed. Treat it as a lead to paper-trade, not a reason to risk real money.")
-        : ` has the strongest evidence: it beat random timing on data nobody had looked at and on extra markets. ` +
-      (st.cagr < bh.cagr ? `But even the best one made less than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year), because it sits in cash most of the time. None of these is a reason to risk real money.`
-                         : `It also made more than simply holding (${sgn(st.cagr)} vs ${sgn(bh.cagr)} a year).`));
+      ` did best of the intraday strategies: it beat ${best.evidence.beat >= 0.9995 ? "all 2,000" : pct(best.evidence.beat, 1) + " of"} random traders on 2021–2026 and made ${sgn(st.cagr)} a year after costs (holding: ${sgn(bh.cagr)}). `
+        + (best.verdict.lockbox ? "It also held up on IWM and DIA." : "But it lost money on IWM and DIA, markets it was never tuned on, so it is not confirmed. Treat it as a lead to paper-trade, not a reason to risk real money."));
   }
   const money_k = t => "$" + (10 * (1 + t)).toFixed(1) + "k";
   document.querySelectorAll("#lfilter button").forEach(bt => {
     bt.setAttribute("aria-pressed", String(bt.dataset.f === lfilter));
     bt.addEventListener("click", () => { lfilter = bt.dataset.f; try { localStorage.setItem("lab-lfilter", lfilter); } catch (e) {}
       document.querySelectorAll("#lfilter button").forEach(x => x.setAttribute("aria-pressed", String(x === bt)));
-      enterSection(); renderAcct(); renderCal(acctData()); if (curTab === "balance") renderBalance(acctData()); renderParams(); renderAll(); liveStart(); liveBadge(); });
+      applyViews(); liveStart(); liveBadge(); });
   });
   const usd = (v, d = 0) => (v < 0 ? "−$" : "$") + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
   const susd = v => (v > 0 ? "+" : v < 0 ? "−" : "") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: Math.abs(v) < 10 ? 2 : 0, maximumFractionDigits: Math.abs(v) < 10 ? 2 : 0 });
@@ -1039,40 +1047,43 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   document.querySelectorAll("#bh-rng button").forEach(b => b.addEventListener("click", () => { bhRange = b.dataset.r; renderHistory(acctData()); }));
   let calMonth = null, calKey = null;
-  function renderBalance(A) {
-    const B = A && A.balance_history, nm = lfilter === "intraday" ? "Intraday paper" : "Long-term account retired " + RETIRED;
-    $("bal-title").textContent = "Balance history · " + nm;
-    const n2 = v => v == null ? "—" : Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const sg = v => (v > 0 ? "+" : v < 0 ? "−" : "") + n2(Math.abs(v));
-    const cls = v => v > 0 ? "pos" : v < 0 ? "neg" : "";
+  const n2 = v => v == null ? "—" : Number(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const sg2 = v => (v > 0 ? "+" : v < 0 ? "−" : "") + n2(Math.abs(v));
+  function tvCells(A, nm) {  // the TradingView-style account bar, shared by the Balance tab and Compare
+    const B = A && A.balance_history;
     const cell = (k, v, c, tip) => { const d = document.createElement("div"); const a = document.createElement("span"); a.className = "k"; a.textContent = k; if (tip) a.title = tip;
       const b = document.createElement("span"); b.className = "v " + (c || ""); b.textContent = v; d.append(a, b); return d; };
-    const bar = $("tv-bar"), body = $("tv-body");
-    body.replaceChildren(); bar.replaceChildren();
-    if (!B) { bar.append(cell("Account", nm)); $("tv-tab").hidden = true; $("tv-empty").hidden = false; return; }
+    if (!B) return [cell("Account", nm + " · no data yet")];
     const bal = (B.start_balance || 0) + (B.realized || 0);
     const acct = document.createElement("div"); acct.className = "acct"; const an = document.createElement("span"); an.textContent = nm + " "; const av = document.createElement("span"); av.className = "v"; av.textContent = n2(bal) + " USD"; acct.append(an, av);
-    bar.append(acct,
+    return [acct,
       cell("Equity", n2(B.equity), "", "Cash plus the market value of open positions"),
-      cell("Realized PnL", sg(B.realized), cls(B.realized), "Profit or loss locked in by closed trades"),
-      cell("Unrealized PnL", sg(B.unrealized), cls(B.unrealized), "Profit or loss on positions still open"),
+      cell("Realized PnL", sg2(B.realized), cls(B.realized), "Profit or loss locked in by closed trades"),
+      cell("Unrealized PnL", sg2(B.unrealized), cls(B.unrealized), "Profit or loss on positions still open"),
       cell("Account margin", n2(B.margin), "", "Initial margin in use"),
-      cell("Available funds", n2(B.available), "", "Buying power without margin"));
+      cell("Available funds", n2(B.available), "", "Buying power without margin")];
+  }
+  function renderBalance(A) {
+    const B = A && A.balance_history, nm = ACCF[lfilter].nm;
+    $("bal-title").textContent = "Balance history · " + nm;
+    const bar = $("tv-bar"), body = $("tv-body");
+    body.replaceChildren(); bar.replaceChildren(...tvCells(A, nm));
+    if (!B) { $("tv-tab").hidden = true; $("tv-empty").hidden = false; return; }
     const rows = B.rows || [];
     $("tv-tab").hidden = !rows.length; $("tv-empty").hidden = !!rows.length;
     for (const r of rows) {
       const tr = document.createElement("tr");
       const td = (t, c) => { const e = document.createElement("td"); if (c) e.className = c; e.textContent = t; tr.append(e); return e; };
       td(r.time, "t"); td(n2(r.balance_before), "r"); td(n2(r.balance_after), "r");
-      td(sg(r.realized_pnl) + " USD", "r " + cls(r.realized_pnl)); td(r.action, "a");
+      td(sg2(r.realized_pnl) + " USD", "r " + cls(r.realized_pnl)); td(r.action, "a");
       body.append(tr);
     }
   }
   function renderCal(A) {
     renderHistory(A);
-    $("cal-title").textContent = "P&L calendar · " + (lfilter === "intraday" ? "Intraday account" : "Long-term account retired " + RETIRED);
+    $("cal-title").textContent = "P&L calendar · " + ACCF[lfilter].nm;
     if (!A) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
-      $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: lfilter === "intraday" ? "No account data yet." : "Long-term account retired " + RETIRED + ".", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
+      $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: "No account data yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
     const cal = (A.calendar || []).slice().sort((a, b) => a.date < b.date ? -1 : 1), box = $("pcal-grid"), tip = $("pcal-tip");
     tip.textContent = "";
     if (!cal.length) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
@@ -1110,42 +1121,151 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
   $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
-  function renderAcct() {
-    const A = acctData();
-    if (lfilter !== "intraday") {  // retired account: a one-line notice instead of live data
-      $("acct").hidden = $("view-backtest").hidden; $("ac-title").textContent = "Long-term account retired " + RETIRED; $("ac-upd").textContent = "";
-      $("acct").classList.add("retired"); return;
+  const short = (t, n) => { t = String(t || ""); return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t; };
+  const spct = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v * 100).toFixed(2) + "%";
+  const ratingCls = r => /^(buy|overweight)/i.test(r || "") ? "buy" : /^(sell|underweight)/i.test(r || "") ? "sell" : "";
+  function renderSysInfo(f, A) {  // what is specific to System B / System C, under the holdings tables
+    const box = $("sysinfo"); box.replaceChildren(); box.hidden = true;
+    const head = (t, r) => { const h = document.createElement("div"); h.className = "ph"; h.append(Object.assign(document.createElement("span"), { className: "cap", textContent: t }), Object.assign(document.createElement("span"), { className: "r", textContent: r || "" })); return h; };
+    const line = t => Object.assign(document.createElement("p"), { className: "sline", textContent: t });
+    const rowOf = (sym, tag, text, sub) => { const d = document.createElement("div");
+      const tx = document.createElement("span"); tx.className = "tx"; tx.append(text); if (sub) tx.appendChild(Object.assign(document.createElement("small"), { textContent: sub }));
+      d.append(Object.assign(document.createElement("b"), { className: "sym", textContent: sym }), Object.assign(document.createElement("span"), { className: "rt " + ratingCls(tag), textContent: tag }), tx); return d; };
+    if (f === "ta") {
+      const latest = {};
+      for (const d of A.decisions || []) { const c = latest[d.symbol]; if (!c || d.date > c.date) latest[d.symbol] = d; }
+      const rows = Object.values(latest).sort((a, b) => a.date < b.date ? 1 : a.date > b.date ? -1 : a.symbol < b.symbol ? -1 : 1);
+      if (!rows.length) return;
+      box.hidden = false; box.append(head("Latest AI decision per ticker", rows.length + " tickers"));
+      const pend = (A.pending || []).map(o => `${o.symbol} ${o.side} ${o.qty}`).join(" · ");
+      if (pend) box.append(line("Waiting to fill: " + pend));
+      const list = document.createElement("div"); list.className = "dec";
+      rows.forEach(d => list.append(rowOf(d.symbol, d.rating || "—", "“" + short(d.rationale, 150) + "”", d.date + (d.horizon ? " · horizon " + d.horizon : ""))));
+      box.append(list);
+    } else if (f === "dts" && A.latest_scan) {
+      const L = A.latest_scan, c = L.counts || {};
+      box.hidden = false; box.append(head("Latest scan", L.date + (L.at ? " at " + L.at : "")));
+      box.append(line(`${(L.universe || 0).toLocaleString("en-US")} stocks looked at → ${c.hits ?? L.hits ?? 0} breakout hits → ${L.evaluated ?? 0} checked closely → ${L.taken ?? 0} taken`));
+      if ((L.decisions || []).length) { const list = document.createElement("div"); list.className = "dec";
+        L.decisions.slice(0, 8).forEach(d => list.append(rowOf(d.symbol, (d.status || "—"), short(d.reason, 150), d.gate ? "gate: " + d.gate : "")));
+        box.append(list); }
     }
-    $("acct").classList.remove("retired");
-    $("acct").hidden = !A || $("view-backtest").hidden; if (!A) return;
-    $("ac-title").textContent = "Live paper trading: intraday account";
+  }
+  const ACCT_NOTE = { intraday: "Each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed on the hourly checks and the account is flat by 15:56. The panel refreshes every time the run works.",
+    dts: "System B scans about 5,900 stocks at 10:15 and is flat by 15:55. Paper money; it has its own account and does not use the rankings below.",
+    ta: "System C lets AI analysts decide after the close and can hold overnight. Paper money; it has its own account and does not use the rankings below." };
+  function renderAcct() {
+    const box = $("acct"), f = lfilter;
+    if (f === "compare") { box.hidden = true; return; }
+    const AC = ACCF[f], A = acctData();
+    box.hidden = curTab !== "backtest" || (f === "intraday" && !A);
+    $("ac-title").textContent = "Live paper trading: " + AC.nm;
+    $("ac-th2").textContent = f === "ta" ? "Latest call" : f === "dts" ? "Strategy" : "Which strategies hold it";
+    $("ac-note").textContent = ACCT_NOTE[f];
+    const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
+    if (!A) {
+      $("ac-upd").textContent = "no snapshot yet"; $("ac-stats").replaceChildren(); $("sysinfo").hidden = true;
+      for (const id of ["ac-pos", "ac-ord"]) { const tr = document.createElement("tr"); tr.append(td("No data yet.")); $(id).replaceChildren(tr); }
+      return;
+    }
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
     const ago = mins < 90 ? mins + " min ago" : mins < 2880 ? Math.round(mins / 60) + " hours ago" : Math.round(mins / 1440) + " days ago";
     if (A.live) { $("ac-upd").textContent = `live figures from Alpaca (paper) · refreshed ${A.live.slice(11, 19)} UTC`; } else
     $("ac-upd").textContent = `figures from ${A.generated.replace("T", " ").slice(0, 16)} UTC (${ago}) · live prices are in Alpaca or TradingView`;
-    const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, invested = A.positions.reduce((s, p) => s + p.value, 0);
+    const positions = A.positions || [], orders = A.orders || [];
+    const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, invested = positions.reduce((s, p) => s + p.value, 0);
     $("ac-stats").replaceChildren(
       tile("Account value", usd(A.equity), "started with " + usd(A.start_equity)),
       tile("Profit / loss so far", susd(tot), pct(tot / A.start_equity, 2), cls(tot)),
       tile("Since last close", susd(day), pct(day / (A.last_equity || A.equity), 2), cls(day)),
       tile("Invested", usd(invested), usd(A.cash) + " in cash"));
     const names = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold fund", IWM: "Small caps", BTCUSD: "Bitcoin" };
-    const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
-    const rows = A.positions.map(p => { const tr = document.createElement("tr");
-      const by = (A.strategies_by_symbol[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—";
-      tr.append(td(p.symbol, "", names[p.symbol] || ""), td(by), td(p.qty < 1 ? p.qty.toFixed(4) : String(p.qty), "n"),
+    const rows = positions.map(p => { const tr = document.createElement("tr");
+      const by = f === "intraday" ? ((A.strategies_by_symbol || {})[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—" : f === "ta" ? p.rating || "—" : "day-trader-skill";
+      tr.append(td(p.symbol, "", names[p.symbol] || ""), td(by, "", f === "ta" && p.rationale ? short(p.rationale, 60) : ""), td(p.qty < 1 ? p.qty.toFixed(4) : String(p.qty), "n"),
         td(usd(p.avg_price, 2), "n"), td(usd(p.price, 2), "n"), td(susd(p.pl), "n " + cls(p.pl), pct(p.pl_pct, 2)));
       return tr; });
-    if (!rows.length) { const tr = document.createElement("tr"); tr.append(td("No positions: every strategy is in cash right now.")); rows.push(tr); }
+    if (!rows.length) { const tr = document.createElement("tr"); tr.append(td(f === "intraday" ? "No positions: every strategy is in cash right now." : "No open positions right now.")); rows.push(tr); }
     $("ac-pos").replaceChildren(...rows);
-    $("ac-ord").replaceChildren(...A.orders.slice(0, 8).map(o => { const tr = document.createElement("tr");
+    const orows = orders.slice(0, 8).map(o => { const tr = document.createElement("tr");
       tr.append(td(`${o.side === "buy" ? "Bought" : "Sold"} ${o.symbol}`, "", o.date.slice(0, 16).replace("T", " ") + " UTC"), td(o.qty < 1 ? o.qty.toFixed(4) : String(o.qty), "n"),
-        td(o.price ? usd(o.price, 2) : "—", "n"), td(o.status.replace(/_/g, " ")));
-      return tr; }));
+        td(o.price ? usd(o.price, 2) : "—", "n"), td(String(o.status || "").replace(/_/g, " ")));
+      return tr; });
+    if (!orows.length) { const tr = document.createElement("tr"); tr.append(td("No orders yet.")); orows.push(tr); }
+    $("ac-ord").replaceChildren(...orows);
+    renderSysInfo(f, A);
   }
-  renderResearch(); renderAcct(); renderParams(); renderAll();
+
+  // ---- Compare: all three accounts side by side
+  const dayMs = d => Date.parse(d + "T00:00:00Z");
+  function cmpSeries(A) {  // [[YYYY-MM-DD, equity]] from the account's start through its latest figure
+    const cal = ((A && A.calendar) || []).slice().sort((a, b) => a.date < b.date ? -1 : 1);
+    if (!cal.length) return [];
+    const d0 = A.started || new Date(dayMs(cal[0].date) - 864e5).toISOString().slice(0, 10);
+    const pts = [[d0, A.start_equity || 25000]].concat(cal.filter(c => c.date > d0).map(c => [c.date, c.equity]));
+    const last = pts[pts.length - 1], gd = (A.live || A.generated || "").slice(0, 10);
+    if (gd > last[0] && A.equity != null && Math.abs(A.equity - last[1]) > 0.005) pts.push([gd, A.equity]);
+    return pts;
+  }
+  function renderCompare() {
+    const data = ACC.map(a => ({ a, A: D[a.snap] }));
+    $("cmp-cards").replaceChildren(...data.map(({ a, A }) => {
+      const c = document.createElement("div"); c.className = "cmp-card"; c.style.setProperty("--c", `var(${a.color})`);
+      c.append(Object.assign(document.createElement("h3"), { textContent: a.nm }), Object.assign(document.createElement("span"), { className: "sub", textContent: a.sub }));
+      if (!A) { c.append(Object.assign(document.createElement("p"), { className: "note", textContent: "No snapshot yet." })); return c; }
+      const tot = A.equity - A.start_equity, day = A.equity - A.last_equity, B = A.balance_history, kvb = document.createElement("div"); kvb.className = "kv";
+      kv(kvb, [["Today", `${susd(day)} (${spct(day / (A.last_equity || A.equity))})`, day > 0 ? "ok" : day < 0 ? "bad" : ""],
+        ["Since start", `${susd(tot)} (${spct(tot / A.start_equity)})`, tot > 0 ? "ok" : tot < 0 ? "bad" : ""],
+        ["Open positions", String((A.positions || []).length)], ["Trades (closed)", String(B && B.rows ? B.rows.length : (A.trades || []).length)]]);
+      c.append(Object.assign(document.createElement("span"), { className: "big", textContent: usd(A.equity, 2) }), kvb);
+      return c; }));
+    // combined balance chart, each line from its own start
+    const series = data.map(({ a, A }) => ({ a, A, pts: cmpSeries(A) })), live = series.filter(x => x.pts.length);
+    const plot = $("cmp-plot"), key = $("cmp-key");
+    key.replaceChildren(...series.map(x => { const sp = document.createElement("span"), i = document.createElement("i"); i.style.background = `var(${x.a.color})`;
+      const A = x.A; sp.append(i, A ? `${x.a.short} ${usd(A.equity)} (${spct(A.equity / A.start_equity - 1)})` : x.a.short + " · no data"); return sp; }));
+    if (!live.length) { plot.replaceChildren(Object.assign(document.createElement("div"), { className: "bh-empty", textContent: "No balance history yet." })); }
+    else {
+      const NS = "http://www.w3.org/2000/svg", W = Math.max(280, plot.clientWidth || 600), Ht = 240, L = 6, R = 62, T = 10, B = 22;
+      let t0 = Infinity, t1 = -Infinity, lo = Infinity, hi = -Infinity;
+      live.forEach(x => x.pts.forEach(([d, v]) => { const t = dayMs(d); t0 = Math.min(t0, t); t1 = Math.max(t1, t); lo = Math.min(lo, v); hi = Math.max(hi, v); }));
+      if (t1 === t0) { t0 -= 864e5; t1 += 864e5; } if (lo === hi) { lo -= 1; hi += 1; }
+      const pad = (hi - lo) * 0.1; lo -= pad; hi += pad;
+      const x = t => L + (W - L - R) * (t - t0) / (t1 - t0), y = v => T + (Ht - T - B) * (1 - (v - lo) / (hi - lo));
+      const el = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+      const svg = el("svg", { viewBox: `0 0 ${W} ${Ht}`, role: "img", "aria-label": "Balance of the three accounts since each started" });
+      niceTicks(lo, hi, 4).forEach(v => svg.append(el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css("--line"), "stroke-width": 1 }), el("text", { x: W - R + 6, y: y(v) + 3 }, "$" + Math.round(v).toLocaleString("en-US"))));
+      const nl = W < 420 ? 3 : 5, fmtD = t => new Date(t).toLocaleString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+      for (let k = 0; k < nl; k++) { const t = t0 + (t1 - t0) * k / (nl - 1); svg.append(el("text", { x: x(t), y: Ht - 6, "text-anchor": k === 0 ? "start" : k === nl - 1 ? "end" : "middle" }, fmtD(t))); }
+      live.forEach(sx => { const col = css(sx.a.color), P = sx.pts.map(([d, v]) => x(dayMs(d)).toFixed(1) + "," + y(v).toFixed(1));
+        svg.append(el("path", { d: "M" + P.join("L"), fill: "none", stroke: col, "stroke-width": 2, "stroke-linejoin": "round" }));
+        const e = sx.pts[sx.pts.length - 1]; svg.append(el("circle", { cx: x(dayMs(e[0])), cy: y(e[1]), r: 3.5, fill: col })); });
+      const vl = el("line", { y1: T, y2: Ht - B, stroke: css("--muted"), "stroke-width": 1, visibility: "hidden" }); svg.append(vl);
+      const tip = Object.assign(document.createElement("div"), { className: "bh-tip" }); tip.hidden = true;
+      const valAt = (pts, t) => { let v = null; for (const [d, e] of pts) { if (dayMs(d) <= t + 1) v = e; } return v; };
+      const move = e => { const rc = svg.getBoundingClientRect(), px = (e.clientX - rc.left) * W / rc.width, t = Math.max(t0, Math.min(t1, t0 + (px - L) / (W - L - R) * (t1 - t0)));
+        vl.setAttribute("x1", x(t)); vl.setAttribute("x2", x(t)); vl.setAttribute("visibility", "visible"); tip.hidden = false;
+        tip.textContent = fmtD(t) + "  " + live.map(sx => { const v = valAt(sx.pts, t); return sx.a.short + " " + (v == null ? "—" : usd(v)); }).join("  ");
+        const tw = tip.offsetWidth; tip.style.left = Math.max(0, Math.min(rc.width - tw, x(t) / W * rc.width - tw / 2)) + "px"; };
+      const out = () => { vl.setAttribute("visibility", "hidden"); tip.hidden = true; };
+      svg.addEventListener("pointermove", move); svg.addEventListener("pointerdown", move); svg.addEventListener("pointerleave", out); svg.addEventListener("pointercancel", out);
+      plot.replaceChildren(svg, tip);
+    }
+    // P&L per day, one column per account
+    const dates = [...new Set(data.flatMap(({ A }) => ((A && A.calendar) || []).map(c => c.date)))].sort().reverse(), tb = $("cmp-days");
+    const th = document.createElement("tr"); [["Date", ""], ...ACC.map(a => [a.f === "intraday" ? "Ours" : "System " + a.short, "r"])].forEach(([t, c]) => th.append(Object.assign(document.createElement("th"), { textContent: t, className: c })));
+    const body = dates.map(d => { const tr = document.createElement("tr"); tr.append(Object.assign(document.createElement("td"), { className: "t", textContent: d }));
+      data.forEach(({ A }) => { const c = ((A && A.calendar) || []).find(z => z.date === d), td = document.createElement("td"); td.className = "r " + (c ? cls(c.pl) : "");
+        td.textContent = c ? `${susd(c.pl)} · ${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%` : "—"; tr.append(td); }); return tr; });
+    tb.replaceChildren(Object.assign(document.createElement("thead"), {}), Object.assign(document.createElement("tbody"), {}));
+    tb.firstChild.append(th); tb.lastChild.append(...body);
+    if (!dates.length) tb.lastChild.append(Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="4">No trading days yet.</td>' }));
+    // account bars
+    $("cmp-bars").replaceChildren(...data.map(({ a, A }) => { const d = document.createElement("div"); d.className = "panel tvbar"; d.setAttribute("aria-label", a.nm + " account summary"); d.append(...tvCells(A, a.nm)); return d; }));
+  }
+  renderResearch(); applyViews();
   // ---------------------------------------------------------------- live account data (Supabase execute_sql via the mcp capability)
-  // Read-only: the only statement ever sent is `select private.alpaca_live('id')` (the long-term 'lt' account is retired and never queried); the server holds the Alpaca keys, the page holds none.
+  // Read-only: the only statement ever sent is `select private.alpaca_live('<account>')` for the accounts 'id' (ours), 'dts' (System B) and 'ta' (System C); the server holds the Alpaca keys, the page holds none.
   // LIVE-PURE-BEGIN (no DOM access in here: unit-checked in node against src/alpaca_paper.py)
   const fmtNum = x => x.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
   const r2 = x => Number(x.toFixed(2));
@@ -1181,6 +1301,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const posOk = Array.isArray(d.positions);
     if (posOk) A.positions = d.positions.map(p => ({ symbol: p.symbol, qty: num(p.qty) ?? 0, avg_price: num(p.avg_entry_price) ?? 0, price: num(p.current_price) ?? 0,
       value: num(p.market_value) ?? 0, pl: num(p.unrealized_pl) ?? 0, pl_pct: num(p.unrealized_plpc) ?? 0 })); else partial.push("positions");
+    if (posOk) { const pb = {}; for (const q of base.positions || []) pb[q.symbol] = q;  // System C's rating + rationale come from its snapshot
+      A.positions.forEach(p => { const q = pb[p.symbol]; if (q && q.rating != null) { p.rating = q.rating; p.rationale = q.rationale; } }); }
     if (Array.isArray(d.orders)) A.orders = d.orders.map(o => { const t = Date.parse(o.submitted_at || o.created_at);
       return { date: (isFinite(t) ? new Date(t).toISOString().slice(0, 16) : String(o.submitted_at || "").slice(0, 16)) + "+00:00", symbol: o.symbol, side: o.side,
         qty: num(o.qty) ?? 0, status: o.status, price: num(o.filled_avg_price) }; }); else partial.push("orders");
@@ -1220,14 +1342,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   // LIVE-PURE-END
 
-  const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh", LIVE_EVERY = 5000;
-  const LIVE_Q = { id: "select private.alpaca_live('id') as d" };
+  const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh";
+  const LIVE_Q = { id: "select private.alpaca_live('id') as d", dts: "select private.alpaca_live('dts') as d", ta: "select private.alpaca_live('ta') as d" };
   const BLANK = { start_equity: 25000, equity: 0, cash: 0, last_equity: 0, generated: "1970-01-01T00:00:00+00:00", positions: [], orders: [], calendar: [], history: {}, strategies_by_symbol: {} };
-  const SNAP = { id: D.alpaca_intraday }, LIVE = { id: null }, SIG = {};
+  const BYKEY = Object.fromEntries(ACC.map(a => [a.key, a]));
+  const SNAP = Object.fromEntries(ACC.map(a => [a.key, D[a.snap]])), LIVE = Object.fromEntries(ACC.map(a => [a.key, null])), SIG = {}, liveBusy = {};
   const DENIED = ["needs_reauth", "server_not_connected", "selection_required", "server_not_found", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted", "capability_disabled", "capability_removed", "consent_required"];
-  let liveMcp = null, liveKey = null, liveUnsub = null, liveTimer = null, liveBusy = false;
-  const liveAcctKey = () => lfilter === "intraday" ? "id" : null;  // null = the retired long-term account: nothing to query
-  const setAcct = (key, A) => { if (key === "id") D.alpaca_intraday = A; };
+  let liveMcp = null, liveKeys = [], liveUnsubs = [], liveTimer = null;
+  const liveAcctKeys = () => lfilter === "compare" ? ACC.map(a => a.key) : [ACCF[lfilter].key];  // the account on screen (all three in Compare)
+  const liveEvery = () => lfilter === "compare" ? 15000 : 5000;
+  const setAcct = (key, A) => { D[BYKEY[key].snap] = A; };
   function liveRows(res) {  // execute_sql result: {"result": "<text with <untrusted-data-...> [json rows] </untrusted-data-...>"}; the rows are data only
     try {
       let t = res && res.payload;
@@ -1246,12 +1370,13 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     return [];
   }
   function liveRerender() {
+    if (lfilter === "compare") { if (curTab !== "research") renderCompare(); return; }
     renderAcct();
     if (curTab === "calendar") renderCal(acctData());
     if (curTab === "balance") renderBalance(acctData());
   }
   function onLive(key, res) {
-    if (key !== liveKey) return;  // a result for the account that was switched away from
+    if (liveKeys.indexOf(key) < 0) return;  // a result for an account that was switched away from
     let d = (liveRows(res)[0] || {}).d;
     if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { d = null; } }
     if (!d || typeof d !== "object") { LIVE[key] = Object.assign({}, LIVE[key], { status: "err", msg: "bad reply" }); liveBadge(); return; }
@@ -1267,53 +1392,57 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     liveBadge();
   }
   function onLiveErr(key, err) {
-    if (key !== liveKey) return;
+    if (liveKeys.indexOf(key) < 0) return;
     const code = (err && err.code) || "error";
     if (DENIED.indexOf(code) >= 0 && SIG[key]) { delete SIG[key]; setAcct(key, SNAP[key]); liveRerender(); LIVE[key] = null; }  // a denial retracts live data
     LIVE[key] = Object.assign({}, LIVE[key], { status: "err", msg: code });
     liveBadge();
   }
   async function livePoll(key) {
-    if (!key || !liveMcp || document.hidden || liveBusy || key !== liveKey) return;
-    liveBusy = true;
+    if (!key || !liveMcp || document.hidden || liveBusy[key] || liveKeys.indexOf(key) < 0) return;
+    liveBusy[key] = true;
     try { onLive(key, await liveMcp.callTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] }, { cache: false })); }
     catch (e) { onLiveErr(key, e); }
-    finally { liveBusy = false; }
+    finally { liveBusy[key] = false; }
   }
-  function liveStart() {  // watch only the account on screen; called again whenever the Long-term/Intraday switch changes
-    if (liveUnsub) { try { liveUnsub(); } catch (e) {} liveUnsub = null; }
+  function liveStart() {  // watch only the account(s) on screen; called again whenever the account switch changes
+    liveUnsubs.forEach(u => { try { u(); } catch (e) {} }); liveUnsubs = [];
     clearInterval(liveTimer); liveTimer = null;
+    liveKeys = liveAcctKeys();
     if (!liveMcp) return;
-    const key = liveKey = liveAcctKey();
-    if (!key) return;
-    try {
-      liveUnsub = liveMcp.watchTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] },
-        ev => ev.type === "data" ? onLive(key, ev.result) : onLiveErr(key, ev.error), { refetchInterval: LIVE_EVERY });
-    } catch (e) { onLiveErr(key, e); }
-    liveTimer = setInterval(() => livePoll(key), LIVE_EVERY);  // watchTool polls are clamped to ~30 s; this keeps a 5 s cadence while visible (one call in flight at a time)
+    const every = liveEvery();
+    liveKeys.forEach(key => {
+      try {
+        const u = liveMcp.watchTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: LIVE_Q[key] },
+          ev => ev.type === "data" ? onLive(key, ev.result) : onLiveErr(key, ev.error), { refetchInterval: every });
+        if (typeof u === "function") liveUnsubs.push(u);
+      } catch (e) { onLiveErr(key, e); }
+    });
+    liveTimer = setInterval(() => liveKeys.forEach(livePoll), every);  // watchTool polls are clamped to ~30 s; this keeps 5 s (one account) or 15 s (Compare) while visible
   }
   function liveBadge() {
-    const b = $("live-badge"), key = liveAcctKey();
-    if (!key) { b.textContent = "Long-term account retired " + RETIRED; b.className = ""; return; }
-    const s = LIVE[key], A = SNAP[key];
+    const b = $("live-badge"), keys = liveAcctKeys(), multi = keys.length > 1;
     const ago = ms => { const sec = Math.max(0, Math.round((Date.now() - ms) / 1000)); return sec < 60 ? sec + "s ago" : sec < 3600 ? Math.round(sec / 60) + "m ago" : Math.round(sec / 3600) + "h ago"; };
-    const snap = A ? "snapshot from " + A.generated.replace("T", " ").slice(0, 16) + " UTC" : "no snapshot yet";
-    let t = snap, c = "";
-    if (liveMcp) {
-      if (!s) t = "Live · connecting… (" + snap + ")";
-      else if (s.status === "live") { t = "● Live · updated " + ago(s.at) + (s.partial.length ? " (no " + s.partial.join(", ") + ")" : ""); c = "ok"; }
-      else if (s.status === "setup") { t = "Live data not set up yet · " + snap; }
-      else { t = s.good ? "Live unavailable — showing data from " + ago(s.at) + " (" + s.msg + ")" : "Live unavailable — showing snapshot (" + s.msg + ")"; c = "bad"; }
-    }
-    b.textContent = t; b.className = c;
+    const one = key => {  // [long text, class, short text] for one account
+      const s = LIVE[key], A = SNAP[key], snap = A ? "snapshot from " + A.generated.replace("T", " ").slice(0, 16) + " UTC" : "no snapshot yet";
+      if (!liveMcp) return [snap, "", "snapshot"];
+      if (!s) return ["Live · connecting… (" + snap + ")", "", "connecting…"];
+      if (s.status === "live") return ["● Live · updated " + ago(s.at) + (s.partial.length ? " (no " + s.partial.join(", ") + ")" : ""), "ok", "● live " + ago(s.at)];
+      if (s.status === "setup") return ["Live data not set up yet — showing " + snap, "", "live data not set up yet, showing snapshot"];
+      return [s.good ? "Live unavailable — showing data from " + ago(s.at) + " (" + s.msg + ")" : "Live unavailable — showing snapshot (" + s.msg + ")", "bad", "live unavailable"];
+    };
+    if (!multi) { const [t, c] = one(keys[0]); b.textContent = t; b.className = c; return; }
+    const parts = keys.map(k => [BYKEY[k].short, one(k)]);
+    b.textContent = parts.map(([n, o]) => n + ": " + o[2]).join("  |  ");
+    b.className = parts.some(([, o]) => o[1] === "bad") ? "bad" : parts.every(([, o]) => o[1] === "ok") ? "ok" : "";
   }
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) livePoll(liveKey); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) liveKeys.forEach(livePoll); });
   liveBadge(); setInterval(liveBadge, 1000);
   (async () => {  // never blocks first paint; no mcp (or no claude runtime) = the snapshot page exactly as before
     try { if (typeof claude !== "undefined" && claude && claude.use) liveMcp = await claude.use("mcp"); } catch (e) { liveMcp = null; }
     liveBadge(); liveStart();
   })();
-  const rh = () => { if (!$("view-calendar").hidden) renderHistory(acctData()); };
+  const rh = () => { if (!$("view-calendar").hidden) renderHistory(acctData()); if (!$("view-compare").hidden && !$("cmp-a").hidden) renderCompare(); };
   window.addEventListener("resize", () => { clearTimeout(rh.t); rh.t = setTimeout(rh, 150); });
   matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", rh);
   new MutationObserver(rh).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });

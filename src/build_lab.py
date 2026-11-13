@@ -1,5 +1,6 @@
-"""Builds report/lab.html (the Strategy Lab dashboard) from the engine, results.json,
-confirmation.json and the agent's memory. Every number on the page is net of costs."""
+"""Builds report/lab.html (the Strategy Lab dashboard): the intraday research plus the snapshots of the three live
+systems (ours, System B, System C). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
+defined because briefing_inputs and candidates still use them. Every number on the page is net of costs."""
 from __future__ import annotations
 
 import json
@@ -12,9 +13,6 @@ import data
 import ftmo_lab
 import lab_research
 import lab_text
-from agent import platform as AP
-from agent import spec as AS
-from agent.memory import Memory
 from engine import extract_trades, returns_np
 from run import CONFIG
 from strategies import STRATEGIES, positions
@@ -101,7 +99,6 @@ def _plain_params(code, combos):
 
 # Daily strategies kept in the lab: the ones behind the three open Alpaca positions (SPY, QQQ, BTC).
 LAB_DAILY = {"MR-IBS", "TS-VOL", "MR-WR", "CAL-JAN", "TS-TREND"}
-SHOW_AGENT = False
 
 INTRA = {
     "id_overnight": ("ID-NIGHT", "Buys the fund at the close and sells at the next morning's open, so it only owns the night.",
@@ -210,54 +207,6 @@ def build_intraday(book, markets):
             _add_intraday(book, markets, json.loads(path.read_text()), by_id, days)
 
 
-def build_crypto9(book, markets):
-    """Add crypto study 9 (results/crypto9.json "lab": settings' daily series stored by src/crypto9_lab.py, so no price data
-    is needed here) to the Long-term family. Only strategies that made money in their test years are stored."""
-    path = ROOT / "results" / "crypto9.json"
-    if not path.exists():
-        return
-    res = json.loads(path.read_text())
-    lab, by_id = res.get("lab"), {s["id"]: s for s in res["strategies"]}
-    if not lab:
-        return
-    markets.update(lab["markets"])
-    for e in lab["entries"]:
-        st = by_id[e["sid"]]
-        code, plain, signal, edge, kills, pp = lab_text.CRYPTO9[e["sid"]]
-        combos = e["combos"]
-        chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(e["params"]))
-        book.append({"code": code, "id": f"{e['sid']}_{e['asset']}", "name": st["name"], "market": e["market"],
-                     "desc": st["plain"], "family": "Rotation" if e["sid"] == "c9_rotation" else "Trend",
-                     "freq": "Daily, long or flat, crypto trades every day", "source": st["source"],
-                     "signal": signal, "edge": edge, "kills": kills, "plain": plain,
-                     "pparams": {k: {"label": a, "help": h, "values": {_js(v): txt for v, txt in vals.items()}} for k, (a, h, vals) in pp.items()},
-                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key) for k in combos[0]["params"]},
-                     "combos": combos, "chosen": chosen, "ftmo": e["ftmo"], "verdict": e["verdict"], "evidence": e["evidence"]})
-
-
-def build_crypto10(book, markets):
-    """Add crypto study 10 (results/crypto10.json "lab") to the Long-term family, same shape as study 9."""
-    path = ROOT / "results" / "crypto10.json"
-    if not path.exists():
-        return
-    lab = json.loads(path.read_text()).get("lab")
-    if not lab:
-        return
-    markets.update(lab["markets"])
-    st = lab["strategy"]
-    for e in lab["entries"]:
-        code, plain, signal, edge, kills, pp = lab_text.CRYPTO10[e["sid"]]
-        combos = e["combos"]
-        chosen = next(i for i, c in enumerate(combos) if _js(c["params"]) == _js(e["params"]))
-        book.append({"code": code, "id": f"{e['sid']}_{e['asset']}", "name": st["name"], "market": e["market"],
-                     "desc": st["plain"], "family": "Trend",
-                     "freq": "Daily, long or flat, crypto trades every day", "source": st["source"],
-                     "signal": signal, "edge": edge, "kills": kills, "plain": plain,
-                     "pparams": {k: {"label": a, "help": h, "values": {_js(v): txt for v, txt in vals.items()}} for k, (a, h, vals) in pp.items()},
-                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key) for k in combos[0]["params"]},
-                     "combos": combos, "chosen": chosen, "ftmo": e["ftmo"], "verdict": e["verdict"], "evidence": e["evidence"]})
-
-
 def _add_intraday(book, markets, res, by_id, days):
     import intraday as I
     pool = sum(1 for r in res["results"] if r.get("coin_flip"))
@@ -355,132 +304,55 @@ def series(df, pos, cost):
             "pos": [int(round(p * 100)) for p in pos]}
 
 
-def rank_book(book, cache):
-    """Order the book by strength of evidence (rule shown on the page):
-    +2 held up on fresh data, +1 held up on lockbox markets, -1 if fewer than 5 decisions a year
-    (a record built on a handful of calls); ties broken by the share of random traders beaten."""
-    for b in book:
-        if "evidence" in b:  # intraday entries carry their own evidence
-            continue
-        v = b["verdict"]
-        df, _, cfg = cache[b["market"]]
-        oos = df.index.searchsorted(np.datetime64(cfg["oos_start"]))
-        years = (len(df) - oos) / cfg["ann"]
-        n_tr = sum(1 for e, _ in b["combos"][b["chosen"]]["trades"] if e >= oos)
-        per_year = float(n_tr / years) if years > 0 else 0.0
-        fresh = bool((v.get("fresh") or {}).get("confirmed"))
-        lock = bool(v.get("lockbox"))
-        beat = 1 - v["p"] if v.get("p") is not None else 0.0
-        few = bool(per_year < 5)
-        score = (2 if fresh else 0) + (1 if lock else 0) - (1 if few and b["code"] != "AGENT" else 0)
-        if b["code"] == "AGENT":
-            score = -9  # no held-out evidence at all yet
-        b["evidence"] = {"fresh": fresh, "lockbox": lock, "beat": round(beat, 4), "per_year": round(per_year, 1),
-                         "few": few, "score": score, "tested": v.get("p") is not None}
+def rank_book(book):
+    """Order the book by strength of evidence (rule shown on the page): every entry is an intraday study row and carries
+    its own evidence: +2 held up on IWM/DIA, +1 passed after allowing for every test, -1 if fewer than 5 decisions a year;
+    ties broken by the share of random traders beaten."""
     book.sort(key=lambda b: (-b["evidence"]["score"], -b["evidence"]["beat"]))
     for i, b in enumerate(book, 1):
         b["rank"] = i
 
 
-def mix_portfolio(mix_daily):
-    """The live 50/50 account: daily strategies 50%, noise-band breakout on SPY and QQQ 25% each."""
-    import intraday as I
-    rows = json.loads((ROOT / "results" / "intraday.json").read_text())["results"]
-    days, noise = {}, {}
-    for sym in ("SPY", "QQQ"):
-        days[sym] = I.Days(sym)
-        p = next(r["params"] for r in rows if r["strategy"] == "id_noise_breakout" and r["asset"] == sym)
-        noise[sym] = I.noise_breakout(days[sym], **p)
-    return ftmo_lab.mix(mix_daily, noise, days)
+def _snapshot(name):
+    """An account snapshot kept up to date by its workflow (agent_memory/<name>); None if missing or unreadable."""
+    p = ROOT / "agent_memory" / name
+    try:
+        return json.loads(p.read_text()) if p.exists() else None
+    except ValueError:
+        return None
+
+
+def slim_system_b(d):
+    """System B's snapshot with its per-day scan log cut to the latest day's summary (the page shows only that)."""
+    if not d:
+        return None
+    d = dict(d)
+    days = d.pop("days", None) or {}
+    if days:
+        day = max(days)
+        scan = (days[day] or {}).get("scan") or {}
+        decs = scan.get("decisions") or []
+        d["latest_scan"] = {"date": day, "status": scan.get("status"), "at": scan.get("at"), "universe": scan.get("universe"),
+                            "counts": scan.get("counts"), "hits": len(scan.get("hits") or []), "evaluated": scan.get("evaluated"),
+                            "taken": scan.get("taken"),
+                            "decisions": [{"symbol": x.get("symbol"), "status": x.get("status"), "gate": x.get("gate"),
+                                           "reason": str(x.get("reason") or "")[:160]} for x in decs[:20]]}
+    return d
 
 
 def main():
-    results = json.loads((ROOT / "results" / "results.json").read_text())["results"]
-    cp = ROOT / "results" / "confirmation.json"
-    conf = json.loads(cp.read_text()) if cp.exists() else None
-    ctx_raw = data.load_context()
-    cache, markets, book, mix_daily = {}, {}, [], []
-    for b in BOOK:
-        if b["code"] not in LAB_DAILY:
-            continue
-        st = BY_ID[b["id"]]
-        df, ctx, cfg = build_market(b["market"], ctx_raw, cache)
-        v = verdict_for(b["id"], b["market"], results, conf)
-        combos, poss = [], []
-        for p in st["grid"]:
-            pos = np.clip(np.nan_to_num(positions(st, df, ctx, p).values.astype(float)), 0, 1)
-            combos.append({"params": p} | series(df, pos, cfg["cost_bps"]))
-            poss.append(pos)
-        chosen = next(i for i, c in enumerate(combos) if json.loads(json.dumps(c["params"])) == v["params"])
-        mix_daily.append((df, poss[chosen], cfg["cost_bps"]))
-        fam, freq, src = ABOUT[b["code"]]
-        book.append({"code": b["code"], "id": b["id"], "name": st["name"], "market": b["market"],
-                     "desc": st["description"], "family": fam, "freq": freq, "source": src,
-                     "signal": b["signal"], "edge": b["edge"], "kills": b["kills"],
-                     "plain": PLAIN[b["code"]][0], "pparams": _plain_params(b["code"], combos),
-                     "axes": {k: sorted({_js(c["params"][k]) for c in combos}, key=_axis_key)
-                              for k in st["grid"][0]},
-                     "combos": combos, "chosen": chosen, "verdict": v,
-                     "ftmo": ftmo_lab.daily_table(df, poss[chosen], cfg["cost_bps"], cfg["oos_start"])})
-    # the self-improving agent's current best idea
-    mem = Memory()
-    top = mem.top(1) if SHOW_AGENT else []
-    if top:
-        t = top[0]
-        s = t["spec"]
-        m = AP.Market(s["market"], ctx_raw)
-        df, ctx, cfg = build_market(s["market"], ctx_raw, cache)
-        pos = AS.positions(s, m.table, m.th)
-        assert len(pos) == len(df)
-        fam, freq, src = ABOUT["AGENT"]
-        book.append({"code": "AGENT", "id": "agent_" + t["hash"], "name": "Agent's best idea", "market": s["market"],
-                     "desc": AS.describe(s), "family": fam, "freq": freq, "source": src,
-                     "signal": ["ENTRY  " + " AND ".join(f"{c['feature']} {c['op']} p{c['q']}" for c in s["entry"])]
-                     + ([f"FILTER {s['filter']['feature']} {s['filter']['op']} p{s['filter']['q']}"] if s.get("filter") else [])
-                     + ([f"EXIT   after {s['exit']['n']} sessions"] if s["exit"]["type"] == "hold" else
-                        [f"EXIT   {s['exit']['cond']['feature']} {s['exit']['cond']['op']} p{s['exit']['cond']['q']}"
-                         f" or after {s['exit']['max_hold']} sessions"])
-                     + ["", "pN = N-th percentile of that feature on the tuning years"],
-                     "plain": "An idea the self-learning agent came up with on its own: " + AS.describe(s).split(": ", 1)[1] + ".",
-                     "pparams": {},
-                     "edge": f"Found by the agent after {len(mem.trials)} trials. Its score on the tuning years, "
-                             f"deflated for every trial run, is {mem.current_reward(t):.2f} (0.95 is needed before a held-out test).",
-                     "kills": ["Chosen as the best of hundreds of tries: some of its score is luck.",
-                               "Has not earned a held-out test yet, so its test-year numbers below are for viewing only.",
-                               "Three or more conditions: each one is another chance to fit noise."],
-                     "axes": {}, "combos": [{"params": {}} | series(df, pos, cfg["cost_bps"])], "chosen": 0,
-                     "verdict": {"verdict": "AGENT", "reward": round(mem.current_reward(t), 3),
-                                 "trials": len(mem.trials)}})
-    build_intraday(book, markets)
-    build_crypto9(book, markets)
-    build_crypto10(book, markets)
-    rank_book(book, cache)
-    for ticker, (df, _, cfg) in cache.items():
-        o, c = df.Open.values, df.Close.values
-        markets[ticker] = {"dates": [d.strftime("%Y-%m-%d") for d in df.index],
-                           "bench": r5(returns_np(o, c, np.ones(len(c)), cfg["cost_bps"])),
-                           "oos_start": cfg["oos_start"], "is_end": cfg["is_end"], "ann": cfg["ann"],
-                           "cost_bps": cfg["cost_bps"]}
-    hv = mem.holdout_verdicts()
-    research = {"trials": len(mem.trials), "scored": len(mem.scored()),
-                "rejected": sum(1 for t in mem.trials if t.get("status") == "rejected"),
-                "holdout_shots": len(hv), "holdout_pass": sum(v["pass"] for v in hv),
-                "top": [{"desc": AS.describe(t["spec"]), "now": round(mem.current_reward(t), 3),
-                         "found": t["reward"], "folds": t["fold_sharpes"]} for t in mem.top(8)],
-                "hunt_tests": sum(1 for r in results if r.get("coin_flip")),
-                "hunt_strategies": len({r["strategy"] for r in results}) - 1}
-    pp = ROOT / "agent_memory" / "paper_report.json"
-    paper = json.loads(pp.read_text()) if pp.exists() else {"strategies": {}}
-    ap = ROOT / "agent_memory" / "alpaca_account.json"
-    alpaca = json.loads(ap.read_text()) if ap.exists() else None
-    ai = ROOT / "agent_memory" / "alpaca_intraday.json"
-    alpaca_intraday = json.loads(ai.read_text()) if ai.exists() else None
+    results_meta = json.loads((ROOT / "results" / "results.json").read_text())
+    markets, book = {}, []
+    build_intraday(book, markets)  # the lab is about the three live systems: only intraday research is built (no long-term data)
+    rank_book(book)
     ip = ROOT / "results" / "intraday.json"
     portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
-    portfolios = [pf for pf in [mix_portfolio(mix_daily)] + portfolios if pf["oos"]["total"] > 0]  # money-makers only
+    portfolios = [pf for pf in portfolios if pf["oos"]["total"] > 0]  # money-makers only
     book, hidden = ftmo_lab.keep_positive(book, markets)
-    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, "research": research, **lab_research.page_data(), "paper": paper, "alpaca": alpaca, "alpaca_intraday": alpaca_intraday,
-                       "generated": json.loads((ROOT / "results" / "results.json").read_text())["generated"]},
+    blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, **lab_research.page_data(),
+                       "alpaca_intraday": _snapshot("alpaca_intraday.json"),
+                       "system_b": slim_system_b(_snapshot("system_dts.json")), "system_c": _snapshot("system_ta.json"),
+                       "generated": results_meta["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)
     out = ROOT / "report" / "lab.html"
