@@ -1,5 +1,34 @@
 {
  "plans": {
+  "CSCO": {
+   "date": "2026-11-13",
+   "decision_id": "2026-11-13|CSCO",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "initial size 0.5x unverified: using the default 1x",
+     "scale-in near $93.17: initial entry already uses the 1x allowed"
+    ],
+    "notes": [],
+    "rating": "Overweight",
+    "ref_price": 95.64,
+    "scale_in": [],
+    "side": "long",
+    "stop": 89.26,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
   "GPN": {
    "date": "2026-11-12",
    "decision_id": "2026-11-12|GPN",
@@ -94,104 +123,71 @@
    "status": "active"
   },
   "NVDA": {
-   "date": "2026-11-12",
-   "decision_id": "2026-11-12|NVDA",
+   "date": "2026-11-13",
+   "decision_id": "2026-11-13|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
    "placed": {
-    "at": "2026-11-13T15:06:32+00:00",
+    "at": "2026-11-13T22:37:49+00:00",
     "ids": [
-     "a64bfe69-790f-4cad-b297-cdd4f323e29f"
+     "d255c6a2-5765-4273-86dd-6f057702f40f"
     ],
     "qty": 15,
-    "stop": 146.49,
+    "stop": 145.0,
     "tp": null
    },
    "plan": {
-    "base": 0.1,
-    "exits": [],
-    "horizon": null,
-    "initial_x": 0.5,
-    "max_total_x": 1.0,
-    "not_executed": [
-     "scale-in above $175 size 1x clipped to the 0.5x left in the slot",
-     "scale-in near $165 size 1x clipped to the 0.5x left in the slot"
-    ],
-    "notes": [
-     "oversold RSI",
-     "current leadership uncertainty"
-    ],
-    "rating": "Overweight",
-    "ref_price": 162.3119,
-    "scale_in": [
-     {
-      "condition": "above",
-      "price": 175.0,
-      "size_x": 0.5,
-      "valid_days": 10
-     },
-     {
-      "condition": "near",
-      "price": 165.0,
-      "size_x": 0.5,
-      "valid_days": 10
-     }
-    ],
-    "side": "long",
-    "stop": 146.49,
-    "stop_type": "price",
-    "tp": null
-   },
-   "scale": [
-    {
-     "condition": "above",
-     "expires": "2026-11-26",
-     "last_bar": null,
-     "price": 175.0,
-     "size_x": 0.5,
-     "state": "pending",
-     "streak": 0,
-     "valid_days": 10
-    },
-    {
-     "condition": "near",
-     "expires": "2026-11-26",
-     "last_bar": null,
-     "price": 165.0,
-     "size_x": 0.5,
-     "state": "pending",
-     "streak": 0,
-     "valid_days": 10
-    }
-   ],
-   "status": "active"
-  },
-  "QQQ": {
-   "date": "2026-11-12",
-   "decision_id": "2026-11-12|QQQ",
-   "exits": [],
-   "log": [],
-   "opened": true,
-   "placed": null,
-   "plan": {
-    "base": null,
+    "base": 0.2,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "$680.93 is a 'reduce risk if it fails' hedge, not a stop: watched as an exit trigger instead",
-     "exit below $680.93 is already triggered at $679.04: skipped"
+     "scale-in above $160: initial entry already uses the 1x allowed"
     ],
     "notes": [
-     "awaiting a clearer technical breakout",
-     "QQQ confirms a sustained move above the 50-day SMA to signal renewed bullish momentum"
+     "extreme valuation compression",
+     "oversold mean-reversion",
+     "ongoing technical momentum decay"
     ],
-    "rating": "Hold",
-    "ref_price": 679.04,
+    "rating": "Buy",
+    "ref_price": 162.84,
     "scale_in": [],
     "side": "long",
+    "stop": 145.0,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "QQQ": {
+   "date": "2026-11-13",
+   "decision_id": "2026-11-13|QQQ",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "plan direction 'long' conflicts with the Underweight rating: rating wins",
+     "no stop in the paragraph",
+     "exit below $681.2 is not an adverse trigger for a short: skipped"
+    ],
+    "notes": [
+     "Macro headwinds",
+     "Volatile market"
+    ],
+    "rating": "Underweight",
+    "ref_price": 680.01,
+    "scale_in": [],
+    "side": "short",
     "stop": null,
     "stop_type": null,
     "tp": null
@@ -200,8 +196,8 @@
    "status": "active"
   },
   "SPY": {
-   "date": "2026-11-12",
-   "decision_id": "2026-11-12|SPY",
+   "date": "2026-11-13",
+   "decision_id": "2026-11-13|SPY",
    "exits": [],
    "log": [],
    "opened": true,
@@ -216,12 +212,44 @@
      "no stop in the paragraph"
     ],
     "notes": [
-     "elevated ATR of 10.94",
-     "wait for technical confirmation",
-     "volatility stabilizes and a directional trend emerges"
+     "Manage tail risk driven by the current $11.03 ATR volatility"
     ],
     "rating": "Hold",
     "ref_price": 752.81,
+    "scale_in": [],
+    "side": "long",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "STE": {
+   "date": "2026-11-13",
+   "decision_id": "2026-11-13|STE",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "initial size 0.5x unverified: using the default 1x",
+     "size cap 1x unverified: ignored",
+     "no stop in the paragraph",
+     "scale-in below $250: initial entry already uses the 1x allowed"
+    ],
+    "notes": [
+     "strong earnings momentum",
+     "manage near-term volatility risk"
+    ],
+    "rating": "Overweight",
+    "ref_price": 264.36,
     "scale_in": [],
     "side": "long",
     "stop": null,

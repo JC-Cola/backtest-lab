@@ -163,3 +163,78 @@ DECISION:
 
 <!-- ENTRY_END -->
 
+[2026-11-13 | SPY | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain current positioning in SPY. With the instrument trapped between the 50-day resistance ($764.09) and 200-day support ($729.32), avoid new directional exposure until a decisive trend emerges. Hedge existing positions to manage tail risk driven by the current $11.03 ATR volatility.
+
+**Investment Thesis**: SPY remains caught in a high-volatility consolidation where the macro bear case (5% Treasury yields and 6.5% PPI) directly conflicts with technical support at the 200-day SMA and consistent institutional buying. While momentum is fading on the downside (RSI 47.14), the high implied probability of sustained tight monetary policy makes a directional breakout thesis premature. The current strategy of holding remains superior to tactical accumulation, as the macro risks are too significant to ignore in favor of a range-trading strategy while the ATR is elevated.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-13 | QQQ | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry.
+
+**Investment Thesis**: The decision to move to Underweight is driven by the decisive breach of the 200-day moving average ($681.20) and the 10 EMA ($683.87), which signals institutional distribution rather than a mere consolidation. The bearish case is supported by a deteriorating macro backdrop, including a 6.5% PPI print and the removal of near-term Fed rate cut expectations, which makes a 28x valuation multiple difficult to defend in a higher-for-longer interest rate environment. While the aggressive camp highlights an oversold RSI and MACD exhaustion, these technical indicators do not outweigh the fundamental structural damage and executive instability at key index components like Nvidia. A 20-30% reduction strikes the correct balance, providing capital protection without exiting the entire position ahead of potential relief bounces. The thesis would pivot to neutral or positive only upon a confirmed reclamation of the 200-day moving average.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-13 | NVDA | Buy | pending]
+
+DECISION:
+**Rating**: Buy
+
+**Executive Summary**: Initiate a long position at 1.5x standard allocation using a tiered strategy to capitalize on extreme valuation compression. Purchase 50% immediately at $162.85 to capture oversold mean-reversion, with the remaining 50% deployed upon evidence of consolidation above $160 over three sessions. Maintain a stop-loss at $145 to mitigate tail risk from ongoing technical momentum decay.
+
+**Investment Thesis**: The investment thesis hinges on a severe valuation-price disconnect. While the Conservative analyst correctly identifies technical headwinds (moving averages, MACD, and volatility), the Aggressive and Research teams provide compelling data: NVDA's Forward P/E of 10.29 and PEG of 0.21 on a company with $193B in TTM net income and 65% operating margins represent a significant market inefficiency. The RSI of 24.86 and testing of the lower Bollinger Band confirm the stock is in deeply oversold territory, making the current pullback an anomaly rather than a fundamental erosion. The Neutral analyst's call for discipline is incorporated via the tiered entry strategy to manage the risk of the $10 ATR volatility. This position remains valid as long as the fundamental earnings power persists; a sustained break below $145 or a material deterioration in the company's competitive moats would trigger a thesis review.
+
+**Price Target**: 200.0
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-13 | CSCO | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a 5% position in CSCO with a disciplined, staggered entry strategy. Buy 50% of the target allocation at current levels near $95.64 and utilize limit orders to scale in the remaining 50% upon testing support near the lower Bollinger Band at $93.17, while maintaining a firm stop-loss at $89.26.
+
+**Investment Thesis**: The bull case for CSCO is underpinned by strong operational execution, highlighted by 21% year-over-year product order growth and an increased $9 billion AI revenue target. While technical indicators show downward momentum and margin compression concerns exist, the current valuation—specifically a Forward P/E of 16.12 and a PEG ratio of 0.93—offers a margin of safety that outweighs near-term transitional costs. This position prioritizes the company's long-term enterprise AI infrastructure dominance over short-term volatility. The thesis would be invalidated if quarterly gross margin trends demonstrate that AI-related compression is structural rather than transitional, or if the stock fails to hold the support zone near $93.17, suggesting a breakdown in fundamentals.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-13 | STE | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a partial, scaled position in STE at current levels (~$264.32) with 50% of the target allocation to participate in the strong earnings momentum. Retain the remaining 50% of liquidity to add on a pullback to the $250-$255 range. Tighten the stop-loss strategy to 1.5 times the Average True Range (ATR) rather than the 50 SMA to manage near-term volatility risk without exposing the portfolio to a 20% drawdown.
+
+**Investment Thesis**: The investment case for STE rests on strong underlying fundamentals—specifically a 9% revenue growth to $1.6 billion, $822 million in free cash flow, and a conservative debt-to-equity ratio below 29%. While technical oscillators like the RSI at 75.71 and the price proximity to the upper Bollinger Band ($267.38) suggest near-term overextension, the expanding MACD histogram of 2.19 confirms institutional buying pressure that justifies an Overweight position. We diverge from a full 'Buy' to mitigate risks identified by the conservative analyst regarding the reliance on one-off tariff refunds for margin expansion and the trimmed outlook for the Applied Sterilization Technologies segment. Adopting a staged entry with a volatility-adjusted stop-loss provides protection against the mean-reversion risk that would otherwise threaten our capital.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
