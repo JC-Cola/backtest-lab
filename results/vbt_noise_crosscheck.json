@@ -1,0 +1,212 @@
+{
+ "generated": "2026-11-13T21:17:50+00:00",
+ "params": {
+  "lookback": 14,
+  "check": 60,
+  "band": 1.0,
+  "vwap": true
+ },
+ "weight": 0.5,
+ "cost_per_side": 0.0001,
+ "symbols": {
+  "SPY": {
+   "sessions": 2725,
+   "first": "2016-01-04",
+   "last": "2026-11-03",
+   "engine_trades": 1788,
+   "engine_seconds": 4.364,
+   "full_1min": {
+    "grid_points": 1065442,
+    "vbt_seconds": 6.951,
+    "vbt_trades": 1788,
+    "max_abs_daily_diff_vs_engine": 0.00011223159793430967,
+    "mean_abs_daily_diff_vs_engine": 4.555422050498433e-07,
+    "days_with_abs_diff_gt_1e-5": 24,
+    "total_return_vbt": 0.11458793022210445,
+    "total_return_engine": 0.11512748133454265,
+    "total_return_diff": -0.0005395511124381969,
+    "max_abs_daily_diff_vs_engine_intraday_compounded": 2.0503839561758497e-06,
+    "total_return_engine_intraday_compounded": 0.11459076504794607,
+    "worst_days": [
+     {
+      "date": "2020-03-12",
+      "diff": -0.00011223159793430967,
+      "engine": -0.006573481051406837,
+      "vbt": -0.006685712649341147
+     },
+     {
+      "date": "2020-03-03",
+      "diff": -8.252345073931407e-05,
+      "engine": 0.0039008155127697513,
+      "vbt": 0.0038182920620304373
+     },
+     {
+      "date": "2024-12-18",
+      "diff": -6.221130232000362e-05,
+      "engine": 0.0003432394465806791,
+      "vbt": 0.00028102814426067546
+     },
+     {
+      "date": "2025-04-09",
+      "diff": -5.2668674134536894e-05,
+      "engine": 0.0010561894976018667,
+      "vbt": 0.0010035208234673298
+     },
+     {
+      "date": "2020-03-24",
+      "diff": -4.171066688943813e-05,
+      "engine": -0.0005445150766663857,
+      "vbt": -0.0005862257435558238
+     }
+    ]
+   },
+   "compact_15min": {
+    "grid_points": 68124,
+    "vbt_seconds": 0.026,
+    "vbt_trades": 1788,
+    "max_abs_daily_diff_vs_engine": 0.00011223159793430967,
+    "mean_abs_daily_diff_vs_engine": 4.555422050498433e-07,
+    "days_with_abs_diff_gt_1e-5": 24,
+    "total_return_vbt": 0.11458793022210445,
+    "total_return_engine": 0.11512748133454265,
+    "total_return_diff": -0.0005395511124381969,
+    "max_abs_daily_diff_vs_engine_intraday_compounded": 2.0503839561758497e-06,
+    "total_return_engine_intraday_compounded": 0.11459076504794607,
+    "worst_days": [
+     {
+      "date": "2020-03-12",
+      "diff": -0.00011223159793430967,
+      "engine": -0.006573481051406837,
+      "vbt": -0.006685712649341147
+     },
+     {
+      "date": "2020-03-03",
+      "diff": -8.252345073931407e-05,
+      "engine": 0.0039008155127697513,
+      "vbt": 0.0038182920620304373
+     },
+     {
+      "date": "2024-12-18",
+      "diff": -6.221130232000362e-05,
+      "engine": 0.0003432394465806791,
+      "vbt": 0.00028102814426067546
+     },
+     {
+      "date": "2025-04-09",
+      "diff": -5.2668674134536894e-05,
+      "engine": 0.0010561894976018667,
+      "vbt": 0.0010035208234673298
+     },
+     {
+      "date": "2020-03-24",
+      "diff": -4.171066688943813e-05,
+      "engine": -0.0005445150766663857,
+      "vbt": -0.0005862257435558238
+     }
+    ]
+   }
+  },
+  "QQQ": {
+   "sessions": 2725,
+   "first": "2016-01-04",
+   "last": "2026-11-03",
+   "engine_trades": 1723,
+   "engine_seconds": 5.677,
+   "full_1min": {
+    "grid_points": 1065445,
+    "vbt_seconds": 0.255,
+    "vbt_trades": 1723,
+    "max_abs_daily_diff_vs_engine": 0.0003275276435631136,
+    "mean_abs_daily_diff_vs_engine": 5.912884639499886e-07,
+    "days_with_abs_diff_gt_1e-5": 27,
+    "total_return_vbt": 0.6764219279099766,
+    "total_return_engine": 0.6778062307419639,
+    "total_return_diff": -0.0013843028319873163,
+    "max_abs_daily_diff_vs_engine_intraday_compounded": 4.223579099571495e-06,
+    "total_return_engine_intraday_compounded": 0.6764307395074369,
+    "worst_days": [
+     {
+      "date": "2025-04-09",
+      "diff": -0.0003275276435631136,
+      "engine": 0.04267809941248721,
+      "vbt": 0.042350571768924095
+     },
+     {
+      "date": "2020-03-03",
+      "diff": -8.324652218131418e-05,
+      "engine": 0.000985374998651846,
+      "vbt": 0.0009021284764705317
+     },
+     {
+      "date": "2024-08-01",
+      "diff": -6.0905125998523234e-05,
+      "engine": 0.00036259402378433555,
+      "vbt": 0.0003016888977858123
+     },
+     {
+      "date": "2022-01-28",
+      "diff": -4.548575969685106e-05,
+      "engine": -0.0038093493118434235,
+      "vbt": -0.0038548350715402746
+     },
+     {
+      "date": "2026-07-02",
+      "diff": -3.249125521218553e-05,
+      "engine": -0.002175147147818768,
+      "vbt": -0.0022076384030309537
+     }
+    ]
+   },
+   "compact_15min": {
+    "grid_points": 68125,
+    "vbt_seconds": 0.018,
+    "vbt_trades": 1723,
+    "max_abs_daily_diff_vs_engine": 0.0003275276435631136,
+    "mean_abs_daily_diff_vs_engine": 5.912884639499886e-07,
+    "days_with_abs_diff_gt_1e-5": 27,
+    "total_return_vbt": 0.6764219279099766,
+    "total_return_engine": 0.6778062307419639,
+    "total_return_diff": -0.0013843028319873163,
+    "max_abs_daily_diff_vs_engine_intraday_compounded": 4.223579099571495e-06,
+    "total_return_engine_intraday_compounded": 0.6764307395074369,
+    "worst_days": [
+     {
+      "date": "2025-04-09",
+      "diff": -0.0003275276435631136,
+      "engine": 0.04267809941248721,
+      "vbt": 0.042350571768924095
+     },
+     {
+      "date": "2020-03-03",
+      "diff": -8.324652218131418e-05,
+      "engine": 0.000985374998651846,
+      "vbt": 0.0009021284764705317
+     },
+     {
+      "date": "2024-08-01",
+      "diff": -6.0905125998523234e-05,
+      "engine": 0.00036259402378433555,
+      "vbt": 0.0003016888977858123
+     },
+     {
+      "date": "2022-01-28",
+      "diff": -4.548575969685106e-05,
+      "engine": -0.0038093493118434235,
+      "vbt": -0.0038548350715402746
+     },
+     {
+      "date": "2026-07-02",
+      "diff": -3.249125521218553e-05,
+      "engine": -0.002175147147818768,
+      "vbt": -0.0022076384030309537
+     }
+    ]
+   }
+  }
+ },
+ "notes": [
+  "Fill convention is shared with the engine on purpose (decision on close of bar m, fill at open of bar m+1, flat at the last close); what is independent is the accounting: vectorbt equity, fees and position sizing.",
+  "Residual daily differences come from one modelling simplification in the engine: it ADDS the returns of the trades of a day (fixed starting notional), vectorbt re-sizes each new entry at current equity (50% of equity). On sessions with 2-3 trades this is a second-order term (about 0.25 * r1 * r2). Against the engine re-computed with intra-day compounding the max daily difference drops to the 1e-6 level.",
+  "full_1min runs every minute of every session through the Portfolio; compact_15min only the minutes where a fill can happen. They are identical, so the sweep uses the compact grid."
+ ]
+}

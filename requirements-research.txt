@@ -1,0 +1,4 @@
+# Research-only extras (not installed by the cloud trading/briefing jobs)
+-r requirements.txt
+vectorbt==1.2.0
+python-telegram-bot
