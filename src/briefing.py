@@ -2,8 +2,8 @@
 
     python src/briefing.py morning|evening|balance [--dry-run] [--text] [--force]
 
-morning: ~09:15 New York, before the open. The intraday paper account (plus System B / System C columns when their
-         snapshot files agent_memory/system_dts.json / system_ta.json exist), open positions, risk
+morning: ~09:15 New York, before the open. The intraday paper account (plus qlib / TradingAgents columns when their
+         snapshot files agent_memory/system_qlib.json / system_ta.json exist), open positions, risk
          flags (distance to the agreed limits), new candidates. The long-term account was retired 2026-11-09. Two crons (EDT and EST) trigger it; the script only
          sends between 09:00 and 09:40 New York on a trading day, so exactly one of them does. --force skips that.
 balance: just the balance-history picture (also sent as a second photo right after the evening card).
@@ -34,9 +34,9 @@ from briefing_inputs import intraday_backtest, research_line, research_today, sa
 from news_gappers import fmt_vol
 from report import ACCOUNTS, MEM, NY, ROOT, START
 
-LABEL = {"intraday": "Intraday", "system-b": "System B", "system-c": "System C"}
+LABEL = {"intraday": "Noise band", "qlib": "qlib", "ta": "TradingAgents"}
 # Shadow systems shown next to the intraday account when their snapshot file exists (graceful when missing).
-EXTRAS = [("system-b", MEM / "system_dts.json"), ("system-c", MEM / "system_ta.json")]
+EXTRAS = [("qlib", MEM / "system_qlib.json"), ("ta", MEM / "system_ta.json")]
 KILL = {"intraday": 0.12}                      # agreed kill switch: drawdown from the account's peak
 DAILY_LIMIT = {"intraday": 0.03}               # agreed daily loss limit (intraday account only)
 FTMO_DAILY, FTMO_TOTAL = 0.05, 0.10            # FTMO reference limits
@@ -63,7 +63,7 @@ def _client(kenv, senv):
 
 
 def snapshot_account(path):
-    """Plain account dict from a System B / System C snapshot json, or None when the file is missing/unusable.
+    """Plain account dict from a qlib / TradingAgents snapshot json, or None when the file is missing/unusable.
     Positions are normalised to symbol/qty/pl; day figures need last_equity (else the change shows n/a)."""
     snap = R.read_json(path)
     if not isinstance(snap, dict) or not isinstance(snap.get("equity"), (int, float)):
@@ -206,7 +206,7 @@ def waiting_candidates(cands):
 
 # ---------- morning ----------
 def morning_flags(it, accts, prev_day, noise_rows, prev_report_exists):
-    flags = [f"Intraday still holds {qty(p['qty'])} {p['symbol']} (should be flat overnight)" for p in it.get("positions", [])]
+    flags = [f"{LABEL['intraday']} still holds {qty(p['qty'])} {p['symbol']} (should be flat overnight)" for p in it.get("positions", [])]
     if prev_day:
         mc = missed_checks(prev_day, noise_rows)
         if mc:
@@ -217,7 +217,7 @@ def morning_flags(it, accts, prev_day, noise_rows, prev_report_exists):
 
 
 def morning_data(today, accts, hists, noise_rows, cands, prev_day=None, prev_report_exists=True):
-    """Everything the morning text and card show, as plain data. accts: {"intraday": ..., optional "system-b"/"system-c"}."""
+    """Everything the morning text and card show, as plain data. accts: {"intraday": ..., optional "qlib"/"ta"}."""
     out = {}
     for name, a in accts.items():
         h = hists.get(name, [])
@@ -398,7 +398,7 @@ def evening_data(day, accts, hists, noise_rows, cands, bt, research):
                      "verdict": verdict(n, ret, bt.get(name)) if eq is not None and mine else None,
                      "bt_line": backtest_line(name, n, ret, bt.get(name)) if eq is not None and mine else None}
     return {"kind": "evening", "day": day, "accounts": out, "research": research, "waiting_candidates": waiting_candidates(cands),
-            "shadow_line": None}
+            "shadow_line": None, "report_lines": []}
 
 
 def text_evening(d):
@@ -418,6 +418,8 @@ def text_evening(d):
         L += ["", e(d["reconcile_line"])]
     if d.get("shadow_line"):
         L += ["", e(d["shadow_line"])]
+    if d.get("report_lines"):
+        L += ["", b("Report cards")] + ["  " + e(x) for x in d["report_lines"]]
     return "\n".join(L)
 
 
@@ -429,7 +431,7 @@ def build_evening(*args, **kw):
 def _gather(day):
     accts = {n: R.get_account(n, k, s, p, day) for n, k, s, p in ACCOUNTS}
     hists = {n: get_history(k, s) for n, k, s, p in ACCOUNTS}
-    for n, a in extra_accounts().items():   # System B / C: snapshot files only, no keys
+    for n, a in extra_accounts().items():   # qlib / TradingAgents: snapshot files only, no keys
         accts[n], hists[n] = a, a.get("calendar_equity") or []
     return accts, hists
 
@@ -472,7 +474,18 @@ def gather_evening(now=None):
         d["shadow_line"] = news_shadow.evening_line(day)
     except Exception as ex:
         print(f"shadow line failed: {type(ex).__name__}", file=sys.stderr)
+    try:   # quantstats report cards (report_cards.py, run by nightly.yml before the lab build); one line per account
+        import report_cards
+        d["report_lines"] = report_cards.briefing_lines()
+    except Exception as ex:
+        print(f"report cards line failed: {type(ex).__name__}", file=sys.stderr)
     return d
+
+
+def report_cards_message(d):
+    """Short text sent after the evening card (the card caption is crowded): one line per account, or None."""
+    lines = d.get("report_lines") or []
+    return None if not lines else b("Report cards") + "\n" + "\n".join(e(x) for x in lines)
 
 
 def balance_data(day, per):
@@ -514,7 +527,7 @@ def gather_balance(now=None):
         if h1d and p.get("equity") and h1d[-1][0] < now_ts - 600:   # the day line ends at the live balance too
             p["history"] = {**p["history"], "1D": h1d + [[now_ts, round(p["equity"], 2)]]}
         per[name] = p
-    for name, a in extra_accounts().items():   # System B / C: their own snapshot, no live fetch
+    for name, a in extra_accounts().items():   # qlib / TradingAgents: their own snapshot, no live fetch
         per[name] = {"equity": a["equity"], "last_equity": a.get("last_equity"), "history": a.get("history")}
     return balance_data(day, per)
 
@@ -577,6 +590,9 @@ def main(argv=None):
     print("sent" if ok else "not sent (missing TELEGRAM_* env or Telegram error)")
     if a.which == "evening" and card and ok:
         print("balance image " + ("sent" if send_balance() else "not sent"))
+        msg = report_cards_message(data)
+        if msg:
+            print("report cards " + ("sent" if telegram.send(msg) else "not sent"))
     return 0
 
 

@@ -23,7 +23,7 @@ def message(pos, orders):
         return None
     parts = []
     if pos:
-        parts.append("Intraday account is NOT flat after the close: "
+        parts.append("Noise band account is NOT flat after the close: "
                      + ", ".join(f"{s} {q}" for s, q in sorted(pos.items())) + ". They will be closed at the 9:31 check.")
     if orders:
         parts.append("Open orders: " + ", ".join(sorted(orders)) + ".")

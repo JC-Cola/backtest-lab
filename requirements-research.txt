@@ -2,3 +2,8 @@
 -r requirements.txt
 vectorbt==1.2.0
 python-telegram-bot
+quantstats==0.0.86
+# study 17 (ML4T meta-labeling): lightgbm, scikit-learn
+lightgbm==4.7.0
+scikit-learn==1.9.1
+# study 16 (FinRL) lives in its own env, .venv-finrl (python 3.12): finrl==0.3.7 stable-baselines3==2.9.2 torch gymnasium stockstats pandas<3 numpy<2.3

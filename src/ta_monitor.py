@@ -300,7 +300,7 @@ def run_once(broker, state, bars, now=None, sleep=time.sleep):
 
 
 def message(events, now):
-    return f"🅲 System C monitor {now:%H:%M} UTC (paper)\n" + "\n".join(events)
+    return f"🅲 TradingAgents monitor {now:%H:%M} UTC (paper)\n" + "\n".join(events)
 
 
 # ---------- nightly hooks (called from system_ta) ----------

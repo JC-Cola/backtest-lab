@@ -1,5 +1,5 @@
 """Builds report/lab.html (the Strategy Lab dashboard): the intraday research plus the snapshots of the three live
-systems (ours, System B, System C). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
+accounts (Noise band, qlib, TradingAgents, plus the day-trader-skill shadow ledger). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
 defined because briefing_inputs and candidates still use them. Every number on the page is net of costs."""
 from __future__ import annotations
 
@@ -322,8 +322,8 @@ def _snapshot(name):
         return None
 
 
-def slim_system_b(d):
-    """System B's snapshot with its per-day scan log cut to the latest day's summary (the page shows only that)."""
+def slim_dts_shadow(d):
+    """The day-trader-skill (shadow) snapshot with its per-day scan log cut to the latest day's summary (the page shows only that)."""
     if not d:
         return None
     d = dict(d)
@@ -340,6 +340,25 @@ def slim_system_b(d):
     return d
 
 
+def slim_qlib(d):
+    """qlib's snapshot (agent_memory/system_qlib.json) with the picks list capped; None when it does not exist yet."""
+    if not d:
+        return None
+    d = dict(d)
+    d["picks"] = [p for p in (d.get("picks") or []) if isinstance(p, dict)][:20]
+    return d
+
+
+def report_cards():
+    """Metrics of agent_memory/report_cards.json (written by report_cards.py) without the tear-sheet paths; None when missing."""
+    d = _snapshot("report_cards.json")
+    if not isinstance(d, dict):
+        return None
+    return {"generated": d.get("generated"), "benchmark": d.get("benchmark"), "min_days": d.get("min_days"),
+            "accounts": {k: {f: v.get(f) for f in ("name", "days", "start", "end", "ok", "note", "metrics")}
+                         for k, v in (d.get("accounts") or {}).items() if isinstance(v, dict)}}
+
+
 def main():
     results_meta = json.loads((ROOT / "results" / "results.json").read_text())
     markets, book = {}, []
@@ -351,7 +370,8 @@ def main():
     book, hidden = ftmo_lab.keep_positive(book, markets)
     blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, **lab_research.page_data(),
                        "alpaca_intraday": _snapshot("alpaca_intraday.json"),
-                       "system_b": slim_system_b(_snapshot("system_dts.json")), "system_c": _snapshot("system_ta.json"),
+                       "system_qlib": slim_qlib(_snapshot("system_qlib.json")), "system_dts": slim_dts_shadow(_snapshot("system_dts.json")),
+                       "system_ta": _snapshot("system_ta.json"), "report_cards": report_cards(),
                        "generated": results_meta["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

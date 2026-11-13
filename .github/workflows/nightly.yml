@@ -52,6 +52,8 @@ jobs:
         run: find data -maxdepth 1 -name '*.csv' ! -name fomc_dates.csv -delete
       - name: Refresh minute data (the data/ cache saved by this job is what research.yml restores)
         run: cd src && python intraday_data.py SPY QQQ
+      - name: Report cards (quantstats metrics + tear sheets per account; alert-only, read-only)
+        run: pip install -q quantstats==0.0.86 && cd src && python report_cards.py || true
       - name: Strategy Lab build (candidates + page; no orders are placed)
         run: cd src && python daily.py
       - uses: actions/setup-node@v4

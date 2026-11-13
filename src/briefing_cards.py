@@ -27,7 +27,7 @@ from report import NY   # noqa: E402
 W, H, DPI = 1080, 1350, 150
 BLUE, GREEN, RED, AMBER = "#2563EB", "#16A34A", "#DC2626", "#D97706"
 INK, GRAY, LINE, SOFT = "#111827", "#6B7280", "#E5E7EB", "#F3F4F6"
-LABEL = {"intraday": "Intraday", "system-b": "System B", "system-c": "System C"}
+LABEL = {"intraday": "Noise band", "qlib": "qlib", "ta": "TradingAgents"}
 MX = 30                      # side margin (px)
 PILLS_MAX = 8                # pills / chips shown per row group before "+k more"
 GAUGE_BAR = 0.95             # score a research idea needs
@@ -112,8 +112,8 @@ class Card:
 
 # ---------- shared pieces ----------
 def tiles(c, d, y, chg_label, key):
-    """One tile per account (Intraday, plus System B / System C when present), side by side: value, change (coloured),
-    since start. A lone Intraday tile is full width."""
+    """One tile per account (Noise band, plus qlib / TradingAgents when present), side by side: value, change (coloured),
+    since start. A lone Noise band tile is full width."""
     names = list(d["accounts"])
     n = len(names)
     w = (W - 2 * MX - 20 * (n - 1)) / n
@@ -218,7 +218,7 @@ def evening_trades(c, d, y):
         c.text(MX, y + 50, "no trades today", 16, GRAY)
         return y + 90
     y += 42
-    c.text(MX, y, "Intraday   ▲ buy  ▼ sell", 13, GRAY)
+    c.text(MX, y, f"{LABEL['intraday']}   ▲ buy  ▼ sell", 13, GRAY)
     return timeline(c, it["trades"], it["trips"], y + 34) + 38
 
 
@@ -463,7 +463,7 @@ def balance_panel(c, name, a, y):
 
 
 def render_balance(d):
-    """PNG, 1080 wide: Intraday panel, then System B / System C panels when present. d from briefing.balance_data()."""
+    """PNG, 1080 wide: Noise band panel, then qlib / TradingAgents panels when present. d from briefing.balance_data()."""
     names = list(d["accounts"])
     c = Card(85 + 495 * len(names) + 5)
     header(c, d, "Balance history")

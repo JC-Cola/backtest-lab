@@ -13,10 +13,10 @@ token in Vault. GitHub's own cron dropped runs, so it is not used for trading; o
 |---|---|---|
 | `intraday.yml` | :01 and :31, 13:01-20:31; plus :56 at 19 and 20 (the 15:56 New York close) | `live_noise.py --once`: noise-band breakout on SPY + QQQ, 50% of equity each, hourly checks 10:00-15:00 NY, flat with a plain market order at 15:56. Commits log/state, sends fill alerts |
 | `morning.yml` | 13:15 and 14:15 (self-gated: sends only 09:00-09:40 NY) | Telegram briefing card before the open |
-| `nightly.yml` | 21:45 | Minute-data refresh, Strategy Lab build, news shadow test, fill alerts, flat guard, live-vs-backtest reconciliation, daily report (commit + issue), evening briefing |
+| `nightly.yml` | 21:45 | Minute-data refresh, report cards (`report_cards.py`, quantstats), Strategy Lab build, news shadow test, fill alerts, flat guard, live-vs-backtest reconciliation, daily report (commit + issue), evening briefing |
 | `research.yml` | every 30 min, all days | Self-learning agents test new ideas (needs the Claude token). Never trades |
-| `system_ta.yml` | 21:15 | System C (TradingAgents on Gemini), one Telegram summary |
-| `system_dts.yml` | not scheduled yet | System B (day-trader-skill); the intended cron is in the file header |
+| `system_ta.yml` | 21:15 | TradingAgents (on Gemini), one Telegram summary |
+| `system_dts.yml` | not scheduled yet | day-trader-skill (shadow ledger, `agent_memory/system_dts.json`); the intended cron is in the file header |
 | `watchdog.yml` | GitHub cron `*/20 13-22 * * 1-5` (+ manual) | Dead-man's switch, see Alerts |
 
 Concurrency: trading workflows share group `backtest-lab-trading`, so they never overlap. All of them can be run by
@@ -24,12 +24,18 @@ hand from the Actions tab.
 
 ## Accounts (Alpaca paper, $25k each; paper only)
 
-- **Intraday**: the only account with the live strategy (`ALPACA_INTRADAY_*`). Risk limits in `live_noise.py`: daily
+- **Noise band** (the intraday account, ours · SPY+QQQ): the only account with the live strategy (`ALPACA_INTRADAY_*`). Risk limits in `live_noise.py`: daily
   loss stop -3%, kill switch at -12% from the peak (re-arm by running `intraday.yml` with `rearm = true`).
 - **Long-term**: retired 2026-11-09 (deleted). No daily-strategy orders any more. Market data uses
   `src/alpaca_keys.py data_keys()`: first working of intraday, DTS, TA keys.
-- **System B** (day-trader-skill, `ALPACA_DTS_*`) and **System C** (TradingAgents on free Gemini, `ALPACA_TA_*`):
-  own paper accounts, shown next to the intraday account on the briefing card. B is not scheduled yet.
+- **qlib** (Microsoft qlib; `ALPACA_DTS_*`, snapshot `agent_memory/system_qlib.json`) and **TradingAgents** (free Gemini,
+  `ALPACA_TA_*`): own paper accounts, shown next to Noise band on the briefing card. **day-trader-skill (shadow)** keeps
+  running as a simulated ledger only (`agent_memory/system_dts.json`, no live Alpaca data; the page's `'dts'` live query
+  now belongs to qlib's account). The page and Telegram use these names; file names and secret names are unchanged.
+- **Report cards**: `src/report_cards.py` (nightly, before the lab build) turns each account's daily equity into a quantstats
+  tear sheet (`reports/cards/<account>.html`, SPY benchmark) and a metrics file (`agent_memory/report_cards.json`: CAGR,
+  Sharpe, Sortino, max drawdown, win days, best/worst day, volatility, beta). Under 5 days: "not enough history yet".
+  The Strategy Lab shows the metrics per account and in Compare; the evening briefing sends one line per account.
 
 ## Secrets (names only; never put values in files, chat or logs)
 
@@ -103,7 +109,7 @@ Commit with explicit paths and `git pull --rebase --autostash origin main` first
   15:56 with a market order instead of the 16:00 close. `reconcile.py` measures all of this.
 - No market-on-close orders: Alpaca paper let them expire.
 - The GitHub dispatch token expires about Nov 2027 (renew it in Supabase Vault); a dead token is caught by the watchdog.
-- Gemini free tier: the Flash models allow only about 20 requests/day; System C rate-limits itself.
+- Gemini free tier: the Flash models allow only about 20 requests/day; TradingAgents rate-limits itself.
 - Claude subscription usage: the research agents and the nightly news review run on `CLAUDE_CODE_OAUTH_TOKEN`; hitting
   the limit makes proposer rounds fail (the morning card warns on a refused login).
 - Actions minutes: intraday, research (every 30 min) and watchdog all count; check the usage page if the repo is private.

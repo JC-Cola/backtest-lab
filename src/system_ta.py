@@ -150,9 +150,9 @@ def scrub(text, n=160):
 
 def alert_text(kind, day):
     if kind == "auth":
-        return (f"⚠️ System C (TradingAgents) {day}: Google API key rejected, no decisions tonight. "
+        return (f"⚠️ TradingAgents {day}: Google API key rejected, no decisions tonight. "
                 "Check the GOOGLE_API_KEY secret (aistudio.google.com/apikey).")
-    return (f"⚠️ System C (TradingAgents) {day}: Gemini free-tier quota/rate limit hit, remaining tickers skipped tonight "
+    return (f"⚠️ TradingAgents {day}: Gemini free-tier quota/rate limit hit, remaining tickers skipped tonight "
             "(daily quota resets at midnight Pacific).")
 
 
@@ -447,7 +447,7 @@ def main(argv=None, decide=None, send=None, bars_fn=None, broker=None):
             broker = ta_broker.client_from_env()
         except Exception as ex:   # e.g. not a paper account: refuse, keep the shadow ledger
             print(f"system_ta: paper account unavailable ({scrub(ex)}); shadow ledger only", file=sys.stderr)
-        print("system_ta: " + ("placing orders on the System C PAPER account" if broker else "no ALPACA_TA keys: shadow ledger only"))
+        print("system_ta: " + ("placing orders on the TradingAgents PAPER account" if broker else "no ALPACA_TA keys: shadow ledger only"))
     if decide is None:
         try:
             decide = make_decider()

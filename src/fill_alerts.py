@@ -25,9 +25,9 @@ MAX_MESSAGES = 20
 NY = ZoneInfo("America/New_York")
 # One line per account: (state key, label, key env var, secret env var). Add a line to cover another paper account.
 # The long-term account (ALPACA_API_KEY) was retired 2026-11-09 and is no longer alerted.
-ACCOUNTS = [("intraday", "Intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"),
-            ("ta", "System C (TradingAgents)", "ALPACA_TA_API_KEY", "ALPACA_TA_SECRET_KEY"),
-            ("dts", "System B (day-trader-skill)", "ALPACA_DTS_API_KEY", "ALPACA_DTS_SECRET_KEY")]
+ACCOUNTS = [("intraday", "Noise band", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY"),
+            ("ta", "TradingAgents", "ALPACA_TA_API_KEY", "ALPACA_TA_SECRET_KEY"),
+            ("dts", "qlib", "ALPACA_DTS_API_KEY", "ALPACA_DTS_SECRET_KEY")]
 EPS = 1e-9
 
 

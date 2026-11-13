@@ -115,7 +115,7 @@ def test_morning_lines_and_flags():
     assert "long-term" not in txt.lower() and "Waiting for the open" not in txt
     assert "last session -$200.00" in txt
     assert "since start -2.40%" in txt and "SPY 3 (-$5.00)" in txt
-    assert "Intraday still holds 3 SPY" in txt
+    assert "Noise band still holds 3 SPY" in txt
     assert "Missed intraday checks on 2026-11-03: QQQ 13:00; SPY 13:00" in txt
     assert "No nightly report found for 2026-11-03" in txt
     assert "1 awaiting approval" in txt and "buy &lt;dips&gt; early" in txt and "zzz-approved" not in txt
@@ -142,17 +142,17 @@ def test_snapshot_accounts_graceful_and_shown(tmp_path, monkeypatch):
                  '"calendar": [{"date": "2026-11-03", "equity": 25000.0}]}')
     c.write_text("not json")
     assert bf.snapshot_account(missing) is None and bf.snapshot_account(c) is None
-    ex = bf.extra_accounts([("system-b", b), ("system-c", c), ("x", missing)])
-    assert list(ex) == ["system-b"] and ex["system-b"]["positions"][0]["pl"] == 12.5
-    assert bf.extra_accounts([("system-b", missing)]) == {}
-    accts = {"intraday": acct(25040, 25000), "system-b": ex["system-b"]}
-    d = bf.morning_data(DAY, accts, {"intraday": [25000.0], "system-b": ex["system-b"]["calendar_equity"]}, [], {}, PREV)
-    assert d["accounts"]["system-b"]["kill"] is None and d["accounts"]["system-b"]["risk"] == ""
+    ex = bf.extra_accounts([("qlib", b), ("ta", c), ("x", missing)])
+    assert list(ex) == ["qlib"] and ex["qlib"]["positions"][0]["pl"] == 12.5
+    assert bf.extra_accounts([("qlib", missing)]) == {}
+    accts = {"intraday": acct(25040, 25000), "qlib": ex["qlib"]}
+    d = bf.morning_data(DAY, accts, {"intraday": [25000.0], "qlib": ex["qlib"]["calendar_equity"]}, [], {}, PREV)
+    assert d["accounts"]["qlib"]["kill"] is None and d["accounts"]["qlib"]["risk"] == ""
     txt = bf.text_morning(d)
-    assert "System B</b> $25,200.00" in txt and "NVDA 3 (+$12.50)" in txt
+    assert "qlib</b> $25,200.00" in txt and "NVDA 3 (+$12.50)" in txt
     assert txt.count("DD ") == 1                       # the risk lines are the intraday account's only
     e = bf.evening_data(DAY, accts, {"intraday": [25000.0]}, [], {}, {"intraday": None}, NO_RES)
-    assert e["accounts"]["system-b"]["trades"] == [] and "System B</b> $25,200.00" in bf.text_evening(e)
+    assert e["accounts"]["qlib"]["trades"] == [] and "qlib</b> $25,200.00" in bf.text_evening(e)
 
 
 # ---------- evening ----------
@@ -220,7 +220,7 @@ def test_evening_text():
     txt = bf.build_evening(DAY, {"intraday": it}, {"intraday": []}, noise, CAND, {"intraday": None}, res)
     assert "today -$16.00 (-0.06%)" in txt and "Long-term" not in txt and "Daily agent" not in txt
     assert "12:05 BUY 16 SPY @ $767.00 (long)" in txt and "15:56 SELL 16 SPY" in txt and "Best SPY -$16.00" in txt
-    assert "Intraday: too early to tell (1 day)" in txt
+    assert "Noise band: too early to tell (1 day)" in txt
     assert "Intraday agent: 4 tested, 2 scored, best score 0.310, 0 held-out shots" in txt and "Candidates awaiting approval: 1" in txt
     assert len(txt) < 1800
 
@@ -231,7 +231,7 @@ def test_evening_verdict_in_text_and_trade_overflow():
     txt = bf.build_evening(DAY, {"intraday": acct(25070, 25060, orders=many)}, {"intraday": hist}, [], {},
                            {"intraday": window(mean=0.0, sd=0.0002)}, {"intraday": bf.research_today("/nonexistent", DAY)})
     assert "+2 more" in txt
-    assert "Intraday: 7 days +0.28% vs backtest" in txt and "above normal" in txt   # tight backtest: +0.28% is far above it
+    assert "Noise band: 7 days +0.28% vs backtest" in txt and "above normal" in txt   # tight backtest: +0.28% is far above it
 
 
 def test_workflows_wiring():
@@ -246,3 +246,12 @@ def test_workflows_wiring():
     n = (wf / "nightly.yml").read_text()
     assert n.rstrip().endswith("if: always()\n        run: cd src && python briefing.py evening")
     assert "TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}" in n and "TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}" in n
+
+
+def test_evening_report_card_lines_text_and_message():
+    it = acct(24984, 25000)
+    d = bf.evening_data(DAY, {"intraday": it}, {"intraday": []}, [], CAND, {"intraday": None}, NO_RES)
+    assert d["report_lines"] == [] and bf.report_cards_message(d) is None and "Report cards" not in bf.text_evening(d)
+    d["report_lines"] = ["Noise band: Sharpe 1.2 · max DD −1.1% · 6 days", "TradingAgents: not enough history yet (3 days)"]
+    assert "<b>Report cards</b>" in bf.text_evening(d) and "Noise band: Sharpe 1.2" in bf.text_evening(d)
+    assert bf.report_cards_message(d) == "<b>Report cards</b>\n" + "\n".join(d["report_lines"])

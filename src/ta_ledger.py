@@ -1,4 +1,4 @@
-"""System C shadow ledger: TradingAgents' five-tier ratings -> hypothetical positions in a $25,000 shadow account.
+"""TradingAgents shadow ledger: TradingAgents' five-tier ratings -> hypothetical positions in a $25,000 shadow account.
 NO real orders are ever placed. Pure functions, no network.
 
 Rating -> target position (fraction of the shadow account's equity, per ticker; fills at the NEXT session's open):
@@ -19,7 +19,7 @@ START_EQUITY = 25_000.0
 SLOT = 0.20
 SLIPPAGE = 0.0002
 FEES = 0.0001
-LABEL = "System C · TradingAgents · shadow / not traded"
+LABEL = "TradingAgents · shadow / not traded"
 TARGETS = {"Buy": SLOT, "Overweight": SLOT / 2, "Hold": None, "Underweight": -SLOT / 2, "Sell": -SLOT}
 MINUS = "−"
 

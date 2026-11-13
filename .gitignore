@@ -11,3 +11,8 @@ data/dts/
 data/news13/
 data/ta_cache/
 data/news14/
+.venv-qlib/
+data/qlib/
+reports/cards/
+data/finrl16/
+.venv-finrl/

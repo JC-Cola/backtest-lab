@@ -26,8 +26,8 @@ def evening(trades=True, days=7, bt=True, res=RES, cands=CAND, extras=False):
     hist = [25000.0] + [25000.0 + 20 * i for i in range(1, days)]
     accts, hists = {"intraday": acct(25040, 25000, orders=its)}, {"intraday": hist}
     if extras:
-        accts |= {"system-b": SYS_B, "system-c": {**SYS_B, "equity": 24900.0}}
-        hists |= {"system-b": [25000.0], "system-c": [25000.0]}
+        accts |= {"qlib": SYS_B, "ta": {**SYS_B, "equity": 24900.0}}
+        hists |= {"qlib": [25000.0], "ta": [25000.0]}
     return bf.evening_data(DAY, accts, hists, [], cands, {"intraday": window(sd=0.003) if bt else None}, res)
 
 
@@ -36,8 +36,8 @@ def morning(positions=2, flags=1, extras=False):
     accts = {"intraday": acct(24800, 24900, pos, note="x" * 200 if flags else "")}
     hists = {"intraday": [25000.0, 24900.0]}
     if extras:
-        accts |= {"system-b": SYS_B, "system-c": {**SYS_B, "positions": [], "last_equity": None}}
-        hists |= {"system-b": [25000.0, 25100.0], "system-c": []}
+        accts |= {"qlib": SYS_B, "ta": {**SYS_B, "positions": [], "last_equity": None}}
+        hists |= {"qlib": [25000.0, 25100.0], "ta": []}
     d = bf.morning_data(DAY, accts, hists, [], CAND, PREV, flags < 2)
     d["flags"] = [f"warning number {i} " + "long text " * 12 for i in range(flags)]
     return d
@@ -70,8 +70,8 @@ def test_data_feeds_text_and_card():
 
 def test_captions():
     cap = bc.caption(evening(days=1)).splitlines()
-    assert cap[0] == "<b>Evening 4 Nov</b> · Intraday +0.2%" and "Too early" in cap[1] and cap[2].startswith("4 trades · 3 ideas tested")
-    assert bc.caption(evening(extras=True)).splitlines()[0] == "<b>Evening 4 Nov</b> · Intraday +0.2% · System B +0.4% · System C -0.8%"
+    assert cap[0] == "<b>Evening 4 Nov</b> · Noise band +0.2%" and "Too early" in cap[1] and cap[2].startswith("4 trades · 3 ideas tested")
+    assert bc.caption(evening(extras=True)).splitlines()[0] == "<b>Evening 4 Nov</b> · Noise band +0.2% · qlib +0.4% · TradingAgents -0.8%"
     assert "candidate awaiting approval" in cap[2]
     assert bc.caption(evening(days=7)).splitlines()[1].startswith(("In line", "Backtest:"))
     assert bc.caption(morning(flags=0)).splitlines()[1] == "All clear before the open"
@@ -87,7 +87,7 @@ def balance(h=None, extras=False):
     h = hist(drop=True) if h is None else h
     per = {"intraday": {"equity": 24900.0, "last_equity": 25000.0, "history": h}}
     if extras:
-        per["system-b"] = {"equity": 25100.0, "last_equity": 25000.0, "history": hist()}
+        per["qlib"] = {"equity": 25100.0, "last_equity": 25000.0, "history": hist()}
     return bf.balance_data(DAY, per)
 
 
@@ -95,13 +95,13 @@ def balance(h=None, extras=False):
 @pytest.mark.parametrize("h", [None, {}, {"1D": [], "ALL": []}, {"1D": [[1793900000, 25000.0]], "ALL": [[1793900000, 25000.0]]}, hist(), hist(2)])
 def test_balance_card_renders(h):
     d = balance(h)
-    assert size(bc.render_balance(d)) == (1080, 585)      # one panel: Intraday only
+    assert size(bc.render_balance(d)) == (1080, 585)      # one panel: Noise band only
     assert bc.balance_caption(d) == "Balance history · 4 Nov"
 
 
 def test_balance_card_with_system_panels():
     d = balance(extras=True)
-    assert list(d["accounts"]) == ["intraday", "system-b"] and size(bc.render_balance(d)) == (1080, 1080)
+    assert list(d["accounts"]) == ["intraday", "qlib"] and size(bc.render_balance(d)) == (1080, 1080)
 
 
 def test_balance_card_missing_account():
@@ -142,7 +142,7 @@ def test_gather_balance_falls_back_to_snapshots(monkeypatch):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setattr(bf.R, "read_json", lambda p: {"equity": 25100.0, "last_equity": 25000.0, "history": hist()})
     d = bf.gather_balance()
-    assert list(d["accounts"]) == ["intraday", "system-b", "system-c"]   # the patched read_json serves every snapshot file
+    assert list(d["accounts"]) == ["intraday", "qlib", "ta"]   # the patched read_json serves every snapshot file
     assert d["accounts"]["intraday"]["equity"] == 25100.0 and len(d["accounts"]["intraday"]["h1d"]) >= 60
 
 

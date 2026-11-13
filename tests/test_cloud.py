@@ -332,7 +332,7 @@ def test_no_safety_flatten_after_the_day_was_closed():
 def test_flat_guard_messages(monkeypatch):
     import flat_guard as fg
     assert fg.message({}, []) is None
-    assert fg.message({"SPY": -16, "QQQ": -19}, []) == ("⚠️ Intraday account is NOT flat after the close: QQQ -19, SPY -16. "
+    assert fg.message({"SPY": -16, "QQQ": -19}, []) == ("⚠️ Noise band account is NOT flat after the close: QQQ -19, SPY -16. "
                                                       "They will be closed at the 9:31 check.")
     assert "Open orders: buy 3 SPY." in fg.message({}, ["buy 3 SPY"])
 
