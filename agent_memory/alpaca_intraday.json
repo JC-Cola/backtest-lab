@@ -1,45 +1,26 @@
 {
- "generated": "2026-11-16T17:02:05+00:00",
+ "generated": "2026-11-16T17:31:36+00:00",
  "start_equity": 25000.0,
- "equity": 24968.45,
- "cash": 16881.27,
+ "equity": 24967.99,
+ "cash": 24967.99,
  "last_equity": 25054.89,
- "positions": [
-  {
-   "symbol": "QQQ",
-   "qty": 11.0,
-   "avg_price": 667.868889,
-   "price": 667.47,
-   "value": 7342.17,
-   "pl": -4.387779,
-   "pl_pct": -0.0006
-  },
-  {
-   "symbol": "SPY",
-   "qty": 1.0,
-   "avg_price": 745.17,
-   "price": 745.01,
-   "value": 745.01,
-   "pl": -0.16,
-   "pl_pct": -0.00021
-  }
- ],
+ "positions": [],
  "orders": [
   {
    "date": "2026-11-16T17:02+00:00",
    "symbol": "QQQ",
    "side": "sell",
    "qty": 18.0,
-   "status": "partially_filled",
-   "price": 667.42
+   "status": "filled",
+   "price": 667.426111
   },
   {
    "date": "2026-11-16T17:02+00:00",
    "symbol": "SPY",
    "side": "sell",
    "qty": 16.0,
-   "status": "partially_filled",
-   "price": 744.95
+   "status": "filled",
+   "price": 744.965
   },
   {
    "date": "2026-11-16T17:01+00:00",
@@ -48,22 +29,6 @@
    "qty": 18.0,
    "status": "filled",
    "price": 667.868889
-  },
-  {
-   "date": "2026-11-16T17:01+00:00",
-   "symbol": "SPY",
-   "side": "buy",
-   "qty": 16.0,
-   "status": "filled",
-   "price": 745.17
-  },
-  {
-   "date": "2026-11-16T16:31+00:00",
-   "symbol": "QQQ",
-   "side": "buy",
-   "qty": 18.0,
-   "status": "filled",
-   "price": 669.622778
   },
   {
    "date": "2026-11-16T17:01+00:00",
@@ -231,9 +196,9 @@
   },
   {
    "date": "2026-11-16",
-   "pl": -86.44,
-   "pct": -0.345,
-   "equity": 24968.45
+   "pl": -86.9,
+   "pct": -0.347,
+   "equity": 24967.99
   }
  ],
  "history": {
@@ -625,6 +590,30 @@
    [
     1794848400,
     24979.24
+   ],
+   [
+    1794848700,
+    24967.99
+   ],
+   [
+    1794849000,
+    24967.99
+   ],
+   [
+    1794849300,
+    24967.99
+   ],
+   [
+    1794849600,
+    24967.99
+   ],
+   [
+    1794849900,
+    24967.99
+   ],
+   [
+    1794850200,
+    24967.99
    ]
   ],
   "1W": [
@@ -1103,6 +1092,14 @@
    [
     1794848400,
     24979.24
+   ],
+   [
+    1794849300,
+    24967.99
+   ],
+   [
+    1794850200,
+    24967.99
    ]
   ],
   "1M": [
@@ -1333,6 +1330,10 @@
    [
     1794846600,
     24985.71
+   ],
+   [
+    1794850200,
+    24967.99
    ]
   ],
   "ALL": [
@@ -1373,13 +1374,20 @@
     25054.89
    ],
    [
-    1794848526,
-    24968.45
+    1794850297,
+    24967.99
    ]
   ]
  },
  "balance_history": {
   "rows": [
+   {
+    "time": "2026-11-16 12:02:05",
+    "balance_before": 24976.41,
+    "balance_after": 24971.58,
+    "realized_pnl": -4.83,
+    "action": "Close long position for symbol QQQ at price 667.43 for 11 units. Position AVG Price was 667.86888889"
+   },
    {
     "time": "2026-11-16 12:02:05",
     "balance_before": 24976.59,
@@ -1689,11 +1697,11 @@
     "action": "Close long position for symbol QQQ at price 692.85 for 17 units. Position AVG Price was 696.40941176"
    }
   ],
-  "realized": -23.59,
-  "unrealized": -4.55,
-  "equity": 24968.45,
-  "available": 20924.86,
-  "margin": 4043.59,
+  "realized": -28.42,
+  "unrealized": 0,
+  "equity": 24967.99,
+  "available": 24967.99,
+  "margin": 0.0,
   "start_balance": 25000.0
  }
 }
