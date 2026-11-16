@@ -35,15 +35,7 @@
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-13T15:06:32+00:00",
-    "ids": [
-     "5876731b-0c73-46fa-b033-bf0c68f687e8"
-    ],
-    "qty": 28,
-    "stop": 77.63,
-    "tp": null
-   },
+   "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
@@ -125,18 +117,18 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-13",
-   "decision_id": "2026-11-13|NVDA",
+   "date": "2026-11-16",
+   "decision_id": "2026-11-16|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
    "placed": {
-    "at": "2026-11-13T22:37:49+00:00",
+    "at": "2026-11-16T22:41:50+00:00",
     "ids": [
-     "d255c6a2-5765-4273-86dd-6f057702f40f"
+     "4c4d6dcf-e063-4852-8da5-f727721fe8e5"
     ],
     "qty": 15,
-    "stop": 145.0,
+    "stop": 140.0,
     "tp": null
    },
    "plan": {
@@ -145,19 +137,16 @@
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [
-     "scale-in above $160: initial entry already uses the 1x allowed"
-    ],
+    "not_executed": [],
     "notes": [
-     "extreme valuation compression",
-     "oversold mean-reversion",
-     "ongoing technical momentum decay"
+     "phased entry strategy to manage high volatility",
+     "capturing the mean reversion potential of an oversold, fundamentally undervalued asset"
     ],
     "rating": "Buy",
-    "ref_price": 162.84,
+    "ref_price": 156.145,
     "scale_in": [],
     "side": "long",
-    "stop": 145.0,
+    "stop": 140.0,
     "stop_type": "price",
     "tp": null
    },
@@ -165,13 +154,11 @@
    "status": "active"
   },
   "QQQ": {
-   "date": "2026-11-13",
-   "decision_id": "2026-11-13|QQQ",
+   "date": "2026-11-16",
+   "decision_id": "2026-11-16|QQQ",
    "exits": [],
-   "log": [
-    "2026-11-16: position closed"
-   ],
-   "opened": true,
+   "log": [],
+   "opened": false,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -180,16 +167,17 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "plan direction 'long' conflicts with the Underweight rating: rating wins",
-     "no stop in the paragraph",
-     "exit below $681.2 is not an adverse trigger for a short: skipped"
+     "initial size 0.25x unverified: using the default 1x",
+     "stop $630 is on the wrong side of $661.8 for a short: skipped",
+     "exit below $681.41 is not an adverse trigger for a short: skipped"
     ],
     "notes": [
-     "Macro headwinds",
-     "Volatile market"
+     "Manage downside risk while the index trades below its critical 200-day moving average",
+     "High volatility",
+     "Avoid further capital deployment until a clear reversal or support base is established"
     ],
     "rating": "Underweight",
-    "ref_price": 680.01,
+    "ref_price": 661.8,
     "scale_in": [],
     "side": "short",
     "stop": null,
@@ -197,33 +185,41 @@
     "tp": null
    },
    "scale": [],
-   "status": "closed"
+   "status": "active"
   },
   "SPY": {
-   "date": "2026-11-13",
-   "decision_id": "2026-11-13|SPY",
+   "date": "2026-11-16",
+   "decision_id": "2026-11-16|SPY",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": null,
+   "placed": {
+    "at": "2026-11-16T22:41:50+00:00",
+    "ids": [
+     "df59206d-b2ef-4d0a-8058-99467c454bcf"
+    ],
+    "qty": 3,
+    "stop": 718.17,
+    "tp": null
+   },
    "plan": {
     "base": null,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [
-     "no stop in the paragraph"
-    ],
+    "not_executed": [],
     "notes": [
-     "Manage tail risk driven by the current $11.03 ATR volatility"
+     "observing price action near the 200-day SMA and lower Bollinger Band",
+     "avoid adding exposure until the price reclaims the 10-day EMA",
+     "maintain a defensive posture to account for high ATR volatility"
     ],
     "rating": "Hold",
-    "ref_price": 752.81,
+    "ref_price": 740.04,
     "scale_in": [],
     "side": "long",
-    "stop": null,
-    "stop_type": null,
+    "stop": 718.17,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],
@@ -256,6 +252,66 @@
     "ref_price": 264.36,
     "scale_in": [],
     "side": "long",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "TSN": {
+   "date": "2026-11-16",
+   "decision_id": "2026-11-16|TSN",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [],
+    "notes": [
+     "overextended momentum breakout",
+     "RSI of 77.11",
+     "breach of the upper Bollinger Band",
+     "high risk of short-term mean reversion"
+    ],
+    "rating": "Hold",
+    "ref_price": 63.93,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "TTWO": {
+   "date": "2026-11-16",
+   "decision_id": "2026-11-16|TTWO",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "GTA VI launch",
+     "post-launch volatility to subside"
+    ],
+    "rating": "Hold",
+    "ref_price": 213.415,
+    "scale_in": [],
+    "side": null,
     "stop": null,
     "stop_type": null,
     "tp": null

@@ -161,6 +161,66 @@
    "rationale": "Initiate a partial, scaled position in STE at current levels (~$264.32) with 50% of the target allocation to participate in the strong earnings momentum. Retain the remaining 50% of liquidity to add on a pullback to the $250-$255 range. Tighten the stop-loss strategy to 1.5 times the Average True Range (ATR) rather than the 50 SMA to manage near-term volatility risk without exposing the portfolio to a 20% drawdown.",
    "horizon": "3-6 months",
    "source": "ta"
+  },
+  {
+   "id": "2026-11-16|SPY",
+   "date": "2026-11-16",
+   "symbol": "SPY",
+   "rating": "Hold",
+   "target": null,
+   "rationale": "Maintain current SPY position while observing price action near the 200-day SMA ($729.58) and lower Bollinger Band ($734.21). Avoid adding exposure until the price reclaims the 10-day EMA ($751.88), and maintain a defensive posture with stops near $718.17 to account for high ATR volatility.",
+   "horizon": "3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-16|QQQ",
+   "date": "2026-11-16",
+   "symbol": "QQQ",
+   "rating": "Underweight",
+   "target": -0.1,
+   "rationale": "Reduce exposure to QQQ by 25% to manage downside risk while the index trades below its critical 200-day moving average ($681.41). Maintain the remaining position with a stop-loss order set at $630.00 to account for high volatility, avoiding further capital deployment until a clear reversal or support base is established.",
+   "horizon": "3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-16|NVDA",
+   "date": "2026-11-16",
+   "symbol": "NVDA",
+   "rating": "Buy",
+   "target": 0.2,
+   "rationale": "Initiate a long position in NVDA, utilizing a phased entry strategy to manage high volatility. Deploy capital incrementally rather than as a single market order, maintaining a strict stop-loss at 140.00 to protect against structural downside. Focus on capturing the mean reversion potential of an oversold, fundamentally undervalued asset.",
+   "horizon": "3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-16|TSN",
+   "date": "2026-11-16",
+   "symbol": "TSN",
+   "rating": "Hold",
+   "target": null,
+   "rationale": "Maintain existing positions in TSN but avoid new entries at current levels. The current price represents an overextended momentum breakout with an RSI of 77.11 and a breach of the upper Bollinger Band, indicating high risk of short-term mean reversion. Await a pullback to the $58-$60 range to initiate or increase exposure with a more favorable risk-reward profile.",
+   "horizon": "3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-16|TTWO",
+   "date": "2026-11-16",
+   "symbol": "TTWO",
+   "rating": "Hold",
+   "target": null,
+   "rationale": "Maintain current exposure to TTWO ahead of the high-stakes GTA VI launch. Avoid adding new capital while the stock consolidates, and wait for post-launch volatility to subside before evaluating potential entry at the 50-day moving average support of $207.82.",
+   "horizon": "Post-launch, 3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-16|GPN",
+   "date": "2026-11-16",
+   "symbol": "GPN",
+   "rating": "Exit",
+   "target": 0.0,
+   "rationale": "dropped off tonight's watchlist: position closed at the next open",
+   "horizon": null,
+   "source": "rotation"
   }
  ],
  "runs": [
@@ -217,24 +277,49 @@
    },
    "calls": 87,
    "seconds": 431
+  },
+  {
+   "date": "2026-11-16",
+   "tickers": {
+    "SPY": "Hold",
+    "QQQ": "Underweight",
+    "NVDA": "Buy",
+    "TSN": "Hold",
+    "TTWO": "Hold"
+   },
+   "calls": 85,
+   "seconds": 653
   }
  ],
  "health": {
   "status": "ok",
-  "last_ok": "2026-11-13"
+  "last_ok": "2026-11-16"
  },
  "shadow": {
-  "equity": 25788.58,
+  "equity": 25312.1,
   "positions": [
+   {
+    "symbol": "CSCO",
+    "side": "long",
+    "qty": 27.2938,
+    "avg_price": 94.5039,
+    "price": 94.585,
+    "value": 2581.58,
+    "pl": 2.21,
+    "pl_pct": 0.00086,
+    "entry_date": "2026-11-16",
+    "rating": "Overweight",
+    "rationale": "Initiate a 5% position in CSCO with a disciplined, staggered entry strategy. Buy 50% of the target allocation at current levels near $95.64 and utilize limit orders to scale in the remaining 50% upon testing support near the lower Bollinger Band at $93.17, while maintaining a firm stop-loss at $89.26."
+   },
    {
     "symbol": "GPN",
     "side": "long",
     "qty": 29.3189,
     "avg_price": 88.2376,
-    "price": 91.935,
-    "value": 2695.43,
-    "pl": 108.4,
-    "pl_pct": 0.0419,
+    "price": 89.885,
+    "value": 2635.33,
+    "pl": 48.3,
+    "pl_pct": 0.01867,
     "entry_date": "2026-11-13",
     "rating": "Overweight",
     "rationale": "Initiate an Overweight position, capping exposure at a 0.5x standard allocation to manage the stock's high volatility. Scale into the position near current levels ($87.09) to capitalize on the mispriced forward valuation, while maintaining a firm risk-off trigger below the 200-day SMA ($77.63)."
@@ -244,10 +329,10 @@
     "side": "long",
     "qty": 20.951,
     "avg_price": 123.4797,
-    "price": 115.845,
-    "value": 2427.07,
-    "pl": -159.95,
-    "pl_pct": -0.06183,
+    "price": 107.125,
+    "value": 2244.38,
+    "pl": -342.65,
+    "pl_pct": -0.13245,
     "entry_date": "2026-11-13",
     "rating": "Overweight",
     "rationale": "Initiate a 0.5x position in NBIS at current levels near $128.64 to capture the oversold bounce. Limit downside with a stop-loss at $110.00, acknowledging the high Average True Range, and look to scale to a full 1.0x position only if the stock sustains support above $118.94. Monitor quarterly CapEx efficiency as the primary indicator for long-term thesis viability."
@@ -255,67 +340,74 @@
    {
     "symbol": "NVDA",
     "side": "long",
-    "qty": 15.2318,
-    "avg_price": 169.844,
-    "price": 162.84,
-    "value": 2480.35,
-    "pl": -106.68,
-    "pl_pct": -0.04124,
-    "entry_date": "2026-11-13",
-    "rating": "Overweight",
-    "rationale": "Initiate a long position in NVDA using a tiered entry strategy to capture the current valuation dislocation while respecting extreme volatility. Execute an initial 0.5x tranche immediately to capitalize on the oversold RSI, deploying the remaining 1.0x allocation only upon price stabilization above $175 or consolidation near $165. Maintain a strict stop-loss at $146.49 to manage downside risk associated with the current leadership uncertainty."
+    "qty": 32.4426,
+    "avg_price": 159.0118,
+    "price": 156.145,
+    "value": 5065.75,
+    "pl": -93.01,
+    "pl_pct": -0.01803,
+    "entry_date": "2026-11-16",
+    "rating": "Buy",
+    "rationale": "Initiate a long position at 1.5x standard allocation using a tiered strategy to capitalize on extreme valuation compression. Purchase 50% immediately at $162.85 to capture oversold mean-reversion, with the remaining 50% deployed upon evidence of consolidation above $160 over three sessions. Maintain a stop-loss at $145 to mitigate tail risk from ongoing technical momentum decay."
    },
    {
     "symbol": "QQQ",
-    "side": "long",
-    "qty": 3.6752,
-    "avg_price": 680.3961,
-    "price": 680.01,
-    "value": 2499.17,
-    "pl": -1.42,
-    "pl_pct": -0.00057,
-    "entry_date": "2026-11-12",
-    "rating": "Overweight",
-    "rationale": "Initiate a 0.5x standard allocation in QQQ at current levels (~$690.38) to capture institutional accumulation support. Maintain a strict stop-loss below the 200-day SMA at $675.00 to mitigate volatility risks, and scale up to a full 1.0x position only upon a decisive close above the $718.87 resistance level."
+    "side": "short",
+    "qty": -3.843,
+    "avg_price": 670.9158,
+    "price": 661.8,
+    "value": -2543.3,
+    "pl": 35.03,
+    "pl_pct": 0.01359,
+    "entry_date": "2026-11-16",
+    "rating": "Underweight",
+    "rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
    },
    {
     "symbol": "SPY",
     "side": "long",
     "qty": 3.3161,
     "avg_price": 754.0808,
-    "price": 754.27,
-    "value": 2501.23,
-    "pl": 0.63,
-    "pl_pct": 0.00025,
+    "price": 740.04,
+    "value": 2454.05,
+    "pl": -46.56,
+    "pl_pct": -0.01862,
     "entry_date": "2026-11-12",
     "rating": "Overweight",
     "rationale": "Initiate an initial 50% position in SPY at current levels near $760 to capture strong institutional accumulation, with the remainder of the allocation deployed upon a confirmed daily close above the $764.55 50-day SMA. Maintain a firm stop-loss at $730.00 to protect against a structural breakdown below the 200-day moving average."
+   },
+   {
+    "symbol": "STE",
+    "side": "long",
+    "qty": 9.7136,
+    "avg_price": 265.5431,
+    "price": 261.81,
+    "value": 2543.12,
+    "pl": -36.26,
+    "pl_pct": -0.01406,
+    "entry_date": "2026-11-16",
+    "rating": "Overweight",
+    "rationale": "Initiate a partial, scaled position in STE at current levels (~$264.32) with 50% of the target allocation to participate in the strong earnings momentum. Retain the remaining 50% of liquidity to add on a pullback to the $250-$255 range. Tighten the stop-loss strategy to 1.5 times the Average True Range (ATR) rather than the 50 SMA to manage near-term volatility risk without exposing the portfolio to a 20% drawdown."
    }
   ],
   "pending": [
    {
-    "symbol": "CSCO",
-    "signal_date": "2026-11-13",
-    "rating": "Overweight",
-    "target": 0.1
+    "symbol": "GPN",
+    "signal_date": "2026-11-16",
+    "rating": "Exit",
+    "target": 0.0
    },
    {
     "symbol": "NVDA",
-    "signal_date": "2026-11-13",
+    "signal_date": "2026-11-16",
     "rating": "Buy",
     "target": 0.2
    },
    {
     "symbol": "QQQ",
-    "signal_date": "2026-11-13",
+    "signal_date": "2026-11-16",
     "rating": "Underweight",
     "target": -0.1
-   },
-   {
-    "symbol": "STE",
-    "signal_date": "2026-11-13",
-    "rating": "Overweight",
-    "target": 0.1
    }
   ],
   "trades": [
@@ -348,6 +440,36 @@
     "rationale": "Initiate a long position in NVDA, utilizing a staggered entry to account for current volatility. Allocate an initial tranche at market prices near $173.73, while retaining liquidity to increase exposure if the stock tests $170.64, keeping a stop-loss at $165.00.",
     "exit_reason": "re-decided",
     "exit_rationale": "Initiate a long position in NVDA using a tiered entry strategy to capture the current valuation dislocation while respecting extreme volatility. Execute an initial 0.5x tranche immediately to capitalize on the oversold RSI, deploying the remaining 1.0x allocation only upon price stabilization above $175 or consolidation near $165. Maintain a strict stop-loss at $146.49 to manage downside risk associated with the current leadership uncertainty."
+   },
+   {
+    "symbol": "NVDA",
+    "side": "long",
+    "qty": 15.2318,
+    "entry_date": "2026-11-13",
+    "entry_px": 169.844,
+    "exit_date": "2026-11-16",
+    "exit_px": 158.9482,
+    "pnl": -166.46,
+    "pnl_pct": -6.435,
+    "rating": "Overweight",
+    "rationale": "Initiate a long position in NVDA using a tiered entry strategy to capture the current valuation dislocation while respecting extreme volatility. Execute an initial 0.5x tranche immediately to capitalize on the oversold RSI, deploying the remaining 1.0x allocation only upon price stabilization above $175 or consolidation near $165. Maintain a strict stop-loss at $146.49 to manage downside risk associated with the current leadership uncertainty.",
+    "exit_reason": "re-decided",
+    "exit_rationale": "Initiate a long position at 1.5x standard allocation using a tiered strategy to capitalize on extreme valuation compression. Purchase 50% immediately at $162.85 to capture oversold mean-reversion, with the remaining 50% deployed upon evidence of consolidation above $160 over three sessions. Maintain a stop-loss at $145 to mitigate tail risk from ongoing technical momentum decay."
+   },
+   {
+    "symbol": "QQQ",
+    "side": "long",
+    "qty": 3.6752,
+    "entry_date": "2026-11-12",
+    "entry_px": 680.3961,
+    "exit_date": "2026-11-16",
+    "exit_px": 670.9158,
+    "pnl": -35.34,
+    "pnl_pct": -1.413,
+    "rating": "Overweight",
+    "rationale": "Initiate a 0.5x standard allocation in QQQ at current levels (~$690.38) to capture institutional accumulation support. Maintain a strict stop-loss below the 200-day SMA at $675.00 to mitigate volatility risks, and scale up to a full 1.0x position only upon a decisive close above the $718.87 resistance level.",
+    "exit_reason": "re-decided",
+    "exit_rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
    }
   ],
   "calendar": [
@@ -374,16 +496,22 @@
     "pl": -76.51,
     "pct": -0.296,
     "equity": 25788.58
+   },
+   {
+    "date": "2026-11-16",
+    "pl": -476.49,
+    "pct": -1.848,
+    "equity": 25312.1
    }
   ],
   "stats": {
-   "total_pct": 3.154,
-   "max_dd_pct": -0.296,
-   "sharpe": 6.986,
-   "trades": 2,
-   "win_rate": 1.0,
-   "days": 4,
-   "equity": 25788.58
+   "total_pct": 1.248,
+   "max_dd_pct": -2.138,
+   "sharpe": 2.14,
+   "trades": 4,
+   "win_rate": 0.5,
+   "days": 5,
+   "equity": 25312.1
   }
  },
  "orders_log": [
@@ -482,22 +610,49 @@
    "qty": 9.0,
    "note": "open",
    "status": "accepted"
+  },
+  {
+   "date": "2026-11-16",
+   "symbol": "GPN",
+   "side": "sell",
+   "qty": 28.0,
+   "note": "exit",
+   "status": "accepted"
+  },
+  {
+   "date": "2026-11-16",
+   "symbol": "QQQ",
+   "side": "sell",
+   "qty": 3.0,
+   "note": "open",
+   "status": "accepted"
   }
  ],
- "generated": "2026-11-13T22:37:52+00:00",
+ "generated": "2026-11-16T22:41:52+00:00",
  "start_equity": 25000.0,
- "equity": 24972.51,
- "cash": 15690.45,
- "last_equity": 25263.24,
+ "equity": 24706.13,
+ "cash": 12810.37,
+ "last_equity": 25009.12,
  "positions": [
+  {
+   "symbol": "CSCO",
+   "qty": 26.0,
+   "avg_price": 95.294615,
+   "price": 94.5,
+   "value": 2457.0,
+   "pl": -20.65999,
+   "pl_pct": -0.00834,
+   "rating": "Overweight",
+   "rationale": "Initiate a 5% position in CSCO with a disciplined, staggered entry strategy. Buy 50% of the target allocation at current levels near $95.64 and utilize limit orders to scale in the remaining 50% upon testing support near the lower Bollinger Band at $93.17, while maintaining a firm stop-loss at $89.26."
+  },
   {
    "symbol": "GPN",
    "qty": 28.0,
    "avg_price": 88.975714,
-   "price": 92.13,
-   "value": 2579.64,
-   "pl": 88.320008,
-   "pl_pct": 0.03545,
+   "price": 89.82,
+   "value": 2514.96,
+   "pl": 23.640008,
+   "pl_pct": 0.00949,
    "rating": "Overweight",
    "rationale": "Initiate an Overweight position, capping exposure at a 0.5x standard allocation to manage the stock's high volatility. Scale into the position near current levels ($87.09) to capitalize on the mispriced forward valuation, while maintaining a firm risk-off trigger below the 200-day SMA ($77.63)."
   },
@@ -505,39 +660,47 @@
    "symbol": "NVDA",
    "qty": 15.0,
    "avg_price": 167.956667,
-   "price": 161.25,
-   "value": 2418.75,
-   "pl": -100.600005,
-   "pl_pct": -0.03993,
+   "price": 156.3607,
+   "value": 2345.4105,
+   "pl": -173.939505,
+   "pl_pct": -0.06904,
    "rating": "Buy",
-   "rationale": "Initiate a long position at 1.5x standard allocation using a tiered strategy to capitalize on extreme valuation compression. Purchase 50% immediately at $162.85 to capture oversold mean-reversion, with the remaining 50% deployed upon evidence of consolidation above $160 over three sessions. Maintain a stop-loss at $145 to mitigate tail risk from ongoing technical momentum decay."
-  },
-  {
-   "symbol": "QQQ",
-   "qty": 3.0,
-   "avg_price": 681.026667,
-   "price": 676.45,
-   "value": 2029.35,
-   "pl": -13.730001,
-   "pl_pct": -0.00672,
-   "rating": "Underweight",
-   "rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
+   "rationale": "Initiate a long position in NVDA, utilizing a phased entry strategy to manage high volatility. Deploy capital incrementally rather than as a single market order, maintaining a strict stop-loss at 140.00 to protect against structural downside. Focus on capturing the mean reversion potential of an oversold, fundamentally undervalued asset."
   },
   {
    "symbol": "SPY",
    "qty": 3.0,
    "avg_price": 754.58,
-   "price": 751.44,
-   "value": 2254.32,
-   "pl": -9.42,
-   "pl_pct": -0.00416,
+   "price": 740.4,
+   "value": 2221.2,
+   "pl": -42.54,
+   "pl_pct": -0.01879,
    "rating": "Hold",
-   "rationale": "Maintain current positioning in SPY. With the instrument trapped between the 50-day resistance ($764.09) and 200-day support ($729.32), avoid new directional exposure until a decisive trend emerges. Hedge existing positions to manage tail risk driven by the current $11.03 ATR volatility."
+   "rationale": "Maintain current SPY position while observing price action near the 200-day SMA ($729.58) and lower Bollinger Band ($734.21). Avoid adding exposure until the price reclaims the 10-day EMA ($751.88), and maintain a defensive posture with stops near $718.17 to account for high ATR volatility."
+  },
+  {
+   "symbol": "STE",
+   "qty": 9.0,
+   "avg_price": 267.611111,
+   "price": 261.91,
+   "value": 2357.19,
+   "pl": -51.309999,
+   "pl_pct": -0.0213,
+   "rating": "Overweight",
+   "rationale": "Initiate a partial, scaled position in STE at current levels (~$264.32) with 50% of the target allocation to participate in the strong earnings momentum. Retain the remaining 50% of liquidity to add on a pullback to the $250-$255 range. Tighten the stop-loss strategy to 1.5 times the Average True Range (ATR) rather than the 50 SMA to manage near-term volatility risk without exposing the portfolio to a 20% drawdown."
   }
  ],
  "orders": [
   {
-   "date": "2026-11-13T22:37+00:00",
+   "date": "2026-11-16T22:41+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 3.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-16T22:41+00:00",
    "symbol": "NVDA",
    "side": "sell",
    "qty": 15.0,
@@ -545,15 +708,7 @@
    "price": null
   },
   {
-   "date": "2026-11-13T22:37+00:00",
-   "symbol": "STE",
-   "side": "buy",
-   "qty": 9.0,
-   "status": "accepted",
-   "price": null
-  },
-  {
-   "date": "2026-11-13T22:37+00:00",
+   "date": "2026-11-16T22:41+00:00",
    "symbol": "QQQ",
    "side": "sell",
    "qty": 3.0,
@@ -561,11 +716,51 @@
    "price": null
   },
   {
-   "date": "2026-11-13T22:37+00:00",
+   "date": "2026-11-16T22:41+00:00",
+   "symbol": "GPN",
+   "side": "sell",
+   "qty": 28.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-16T14:35+00:00",
+   "symbol": "CSCO",
+   "side": "sell",
+   "qty": 26.0,
+   "status": "new",
+   "price": null
+  },
+  {
+   "date": "2026-11-16T09:00+00:00",
+   "symbol": "STE",
+   "side": "buy",
+   "qty": 9.0,
+   "status": "filled",
+   "price": 267.611111
+  },
+  {
+   "date": "2026-11-16T09:00+00:00",
    "symbol": "CSCO",
    "side": "buy",
    "qty": 26.0,
-   "status": "accepted",
+   "status": "filled",
+   "price": 95.294615
+  },
+  {
+   "date": "2026-11-16T09:00+00:00",
+   "symbol": "QQQ",
+   "side": "sell",
+   "qty": 3.0,
+   "status": "filled",
+   "price": 668.713333
+  },
+  {
+   "date": "2026-11-16T09:00+00:00",
+   "symbol": "NVDA",
+   "side": "sell",
+   "qty": 15.0,
+   "status": "new",
    "price": null
   },
   {
@@ -573,7 +768,7 @@
    "symbol": "NVDA",
    "side": "sell",
    "qty": 15.0,
-   "status": "new",
+   "status": "canceled",
    "price": null
   },
   {
@@ -615,46 +810,6 @@
    "qty": 28.0,
    "status": "filled",
    "price": 88.975714
-  },
-  {
-   "date": "2026-11-12T09:00+00:00",
-   "symbol": "QQQ",
-   "side": "buy",
-   "qty": 3.0,
-   "status": "filled",
-   "price": 681.026667
-  },
-  {
-   "date": "2026-11-12T09:00+00:00",
-   "symbol": "NVDA",
-   "side": "buy",
-   "qty": 13.0,
-   "status": "filled",
-   "price": 153.32
-  },
-  {
-   "date": "2026-11-12T09:00+00:00",
-   "symbol": "SPY",
-   "side": "buy",
-   "qty": 3.0,
-   "status": "filled",
-   "price": 754.58
-  },
-  {
-   "date": "2026-11-10T09:00+00:00",
-   "symbol": "NVDA",
-   "side": "sell",
-   "qty": 13.0,
-   "status": "filled",
-   "price": 171.34
-  },
-  {
-   "date": "2026-11-09T21:20+00:00",
-   "symbol": "NVDA",
-   "side": "sell",
-   "qty": 13.0,
-   "status": "canceled",
-   "price": null
   }
  ],
  "calendar": [
@@ -678,767 +833,681 @@
   },
   {
    "date": "2026-11-13",
-   "pl": -290.73,
-   "pct": -1.151,
-   "equity": 24972.51
+   "pl": -254.12,
+   "pct": -1.01,
+   "equity": 25009.12
+  },
+  {
+   "date": "2026-11-16",
+   "pl": -302.99,
+   "pct": -1.212,
+   "equity": 24706.13
   }
  ],
  "history": {
   "1D": [
    [
-    1794560400,
-    25258.08
+    1794819600,
+    24943.63
    ],
    [
-    1794560700,
-    25258.08
+    1794819900,
+    24943.63
    ],
    [
-    1794561000,
-    25257.84
+    1794820200,
+    24941.29
    ],
    [
-    1794561300,
-    25259.43
+    1794820500,
+    24933.61
    ],
    [
-    1794561600,
-    25261.29
+    1794820800,
+    24938.86
    ],
    [
-    1794561900,
-    25258.76
+    1794821100,
+    24940.32
    ],
    [
-    1794562200,
-    25259.97
+    1794821400,
+    24942.52
    ],
    [
-    1794562500,
-    25260.75
+    1794821700,
+    24950.59
    ],
    [
-    1794562800,
-    25263.72
+    1794822000,
+    24942.16
    ],
    [
-    1794563100,
-    25263.48
+    1794822300,
+    24937.18
    ],
    [
-    1794563400,
-    25260.54
+    1794822600,
+    24937.06
    ],
    [
-    1794563700,
-    25260.54
+    1794822900,
+    24934.36
    ],
    [
-    1794564000,
-    25262.76
+    1794823200,
+    24939.55
    ],
    [
-    1794564300,
-    25265.61
+    1794823500,
+    24927.52
    ],
    [
-    1794564600,
-    25265.73
+    1794823800,
+    24928.93
    ],
    [
-    1794564900,
-    25265.79
+    1794824100,
+    24916.03
    ],
    [
-    1794565200,
-    25267.14
+    1794824400,
+    24928.87
    ],
    [
-    1794565500,
-    25266.66
+    1794824700,
+    24929.85
    ],
    [
-    1794565800,
-    25265.79
+    1794825000,
+    24931.14
    ],
    [
-    1794566100,
-    25264.35
+    1794825300,
+    24925.54
    ],
    [
-    1794566400,
-    25266.57
+    1794825600,
+    24924.49
    ],
    [
-    1794566700,
-    25267.23
+    1794825900,
+    24925.27
    ],
    [
-    1794567000,
-    25267.62
+    1794826200,
+    24922.15
    ],
    [
-    1794567300,
-    25268.19
+    1794826500,
+    24925.93
    ],
    [
-    1794567600,
-    25269.69
+    1794826800,
+    24927.64
    ],
    [
-    1794567900,
-    25269.78
+    1794827100,
+    24929.56
    ],
    [
-    1794568200,
-    25271.58
+    1794827400,
+    24929.23
    ],
    [
-    1794568500,
-    25270.5
+    1794827700,
+    24924.76
    ],
    [
-    1794568800,
-    25271.4
+    1794828000,
+    24935.62
    ],
    [
-    1794569100,
-    25271.1
+    1794828300,
+    24934.72
    ],
    [
-    1794569400,
-    25268.7
+    1794828600,
+    24928.03
    ],
    [
-    1794569700,
-    25267.05
+    1794828900,
+    24925.54
    ],
    [
-    1794570000,
-    25268.22
+    1794829200,
+    24921.76
    ],
    [
-    1794570300,
-    25268.43
+    1794829500,
+    24920.48
    ],
    [
-    1794570600,
-    25273.98
+    1794829800,
+    24915.55
    ],
    [
-    1794570900,
-    25274.81
+    1794830100,
+    24910.33
    ],
    [
-    1794571200,
-    25274.75
+    1794830400,
+    24904.18
    ],
    [
-    1794571500,
-    25276.09
+    1794830700,
+    24875.98
    ],
    [
-    1794571800,
-    25275.78
+    1794831000,
+    24877.65
    ],
    [
-    1794572100,
-    25275.57
+    1794831300,
+    24880.69
    ],
    [
-    1794572400,
-    25274.16
+    1794831600,
+    24879.13
    ],
    [
-    1794572700,
-    25273.62
+    1794831900,
+    24861.37
    ],
    [
-    1794573000,
-    25272.32
+    1794832200,
+    24847.27
    ],
    [
-    1794573300,
-    25273.06
+    1794832500,
+    24873.69
    ],
    [
-    1794573600,
-    25269.54
+    1794832800,
+    24882.97
    ],
    [
-    1794573900,
-    25270.47
+    1794833100,
+    24903.07
    ],
    [
-    1794574200,
-    25266.06
+    1794833400,
+    24893.68
    ],
    [
-    1794574500,
-    25266.84
+    1794833700,
+    24891.31
    ],
    [
-    1794574800,
-    25270.47
+    1794834000,
+    24905.1
    ],
    [
-    1794575100,
-    25273.65
+    1794834300,
+    24904.87
    ],
    [
-    1794575400,
-    25273.05
+    1794834600,
+    24899.17
    ],
    [
-    1794575700,
-    25272.81
+    1794834900,
+    24893.94
    ],
    [
-    1794576000,
-    25270.51
+    1794835200,
+    24878.05
    ],
    [
-    1794576300,
-    25273.79
+    1794835500,
+    24865.9
    ],
    [
-    1794576600,
-    25276.53
+    1794835800,
+    24861.64
    ],
    [
-    1794576900,
-    25293.04
+    1794836100,
+    24881.11
    ],
    [
-    1794577200,
-    25287.99
+    1794836400,
+    24875.31
    ],
    [
-    1794577500,
-    25284.18
+    1794836700,
+    24887.65
    ],
    [
-    1794577800,
-    25278.3
+    1794837000,
+    24881.71
    ],
    [
-    1794578100,
-    25278.23
+    1794837300,
+    24867.46
    ],
    [
-    1794578400,
-    25275.78
+    1794837600,
+    24878.5
    ],
    [
-    1794578700,
-    25277.76
+    1794837900,
+    24890.68
    ],
    [
-    1794579000,
-    25277.91
+    1794838200,
+    24882.75
    ],
    [
-    1794579300,
-    25278.63
+    1794838500,
+    24882.37
    ],
    [
-    1794579600,
-    25281.0
+    1794838800,
+    24894.85
    ],
    [
-    1794579900,
-    25278.6
+    1794839100,
+    24898.18
    ],
    [
-    1794580200,
-    25273.41
+    1794839400,
+    24910.33
    ],
    [
-    1794580500,
-    25183.01
+    1794839700,
+    24896.3
    ],
    [
-    1794580800,
-    25101.31
+    1794840000,
+    24930.96
    ],
    [
-    1794581100,
-    25047.9
+    1794840300,
+    24960.95
    ],
    [
-    1794581400,
-    25045.59
+    1794840600,
+    24919.92
    ],
    [
-    1794581700,
-    25074.95
+    1794840900,
+    24912.32
    ],
    [
-    1794582000,
-    25051.1
+    1794841200,
+    24921.07
    ],
    [
-    1794582300,
-    25006.17
+    1794841500,
+    24904.9
    ],
    [
-    1794582600,
-    24999.94
+    1794841800,
+    24905.18
    ],
    [
-    1794582900,
-    24900.97
+    1794842100,
+    24901.41
    ],
    [
-    1794583200,
-    24881.46
+    1794842400,
+    24886.76
    ],
    [
-    1794583500,
-    24875.65
+    1794842700,
+    24863.07
    ],
    [
-    1794583800,
-    24884.65
+    1794843000,
+    24854.01
    ],
    [
-    1794584100,
-    24906.89
+    1794843300,
+    24846.8
    ],
    [
-    1794584400,
-    24893.74
+    1794843600,
+    24842.26
    ],
    [
-    1794584700,
-    24906.32
+    1794843900,
+    24848.47
    ],
    [
-    1794585000,
-    24922.28
+    1794844200,
+    24853.59
    ],
    [
-    1794585300,
-    24907.06
+    1794844500,
+    24864.49
    ],
    [
-    1794585600,
-    24916.12
+    1794844800,
+    24847.41
    ],
    [
-    1794585900,
-    24899.27
+    1794845100,
+    24839.71
    ],
    [
-    1794586200,
-    24923.89
+    1794845400,
+    24842.67
    ],
    [
-    1794586500,
-    24905.11
+    1794845700,
+    24816.4
    ],
    [
-    1794586800,
-    24908.61
+    1794846000,
+    24830.05
    ],
    [
-    1794587100,
-    24922.72
+    1794846300,
+    24841.18
    ],
    [
-    1794587400,
-    24941.36
+    1794846600,
+    24848.11
    ],
    [
-    1794587700,
-    24936.51
+    1794846900,
+    24845.93
    ],
    [
-    1794588000,
-    24921.98
+    1794847200,
+    24838.15
    ],
    [
-    1794588300,
-    24921.9
+    1794847500,
+    24837.46
    ],
    [
-    1794588600,
-    24921.8
+    1794847800,
+    24826.53
    ],
    [
-    1794588900,
-    24930.42
+    1794848100,
+    24820.55
    ],
    [
-    1794589200,
-    24931.52
+    1794848400,
+    24823.99
    ],
    [
-    1794589500,
-    24932.18
+    1794848700,
+    24809.2
    ],
    [
-    1794589800,
-    24955.98
+    1794849000,
+    24805.96
    ],
    [
-    1794590100,
-    24945.7
+    1794849300,
+    24811.14
    ],
    [
-    1794590400,
-    24951.48
+    1794849600,
+    24805.95
    ],
    [
-    1794590700,
-    24949.63
+    1794849900,
+    24798.22
    ],
    [
-    1794591000,
-    24963.68
+    1794850200,
+    24796.71
    ],
    [
-    1794591300,
-    24959.99
+    1794850500,
+    24793.7
    ],
    [
-    1794591600,
-    24947.49
+    1794850800,
+    24785.77
    ],
    [
-    1794591900,
-    24964.27
+    1794851100,
+    24787.96
    ],
    [
-    1794592200,
-    24966.99
+    1794851400,
+    24796.17
    ],
    [
-    1794592500,
-    24967.67
+    1794851700,
+    24789.09
    ],
    [
-    1794592800,
-    24968.91
+    1794852000,
+    24788.99
    ],
    [
-    1794593100,
-    24962.93
+    1794852300,
+    24774.23
    ],
    [
-    1794593400,
-    24972.75
+    1794852600,
+    24771.65
    ],
    [
-    1794593700,
-    24967.84
+    1794852900,
+    24764.52
    ],
    [
-    1794594000,
-    24970.5
+    1794853200,
+    24755.07
    ],
    [
-    1794594300,
-    24965.98
+    1794853500,
+    24755.2
    ],
    [
-    1794594600,
-    24980.68
+    1794853800,
+    24729.06
    ],
    [
-    1794594900,
-    24988.51
+    1794854100,
+    24712.05
    ],
    [
-    1794595200,
-    24986.58
+    1794854400,
+    24714.81
    ],
    [
-    1794595500,
-    24995.67
+    1794854700,
+    24729.14
    ],
    [
-    1794595800,
-    25000.59
+    1794855000,
+    24754.86
    ],
    [
-    1794596100,
-    25011.53
+    1794855300,
+    24757.63
    ],
    [
-    1794596400,
-    25011.92
+    1794855600,
+    24768.16
    ],
    [
-    1794596700,
-    25013.2
+    1794855900,
+    24747.42
    ],
    [
-    1794597000,
-    25016.11
+    1794856200,
+    24747.88
    ],
    [
-    1794597300,
-    25005.66
+    1794856500,
+    24731.92
    ],
    [
-    1794597600,
-    25019.71
+    1794856800,
+    24733.74
    ],
    [
-    1794597900,
-    25015.53
+    1794857100,
+    24730.52
    ],
    [
-    1794598200,
-    25019.05
+    1794857400,
+    24726.54
    ],
    [
-    1794598500,
-    25008.58
+    1794857700,
+    24711.29
    ],
    [
-    1794598800,
-    25006.02
+    1794858000,
+    24703.76
    ],
    [
-    1794599100,
-    24997.99
+    1794858300,
+    24687.36
    ],
    [
-    1794599400,
-    24992.82
+    1794858600,
+    24693.88
    ],
    [
-    1794599700,
-    24995.67
+    1794858900,
+    24719.99
    ],
    [
-    1794600000,
-    25016.68
+    1794859200,
+    24719.29
    ],
    [
-    1794600300,
-    25005.17
+    1794859500,
+    24704.74
    ],
    [
-    1794600600,
-    25003.9
+    1794859800,
+    24701.32
    ],
    [
-    1794600900,
-    25007.05
+    1794860100,
+    24684.79
    ],
    [
-    1794601200,
-    25004.66
+    1794860400,
+    24691.65
    ],
    [
-    1794601500,
-    24994.61
+    1794860700,
+    24679.08
    ],
    [
-    1794601800,
-    24990.25
+    1794861000,
+    24681.45
    ],
    [
-    1794602100,
-    24982.08
+    1794861300,
+    24675.22
    ],
    [
-    1794602400,
-    24986.36
+    1794861600,
+    24666.17
    ],
    [
-    1794602700,
-    24974.03
+    1794861900,
+    24673.95
    ],
    [
-    1794603000,
-    24990.66
+    1794862200,
+    24680.27
    ],
    [
-    1794603300,
-    25007.88
+    1794862500,
+    24698.38
    ],
    [
-    1794603600,
-    25008.4
+    1794862800,
+    24706.33
    ],
    [
-    1794603900,
-    24970.69
+    1794863100,
+    24705.34
    ],
    [
-    1794604200,
-    25005.65
+    1794863400,
+    24718.31
    ],
    [
-    1794604500,
-    24992.04
+    1794863700,
+    24711.15
    ],
    [
-    1794604800,
-    24980.57
+    1794864000,
+    24724.57
    ],
    [
-    1794605100,
-    24972.42
+    1794864300,
+    24710.45
    ],
    [
-    1794605400,
-    24975.81
+    1794864600,
+    24711.74
    ],
    [
-    1794605700,
-    24963.06
+    1794864900,
+    24714.28
    ],
    [
-    1794606000,
-    24957.19
+    1794865200,
+    24715.2
    ],
    [
-    1794606300,
-    24967.36
+    1794865500,
+    24713.58
    ],
    [
-    1794606600,
-    24980.79
+    1794865800,
+    24712.1
    ],
    [
-    1794606900,
-    24981.53
+    1794866100,
+    24692.57
    ],
    [
-    1794607200,
-    24977.89
+    1794866400,
+    24699.32
    ],
    [
-    1794607500,
-    24975.97
+    1794866700,
+    24688.65
    ],
    [
-    1794607800,
-    24974.55
+    1794867000,
+    24696.71
    ],
    [
-    1794608100,
-    24976.92
+    1794867300,
+    24701.04
    ],
    [
-    1794608400,
-    24973.21
+    1794867600,
+    24704.89
    ],
    [
-    1794608700,
-    24973.57
+    1794867900,
+    24706.94
    ],
    [
-    1794609000,
-    24969.31
+    1794868200,
+    24705.3
    ],
    [
-    1794609300,
-    24968.17
+    1794868500,
+    24706.16
+   ],
+   [
+    1794868800,
+    24706.88
    ]
   ],
   "1W": [
-   [
-    1794237300,
-    25000.0
-   ],
-   [
-    1794238200,
-    25000.0
-   ],
-   [
-    1794239100,
-    25000.0
-   ],
-   [
-    1794240000,
-    25000.0
-   ],
-   [
-    1794240900,
-    25000.0
-   ],
-   [
-    1794241800,
-    25000.0
-   ],
-   [
-    1794242700,
-    25000.0
-   ],
-   [
-    1794243600,
-    25000.0
-   ],
-   [
-    1794244500,
-    25000.0
-   ],
-   [
-    1794245400,
-    25000.0
-   ],
-   [
-    1794246300,
-    25000.0
-   ],
-   [
-    1794247200,
-    25000.0
-   ],
-   [
-    1794248100,
-    25000.0
-   ],
-   [
-    1794249000,
-    25000.0
-   ],
-   [
-    1794249900,
-    25000.0
-   ],
-   [
-    1794250800,
-    25000.0
-   ],
-   [
-    1794251700,
-    25000.0
-   ],
-   [
-    1794252600,
-    25000.0
-   ],
-   [
-    1794253500,
-    25000.0
-   ],
-   [
-    1794254400,
-    25000.0
-   ],
-   [
-    1794255300,
-    25000.0
-   ],
-   [
-    1794256200,
-    25000.0
-   ],
-   [
-    1794257100,
-    25000.0
-   ],
-   [
-    1794258000,
-    25000.0
-   ],
    [
     1794321000,
     25000.0
@@ -1870,6 +1939,114 @@
    [
     1794603600,
     25008.4
+   ],
+   [
+    1794839400,
+    24910.33
+   ],
+   [
+    1794840300,
+    24960.95
+   ],
+   [
+    1794841200,
+    24921.07
+   ],
+   [
+    1794842100,
+    24901.41
+   ],
+   [
+    1794843000,
+    24854.01
+   ],
+   [
+    1794843900,
+    24848.47
+   ],
+   [
+    1794844800,
+    24847.41
+   ],
+   [
+    1794845700,
+    24816.4
+   ],
+   [
+    1794846600,
+    24848.11
+   ],
+   [
+    1794847500,
+    24837.46
+   ],
+   [
+    1794848400,
+    24823.99
+   ],
+   [
+    1794849300,
+    24811.14
+   ],
+   [
+    1794850200,
+    24796.71
+   ],
+   [
+    1794851100,
+    24787.96
+   ],
+   [
+    1794852000,
+    24788.99
+   ],
+   [
+    1794852900,
+    24764.52
+   ],
+   [
+    1794853800,
+    24729.06
+   ],
+   [
+    1794854700,
+    24729.14
+   ],
+   [
+    1794855600,
+    24768.16
+   ],
+   [
+    1794856500,
+    24731.92
+   ],
+   [
+    1794857400,
+    24726.54
+   ],
+   [
+    1794858300,
+    24687.36
+   ],
+   [
+    1794859200,
+    24719.29
+   ],
+   [
+    1794860100,
+    24684.79
+   ],
+   [
+    1794861000,
+    24681.45
+   ],
+   [
+    1794861900,
+    24673.95
+   ],
+   [
+    1794862800,
+    24706.33
    ]
   ],
   "1M": [
@@ -2008,6 +2185,34 @@
    [
     1794601800,
     24990.25
+   ],
+   [
+    1794839400,
+    24910.33
+   ],
+   [
+    1794843000,
+    24854.01
+   ],
+   [
+    1794846600,
+    24848.11
+   ],
+   [
+    1794850200,
+    24796.71
+   ],
+   [
+    1794853800,
+    24729.06
+   ],
+   [
+    1794857400,
+    24726.54
+   ],
+   [
+    1794861000,
+    24681.45
    ]
   ],
   "ALL": [
@@ -2032,13 +2237,38 @@
     25263.24
    ],
    [
-    1794609472,
-    24972.51
+    1794618000,
+    25009.12
+   ],
+   [
+    1794868912,
+    24706.13
    ]
   ]
  },
  "balance_history": {
   "rows": [
+   {
+    "time": "2026-11-16 09:34:16",
+    "balance_before": 24983.71,
+    "balance_after": 24971.07,
+    "realized_pnl": -12.64,
+    "action": "Close long position for symbol QQQ at price 668.39 for 1 units. Position AVG Price was 681.02666667"
+   },
+   {
+    "time": "2026-11-16 09:33:28",
+    "balance_before": 24996.24,
+    "balance_after": 24983.71,
+    "realized_pnl": -12.54,
+    "action": "Close long position for symbol QQQ at price 668.49 for 1 units. Position AVG Price was 681.02666667"
+   },
+   {
+    "time": "2026-11-16 09:32:29",
+    "balance_before": 25008.01,
+    "balance_after": 24996.24,
+    "realized_pnl": -11.77,
+    "action": "Close long position for symbol QQQ at price 669.26 for 1 units. Position AVG Price was 681.02666667"
+   },
    {
     "time": "2026-11-13 10:20:30",
     "balance_before": 25234.26,
@@ -2061,15 +2291,48 @@
     "action": "Close short position for symbol NVDA at price 152.24 for 4 units. Position AVG Price was 171.34"
    }
   ],
-  "realized": 8.01,
-  "unrealized": -35.43,
-  "equity": 24972.51,
-  "available": 17907.52,
-  "margin": 7064.99,
+  "realized": -28.93,
+  "unrealized": -264.81,
+  "equity": 24706.13,
+  "available": 17734.37,
+  "margin": 6971.76,
   "start_balance": 25000.0
  },
  "mode": "paper",
  "trades": [
+  {
+   "symbol": "QQQ",
+   "side": "long",
+   "qty": 1.0,
+   "entry_px": 681.02666667,
+   "exit_px": 668.39,
+   "exit_date": "2026-11-16",
+   "pnl": -12.64,
+   "rating": "Underweight",
+   "rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
+  },
+  {
+   "symbol": "QQQ",
+   "side": "long",
+   "qty": 1.0,
+   "entry_px": 681.02666667,
+   "exit_px": 668.49,
+   "exit_date": "2026-11-16",
+   "pnl": -12.54,
+   "rating": "Underweight",
+   "rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
+  },
+  {
+   "symbol": "QQQ",
+   "side": "long",
+   "qty": 1.0,
+   "entry_px": 681.02666667,
+   "exit_px": 669.26,
+   "exit_date": "2026-11-16",
+   "pnl": -11.77,
+   "rating": "Underweight",
+   "rationale": "We are reducing QQQ exposure by 20-30% to align with the technical breakdown below the 200-day moving average ($681.20). This defensive posture preserves capital against macro headwinds while avoiding total divestment in a volatile market. We will await a confirmed reclamation of the 200-day moving average before considering a re-entry."
+  },
   {
    "symbol": "NBIS",
    "side": "long",
@@ -2106,35 +2369,40 @@
  ],
  "pending": [
   {
-   "symbol": "CSCO",
-   "side": "buy",
-   "qty": 26.0,
-   "note": "open",
+   "symbol": "GPN",
+   "side": "sell",
+   "qty": 28.0,
+   "note": "exit",
    "status": "accepted"
-  },
-  {
-   "symbol": "NVDA",
-   "side": "buy",
-   "qty": 15.0,
-   "note": "resize",
-   "status": "error: {\"code\":40310000,\"existing_order_id\":\"a64bfe69-790f-4cad-b297-cdd4f323e29f\",\"mes"
   },
   {
    "symbol": "QQQ",
    "side": "sell",
    "qty": 3.0,
-   "note": "flip: close first, open next night",
-   "status": "accepted"
-  },
-  {
-   "symbol": "STE",
-   "side": "buy",
-   "qty": 9.0,
    "note": "open",
    "status": "accepted"
   }
  ],
  "plans": {
+  "CSCO": {
+   "base": 0.1,
+   "exits": [],
+   "horizon": null,
+   "initial_x": 1.0,
+   "max_total_x": 1.0,
+   "not_executed": [
+    "initial size 0.5x unverified: using the default 1x",
+    "scale-in near $93.17: initial entry already uses the 1x allowed"
+   ],
+   "notes": [],
+   "rating": "Overweight",
+   "ref_price": 95.64,
+   "scale_in": [],
+   "side": "long",
+   "stop": 89.26,
+   "stop_type": "price",
+   "tp": null
+  },
   "GPN": {
    "base": 0.1,
    "exits": [],
@@ -2184,29 +2452,26 @@
   "NVDA": {
    "rating": "Buy",
    "side": "long",
-   "ref_price": 162.84,
+   "ref_price": 156.145,
    "initial_x": 1.0,
-   "stop": 145.0,
+   "stop": 140.0,
    "stop_type": "price",
    "tp": null,
    "scale_in": [],
    "exits": [],
    "horizon": null,
    "notes": [
-    "extreme valuation compression",
-    "oversold mean-reversion",
-    "ongoing technical momentum decay"
+    "phased entry strategy to manage high volatility",
+    "capturing the mean reversion potential of an oversold, fundamentally undervalued asset"
    ],
-   "not_executed": [
-    "scale-in above $160: initial entry already uses the 1x allowed"
-   ],
+   "not_executed": [],
    "base": 0.2,
    "max_total_x": 1.0
   },
   "QQQ": {
    "rating": "Underweight",
    "side": "short",
-   "ref_price": 680.01,
+   "ref_price": 661.8,
    "initial_x": 1.0,
    "stop": null,
    "stop_type": null,
@@ -2215,82 +2480,106 @@
    "exits": [],
    "horizon": null,
    "notes": [
-    "Macro headwinds",
-    "Volatile market"
+    "Manage downside risk while the index trades below its critical 200-day moving average",
+    "High volatility",
+    "Avoid further capital deployment until a clear reversal or support base is established"
    ],
    "not_executed": [
-    "plan direction 'long' conflicts with the Underweight rating: rating wins",
-    "no stop in the paragraph",
-    "exit below $681.2 is not an adverse trigger for a short: skipped"
+    "initial size 0.25x unverified: using the default 1x",
+    "stop $630 is on the wrong side of $661.8 for a short: skipped",
+    "exit below $681.41 is not an adverse trigger for a short: skipped"
    ],
    "base": 0.1,
    "max_total_x": 1.0
   },
   "SPY": {
-   "base": null,
-   "exits": [],
-   "horizon": null,
-   "initial_x": 1.0,
-   "max_total_x": 1.0,
-   "not_executed": [
-    "no stop in the paragraph"
-   ],
-   "notes": [
-    "Manage tail risk driven by the current $11.03 ATR volatility"
-   ],
    "rating": "Hold",
-   "ref_price": 752.81,
-   "scale_in": [],
    "side": "long",
-   "stop": null,
-   "stop_type": null,
-   "tp": null
-  },
-  "CSCO": {
-   "rating": "Overweight",
-   "side": "long",
-   "ref_price": 95.64,
+   "ref_price": 740.04,
    "initial_x": 1.0,
-   "stop": 89.26,
+   "stop": 718.17,
    "stop_type": "price",
    "tp": null,
    "scale_in": [],
    "exits": [],
    "horizon": null,
-   "notes": [],
-   "not_executed": [
-    "initial size 0.5x unverified: using the default 1x",
-    "scale-in near $93.17: initial entry already uses the 1x allowed"
+   "notes": [
+    "observing price action near the 200-day SMA and lower Bollinger Band",
+    "avoid adding exposure until the price reclaims the 10-day EMA",
+    "maintain a defensive posture to account for high ATR volatility"
    ],
-   "base": 0.1,
+   "not_executed": [],
+   "base": null,
    "max_total_x": 1.0
   },
   "STE": {
-   "rating": "Overweight",
-   "side": "long",
-   "ref_price": 264.36,
-   "initial_x": 1.0,
-   "stop": null,
-   "stop_type": null,
-   "tp": null,
-   "scale_in": [],
+   "base": 0.1,
    "exits": [],
    "horizon": null,
-   "notes": [
-    "strong earnings momentum",
-    "manage near-term volatility risk"
-   ],
+   "initial_x": 1.0,
+   "max_total_x": 1.0,
    "not_executed": [
     "initial size 0.5x unverified: using the default 1x",
     "size cap 1x unverified: ignored",
     "no stop in the paragraph",
     "scale-in below $250: initial entry already uses the 1x allowed"
    ],
-   "base": 0.1,
-   "max_total_x": 1.0
+   "notes": [
+    "strong earnings momentum",
+    "manage near-term volatility risk"
+   ],
+   "rating": "Overweight",
+   "ref_price": 264.36,
+   "scale_in": [],
+   "side": "long",
+   "stop": null,
+   "stop_type": null,
+   "tp": null
+  },
+  "TSN": {
+   "rating": "Hold",
+   "side": null,
+   "ref_price": 63.93,
+   "initial_x": 1.0,
+   "stop": null,
+   "stop_type": null,
+   "tp": null,
+   "scale_in": [],
+   "exits": [],
+   "horizon": null,
+   "notes": [
+    "overextended momentum breakout",
+    "RSI of 77.11",
+    "breach of the upper Bollinger Band",
+    "high risk of short-term mean reversion"
+   ],
+   "not_executed": [],
+   "base": null
+  },
+  "TTWO": {
+   "rating": "Hold",
+   "side": null,
+   "ref_price": 213.415,
+   "initial_x": 1.0,
+   "stop": null,
+   "stop_type": null,
+   "tp": null,
+   "scale_in": [],
+   "exits": [],
+   "horizon": null,
+   "notes": [
+    "GTA VI launch",
+    "post-launch volatility to subside"
+   ],
+   "not_executed": [
+    "no open position or no price to validate against: levels not executed"
+   ],
+   "base": null
   }
  },
  "plan_events": [
-  "NVDA: cancelled 1 old protective order(s), placed GTC STOP stop $145 for 15 sh (order d255c6a2, accepted)"
- ]
+  "NVDA: cancelled 1 old protective order(s), placed GTC STOP stop $140 for 15 sh (order 4c4d6dcf, accepted)",
+  "SPY: placed GTC STOP stop $718.17 for 3 sh (order df59206d, accepted)"
+ ],
+ "earnings_skips": []
 }
