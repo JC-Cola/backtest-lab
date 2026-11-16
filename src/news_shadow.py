@@ -189,7 +189,25 @@ def candidates(bars, day, news_fn, symbols):
     return out
 
 
-def run(state, bars, day, news_fn, review_fn=None, symbols=None, cap=CAP):
+def finnhub_context(sym, day, recs=None, surprises=None):
+    """Optional catalyst context from Finnhub for one shock: analyst-recommendation change (rec_delta = newest month's score minus
+    the previous month's, score in [-2, 2]) and the latest reported EPS surprise (surprise_pct, surprise_period). Only the fields
+    that exist are returned; {} when there is no key, no data or anything fails. Never raises."""
+    try:
+        import finnhub_client as FH
+        out = {}
+        ch = FH.rec_change((recs or FH.recommendation_trends)(sym))
+        if ch:
+            out.update(rec_delta=ch["delta"], rec_score=ch["score"])
+        sp = FH.latest_surprise((surprises or FH.earnings_surprises)(sym), before=day)
+        if sp:
+            out.update(surprise_pct=sp["surprise_pct"], surprise_period=sp["period"])
+        return out
+    except Exception:
+        return {}
+
+
+def run(state, bars, day, news_fn, review_fn=None, symbols=None, cap=CAP, context_fn=None):
     """One nightly pass. Records new shocks of `day` (top `cap` by score; shocks already recorded for the day count
     against the cap, so re-runs add nothing), reviews them, opens their hypothetical trades, then settles all trades.
     news_fn(sym, prev_day, day) -> [headline], or None to skip detection (settle only).
@@ -200,6 +218,12 @@ def run(state, bars, day, news_fn, review_fn=None, symbols=None, cap=CAP):
         symbols = symbols or [s for s in bars if s != MARKET]
         room = cap - sum(s["date"] == day for s in state["shocks"])
         new = [r for r in candidates(bars, day, news_fn, symbols) if r["id"] not in have][:max(0, room)]
+        if context_fn:   # optional catalyst context (Finnhub); a failure never blocks the scan
+            for r in new:
+                try:
+                    r.update(context_fn(r["symbol"], day) or {})
+                except Exception:
+                    pass
         if new and review_fn:
             reviews = review_fn(new) or {}
             for r in new:
@@ -377,7 +401,7 @@ def main(argv=None):
                 print(f"news_shadow: market news unavailable ({type(ex).__name__}: {str(ex)[:80]}); no new shocks tonight", file=sys.stderr)
     t2 = _time.monotonic()
     review_fn = None if a.no_llm else (lambda recs: news_review.review_all(recs, max_calls=a.max_reviews))
-    new = run(state, bars, day, news_fn, review_fn, syms) if day else []
+    new = run(state, bars, day, news_fn, review_fn, syms, context_fn=finnhub_context) if day else []
     t3 = _time.monotonic()
     print(f"timing: bars {t1 - t0:.0f}s ({len(bars)} symbols), news {t2 - t1:.0f}s ({nart} articles), detect+review {t3 - t2:.0f}s"
           + ("" if a.no_llm else f"; Claude reported cost ${claude_cli.spent():.2f}"))

@@ -205,6 +205,40 @@ def waiting_candidates(cands):
 
 
 # ---------- morning ----------
+HOUR_WORD = {"bmo": "before open", "amc": "after close", "dmh": "during hours"}
+
+
+def earnings_items(symbols, today, calendar_fn=None, tomorrow=None):
+    """[{symbol, when: 'today'|'tomorrow', hour}] for symbols reporting today or on the next session (Finnhub calendar), sorted
+    by day then symbol. Never raises: no key / no data -> []."""
+    try:
+        if calendar_fn is None:
+            import finnhub_client
+            calendar_fn = finnhub_client.earnings_calendar
+        if tomorrow is None:
+            import ta_broker
+            tomorrow = ta_broker.next_sessions(today, 1)[0]
+        want, out = set(symbols), []
+        for r in calendar_fn(str(today), tomorrow) or []:
+            when = str(r.get("date") or "")[:10]
+            if r.get("symbol") in want and when in (str(today), str(tomorrow)):
+                out.append({"symbol": r["symbol"], "when": "today" if when == str(today) else "tomorrow",
+                            "hour": str(r.get("hour") or "").lower()})
+        return sorted(out, key=lambda x: (x["when"] != "today", x["symbol"]))
+    except Exception:
+        return []
+
+
+def earnings_text(items):
+    """One compact line: 'Earnings: today NVDA (after close), AAPL (before open) · tomorrow MSFT'; '' when none."""
+    parts = []
+    for when in ("today", "tomorrow"):
+        xs = [f"{i['symbol']}" + (f" ({HOUR_WORD[i['hour']]})" if i.get("hour") in HOUR_WORD else "") for i in items if i["when"] == when]
+        if xs:
+            parts.append(f"{when} " + ", ".join(xs))
+    return "Earnings: " + " · ".join(parts) if parts else ""
+
+
 def morning_flags(it, accts, prev_day, noise_rows, prev_report_exists):
     flags = [f"{LABEL['intraday']} still holds {qty(p['qty'])} {p['symbol']} (should be flat overnight)" for p in it.get("positions", [])]
     if prev_day:
@@ -229,7 +263,7 @@ def morning_data(today, accts, hists, noise_rows, cands, prev_day=None, prev_rep
                      "dd": None if eq is None or not mine else drawdown(h, eq), "kill": KILL.get(name),
                      "day_limit": DAILY_LIMIT.get(name), "risk": risk_line(name, eq, h, a.get("last_equity")) if mine else ""}
     flags = morning_flags(accts["intraday"], accts, prev_day, noise_rows, prev_report_exists)
-    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": [], "gappers": []}
+    return {"kind": "morning", "day": today, "accounts": out, "flags": flags, "waiting_candidates": waiting_candidates(cands), "headlines": [], "gappers": [], "earnings": []}
 
 
 def text_morning(d):
@@ -243,6 +277,8 @@ def text_morning(d):
     wc = d["waiting_candidates"]
     L += ["", b("Candidates") + (": none awaiting approval" if not wc else f": {len(wc)} awaiting approval")]
     L += [f"  {e(c['account'])}: {e(c['description'][:80])}" for c in wc[:3]]
+    if d.get("earnings"):
+        L += ["", e(earnings_text(d["earnings"]))]
     if d.get("gappers"):
         L += ["", b("Gappers with news") + " (pre-market, not traded)"]
         L += [f"  {e(g['symbol'])} {g['gap'] * 100:+.1f}% · vol {fmt_vol(g['pm_vol'])} · {e(g['headline'][:90])}" for g in d["gappers"]]
@@ -445,6 +481,18 @@ def gather_morning(now=None):
     w = proposer_health.briefing_warning()   # research agents' Claude login refused (401)
     if w:
         d["flags"].append(w)
+    try:   # earnings today / tomorrow for what we hold or trade (Finnhub; shown only)
+        import json
+        held = {p["symbol"] for a in accts.values() for p in a.get("positions", []) if p.get("symbol")}
+        try:
+            decs = json.loads((MEM / "system_ta.json").read_text()).get("decisions", [])
+            last = max((x["date"] for x in decs), default=None)
+            held |= {x["symbol"] for x in decs if x["date"] == last and x.get("symbol")}
+        except (OSError, ValueError):
+            pass
+        d["earnings"] = earnings_items(sorted(held), today)
+    except Exception as ex:
+        print(f"earnings failed: {type(ex).__name__}", file=sys.stderr)
     try:   # pre-market gappers with news (universe scan; shown only)
         import news_gappers
         d["gappers"] = news_gappers.gappers_now(now)

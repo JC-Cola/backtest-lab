@@ -1,0 +1,232 @@
+{
+ "cutoffs": {
+  "p10": -4.675,
+  "p90": 23.993
+ },
+ "n_events": 1738,
+ "n_main": 1324,
+ "n_lockbox": 414,
+ "holds": {
+  "5": {
+   "long": {
+    "n": 141,
+    "mean_net": 0.01541,
+    "mean_excess": 0.005,
+    "hit": 0.539,
+    "t_excess": 0.72,
+    "coin_flip_p": 0.1436,
+    "bh_q": 0.1436
+   },
+   "short": {
+    "n": 133,
+    "mean_net": -0.00035,
+    "mean_excess": 0.00466,
+    "hit": 0.526,
+    "t_excess": 1.02,
+    "coin_flip_p": 0.1164,
+    "bh_q": 0.1397
+   },
+   "unrealised_or_missing": 0,
+   "long_minus_short_net": 0.01576
+  },
+  "20": {
+   "long": {
+    "n": 141,
+    "mean_net": 0.0416,
+    "mean_excess": 0.02226,
+    "hit": 0.567,
+    "t_excess": 1.92,
+    "coin_flip_p": 0.0045,
+    "bh_q": 0.027
+   },
+   "short": {
+    "n": 133,
+    "mean_net": 0.00806,
+    "mean_excess": 0.01603,
+    "hit": 0.594,
+    "t_excess": 1.73,
+    "coin_flip_p": 0.0655,
+    "bh_q": 0.0983
+   },
+   "unrealised_or_missing": 0,
+   "long_minus_short_net": 0.03354
+  },
+  "60": {
+   "long": {
+    "n": 136,
+    "mean_net": 0.06465,
+    "mean_excess": 0.02885,
+    "hit": 0.581,
+    "t_excess": 1.52,
+    "coin_flip_p": 0.0346,
+    "bh_q": 0.0692
+   },
+   "short": {
+    "n": 130,
+    "mean_net": -0.00282,
+    "mean_excess": 0.0302,
+    "hit": 0.577,
+    "t_excess": 2.18,
+    "coin_flip_p": 0.0323,
+    "bh_q": 0.0692
+   },
+   "unrealised_or_missing": 47,
+   "long_minus_short_net": 0.06747
+  }
+ },
+ "halves": {
+  "early": {
+   "5": {
+    "long": {
+     "n": 56,
+     "mean_net": 0.00518,
+     "mean_excess": -0.00024,
+     "hit": 0.607,
+     "t_excess": -0.02
+    },
+    "short": {
+     "n": 84,
+     "mean_net": -0.00501,
+     "mean_excess": -0.00483,
+     "hit": 0.452,
+     "t_excess": -0.83
+    }
+   },
+   "20": {
+    "long": {
+     "n": 56,
+     "mean_net": 0.03536,
+     "mean_excess": 0.02736,
+     "hit": 0.536,
+     "t_excess": 1.56
+    },
+    "short": {
+     "n": 84,
+     "mean_net": -0.00205,
+     "mean_excess": -0.0038,
+     "hit": 0.488,
+     "t_excess": -0.31
+    }
+   },
+   "60": {
+    "long": {
+     "n": 56,
+     "mean_net": 0.11458,
+     "mean_excess": 0.06939,
+     "hit": 0.625,
+     "t_excess": 1.8
+    },
+    "short": {
+     "n": 84,
+     "mean_net": -0.0046,
+     "mean_excess": 0.03107,
+     "hit": 0.595,
+     "t_excess": 1.65
+    }
+   }
+  },
+  "late": {
+   "5": {
+    "long": {
+     "n": 85,
+     "mean_net": 0.02216,
+     "mean_excess": 0.00845,
+     "hit": 0.494,
+     "t_excess": 0.88
+    },
+    "short": {
+     "n": 49,
+     "mean_net": 0.00764,
+     "mean_excess": 0.02093,
+     "hit": 0.653,
+     "t_excess": 3.05
+    }
+   },
+   "20": {
+    "long": {
+     "n": 85,
+     "mean_net": 0.04571,
+     "mean_excess": 0.0189,
+     "hit": 0.588,
+     "t_excess": 1.22
+    },
+    "short": {
+     "n": 49,
+     "mean_net": 0.02539,
+     "mean_excess": 0.05003,
+     "hit": 0.776,
+     "t_excess": 3.94
+    }
+   },
+   "60": {
+    "long": {
+     "n": 80,
+     "mean_net": 0.0297,
+     "mean_excess": 0.00047,
+     "hit": 0.55,
+     "t_excess": 0.03
+    },
+    "short": {
+     "n": 46,
+     "mean_net": 0.00042,
+     "mean_excess": 0.02861,
+     "hit": 0.543,
+     "t_excess": 1.52
+    }
+   }
+  }
+ },
+ "lockbox": {
+  "5": {
+   "long": {
+    "n": 32,
+    "mean_net": 0.01897,
+    "mean_excess": 0.0253,
+    "hit": 0.594,
+    "t_excess": 2.2
+   },
+   "short": {
+    "n": 41,
+    "mean_net": -0.04159,
+    "mean_excess": -0.05299,
+    "hit": 0.22,
+    "t_excess": -5.76
+   }
+  },
+  "20": {
+   "long": {
+    "n": 6,
+    "mean_net": -0.03518,
+    "mean_excess": -0.01755,
+    "hit": 0.5,
+    "t_excess": -0.2
+   },
+   "short": {
+    "n": 10,
+    "mean_net": -0.04377,
+    "mean_excess": -0.06323,
+    "hit": 0.4,
+    "t_excess": -1.77
+   }
+  },
+  "60": {
+   "long": {
+    "n": 0
+   },
+   "short": {
+    "n": 0
+   }
+  }
+ },
+ "verdict": "no visible drift (descriptive only)",
+ "generated": "2026-11-16T15:09:56+00:00",
+ "plan": "EARNINGS_PLAN_18.md",
+ "symbols": 518,
+ "symbols_with_surprises": 513,
+ "dropped": {
+  "no_surprise": 4,
+  "small_estimate": 13,
+  "no_reaction_day": 287
+ },
+ "note": "descriptive only: free-plan history is 4 quarters, no tune/test years"
+}

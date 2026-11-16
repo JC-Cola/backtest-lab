@@ -63,6 +63,17 @@ def _pct(x, d=1):
     return "n/a" if x is None else f"{x * 100:+.{d}f}%"
 
 
+def _context(sh):
+    """Optional Finnhub lines (analyst recommendation change, latest EPS surprise); '' when the record has none."""
+    out = ""
+    if sh.get("rec_delta") is not None:
+        out += (f"Analyst consensus score (-2 strong sell .. +2 strong buy): {sh.get('rec_score')}, change vs the previous month "
+                f"{sh['rec_delta']:+.2f}\n")
+    if sh.get("surprise_pct") is not None:
+        out += f"Latest reported EPS surprise (quarter ending {sh.get('surprise_period')}): {sh['surprise_pct']:+.1f}% vs estimate\n"
+    return out
+
+
 def build_prompt(sh):
     """Prompt text for one shock record (symbol, date, ret, mult, relvol, gap, spy_ret, beta, abn, headlines)."""
     heads = "\n".join(f"- {h}" for h in sh["headlines"])
@@ -76,6 +87,7 @@ def build_prompt(sh):
         f"Relative volume (today / 20-day average): {sh.get('relvol') if sh.get('relvol') is not None else 'n/a'}\n"
         f"S&P 500 (SPY) move that day: {_pct(sh.get('spy_ret'))}; stock beta {sh.get('beta') if sh.get('beta') is not None else 'n/a'}; "
         f"move beyond what beta x market explains: {_pct(sh.get('abn'))}\n"
+        + _context(sh) +
         f"Keyword hints from the headlines: {', '.join(keyword_tags(sh['headlines'])) or 'none'}\n"
         f"Headlines in the window (16:00 ET the day before to 16:00 ET that session):\n{heads}\n\n"
         "Step 1, NEWS ANALYST: pick the catalyst type (use unrelated_headline when the headlines do not really explain "

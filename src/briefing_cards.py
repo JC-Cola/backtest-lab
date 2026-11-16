@@ -355,6 +355,20 @@ def morning_gappers(c, d, y):
     return y
 
 
+def morning_earnings(c, d, y):
+    """One line: who reports today / tomorrow among what we hold or trade. Draws nothing when nobody does."""
+    from briefing import earnings_text
+    t = earnings_text(d.get("earnings") or [])
+    if not t:
+        return y
+    c.title(y, "Earnings")
+    t = t.replace("Earnings: ", "").replace("(after close)", "(amc)").replace("(before open)", "(bmo)").replace("(during hours)", "(dmh)")
+    lines = textwrap.wrap(t, 60)[:3]
+    for k, ln in enumerate(lines):
+        c.text(MX, y + 48 + 30 * k, ln, 14, INK)
+    return y + 50 + 30 * len(lines)
+
+
 def morning(c, d):
     header(c, d, "Morning · before the open")
     tiles(c, d, 80, "last session", "last")
@@ -374,6 +388,7 @@ def morning(c, d):
         y = c.pills(MX, y + 28, items) + 34
     y = morning_risk(c, d, y + 40) + 20
     y = morning_flags(c, d, y)
+    y = morning_earnings(c, d, y + 30)
     y = morning_gappers(c, d, y + 14)
     return morning_news(c, d, y + 14)
 

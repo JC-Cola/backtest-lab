@@ -188,8 +188,11 @@ def apply_ledger(state, bars, broker=None, day=None, stamp=None, plan_ctx=None):
         history = [d for d in state["decisions"] if d["date"] < str(day)]
         prices = {d["symbol"]: bars[d["symbol"]][str(day)][2] for d in night if str(day) in bars.get(d["symbol"], {})}
         equity = float(broker.get_account().equity)
-        orders = ta_broker.plan_orders(night, history, ta_broker.held_qty(broker), prices, equity, ta_broker.shortable_fn(broker),
-                                       sizes=(plan_ctx or {}).get("sizes"))
+        held = ta_broker.held_qty(broker)
+        blocks = ta_broker.earnings_blocks([d["symbol"] for d in night if d["symbol"] not in held and d.get("target")], day)
+        orders = ta_broker.plan_orders(night, history, held, prices, equity, ta_broker.shortable_fn(broker),
+                                       sizes=(plan_ctx or {}).get("sizes"), earnings=blocks)
+        state["earnings_skips"] = [{"symbol": o["symbol"], "note": o["note"]} for o in orders if str(o.get("note", "")).startswith("skipped: earnings")]
         released = set()
         if plan_ctx:   # stops of positions we are about to reduce/close/flip must be gone (and confirmed) before the order
             try:
@@ -376,7 +379,12 @@ def run(state, day, tickers, decide, bars_fn, force=False, send=None, broker=Non
                     r["plan_line"], r["not_executed"] = ta_plan.plan_line(r["symbol"], plans[r["symbol"]]), plans[r["symbol"]]["not_executed"]
         except Exception as ex:
             print(f"system_ta: plan step failed ({type(ex).__name__}): {scrub(ex)}", file=sys.stderr)
+    state["earnings_skips"] = []
     apply_ledger(state, bars, broker, day, datetime.now(timezone.utc).strftime("%Y%m%d%H%M"), plan_ctx=plan_ctx)
+    for sk in state.get("earnings_skips") or []:   # tell the Telegram message why no position was opened tonight
+        for r in results:
+            if r.get("symbol") == sk["symbol"]:
+                r["not_executed"] = list(r.get("not_executed") or []) + [sk["note"]]
     if plan_ctx:
         ta_monitor.save(plan_ctx["state"], plans_path or ta_monitor.PLANS)
         state["plans"] = {k: v["plan"] for k, v in plan_ctx["state"]["plans"].items()}

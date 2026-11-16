@@ -18,6 +18,9 @@ from pathlib import Path
 PREFIX = "ta-"
 MIN_TRADE_USD = 50.0
 KEY, SECRET = "ALPACA_TA_API_KEY", "ALPACA_TA_SECRET_KEY"
+# Earnings guard: do not OPEN a new position in a ticker that reports earnings within this many trading days (Finnhub earnings
+# calendar). 0 disables. Existing positions are never touched (their stops protect them). Env EARNINGS_GUARD_DAYS overrides.
+EARNINGS_GUARD_DAYS = int(os.environ.get("EARNINGS_GUARD_DAYS") or 2)
 
 
 def client_from_env(env=None, factory=None):
@@ -36,16 +39,52 @@ def client_from_env(env=None, factory=None):
     return client
 
 
+def next_sessions(day, n):
+    """The `n` NYSE sessions after `day` (weekdays minus the scheduled holidays)."""
+    import pandas as pd
+    from calendar_util import nyse_holidays
+    d, out, hol = pd.Timestamp(str(day)), [], nyse_holidays()
+    while len(out) < n:
+        d += pd.Timedelta(days=1)
+        if d.weekday() < 5 and d not in hol:
+            out.append(d.strftime("%Y-%m-%d"))
+    return out
+
+
+def earnings_blocks(symbols, day, days=None, calendar_fn=None):
+    """{symbol: 'YYYY-MM-DD'} of tickers reporting within the next `days` trading days after `day`'s close: the next `days`
+    sessions, plus `day` itself when the report is after the close (the gap lands on the order's fill). Fails open: no key /
+    no calendar -> {} (nothing is blocked)."""
+    days = EARNINGS_GUARD_DAYS if days is None else days
+    if days <= 0 or not symbols:
+        return {}
+    try:
+        if calendar_fn is None:
+            import finnhub_client
+            calendar_fn = finnhub_client.earnings_calendar
+        sess = next_sessions(day, days)
+        want, out = set(symbols), {}
+        for r in calendar_fn(str(day), sess[-1]) or []:
+            sym, when, hour = r.get("symbol"), str(r.get("date") or "")[:10], str(r.get("hour") or "").lower()
+            if sym in want and (when in sess or (when == str(day) and hour == "amc")):
+                out[sym] = min(when, out.get(sym, when))
+        return out
+    except Exception:
+        return {}
+
+
 def sign(x):
     return (x > 0) - (x < 0)
 
 
-def plan_orders(decisions, history, held, prices, equity, shortable=lambda s: True, sizes=None):
+def plan_orders(decisions, history, held, prices, equity, shortable=lambda s: True, sizes=None, earnings=None):
     """decisions: tonight's decisions [{symbol, target, ...}] (target None = Hold: no order). history: all earlier
     decisions (to see whether the tier changed). held: {symbol: signed qty}. prices: {symbol: last close}.
     sizes: {symbol: initial_size_x} from the validated trading plan (Overweight 0.5x = half of the 10% slot); default 1.
+    earnings: {symbol: date} from earnings_blocks: a NEW position (nothing held yet) in those is skipped, note "skipped: earnings
+    on <date>"; resizes, flips and exits of held positions are unaffected.
     Returns [{symbol, side, qty, note}]."""
-    out, sizes = [], sizes or {}
+    out, sizes, earnings = [], sizes or {}, earnings or {}
     for d in sorted(decisions, key=lambda d: d["symbol"]):
         sym, t = d["symbol"], d["target"]
         px = prices.get(sym)
@@ -66,6 +105,9 @@ def plan_orders(decisions, history, held, prices, equity, shortable=lambda s: Tr
             continue
         diff = desired - cur
         if abs(diff) * px < MIN_TRADE_USD:
+            continue
+        if not cur and sym in earnings:
+            out.append({"symbol": sym, "side": None, "qty": 0, "note": f"skipped: earnings on {earnings[sym]}"})
             continue
         out.append({"symbol": sym, "side": "buy" if diff > 0 else "sell", "qty": abs(diff),
                     "note": "open" if not cur else "resize"})
