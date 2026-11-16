@@ -72,7 +72,9 @@
    "date": "2026-11-12",
    "decision_id": "2026-11-12|NBIS",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-16: position closed"
+   ],
    "opened": true,
    "placed": {
     "at": "2026-11-13T15:06:32+00:00",
@@ -120,7 +122,7 @@
      "valid_days": 10
     }
    ],
-   "status": "active"
+   "status": "closed"
   },
   "NVDA": {
    "date": "2026-11-13",
@@ -230,7 +232,7 @@
    "decision_id": "2026-11-13|STE",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
