@@ -23,7 +23,7 @@ DAYS_KEEP = 25
 
 
 def new_state() -> dict:
-    return {"system": "day-trader-skill (System B)", "start_equity": START_EQUITY, "cash": START_EQUITY,
+    return {"system": "day-trader-skill (shadow)", "mode": "shadow", "start_equity": START_EQUITY, "cash": START_EQUITY,
             "equity": START_EQUITY, "last_equity": START_EQUITY, "positions": [], "trades": [], "orders": [],
             "curve": [], "days": {}, "universe_refreshed": None}
 

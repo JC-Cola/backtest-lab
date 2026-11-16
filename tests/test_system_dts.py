@@ -306,6 +306,28 @@ def test_broker_refuses_non_paper_and_falls_back_without_keys(monkeypatch):
     assert isinstance(dts_broker.select_broker(force_shadow=True), dts_broker.Shadow)
 
 
+def test_select_broker_is_shadow_even_with_keys_and_live_mode(monkeypatch):
+    """day-trader-skill is shadow-only: the DTS keys (now the qlib account's) must never make it trade."""
+    monkeypatch.setenv("ALPACA_DTS_API_KEY", "PKTESTKEY000000000000")
+    monkeypatch.setenv("ALPACA_DTS_SECRET_KEY", "testsecret")
+    assert dts_broker.LIVE is False
+    for mode in (None, "shadow", "live"):
+        if mode is None:
+            monkeypatch.delenv("DTS_MODE", raising=False)
+        else:
+            monkeypatch.setenv("DTS_MODE", mode)
+        assert isinstance(dts_broker.select_broker(), dts_broker.Shadow)
+
+
+def test_old_paper_account_state_is_reset_to_a_fresh_shadow_ledger(env):
+    env.state.update({"source": "alpaca-paper", "equity": 31234.0, "cash": 100.0, "calendar": [{"date": "x"}]})
+    env.state["days"]["2026-11-05"] = {"scan": {"status": "done"}, "decisions": [], "telegram": 0}
+    run(env, World([(101.0, 101.2, 100.9, 101.1)]), notify=False)
+    st = json.loads(env.path.read_text())
+    assert st["mode"] == "shadow" and st.get("source") != "alpaca-paper" and st["start_equity"] == 25000.0
+    assert 24900 < st["equity"] < 25100 and "2026-11-05" in st["days"]
+
+
 def test_broker_entry_is_a_market_bracket_and_flatten_is_a_plain_market_sell(env, monkeypatch):
     fc = FakeClient()
     br = dts_broker.AlpacaPaper(fc, wait=0, sleep=lambda s: None)

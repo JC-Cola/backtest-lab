@@ -1,4 +1,8 @@
-"""System B execution: Alpaca PAPER orders on the dedicated System B account, or the shadow ledger as a fallback.
+"""day-trader-skill execution. SHADOW ONLY since 2026-11-13: the dedicated paper account (ALPACA_DTS_* keys) now
+belongs to the qlib system (system_qlib.py). select_broker() therefore always returns Shadow while LIVE is False
+(and DTS_MODE=shadow in system_dts.yml); AlpacaPaper below is kept, tested, but unreachable from the CLI.
+
+Former description: Alpaca PAPER orders on the dedicated account, or the shadow ledger as a fallback.
 
 Keys: ALPACA_DTS_API_KEY / ALPACA_DTS_SECRET_KEY (GitHub secrets of the same names; ~/.config/backtest-lab/alpaca.env
 locally). TradingClient(paper=True) is hard-coded and the client is refused unless it points at paper-api.alpaca.markets.
@@ -18,6 +22,7 @@ import time
 import dts_ledger as L
 
 PAPER_HOST = "paper-api.alpaca.markets"
+LIVE = False             # day-trader-skill is a shadow ledger now: flipping this AND DTS_MODE=live is needed to trade
 
 
 class NoKeys(Exception):
@@ -180,8 +185,8 @@ class AlpacaPaper:
 
 
 def select_broker(force_shadow=False):
-    """AlpacaPaper when the System B keys exist, else the shadow ledger."""
-    if force_shadow:
+    """Always the shadow ledger unless LIVE is True AND DTS_MODE=live AND the keys exist (none of which is the case)."""
+    if force_shadow or not LIVE or os.environ.get("DTS_MODE", "shadow").strip().lower() != "live":
         return Shadow()
     try:
         return AlpacaPaper()

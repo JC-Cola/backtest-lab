@@ -1,4 +1,4 @@
-"""System B: Jake Schincariol's day-trader-skill pipeline, run as an automated SHADOW paper strategy.
+"""day-trader-skill (Jake Schincariol), run as an automated SHADOW paper strategy (no Alpaca orders, ever; state mode "shadow").
 
 Upstream tool code is vendored unmodified in third_party/day_trader_skill (see UPSTREAM.md there). This file only
 wires it: scanner -> news -> entry timer -> exit planner -> time machine -> budget -> risk, then manages open
@@ -236,9 +236,23 @@ def manage(state, now_utc, data, notify, path, broker):
 
 # ---------------------------------------------------------------- one scheduled check
 
+def to_shadow(state):
+    """The ledger used to mirror the dedicated paper account (source "alpaca-paper"); that account now belongs to the qlib
+    system, so drop its numbers and start a fresh $25k shadow ledger (the day log and universe refresh date are kept)."""
+    if state.get("source") == "alpaca-paper":
+        keep = {k: state.get(k) for k in ("days", "universe_refreshed")}
+        state.clear()
+        state.update(L.new_state())
+        state.update({k: v for k, v in keep.items() if v is not None})
+    state["mode"] = "shadow"
+    state["system"] = "day-trader-skill (shadow)"
+
+
 def run_once(state, now_utc, data, notify=None, path=STATE_PATH, broker=None):
-    from dts_broker import Shadow
-    broker = broker or Shadow()
+    from dts_broker import select_broker
+    broker = broker or select_broker()
+    if not broker.live:
+        to_shadow(state)
     if broker.live:
         notify = None          # fill_alerts.py sends the fill messages for the paper account
     s = scan_m()
@@ -301,13 +315,13 @@ def summarize(state) -> str:
 
 
 def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description="System B: day-trader-skill shadow strategy")
+    ap = argparse.ArgumentParser(description="day-trader-skill shadow strategy")
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
     r.add_argument("--now", help='New York time, e.g. "2026-11-06 10:15"')
     r.add_argument("--state", default=str(STATE_PATH))
     r.add_argument("--no-telegram", action="store_true")
-    r.add_argument("--shadow", action="store_true", help="force the shadow ledger even if the System B keys are set")
+    r.add_argument("--shadow", action="store_true", help="(always on now) force the shadow ledger")
     p = sub.add_parser("replay")
     p.add_argument("--date", required=True)
     p.add_argument("--step", type=int, default=15)
