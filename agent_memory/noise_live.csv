@@ -90,5 +90,7 @@ time_ny,symbol,event,price,vwap,upper,lower,decision,qty_before,qty_after,order_
 2026-11-13 15:01:34,QQQ,check,679.3,677.27,695.44,681.08,flat,0,0,,bands from 14 sessions to 2026-11-12; prev close 688.20; open 688.33 (IEX)
 2026-11-16 10:01:34,SPY,check,745.54,748.05,757.57,746.38,short,0,-16,7acbcace-2d50-4248-9222-2e533729b0c5,bands from 14 sessions to 2026-11-13; prev close 754.25; open 749.68 (IEX)
 2026-11-16 10:01:34,QQQ,check,665.82,669.28,684.89,666.13,short,0,-18,23fbd12a-c6c7-4f6c-adbd-aefc8862c762,bands from 14 sessions to 2026-11-13; prev close 679.90; open 671.05 (IEX)
-2026-11-16 11:31:31,SPY,check,746.6,746.44,758.86,745.1,flat,-16,0,eda87c9d-9bf9-4cac-a649-740087c54234,bands from 14 sessions to 2026-11-13; prev close 754.25; open 749.68 (IEX)
-2026-11-16 11:31:31,QQQ,check,669.3,667.53,685.87,665.16,flat,-18,0,3885d27b-24a2-43a8-a5af-95fad16ce1bd,bands from 14 sessions to 2026-11-13; prev close 679.90; open 671.05 (IEX)
+2026-11-16 12:01:17,SPY,position mismatch,,,,,,-16,0,,"account holds 0, state says -16; no trade"
+2026-11-16 12:01:17,SPY,check,745.32,746.36,759.79,744.17,flat,-16,0,1941f55d-ed71-446c-89f3-be5a6008ffd2,bands from 14 sessions to 2026-11-13; prev close 754.25; open 749.68 (IEX)
+2026-11-16 12:01:17,QQQ,position mismatch,,,,,,-18,0,,"account holds 0, state says -18; no trade"
+2026-11-16 12:01:17,QQQ,check,667.81,667.66,687.05,663.99,flat,-18,0,f409d697-1368-4451-855f-60694e5241a5,bands from 14 sessions to 2026-11-13; prev close 679.90; open 671.05 (IEX)
