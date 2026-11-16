@@ -1,0 +1,197 @@
+{
+ "generated": "2026-11-16 15:38 UTC",
+ "member": "Nancy Pelosi (House; trades are mostly by her spouse, owner SP)",
+ "source": "House Clerk PTRs via third_party/day_trader_skill/trader-pelosi",
+ "chamber": "House only (the Senate site needs a person to accept an agreement; not automated)",
+ "rules": {
+  "start_equity": 25000.0,
+  "cap_per_name": 0.2,
+  "ref_midpoint": 3000000.0,
+  "cost_per_side": 0.0005,
+  "entry": "first market open strictly after the filing date",
+  "shorting": false,
+  "options": "recorded, never traded"
+ },
+ "filings": {
+  "ptr_filings_since_2020": 44,
+  "unread_or_partial": [
+   {
+    "doc_id": "20015042",
+    "filed": "2020-02-11",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2020/20015042.pdf",
+    "reason": "parsed 3 of 5 transaction rows; the rest are unread"
+   }
+  ],
+  "transactions_parsed": 157,
+  "by_kind": {
+   "option": 80,
+   "noticker": 24,
+   "sell_partial": 28,
+   "sell_full": 7,
+   "buy": 12,
+   "nonequity": 4,
+   "exchange": 2
+  }
+ },
+ "equity_trades_since_2020": {
+  "total": 47,
+  "purchases": 12,
+  "full_sales": 7,
+  "partial_sales": 28,
+  "tickers_without_prices": [
+   "WORK"
+  ]
+ },
+ "lag": {
+  "all_transactions": {
+   "n": 157,
+   "mean_days": 25.6,
+   "median_days": 25,
+   "max_days": 186,
+   "over_45_days": 4
+  },
+  "equity_trades": {
+   "n": 47,
+   "mean_days": 21.7,
+   "median_days": 24,
+   "max_days": 36,
+   "over_45_days": 0
+  }
+ },
+ "copy_at_filing_open": {
+  "label": "copy at the open after the FILING date (what a follower can do)",
+  "from": "2020-06-10",
+  "to": "2026-11-16",
+  "final_equity": 30867.75,
+  "total_return_pct": 23.47,
+  "cagr_pct": 3.33,
+  "max_drawdown_pct": -19.82,
+  "avg_exposure_pct": 25.8,
+  "by_year_pct": {
+   "2020": 1.57,
+   "2021": 5.26,
+   "2022": -7.79,
+   "2023": 3.21,
+   "2024": 8.53,
+   "2025": 9.75,
+   "2026": 1.88
+  },
+  "rows_by_status": {
+   "copied": 14,
+   "ignored": 30,
+   "skipped": 1,
+   "no_price": 2,
+   "pending": 0
+  },
+  "round_trips_closed": 3,
+  "open_positions": 5
+ },
+ "copy_at_trade_open_not_achievable": {
+  "label": "same trades at the open of the TRADE date (not achievable: the filing comes later)",
+  "from": "2020-05-08",
+  "to": "2026-11-16",
+  "final_equity": 30482.5,
+  "total_return_pct": 21.93,
+  "cagr_pct": 3.09,
+  "max_drawdown_pct": -19.91,
+  "avg_exposure_pct": 26.6,
+  "by_year_pct": {
+   "2020": 2.09,
+   "2021": 6.1,
+   "2022": -8.31,
+   "2023": 3.51,
+   "2024": 8.14,
+   "2025": 9.42,
+   "2026": 0.24
+  },
+  "rows_by_status": {
+   "copied": 15,
+   "ignored": 30,
+   "skipped": 0,
+   "no_price": 2,
+   "pending": 0
+  },
+  "round_trips_closed": 3,
+  "open_positions": 5
+ },
+ "spy_same_period": {
+  "symbol": "SPY",
+  "from": "2020-06-10",
+  "to": "2026-11-16",
+  "total_return_pct": 153.2,
+  "cagr_pct": 15.53,
+  "max_drawdown_pct": -24.5,
+  "by_year_pct": {
+   "2020": 17.8,
+   "2021": 28.73,
+   "2022": -18.18,
+   "2023": 26.18,
+   "2024": 24.89,
+   "2025": 17.72,
+   "2026": 10.01
+  }
+ },
+ "nanc_window": {
+  "copy": {
+   "label": "copy at the open after FILING, filings from 2023-03-01",
+   "from": "2023-06-07",
+   "to": "2026-11-16",
+   "final_equity": 25636.28,
+   "total_return_pct": 2.55,
+   "cagr_pct": 0.73,
+   "max_drawdown_pct": -16.99,
+   "avg_exposure_pct": 11.7,
+   "by_year_pct": {
+    "2023": 0.0,
+    "2024": 2.52,
+    "2025": 5.16,
+    "2026": -4.88
+   },
+   "rows_by_status": {
+    "copied": 6,
+    "ignored": 12,
+    "skipped": 1,
+    "no_price": 1,
+    "pending": 0
+   },
+   "round_trips_closed": 2,
+   "open_positions": 3
+  },
+  "NANC": {
+   "symbol": "NANC",
+   "from": "2023-06-07",
+   "to": "2026-11-16",
+   "total_return_pct": 80.67,
+   "cagr_pct": 18.74,
+   "max_drawdown_pct": -20.94,
+   "by_year_pct": {
+    "2023": 13.81,
+    "2024": 26.82,
+    "2025": 18.54,
+    "2026": 5.59
+   }
+  },
+  "SPY": {
+   "symbol": "SPY",
+   "from": "2023-06-07",
+   "to": "2026-11-16",
+   "total_return_pct": 81.45,
+   "cagr_pct": 18.89,
+   "max_drawdown_pct": -18.76,
+   "by_year_pct": {
+    "2023": 12.2,
+    "2024": 24.89,
+    "2025": 17.72,
+    "2026": 10.01
+   }
+  }
+ },
+ "caveats": [
+  "Descriptive only; not a strategy claim and not advice.",
+  "Selection: one famous member chosen because she is famous; survivorship: tickers that no longer trade have no prices and are skipped (listed above).",
+  "The famous return tables measure from the TRADE date; a copier only learns of a trade at the filing (lag above), so the second run is a ceiling nobody could trade.",
+  "Most of her disclosed activity is options and private assets, which are recorded but not copied, so the copied book is partial and often mostly cash (see avg_exposure_pct).",
+  "Amounts are ranges; sizes here are a rule (midpoint-based, 20% cap), not what the member held. Sales of names the shadow never held are ignored.",
+  "Prices are split/dividend-adjusted daily bars (yfinance when run locally, Alpaca in the nightly job)."
+ ]
+}

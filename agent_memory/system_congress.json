@@ -1,0 +1,2873 @@
+{
+ "filings": [
+  {
+   "key": "20033725:0",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "AB",
+   "asset": "AllianceBernstein Holding L.P. Units",
+   "type": "purchase",
+   "kind": "nonequity",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "asset type AB, not a listed stock",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:1",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "GOOGL",
+   "asset": "Alphabet Inc. - Class A Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:10",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "NVDA",
+   "asset": "NVIDIA Corporation - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$100K\u2013250K",
+   "amount_low": 100001,
+   "amount_high": 250000,
+   "mid": 175000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:11",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-24",
+   "ticker": "NVDA",
+   "asset": "NVIDIA Corporation - Common Stock",
+   "type": "partial sale",
+   "kind": "sell_partial",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 30,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:12",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "NVDA",
+   "asset": "NVIDIA Corporation - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$250K\u2013500K",
+   "amount_low": 250001,
+   "amount_high": 500000,
+   "mid": 375000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:13",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "PYPL",
+   "asset": "PayPal Holdings, Inc. - Common Stock",
+   "type": "sale",
+   "kind": "sell_full",
+   "owner": "spouse",
+   "amount_range": "$250K\u2013500K",
+   "amount_low": 250001,
+   "amount_high": 500000,
+   "mid": 375000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:14",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "TEM",
+   "asset": "Tempus AI, Inc. - Class A Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$50K\u2013100K",
+   "amount_low": 50001,
+   "amount_high": 100000,
+   "mid": 75000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:15",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-02",
+   "ticker": "VSNT",
+   "asset": "Versant Media Group, Inc. - Class A Common Stock",
+   "type": "exchange",
+   "kind": "exchange",
+   "owner": "spouse",
+   "amount_range": "over $15",
+   "amount_low": 15,
+   "amount_high": null,
+   "mid": 15.0,
+   "lag_days": 21,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "exchange, not a clear buy or sell",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:16",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "VST",
+   "asset": "Vistra Corp. Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$100K\u2013250K",
+   "amount_low": 100001,
+   "amount_high": 250000,
+   "mid": 175000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:17",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "DIS",
+   "asset": "Walt Disney Company",
+   "type": "sale",
+   "kind": "sell_full",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:2",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "GOOGL",
+   "asset": "Alphabet Inc. - Class A Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$250K\u2013500K",
+   "amount_low": 250001,
+   "amount_high": 500000,
+   "mid": 375000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:3",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "GOOGL",
+   "asset": "Alphabet Inc. - Class A Common Stock",
+   "type": "partial sale",
+   "kind": "sell_partial",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:4",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "AMZN",
+   "asset": "Amazon.com, Inc. - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$100K\u2013250K",
+   "amount_low": 100001,
+   "amount_high": 250000,
+   "mid": 175000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:5",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-24",
+   "ticker": "AMZN",
+   "asset": "Amazon.com, Inc. - Common Stock",
+   "type": "partial sale",
+   "kind": "sell_partial",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 30,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:6",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2026-01-16",
+   "ticker": "AMZN",
+   "asset": "Amazon.com, Inc. - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 7,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:7",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-24",
+   "ticker": "AAPL",
+   "asset": "Apple Inc. - Common Stock",
+   "type": "partial sale",
+   "kind": "sell_partial",
+   "owner": "spouse",
+   "amount_range": "$5M\u201325M",
+   "amount_low": 5000001,
+   "amount_high": 25000000,
+   "mid": 15000000.5,
+   "lag_days": 30,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20033725:8",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "AAPL",
+   "asset": "Apple Inc. - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$250K\u2013500K",
+   "amount_low": 250001,
+   "amount_high": 500000,
+   "mid": 375000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20033725:9",
+   "doc_id": "20033725",
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "traded": "2025-12-30",
+   "ticker": "AAPL",
+   "asset": "Apple Inc. - Common Stock",
+   "type": "partial sale",
+   "kind": "sell_partial",
+   "owner": "spouse",
+   "amount_range": "$5M\u201325M",
+   "amount_low": 5000001,
+   "amount_high": 25000000,
+   "mid": 15000000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "first_seen": null,
+   "note": "sale of a name the shadow never held",
+   "status": "ignored",
+   "exec_date": "2026-01-26"
+  },
+  {
+   "key": "20034836:0",
+   "doc_id": "20034836",
+   "member": "Pelosi",
+   "filed": "2026-06-23",
+   "traded": "2026-05-29",
+   "ticker": "INTC",
+   "asset": "Intel Corporation - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 25,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20034836.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20034836:1",
+   "doc_id": "20034836",
+   "member": "Pelosi",
+   "filed": "2026-06-23",
+   "traded": "2026-05-29",
+   "ticker": "UBER",
+   "asset": "Uber Technologies, Inc. Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 25,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20034836.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20035143:0",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-24",
+   "ticker": "BE",
+   "asset": "Bloom Energy Corporation Class A Common Stock",
+   "type": "purchase",
+   "kind": "buy",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 28,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "",
+   "status": "copied",
+   "exec_date": "2026-08-24",
+   "fill": 192.076,
+   "qty": 26.0314,
+   "weight": 0.2,
+   "backfilled": true
+  },
+  {
+   "key": "20035143:1",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-24",
+   "ticker": "BE",
+   "asset": "Bloom Energy Corporation Class A Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$1M\u20135M",
+   "amount_low": 1000001,
+   "amount_high": 5000000,
+   "mid": 3000000.5,
+   "lag_days": 28,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20035143:2",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-28",
+   "ticker": "BE",
+   "asset": "Bloom Energy Corporation Class A Common Stock",
+   "type": "purchase",
+   "kind": "buy",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "at the 20% cap or out of cash",
+   "status": "skipped",
+   "exec_date": "2026-08-24"
+  },
+  {
+   "key": "20035143:3",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-28",
+   "ticker": "BE",
+   "asset": "Bloom Energy Corporation Class A Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20035143:4",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-24",
+   "ticker": "INTC",
+   "asset": "Intel Corporation - Common Stock",
+   "type": "purchase",
+   "kind": "option",
+   "owner": "spouse",
+   "amount_range": "$250K\u2013500K",
+   "amount_low": 250001,
+   "amount_high": 500000,
+   "mid": 375000.5,
+   "lag_days": 28,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "option contract, recorded not traded",
+   "status": "recorded"
+  },
+  {
+   "key": "20035143:5",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-24",
+   "ticker": "INTC",
+   "asset": "Intel Corporation - Common Stock",
+   "type": "purchase",
+   "kind": "buy",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 28,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "",
+   "status": "copied",
+   "exec_date": "2026-08-24",
+   "fill": 88.9044,
+   "qty": 14.0601,
+   "weight": 0.05,
+   "backfilled": true
+  },
+  {
+   "key": "20035143:6",
+   "doc_id": "20035143",
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "traded": "2026-07-27",
+   "ticker": null,
+   "asset": "REOF XXV, LLC",
+   "type": "purchase",
+   "kind": "noticker",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 25,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "first_seen": null,
+   "note": "no ticker (private or non-listed asset)",
+   "status": "recorded"
+  },
+  {
+   "key": "20035553:0",
+   "doc_id": "20035553",
+   "member": "Pelosi",
+   "filed": "2026-10-02",
+   "traded": "2026-09-08",
+   "ticker": null,
+   "asset": "REOF XXX, LLC",
+   "type": "purchase",
+   "kind": "noticker",
+   "owner": "spouse",
+   "amount_range": "$500K\u20131M",
+   "amount_low": 500001,
+   "amount_high": 1000000,
+   "mid": 750000.5,
+   "lag_days": 24,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035553.pdf",
+   "first_seen": null,
+   "note": "no ticker (private or non-listed asset)",
+   "status": "recorded"
+  },
+  {
+   "key": "20035780:0",
+   "doc_id": "20035780",
+   "member": "Pelosi",
+   "filed": "2026-11-06",
+   "traded": "2026-10-07",
+   "ticker": "WBD",
+   "asset": "Warner Bros. Discovery, Inc. - Series A Common Stock",
+   "type": "sale",
+   "kind": "sell_full",
+   "owner": "spouse",
+   "amount_range": "$50K\u2013100K",
+   "amount_low": 50001,
+   "amount_high": 100000,
+   "mid": 75000.5,
+   "lag_days": 30,
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035780.pdf",
+   "first_seen": null,
+   "note": "WBD has no bars after 2026-10-05 (delisted or renamed)",
+   "status": "no_price"
+  }
+ ],
+ "docs": {
+  "20033725": {
+   "member": "Pelosi",
+   "filed": "2026-01-23",
+   "first_seen": null,
+   "rows": 18,
+   "status": "ok",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20033725.pdf",
+   "reason": null
+  },
+  "20034836": {
+   "member": "Pelosi",
+   "filed": "2026-06-23",
+   "first_seen": null,
+   "rows": 2,
+   "status": "ok",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20034836.pdf",
+   "reason": null
+  },
+  "20035143": {
+   "member": "Pelosi",
+   "filed": "2026-08-21",
+   "first_seen": null,
+   "rows": 7,
+   "status": "ok",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "reason": null
+  },
+  "20035553": {
+   "member": "Pelosi",
+   "filed": "2026-10-02",
+   "first_seen": null,
+   "rows": 1,
+   "status": "ok",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035553.pdf",
+   "reason": null
+  },
+  "20035780": {
+   "member": "Pelosi",
+   "filed": "2026-11-06",
+   "first_seen": null,
+   "rows": 1,
+   "status": "ok",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035780.pdf",
+   "reason": null
+  }
+ },
+ "notified": [
+  "20033725:0",
+  "20033725:1",
+  "20033725:10",
+  "20033725:11",
+  "20033725:12",
+  "20033725:13",
+  "20033725:14",
+  "20033725:15",
+  "20033725:16",
+  "20033725:17",
+  "20033725:2",
+  "20033725:3",
+  "20033725:4",
+  "20033725:5",
+  "20033725:6",
+  "20033725:7",
+  "20033725:8",
+  "20033725:9",
+  "20034836:0",
+  "20034836:1",
+  "20035143:0",
+  "20035143:1",
+  "20035143:2",
+  "20035143:3",
+  "20035143:4",
+  "20035143:5",
+  "20035143:6",
+  "20035553:0",
+  "20035780:0"
+ ],
+ "live_since": "2026-11-16",
+ "system": "Pelosi (shadow)",
+ "label": "Pelosi (shadow)",
+ "mode": "shadow",
+ "follow": [
+  "Pelosi"
+ ],
+ "start_equity": 25000.0,
+ "cash": 18749.99,
+ "equity": 24109.17,
+ "last_equity": 24586.58,
+ "positions": [
+  {
+   "symbol": "BE",
+   "qty": 26.0314,
+   "avg_price": 192.076,
+   "entry_date": "2026-08-24",
+   "member": "Pelosi",
+   "doc_id": "20035143",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "price": 175.77,
+   "value": 4575.54,
+   "pl": -424.47,
+   "pl_pct": -0.08489,
+   "date": "2026-08-24"
+  },
+  {
+   "symbol": "INTC",
+   "qty": 14.0601,
+   "avg_price": 88.9044,
+   "entry_date": "2026-08-24",
+   "member": "Pelosi",
+   "doc_id": "20035143",
+   "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
+   "price": 55.735,
+   "value": 783.64,
+   "pl": -466.37,
+   "pl_pct": -0.37309,
+   "date": "2026-08-24"
+  }
+ ],
+ "trades": [],
+ "orders": [
+  {
+   "date": "2026-08-24",
+   "symbol": "BE",
+   "side": "buy",
+   "qty": 26.0314,
+   "status": "filled",
+   "price": 192.076,
+   "member": "Pelosi",
+   "doc_id": "20035143"
+  },
+  {
+   "date": "2026-08-24",
+   "symbol": "INTC",
+   "side": "buy",
+   "qty": 14.0601,
+   "status": "filled",
+   "price": 88.9044,
+   "member": "Pelosi",
+   "doc_id": "20035143"
+  }
+ ],
+ "calendar": [
+  {
+   "date": "2026-01-26",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-01-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-01-28",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-01-29",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-01-30",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-02",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-03",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-04",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-05",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-09",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-11",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-18",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-19",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-23",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-24",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-25",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-26",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-02-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-02",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-03",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-04",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-05",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-09",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-11",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-16",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-18",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-19",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-23",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-24",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-25",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-26",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-30",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-03-31",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-01",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-02",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-07",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-08",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-09",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-14",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-15",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-16",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-21",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-22",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-23",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-24",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-28",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-29",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-04-30",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-01",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-04",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-05",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-07",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-08",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-11",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-14",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-15",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-18",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-19",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-21",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-22",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-26",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-28",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-05-29",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-01",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-02",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-03",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-04",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-05",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-08",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-09",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-11",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-15",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-16",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-18",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-22",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-23",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-24",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-25",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-26",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-29",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-06-30",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-01",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-02",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-07",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-08",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-09",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-14",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-15",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-16",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-21",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-22",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-23",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-24",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-27",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-28",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-29",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-30",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-07-31",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-03",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-04",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-05",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-06",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-07",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-10",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-11",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-12",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-13",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-14",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-17",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-18",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-19",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-20",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-21",
+   "pl": 0.0,
+   "pct": 0.0,
+   "equity": 25000.0
+  },
+  {
+   "date": "2026-08-24",
+   "pl": 287.8,
+   "pct": 1.15,
+   "equity": 25287.8
+  },
+  {
+   "date": "2026-08-25",
+   "pl": 352.69,
+   "pct": 1.39,
+   "equity": 25640.49
+  },
+  {
+   "date": "2026-08-26",
+   "pl": 30.47,
+   "pct": 0.12,
+   "equity": 25670.96
+  },
+  {
+   "date": "2026-08-27",
+   "pl": 44.24,
+   "pct": 0.17,
+   "equity": 25715.2
+  },
+  {
+   "date": "2026-08-28",
+   "pl": -220.62,
+   "pct": -0.86,
+   "equity": 25494.58
+  },
+  {
+   "date": "2026-08-31",
+   "pl": -115.79,
+   "pct": -0.45,
+   "equity": 25378.79
+  },
+  {
+   "date": "2026-09-01",
+   "pl": 183.21,
+   "pct": 0.72,
+   "equity": 25562.0
+  },
+  {
+   "date": "2026-09-02",
+   "pl": 110.2,
+   "pct": 0.43,
+   "equity": 25672.2
+  },
+  {
+   "date": "2026-09-03",
+   "pl": 498.37,
+   "pct": 1.94,
+   "equity": 26170.57
+  },
+  {
+   "date": "2026-09-04",
+   "pl": 508.94,
+   "pct": 1.94,
+   "equity": 26679.51
+  },
+  {
+   "date": "2026-09-08",
+   "pl": 755.76,
+   "pct": 2.83,
+   "equity": 27435.27
+  },
+  {
+   "date": "2026-09-09",
+   "pl": -181.8,
+   "pct": -0.66,
+   "equity": 27253.47
+  },
+  {
+   "date": "2026-09-10",
+   "pl": -364.12,
+   "pct": -1.34,
+   "equity": 26889.35
+  },
+  {
+   "date": "2026-09-11",
+   "pl": 486.14,
+   "pct": 1.81,
+   "equity": 27375.49
+  },
+  {
+   "date": "2026-09-14",
+   "pl": -567.63,
+   "pct": -2.07,
+   "equity": 26807.86
+  },
+  {
+   "date": "2026-09-15",
+   "pl": 59.17,
+   "pct": 0.22,
+   "equity": 26867.03
+  },
+  {
+   "date": "2026-09-16",
+   "pl": 332.73,
+   "pct": 1.24,
+   "equity": 27199.76
+  },
+  {
+   "date": "2026-09-17",
+   "pl": 388.54,
+   "pct": 1.43,
+   "equity": 27588.3
+  },
+  {
+   "date": "2026-09-18",
+   "pl": -396.66,
+   "pct": -1.44,
+   "equity": 27191.64
+  },
+  {
+   "date": "2026-09-21",
+   "pl": 374.3,
+   "pct": 1.38,
+   "equity": 27565.94
+  },
+  {
+   "date": "2026-09-22",
+   "pl": 124.0,
+   "pct": 0.45,
+   "equity": 27689.94
+  },
+  {
+   "date": "2026-09-23",
+   "pl": -52.6,
+   "pct": -0.19,
+   "equity": 27637.34
+  },
+  {
+   "date": "2026-09-24",
+   "pl": -154.96,
+   "pct": -0.56,
+   "equity": 27482.38
+  },
+  {
+   "date": "2026-09-25",
+   "pl": 512.27,
+   "pct": 1.86,
+   "equity": 27994.65
+  },
+  {
+   "date": "2026-09-28",
+   "pl": -770.39,
+   "pct": -2.75,
+   "equity": 27224.26
+  },
+  {
+   "date": "2026-09-29",
+   "pl": 737.36,
+   "pct": 2.71,
+   "equity": 27961.62
+  },
+  {
+   "date": "2026-09-30",
+   "pl": -311.01,
+   "pct": -1.11,
+   "equity": 27650.61
+  },
+  {
+   "date": "2026-10-01",
+   "pl": 12.39,
+   "pct": 0.04,
+   "equity": 27663.0
+  },
+  {
+   "date": "2026-10-02",
+   "pl": 291.76,
+   "pct": 1.05,
+   "equity": 27954.76
+  },
+  {
+   "date": "2026-10-05",
+   "pl": -109.23,
+   "pct": -0.39,
+   "equity": 27845.53
+  },
+  {
+   "date": "2026-10-06",
+   "pl": 185.79,
+   "pct": 0.67,
+   "equity": 28031.32
+  },
+  {
+   "date": "2026-10-07",
+   "pl": -108.17,
+   "pct": -0.39,
+   "equity": 27923.15
+  },
+  {
+   "date": "2026-10-08",
+   "pl": -565.72,
+   "pct": -2.03,
+   "equity": 27357.43
+  },
+  {
+   "date": "2026-10-09",
+   "pl": 166.46,
+   "pct": 0.61,
+   "equity": 27523.89
+  },
+  {
+   "date": "2026-10-12",
+   "pl": -521.4,
+   "pct": -1.89,
+   "equity": 27002.49
+  },
+  {
+   "date": "2026-10-13",
+   "pl": 50.99,
+   "pct": 0.19,
+   "equity": 27053.48
+  },
+  {
+   "date": "2026-10-14",
+   "pl": -693.56,
+   "pct": -2.56,
+   "equity": 26359.92
+  },
+  {
+   "date": "2026-10-15",
+   "pl": -117.8,
+   "pct": -0.45,
+   "equity": 26242.12
+  },
+  {
+   "date": "2026-10-16",
+   "pl": -467.82,
+   "pct": -1.78,
+   "equity": 25774.3
+  },
+  {
+   "date": "2026-10-19",
+   "pl": 158.46,
+   "pct": 0.61,
+   "equity": 25932.76
+  },
+  {
+   "date": "2026-10-20",
+   "pl": -97.71,
+   "pct": -0.38,
+   "equity": 25835.05
+  },
+  {
+   "date": "2026-10-21",
+   "pl": 431.23,
+   "pct": 1.67,
+   "equity": 26266.28
+  },
+  {
+   "date": "2026-10-22",
+   "pl": -645.44,
+   "pct": -2.46,
+   "equity": 25620.84
+  },
+  {
+   "date": "2026-10-23",
+   "pl": -616.32,
+   "pct": -2.41,
+   "equity": 25004.52
+  },
+  {
+   "date": "2026-10-26",
+   "pl": 325.81,
+   "pct": 1.3,
+   "equity": 25330.33
+  },
+  {
+   "date": "2026-10-27",
+   "pl": 425.51,
+   "pct": 1.68,
+   "equity": 25755.84
+  },
+  {
+   "date": "2026-10-28",
+   "pl": 274.55,
+   "pct": 1.07,
+   "equity": 26030.39
+  },
+  {
+   "date": "2026-10-29",
+   "pl": -199.11,
+   "pct": -0.76,
+   "equity": 25831.28
+  },
+  {
+   "date": "2026-10-30",
+   "pl": -867.9,
+   "pct": -3.36,
+   "equity": 24963.38
+  },
+  {
+   "date": "2026-11-02",
+   "pl": -261.55,
+   "pct": -1.05,
+   "equity": 24701.83
+  },
+  {
+   "date": "2026-11-03",
+   "pl": 470.48,
+   "pct": 1.9,
+   "equity": 25172.31
+  },
+  {
+   "date": "2026-11-04",
+   "pl": -386.35,
+   "pct": -1.53,
+   "equity": 24785.96
+  },
+  {
+   "date": "2026-11-05",
+   "pl": -940.55,
+   "pct": -3.79,
+   "equity": 23845.41
+  },
+  {
+   "date": "2026-11-06",
+   "pl": 205.56,
+   "pct": 0.86,
+   "equity": 24050.97
+  },
+  {
+   "date": "2026-11-09",
+   "pl": 580.73,
+   "pct": 2.41,
+   "equity": 24631.7
+  },
+  {
+   "date": "2026-11-10",
+   "pl": -237.66,
+   "pct": -0.96,
+   "equity": 24394.04
+  },
+  {
+   "date": "2026-11-11",
+   "pl": 687.5,
+   "pct": 2.82,
+   "equity": 25081.54
+  },
+  {
+   "date": "2026-11-12",
+   "pl": -214.55,
+   "pct": -0.86,
+   "equity": 24866.99
+  },
+  {
+   "date": "2026-11-13",
+   "pl": -280.41,
+   "pct": -1.13,
+   "equity": 24586.58
+  },
+  {
+   "date": "2026-11-16",
+   "pl": -477.41,
+   "pct": -1.94,
+   "equity": 24109.17
+  }
+ ],
+ "generated": "2026-11-16T15:38+00:00",
+ "history": {
+  "1D": [
+   [
+    1794837600,
+    24586.58
+   ],
+   [
+    1794862800,
+    24109.17
+   ]
+  ],
+  "ALL": [
+   [
+    1769461200,
+    25000.0
+   ],
+   [
+    1769547600,
+    25000.0
+   ],
+   [
+    1769634000,
+    25000.0
+   ],
+   [
+    1769720400,
+    25000.0
+   ],
+   [
+    1769806800,
+    25000.0
+   ],
+   [
+    1770066000,
+    25000.0
+   ],
+   [
+    1770152400,
+    25000.0
+   ],
+   [
+    1770238800,
+    25000.0
+   ],
+   [
+    1770325200,
+    25000.0
+   ],
+   [
+    1770411600,
+    25000.0
+   ],
+   [
+    1770670800,
+    25000.0
+   ],
+   [
+    1770757200,
+    25000.0
+   ],
+   [
+    1770843600,
+    25000.0
+   ],
+   [
+    1770930000,
+    25000.0
+   ],
+   [
+    1771016400,
+    25000.0
+   ],
+   [
+    1771362000,
+    25000.0
+   ],
+   [
+    1771448400,
+    25000.0
+   ],
+   [
+    1771534800,
+    25000.0
+   ],
+   [
+    1771621200,
+    25000.0
+   ],
+   [
+    1771880400,
+    25000.0
+   ],
+   [
+    1771966800,
+    25000.0
+   ],
+   [
+    1772053200,
+    25000.0
+   ],
+   [
+    1772139600,
+    25000.0
+   ],
+   [
+    1772226000,
+    25000.0
+   ],
+   [
+    1772485200,
+    25000.0
+   ],
+   [
+    1772571600,
+    25000.0
+   ],
+   [
+    1772658000,
+    25000.0
+   ],
+   [
+    1772744400,
+    25000.0
+   ],
+   [
+    1772830800,
+    25000.0
+   ],
+   [
+    1773090000,
+    25000.0
+   ],
+   [
+    1773176400,
+    25000.0
+   ],
+   [
+    1773262800,
+    25000.0
+   ],
+   [
+    1773349200,
+    25000.0
+   ],
+   [
+    1773435600,
+    25000.0
+   ],
+   [
+    1773694800,
+    25000.0
+   ],
+   [
+    1773781200,
+    25000.0
+   ],
+   [
+    1773867600,
+    25000.0
+   ],
+   [
+    1773954000,
+    25000.0
+   ],
+   [
+    1774040400,
+    25000.0
+   ],
+   [
+    1774299600,
+    25000.0
+   ],
+   [
+    1774386000,
+    25000.0
+   ],
+   [
+    1774472400,
+    25000.0
+   ],
+   [
+    1774558800,
+    25000.0
+   ],
+   [
+    1774645200,
+    25000.0
+   ],
+   [
+    1774904400,
+    25000.0
+   ],
+   [
+    1774990800,
+    25000.0
+   ],
+   [
+    1775077200,
+    25000.0
+   ],
+   [
+    1775163600,
+    25000.0
+   ],
+   [
+    1775509200,
+    25000.0
+   ],
+   [
+    1775595600,
+    25000.0
+   ],
+   [
+    1775682000,
+    25000.0
+   ],
+   [
+    1775768400,
+    25000.0
+   ],
+   [
+    1775854800,
+    25000.0
+   ],
+   [
+    1776114000,
+    25000.0
+   ],
+   [
+    1776200400,
+    25000.0
+   ],
+   [
+    1776286800,
+    25000.0
+   ],
+   [
+    1776373200,
+    25000.0
+   ],
+   [
+    1776459600,
+    25000.0
+   ],
+   [
+    1776718800,
+    25000.0
+   ],
+   [
+    1776805200,
+    25000.0
+   ],
+   [
+    1776891600,
+    25000.0
+   ],
+   [
+    1776978000,
+    25000.0
+   ],
+   [
+    1777064400,
+    25000.0
+   ],
+   [
+    1777323600,
+    25000.0
+   ],
+   [
+    1777410000,
+    25000.0
+   ],
+   [
+    1777496400,
+    25000.0
+   ],
+   [
+    1777582800,
+    25000.0
+   ],
+   [
+    1777669200,
+    25000.0
+   ],
+   [
+    1777928400,
+    25000.0
+   ],
+   [
+    1778014800,
+    25000.0
+   ],
+   [
+    1778101200,
+    25000.0
+   ],
+   [
+    1778187600,
+    25000.0
+   ],
+   [
+    1778274000,
+    25000.0
+   ],
+   [
+    1778533200,
+    25000.0
+   ],
+   [
+    1778619600,
+    25000.0
+   ],
+   [
+    1778706000,
+    25000.0
+   ],
+   [
+    1778792400,
+    25000.0
+   ],
+   [
+    1778878800,
+    25000.0
+   ],
+   [
+    1779138000,
+    25000.0
+   ],
+   [
+    1779224400,
+    25000.0
+   ],
+   [
+    1779310800,
+    25000.0
+   ],
+   [
+    1779397200,
+    25000.0
+   ],
+   [
+    1779483600,
+    25000.0
+   ],
+   [
+    1779829200,
+    25000.0
+   ],
+   [
+    1779915600,
+    25000.0
+   ],
+   [
+    1780002000,
+    25000.0
+   ],
+   [
+    1780088400,
+    25000.0
+   ],
+   [
+    1780347600,
+    25000.0
+   ],
+   [
+    1780434000,
+    25000.0
+   ],
+   [
+    1780520400,
+    25000.0
+   ],
+   [
+    1780606800,
+    25000.0
+   ],
+   [
+    1780693200,
+    25000.0
+   ],
+   [
+    1780952400,
+    25000.0
+   ],
+   [
+    1781038800,
+    25000.0
+   ],
+   [
+    1781125200,
+    25000.0
+   ],
+   [
+    1781211600,
+    25000.0
+   ],
+   [
+    1781298000,
+    25000.0
+   ],
+   [
+    1781557200,
+    25000.0
+   ],
+   [
+    1781643600,
+    25000.0
+   ],
+   [
+    1781730000,
+    25000.0
+   ],
+   [
+    1781816400,
+    25000.0
+   ],
+   [
+    1782162000,
+    25000.0
+   ],
+   [
+    1782248400,
+    25000.0
+   ],
+   [
+    1782334800,
+    25000.0
+   ],
+   [
+    1782421200,
+    25000.0
+   ],
+   [
+    1782507600,
+    25000.0
+   ],
+   [
+    1782766800,
+    25000.0
+   ],
+   [
+    1782853200,
+    25000.0
+   ],
+   [
+    1782939600,
+    25000.0
+   ],
+   [
+    1783026000,
+    25000.0
+   ],
+   [
+    1783371600,
+    25000.0
+   ],
+   [
+    1783458000,
+    25000.0
+   ],
+   [
+    1783544400,
+    25000.0
+   ],
+   [
+    1783630800,
+    25000.0
+   ],
+   [
+    1783717200,
+    25000.0
+   ],
+   [
+    1783976400,
+    25000.0
+   ],
+   [
+    1784062800,
+    25000.0
+   ],
+   [
+    1784149200,
+    25000.0
+   ],
+   [
+    1784235600,
+    25000.0
+   ],
+   [
+    1784322000,
+    25000.0
+   ],
+   [
+    1784581200,
+    25000.0
+   ],
+   [
+    1784667600,
+    25000.0
+   ],
+   [
+    1784754000,
+    25000.0
+   ],
+   [
+    1784840400,
+    25000.0
+   ],
+   [
+    1784926800,
+    25000.0
+   ],
+   [
+    1785186000,
+    25000.0
+   ],
+   [
+    1785272400,
+    25000.0
+   ],
+   [
+    1785358800,
+    25000.0
+   ],
+   [
+    1785445200,
+    25000.0
+   ],
+   [
+    1785531600,
+    25000.0
+   ],
+   [
+    1785790800,
+    25000.0
+   ],
+   [
+    1785877200,
+    25000.0
+   ],
+   [
+    1785963600,
+    25000.0
+   ],
+   [
+    1786050000,
+    25000.0
+   ],
+   [
+    1786136400,
+    25000.0
+   ],
+   [
+    1786395600,
+    25000.0
+   ],
+   [
+    1786482000,
+    25000.0
+   ],
+   [
+    1786568400,
+    25000.0
+   ],
+   [
+    1786654800,
+    25000.0
+   ],
+   [
+    1786741200,
+    25000.0
+   ],
+   [
+    1787000400,
+    25000.0
+   ],
+   [
+    1787086800,
+    25000.0
+   ],
+   [
+    1787173200,
+    25000.0
+   ],
+   [
+    1787259600,
+    25000.0
+   ],
+   [
+    1787346000,
+    25000.0
+   ],
+   [
+    1787605200,
+    25287.8
+   ],
+   [
+    1787691600,
+    25640.49
+   ],
+   [
+    1787778000,
+    25670.96
+   ],
+   [
+    1787864400,
+    25715.2
+   ],
+   [
+    1787950800,
+    25494.58
+   ],
+   [
+    1788210000,
+    25378.79
+   ],
+   [
+    1788296400,
+    25562.0
+   ],
+   [
+    1788382800,
+    25672.2
+   ],
+   [
+    1788469200,
+    26170.57
+   ],
+   [
+    1788555600,
+    26679.51
+   ],
+   [
+    1788901200,
+    27435.27
+   ],
+   [
+    1788987600,
+    27253.47
+   ],
+   [
+    1789074000,
+    26889.35
+   ],
+   [
+    1789160400,
+    27375.49
+   ],
+   [
+    1789419600,
+    26807.86
+   ],
+   [
+    1789506000,
+    26867.03
+   ],
+   [
+    1789592400,
+    27199.76
+   ],
+   [
+    1789678800,
+    27588.3
+   ],
+   [
+    1789765200,
+    27191.64
+   ],
+   [
+    1790024400,
+    27565.94
+   ],
+   [
+    1790110800,
+    27689.94
+   ],
+   [
+    1790197200,
+    27637.34
+   ],
+   [
+    1790283600,
+    27482.38
+   ],
+   [
+    1790370000,
+    27994.65
+   ],
+   [
+    1790629200,
+    27224.26
+   ],
+   [
+    1790715600,
+    27961.62
+   ],
+   [
+    1790802000,
+    27650.61
+   ],
+   [
+    1790888400,
+    27663.0
+   ],
+   [
+    1790974800,
+    27954.76
+   ],
+   [
+    1791234000,
+    27845.53
+   ],
+   [
+    1791320400,
+    28031.32
+   ],
+   [
+    1791406800,
+    27923.15
+   ],
+   [
+    1791493200,
+    27357.43
+   ],
+   [
+    1791579600,
+    27523.89
+   ],
+   [
+    1791838800,
+    27002.49
+   ],
+   [
+    1791925200,
+    27053.48
+   ],
+   [
+    1792011600,
+    26359.92
+   ],
+   [
+    1792098000,
+    26242.12
+   ],
+   [
+    1792184400,
+    25774.3
+   ],
+   [
+    1792443600,
+    25932.76
+   ],
+   [
+    1792530000,
+    25835.05
+   ],
+   [
+    1792616400,
+    26266.28
+   ],
+   [
+    1792702800,
+    25620.84
+   ],
+   [
+    1792789200,
+    25004.52
+   ],
+   [
+    1793048400,
+    25330.33
+   ],
+   [
+    1793134800,
+    25755.84
+   ],
+   [
+    1793221200,
+    26030.39
+   ],
+   [
+    1793307600,
+    25831.28
+   ],
+   [
+    1793394000,
+    24963.38
+   ],
+   [
+    1793653200,
+    24701.83
+   ],
+   [
+    1793739600,
+    25172.31
+   ],
+   [
+    1793826000,
+    24785.96
+   ],
+   [
+    1793912400,
+    23845.41
+   ],
+   [
+    1793998800,
+    24050.97
+   ],
+   [
+    1794258000,
+    24631.7
+   ],
+   [
+    1794344400,
+    24394.04
+   ],
+   [
+    1794430800,
+    25081.54
+   ],
+   [
+    1794517200,
+    24866.99
+   ],
+   [
+    1794603600,
+    24586.58
+   ],
+   [
+    1794862800,
+    24109.17
+   ]
+  ]
+ },
+ "balance_history": {
+  "rows": [
+   {
+    "time": "2026-08-24 13:30:00",
+    "balance_before": 25000.0,
+    "balance_after": 25000.0,
+    "realized_pnl": 0.0,
+    "action": "Open long position for symbol BE at price 192.08 for 26.0314 units (Pelosi filing 20035143)"
+   },
+   {
+    "time": "2026-08-24 13:30:00",
+    "balance_before": 25000.0,
+    "balance_after": 25000.0,
+    "realized_pnl": 0.0,
+    "action": "Open long position for symbol INTC at price 88.90 for 14.0601 units (Pelosi filing 20035143)"
+   }
+  ],
+  "realized": 0,
+  "unrealized": -890.84,
+  "equity": 24109.17,
+  "available": 18749.99,
+  "margin": 0.0,
+  "start_balance": 25000.0
+ },
+ "source": "shadow-ledger",
+ "stats": {
+  "filings": 5,
+  "transactions": 29,
+  "copied": 2,
+  "options_recorded": 14,
+  "unparsed": 0,
+  "avg_lag_days": 21.9
+ }
+}

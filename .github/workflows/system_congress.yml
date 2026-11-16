@@ -1,0 +1,59 @@
+name: system_congress
+# Congress shadow account ("Pelosi (shadow)"): copies the disclosed stock trades of the members in FOLLOW (src/system_congress.py CFG),
+# House Clerk PTRs via the vendored trader-pelosi tool. SHADOW ONLY: no Alpaca orders. The ledger acts at the first market open after
+# each FILING date and is replayed from the stored filings every run, so a re-run changes nothing. Commits agent_memory/system_congress.json.
+# Dispatch (Supabase pg_cron), weekdays, after the close in both EST and EDT, once the Clerk's daily index is rebuilt:
+#   '15 23 * * 1-5'   (23:15 UTC = 19:15 New York in EDT, 18:15 in EST)
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: backtest-lab-system-congress
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  ALPACA_INTRADAY_API_KEY: ${{ secrets.ALPACA_INTRADAY_API_KEY }}
+  ALPACA_INTRADAY_SECRET_KEY: ${{ secrets.ALPACA_INTRADAY_SECRET_KEY }}
+  ALPACA_TA_API_KEY: ${{ secrets.ALPACA_TA_API_KEY }}
+  ALPACA_TA_SECRET_KEY: ${{ secrets.ALPACA_TA_SECRET_KEY }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+jobs:
+  system-congress:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Install pdftotext (poppler) for the House PTR PDFs
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      - name: Congress shadow run
+        run: cd src && python system_congress.py run
+      - name: Commit the ledger
+        if: always()  # a failed run must still save what it already did
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          [ -e agent_memory/system_congress.json ] && git add -- agent_memory/system_congress.json
+          git diff --cached --quiet && exit 0
+          git commit -q -m "Congress shadow run $(TZ=America/New_York date '+%Y-%m-%d %H:%M') New York"
+          for i in 1 2 3; do
+            git pull --rebase -X theirs --autostash -q && git push -q && exit 0
+            sleep 5
+          done
+          exit 1
+      - name: Telegram alert on failure
+        if: failure()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          export MSG="⚠️ Congress shadow run failed at $(TZ=America/New_York date '+%H:%M') New York: $RUN_URL"
+          cd src && python -c "import os, telegram; telegram.send(os.environ['MSG'])" || true
