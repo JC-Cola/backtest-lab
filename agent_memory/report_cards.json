@@ -1,25 +1,25 @@
 {
- "generated": "2026-11-13T21:14:46Z",
+ "generated": "2026-11-16T21:46:08Z",
  "benchmark": "SPY",
  "min_days": 5,
  "accounts": {
   "intraday": {
    "name": "Noise band",
-   "days": 8,
+   "days": 9,
    "start": "2026-11-04",
-   "end": "2026-11-13",
+   "end": "2026-11-16",
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": 0.07222866132471562,
-    "sharpe": 0.786812440977272,
-    "sortino": 1.2154422368280733,
+    "cagr": 0.017358040292841492,
+    "sharpe": 0.23466238133420353,
+    "sortino": 0.3580744217121458,
     "max_dd": -0.010119487767203172,
-    "win_days": 0.5,
+    "win_days": 0.42857142857142855,
     "best_day": 0.008944366611510324,
     "worst_day": -0.010119487767203172,
-    "vol": 0.0935124291659504,
-    "beta": -0.06486065150946525
+    "vol": 0.08801464263599794,
+    "beta": -0.04867589705441136
    },
    "tearsheet": "reports/cards/intraday.html"
   },
@@ -35,23 +35,63 @@
   },
   "ta": {
    "name": "TradingAgents",
-   "days": 3,
+   "days": 4,
    "start": "2026-11-10",
-   "end": "2026-11-12",
+   "end": "2026-11-13",
    "ok": false,
-   "note": "not enough history yet (3 days)",
+   "note": "not enough history yet (4 days)",
    "metrics": null,
    "tearsheet": null
   },
   "dts_shadow": {
    "name": "day-trader-skill (shadow)",
-   "days": 1,
-   "start": "2026-11-13",
-   "end": "2026-11-13",
+   "days": 0,
+   "start": null,
+   "end": null,
    "ok": false,
-   "note": "not enough history yet (1 day)",
+   "note": "not enough history yet (0 days)",
    "metrics": null,
    "tearsheet": null
+  },
+  "pelosi_shadow": {
+   "name": "Pelosi (shadow)",
+   "days": 205,
+   "start": "2026-01-26",
+   "end": "2026-11-16",
+   "ok": true,
+   "note": "",
+   "metrics": {
+    "cagr": -0.04362217387865497,
+    "sharpe": -0.2553655024307019,
+    "sortino": -0.34373332370021725,
+    "max_dd": -0.14932974972281032,
+    "win_days": 0.5166666666666667,
+    "best_day": 0.028327356836763462,
+    "worst_day": -0.037946886059688656,
+    "vol": 0.13762177162485179,
+    "beta": 0.36130541552452455
+   },
+   "tearsheet": "reports/cards/pelosi_shadow.html"
+  },
+  "qlib_bt": {
+   "name": "qlib backtest",
+   "days": 1220,
+   "start": "2022-01-04",
+   "end": "2026-11-12",
+   "ok": true,
+   "note": "",
+   "metrics": {
+    "cagr": 0.24080499725348803,
+    "sharpe": 1.0196466626873948,
+    "sortino": 1.5318950050109434,
+    "max_dd": -0.2681828674468649,
+    "win_days": 0.5401639344262295,
+    "best_day": 0.127948,
+    "worst_day": -0.083851,
+    "vol": 0.23976575714376924,
+    "beta": 1.2217195851438123
+   },
+   "tearsheet": "reports/cards/qlib_bt.html"
   }
  }
 }
