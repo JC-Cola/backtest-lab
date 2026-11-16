@@ -1,0 +1,9 @@
+# Extra dependencies of the qlib system (system_qlib.yml, local .venv-qlib). Kept out of requirements.txt on purpose:
+# pyqlib pulls ~60 packages (mlflow, cvxpy, gym ...) that the other jobs do not need.
+yfinance
+pandas
+numpy
+alpaca-py
+pytest
+pyqlib==0.9.7
+lightgbm==4.7.0
