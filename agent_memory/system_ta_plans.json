@@ -6,15 +6,7 @@
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-16T14:35:22+00:00",
-    "ids": [
-     "f1286913-3916-4cd4-a16f-35f31b5b8b1b"
-    ],
-    "qty": 26,
-    "stop": 89.26,
-    "tp": null
-   },
+   "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
