@@ -1,12 +1,86 @@
 {
  "system": "day-trader-skill (System B)",
  "start_equity": 25000.0,
- "cash": 25000.0,
- "equity": 25000.0,
+ "cash": 18767.28,
+ "equity": 25000.85,
  "last_equity": 25000.0,
- "positions": [],
+ "positions": [
+  {
+   "id": "2026-11-16-KDP",
+   "symbol": "KDP",
+   "qty": 169,
+   "avg_price": 36.88,
+   "entry_ref": 36.87,
+   "entry_et": "2026-11-16 10:15",
+   "entry_utc": "2026-11-16T15:15+00:00",
+   "date": "2026-11-16",
+   "stop": 36.63,
+   "target": 37.35,
+   "flat_by": "15:55",
+   "risk_per_share": 0.24,
+   "fees_in": 0.0,
+   "checked_to": "2026-11-16 10:15",
+   "price": 36.885,
+   "odds": {
+    "p_target": 0.3134,
+    "p_stop": 0.4846,
+    "p_neither": 0.202,
+    "p_green": 0.4641,
+    "avg_R": 0.242,
+    "lean": 0.0594,
+    "hist_n": 37,
+    "hist_avg_R": 0.123,
+    "verdict": "Leans toward the target: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 39 % (target first 31.3 % vs stop first 48.5 %).",
+    "seed": 19
+   },
+   "gates": {
+    "news": {
+     "reasons": [],
+     "flags": [],
+     "items": 1
+    },
+    "risk": "risk PASS: max loss $40.56 at the stop, position cap"
+   },
+   "trigger": {
+    "time": "10:05",
+    "price": 36.81,
+    "pct_over": 0.07,
+    "or_high": 36.78,
+    "or_low": 36.48
+   },
+   "order_id": "a2b4c67c-53bc-46dd-944d-f9217ba334e8",
+   "value": 6233.565,
+   "pl": 0.845,
+   "pl_pct": 0.00014
+  }
+ ],
  "trades": [],
- "orders": [],
+ "orders": [
+  {
+   "date": "2026-11-16T15:20+00:00",
+   "symbol": "KDP",
+   "side": "sell",
+   "qty": 169.0,
+   "status": "new",
+   "price": null
+  },
+  {
+   "date": "2026-11-16T15:20+00:00",
+   "symbol": "KDP",
+   "side": "buy",
+   "qty": 169.0,
+   "status": "filled",
+   "price": 36.88
+  },
+  {
+   "date": "2026-11-16T15:20+00:00",
+   "symbol": "KDP",
+   "side": "sell",
+   "qty": 169.0,
+   "status": "held",
+   "price": null
+  }
+ ],
  "curve": [],
  "days": {
   "2026-11-12": {
@@ -1383,8 +1457,723 @@
    "telegram": 0
   },
   "2026-11-16": {
-   "scan": null,
-   "decisions": [],
+   "scan": {
+    "status": "done",
+    "at": "10:15",
+    "universe": 5928,
+    "counts": {
+     "requested": 5928,
+     "fetched": 5928,
+     "unusable": 3273,
+     "illiquid": 950,
+     "scanned": 1705,
+     "candidates": 672,
+     "confirmed": 300,
+     "unconfirmed": 372,
+     "hits": 142
+    },
+    "failed": 0,
+    "hits": [
+     "COIN",
+     "SMCI",
+     "VRT",
+     "PEP",
+     "ABNB",
+     "NKE",
+     "RIVN",
+     "UBER",
+     "TSN",
+     "CLS",
+     "CMCSA",
+     "APH",
+     "TSCO",
+     "KDP",
+     "SBUX",
+     "ASTS",
+     "CL",
+     "SCHW",
+     "AG",
+     "AU",
+     "CDE",
+     "NEM",
+     "NEE",
+     "SO",
+     "B",
+     "DUK",
+     "POWL",
+     "SNPS",
+     "FDX",
+     "PCG",
+     "AEM",
+     "PAAS",
+     "GIS",
+     "PWR",
+     "HL",
+     "MAR",
+     "BHP",
+     "KMB",
+     "JD",
+     "GFI",
+     "MOH",
+     "CELH",
+     "FTAI",
+     "NUE",
+     "OKLO",
+     "YUM",
+     "SCCO",
+     "XYL",
+     "KGC",
+     "BROS",
+     "SEZL",
+     "DPZ",
+     "USAR",
+     "CPB",
+     "TEL",
+     "ECHO",
+     "DRI",
+     "CLF",
+     "VMC",
+     "SNAP"
+    ],
+    "seconds": 274.1,
+    "evaluated": 20,
+    "taken": 1
+   },
+   "decisions": [
+    {
+     "symbol": "COIN",
+     "price": 121.97,
+     "breakout_at": "9:55 AM",
+     "pct_over": 0.14,
+     "dollar_volume": 350182157,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 10
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $120.26 (opening-range midpoint) is at or above the entry $119.49: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "SMCI",
+     "price": 25.77,
+     "breakout_at": "10:00 AM",
+     "pct_over": 0.37,
+     "dollar_volume": 248102882,
+     "news": {
+      "reasons": [
+       "risk: Super Micro Is Priced Like It \u201cGoes Bankrupt Next Quarter\u201d Despite $16B of Equity"
+      ],
+      "flags": [
+       "earnings"
+      ],
+      "items": 6
+     },
+     "status": "skipped",
+     "gate": "news",
+     "reason": "risk: Super Micro Is Priced Like It \u201cGoes Bankrupt Next Quarter\u201d Despite $16B of Equity"
+    },
+    {
+     "symbol": "VRT",
+     "price": 192.94,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.13,
+     "dollar_volume": 242736664,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 6
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $190.70 (opening-range midpoint) is at or above the entry $190.12: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "PEP",
+     "price": 147.51,
+     "breakout_at": "10:05 AM",
+     "pct_over": 0.05,
+     "dollar_volume": 217762572,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 2
+     },
+     "plan": {
+      "entry": 147.71,
+      "stop": 146.98,
+      "target": 149.17,
+      "risk_per_share": 0.73,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.2252,
+      "p_stop": 0.536,
+      "p_neither": 0.2388,
+      "p_green": 0.4034,
+      "avg_R": 0.036,
+      "lean": -0.0375,
+      "hist_n": 35,
+      "hist_avg_R": 0.127,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 30 % (target first 22.5 % vs stop first 53.6 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 30 % (target first 22.5 % vs stop first 53.6 %)."
+    },
+    {
+     "symbol": "ABNB",
+     "price": 185.09,
+     "breakout_at": "10:05 AM",
+     "pct_over": 0.32,
+     "dollar_volume": 212284789,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 3
+     },
+     "plan": {
+      "entry": 186.59,
+      "stop": 182.53,
+      "target": 194.71,
+      "risk_per_share": 4.06,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0006,
+      "p_stop": 0.1009,
+      "p_neither": 0.8985,
+      "p_green": 0.4551,
+      "avg_R": -0.058,
+      "lean": -0.3274,
+      "hist_n": 29,
+      "hist_avg_R": 0.012,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 1 % (target first 0.1 % vs stop first 10.1 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 1 % (target first 0.1 % vs stop first 10.1 %)."
+    },
+    {
+     "symbol": "NKE",
+     "price": 38.65,
+     "breakout_at": "10:05 AM",
+     "pct_over": 0.42,
+     "dollar_volume": 169978955,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 3
+     },
+     "plan": {
+      "entry": 38.53,
+      "stop": 38.2,
+      "target": 39.19,
+      "risk_per_share": 0.33,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1591,
+      "p_stop": 0.4517,
+      "p_neither": 0.3892,
+      "p_green": 0.4462,
+      "avg_R": 0.058,
+      "lean": -0.0729,
+      "hist_n": 29,
+      "hist_avg_R": 0.239,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 26 % (target first 15.9 % vs stop first 45.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 26 % (target first 15.9 % vs stop first 45.2 %)."
+    },
+    {
+     "symbol": "RIVN",
+     "price": 12.2,
+     "breakout_at": "10:00 AM",
+     "pct_over": 0.04,
+     "dollar_volume": 154064011,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 12.22,
+      "stop": 12.08,
+      "target": 12.5,
+      "risk_per_share": 0.14,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.2031,
+      "p_stop": 0.6147,
+      "p_neither": 0.1822,
+      "p_green": 0.3341,
+      "avg_R": -0.13,
+      "lean": -0.085,
+      "hist_n": 26,
+      "hist_avg_R": -0.123,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 20.3 % vs stop first 61.5 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 20.3 % vs stop first 61.5 %)."
+    },
+    {
+     "symbol": "UBER",
+     "price": 70.2,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.14,
+     "dollar_volume": 138155412,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 12
+     },
+     "plan": {
+      "entry": 70.08,
+      "stop": 69.77,
+      "target": 70.7,
+      "risk_per_share": 0.31,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3428,
+      "p_stop": 0.6377,
+      "p_neither": 0.0195,
+      "p_green": 0.3575,
+      "avg_R": 0.059,
+      "lean": 0.0163,
+      "hist_n": 27,
+      "hist_avg_R": -0.197,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 35 % (target first 34.3 % vs stop first 63.8 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 35 % (target first 34.3 % vs stop first 63.8 %)."
+    },
+    {
+     "symbol": "TSN",
+     "price": 65.03,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.15,
+     "dollar_volume": 136627645,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 10
+     },
+     "plan": {
+      "entry": 63.49,
+      "stop": 62.69,
+      "target": 65.09,
+      "risk_per_share": 0.8,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0128,
+      "p_stop": 0.2325,
+      "p_neither": 0.7547,
+      "p_green": 0.4827,
+      "avg_R": -0.022,
+      "lean": -0.2812,
+      "hist_n": 33,
+      "hist_avg_R": -0.123,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 5 % (target first 1.3 % vs stop first 23.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 5 % (target first 1.3 % vs stop first 23.2 %)."
+    },
+    {
+     "symbol": "CLS",
+     "price": 240.54,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.43,
+     "dollar_volume": 128599873,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 1
+     },
+     "plan": {
+      "entry": 237.83,
+      "stop": 232.98,
+      "target": 247.53,
+      "risk_per_share": 4.85,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1087,
+      "p_stop": 0.4521,
+      "p_neither": 0.4392,
+      "p_green": 0.4199,
+      "avg_R": -0.056,
+      "lean": -0.1395,
+      "hist_n": 26,
+      "hist_avg_R": -0.03,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 19 % (target first 10.9 % vs stop first 45.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 19 % (target first 10.9 % vs stop first 45.2 %)."
+    },
+    {
+     "symbol": "CMCSA",
+     "price": 25.58,
+     "breakout_at": "9:55 AM",
+     "pct_over": 0.14,
+     "dollar_volume": 124472059,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 2
+     },
+     "plan": {
+      "entry": 25.65,
+      "stop": 25.44,
+      "target": 26.07,
+      "risk_per_share": 0.21,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.1801,
+      "p_stop": 0.5314,
+      "p_neither": 0.2885,
+      "p_green": 0.393,
+      "avg_R": -0.031,
+      "lean": -0.0802,
+      "hist_n": 31,
+      "hist_avg_R": 0.057,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 18.0 % vs stop first 53.1 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 25 % (target first 18.0 % vs stop first 53.1 %)."
+    },
+    {
+     "symbol": "APH",
+     "price": 76.68,
+     "breakout_at": "9:55 AM",
+     "pct_over": 0.15,
+     "dollar_volume": 119729872,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 75.98,
+      "stop": 75.6,
+      "target": 76.74,
+      "risk_per_share": 0.38,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.36,
+      "p_stop": 0.6353,
+      "p_neither": 0.0047,
+      "p_green": 0.3639,
+      "avg_R": 0.088,
+      "lean": 0.0284,
+      "hist_n": 30,
+      "hist_avg_R": 0.029,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 36 % (target first 36.0 % vs stop first 63.5 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 36 % (target first 36.0 % vs stop first 63.5 %)."
+    },
+    {
+     "symbol": "TSCO",
+     "price": 38.05,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.07,
+     "dollar_volume": 119046283,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 38.28,
+      "stop": 37.53,
+      "target": 39.78,
+      "risk_per_share": 0.75,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0253,
+      "p_stop": 0.158,
+      "p_neither": 0.8167,
+      "p_green": 0.5473,
+      "avg_R": 0.119,
+      "lean": -0.1953,
+      "hist_n": 35,
+      "hist_avg_R": -0.011,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 14 % (target first 2.5 % vs stop first 15.8 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 14 % (target first 2.5 % vs stop first 15.8 %)."
+    },
+    {
+     "symbol": "KDP",
+     "price": 36.81,
+     "breakout_at": "10:05 AM",
+     "pct_over": 0.07,
+     "dollar_volume": 113021555,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 36.87,
+      "stop": 36.63,
+      "target": 37.35,
+      "risk_per_share": 0.24,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3134,
+      "p_stop": 0.4846,
+      "p_neither": 0.202,
+      "p_green": 0.4641,
+      "avg_R": 0.242,
+      "lean": 0.0594,
+      "hist_n": 37,
+      "hist_avg_R": 0.123,
+      "verdict": "Leans toward the target: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 39 % (target first 31.3 % vs stop first 48.5 %).",
+      "seed": 19
+     },
+     "status": "taken",
+     "qty": 169,
+     "fill": 36.88,
+     "reason": "risk PASS: max loss $40.56 at the stop, position cap"
+    },
+    {
+     "symbol": "SBUX",
+     "price": 109.68,
+     "breakout_at": "10:15 AM",
+     "pct_over": 0.2,
+     "dollar_volume": 110816678,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 2
+     },
+     "plan": {
+      "entry": 109.68,
+      "stop": 108.58,
+      "target": 111.88,
+      "risk_per_share": 1.1,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0984,
+      "p_stop": 0.3508,
+      "p_neither": 0.5508,
+      "p_green": 0.494,
+      "avg_R": 0.09,
+      "lean": -0.1143,
+      "hist_n": 34,
+      "hist_avg_R": 0.062,
+      "verdict": "Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 22 % (target first 9.8 % vs stop first 35.1 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Leans toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 22 % (target first 9.8 % vs stop first 35.1 %)."
+    },
+    {
+     "symbol": "ASTS",
+     "price": 31.63,
+     "breakout_at": "10:00 AM",
+     "pct_over": 0.03,
+     "dollar_volume": 103766268,
+     "news": {
+      "reasons": [],
+      "flags": [
+       "earnings"
+      ],
+      "items": 4
+     },
+     "plan": {
+      "entry": 31.35,
+      "stop": 31.01,
+      "target": 32.03,
+      "risk_per_share": 0.34,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3024,
+      "p_stop": 0.686,
+      "p_neither": 0.0116,
+      "p_green": 0.3101,
+      "avg_R": -0.078,
+      "lean": -0.0274,
+      "hist_n": 29,
+      "hist_avg_R": 0.162,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 31 % (target first 30.2 % vs stop first 68.6 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 31 % (target first 30.2 % vs stop first 68.6 %)."
+    },
+    {
+     "symbol": "CL",
+     "price": 101.22,
+     "breakout_at": "10:15 AM",
+     "pct_over": 0.07,
+     "dollar_volume": 94928975,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 2
+     },
+     "plan": {
+      "entry": 101.22,
+      "stop": 100.57,
+      "target": 102.52,
+      "risk_per_share": 0.65,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.0937,
+      "p_stop": 0.4492,
+      "p_neither": 0.4571,
+      "p_green": 0.4173,
+      "avg_R": -0.079,
+      "lean": -0.1607,
+      "hist_n": 40,
+      "hist_avg_R": 0.018,
+      "verdict": "Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 17 % (target first 9.4 % vs stop first 44.9 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Strongly toward the stop: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 17 % (target first 9.4 % vs stop first 44.9 %)."
+    },
+    {
+     "symbol": "SCHW",
+     "price": 93.88,
+     "breakout_at": "10:05 AM",
+     "pct_over": 0.3,
+     "dollar_volume": 86784556,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 1
+     },
+     "plan": {
+      "entry": 93.39,
+      "stop": 92.9,
+      "target": 94.37,
+      "risk_per_share": 0.49,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.2498,
+      "p_stop": 0.5678,
+      "p_neither": 0.1824,
+      "p_green": 0.3785,
+      "avg_R": 0.009,
+      "lean": -0.0278,
+      "hist_n": 28,
+      "hist_avg_R": 0.114,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 31 % (target first 25.0 % vs stop first 56.8 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 31 % (target first 25.0 % vs stop first 56.8 %)."
+    },
+    {
+     "symbol": "AG",
+     "price": 13.23,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.3,
+     "dollar_volume": 86102699,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "status": "skipped",
+     "gate": "entry/exit",
+     "reason": "exit planner: the stop $13.06 (opening-range midpoint) is at or above the entry $12.98: a long's stop goes under the entry"
+    },
+    {
+     "symbol": "AU",
+     "price": 87.54,
+     "breakout_at": "9:50 AM",
+     "pct_over": 0.91,
+     "dollar_volume": 82130293,
+     "news": {
+      "reasons": [],
+      "flags": [],
+      "items": 0
+     },
+     "plan": {
+      "entry": 86.44,
+      "stop": 86.11,
+      "target": 87.1,
+      "risk_per_share": 0.33,
+      "reward_risk": 2.0,
+      "flat_by": "15:55"
+     },
+     "odds": {
+      "p_target": 0.3778,
+      "p_stop": 0.6219,
+      "p_neither": 0.0003,
+      "p_green": 0.3781,
+      "avg_R": 0.134,
+      "lean": 0.0446,
+      "hist_n": 33,
+      "hist_avg_R": -0.153,
+      "verdict": "Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 38 % (target first 37.8 % vs stop first 62.2 %).",
+      "seed": 19
+     },
+     "status": "skipped",
+     "gate": "odds",
+     "reason": "verdict not toward the target: Close to break-even: at 2R the target has to come first in 33 % of the replays that hit one side; it did in 38 % (target first 37.8 % vs stop first 62.2 %)."
+    }
+   ],
    "telegram": 0
   }
  },
@@ -1392,9 +2181,9 @@
  "calendar": [
   {
    "date": "2026-11-16",
-   "pl": 0.0,
-   "pct": 0.0,
-   "equity": 25000.0
+   "pl": 0.85,
+   "pct": 0.003,
+   "equity": 25000.85
   }
  ],
  "history": {
@@ -1689,6 +2478,22 @@
    ],
    [
     1794841200,
+    25000.0
+   ],
+   [
+    1794841500,
+    25000.0
+   ],
+   [
+    1794841800,
+    25000.0
+   ],
+   [
+    1794842100,
+    25000.0
+   ],
+   [
+    1794842400,
     25000.0
    ]
   ],
@@ -2136,6 +2941,10 @@
    [
     1794841200,
     25000.0
+   ],
+   [
+    1794842100,
+    25000.0
    ]
   ],
   "1M": [
@@ -2306,20 +3115,20 @@
     25000.0
    ],
    [
-    1794841234,
-    25000.0
+    1794842428,
+    25000.85
    ]
   ]
  },
  "balance_history": {
   "rows": [],
   "realized": 0.0,
-  "unrealized": 0,
-  "equity": 25000.0,
-  "available": 25000.0,
-  "margin": 0.0,
+  "unrealized": 0.84,
+  "equity": 25000.85,
+  "available": 21884.06,
+  "margin": 3116.78,
   "start_balance": 25000.0
  },
- "generated": "2026-11-16T15:00+00:00",
+ "generated": "2026-11-16T15:15+00:00",
  "source": "alpaca-paper"
 }
