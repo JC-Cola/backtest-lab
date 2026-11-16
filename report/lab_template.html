@@ -110,7 +110,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .acct td { padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
 .acct td.n, .acct th.n { text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .acct td small { display: block; color: var(--faint); font-size: 0.72rem; }
-.acct .tw { overflow-x: auto; }
+.acct .tw, .sysinfo .tw { overflow-x: auto; }
 .acct .note { margin: 0; }
 @media (max-width: 900px) { .acct-tables { grid-template-columns: minmax(0, 1fr); } .acct .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ftmo { padding: 0 0 6px; }
@@ -306,6 +306,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 .sysinfo { padding: 0; }
 .sysinfo .ph { padding: 9px 12px 6px; }
 .sysinfo .sline { margin: 0; padding: 0 12px 8px; font-size: 0.8rem; color: var(--muted); }
+.fil { width: 100%; font-size: 0.78rem; } .fil th, .fil td { padding: 5px 8px; text-align: left; white-space: nowrap; } .fil th.n, .fil td.n { text-align: right; } .fil a { color: var(--accent); }
 .dec > div { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 0.8rem; display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 2px 10px; align-items: baseline; }
 .dec b.sym { font: 600 0.78rem var(--f-mono); }
 .dec .rt { font: 500 0.66rem var(--f-mono); text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 6px; border-radius: 3px; background: var(--raised); color: var(--muted); border: 1px solid var(--line); }
@@ -360,7 +361,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <button data-f="qlib" aria-pressed="false"><b>qlib</b><small>Microsoft qlib model, daily stock picks</small></button>
   <button data-f="ta" aria-pressed="false"><b>TradingAgents</b><small>AI analysts decide after the close, holds overnight</small></button>
   <button data-f="dts_shadow" aria-pressed="false"><b>day-trader-skill (shadow)</b><small>simulated ledger, not traded</small></button>
-  <button data-f="compare" aria-pressed="false"><b>Compare</b><small>all four side by side</small></button>
+  <button data-f="pelosi_shadow" aria-pressed="false"><b>Pelosi (shadow)</b><small>copies public House filings, simulated ledger</small></button>
+  <button data-f="compare" aria-pressed="false"><b>Compare</b><small>all five side by side</small></button>
 </nav>
 <div class="livebar" id="livebar"><span id="live-badge" role="status"></span></div>
 
@@ -372,6 +374,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="panel tw"><table><thead><tr><th>Recent orders</th><th class="n">Quantity</th><th class="n">Filled at</th><th>Status</th></tr></thead><tbody id="ac-ord"></tbody></table></div>
   </div>
   <div class="panel sysinfo" id="sysinfo" hidden></div>
+  <div class="panel sysinfo" id="qbt" hidden></div>
   <div class="panel rcard" id="rcard" hidden></div>
   <p class="note" id="ac-note"></p>
 </section>
@@ -477,7 +480,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 </main>
 
 <main id="view-compare" class="calview" hidden>
-  <h2>Compare · all four accounts</h2>
+  <h2>Compare · all five accounts</h2>
   <section id="cmp-a" class="calview" style="padding:0" hidden>
     <div class="cmp-cards" id="cmp-cards"></div>
     <div class="panel bh" aria-label="Balance since each account started">
@@ -945,9 +948,10 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     { f: "intraday", key: "id", nm: "Noise band", short: "Noise band", sub: "ours · SPY+QQQ intraday", color: "--accent", snap: "alpaca_intraday" },
     { f: "qlib", key: "dts", nm: "qlib", short: "qlib", sub: "Microsoft qlib model, daily stock picks", color: "--amber", snap: "system_qlib" },
     { f: "ta", key: "ta", nm: "TradingAgents", short: "TradingAgents", sub: "AI analysts decide after the close, holds overnight", color: "--agent", snap: "system_ta" },
-    { f: "dts_shadow", key: null, nm: "day-trader-skill (shadow)", short: "Shadow", sub: "simulated ledger, not traded", color: "--muted", snap: "system_dts", shadow: true }];
+    { f: "dts_shadow", key: null, nm: "day-trader-skill (shadow)", short: "Shadow", sub: "simulated ledger, not traded", color: "--muted", snap: "system_dts", shadow: true },
+    { f: "pelosi_shadow", key: null, nm: "Pelosi (shadow)", short: "Pelosi", sub: "copies public House filings, simulated ledger", color: "--pos", snap: "system_congress", shadow: true }];
   const ACCF = Object.fromEntries(ACC.map(a => [a.f, a]));
-  let lfilter = "intraday";  // "intraday" | "qlib" | "ta" | "dts_shadow" | "compare". The old "dts" value now means qlib; "longterm" and anything unknown open on Noise band
+  let lfilter = "intraday";  // "intraday" | "qlib" | "ta" | "dts_shadow" | "pelosi_shadow" | "compare". The old "dts" value now means qlib; "longterm" and anything unknown open on Noise band
   try { let f = localStorage.getItem("lab-lfilter"); if (f === "dts") f = "qlib"; if (f === "compare" || ACCF[f]) lfilter = f; } catch (e) {}
   const acctData = () => lfilter === "compare" ? null : D[ACCF[lfilter].snap];
   function renderPorts() {
@@ -1158,6 +1162,20 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       const list = document.createElement("div"); list.className = "dec";
       rows.forEach(d => list.append(rowOf(d.symbol, d.rating || "—", "“" + short(d.rationale, 150) + "”", d.date + (d.horizon ? " · horizon " + d.horizon : ""))));
       box.append(list);
+    } else if (f === "pelosi_shadow") {
+      const F = A.filings || [];
+      if (!F.length) return;
+      box.hidden = false; box.append(head("Latest filings", F.length + " most recent · " + (A.stats ? `${A.stats.copied ?? 0} copied, ${A.stats.options_recorded ?? 0} options recorded only, avg lag ${A.stats.avg_lag_days ?? "—"} days` : "")));
+      const wrap = document.createElement("div"); wrap.className = "tw"; const t = document.createElement("table"); t.className = "fil";
+      const hr = document.createElement("tr"); ["Filed", "Traded", "Ticker", "Type", "Amount range", "Lag", "Status"].forEach((h, i) => hr.append(Object.assign(document.createElement("th"), { textContent: h, className: i === 5 ? "n" : "" })));
+      const th = document.createElement("thead"); th.append(hr); const tb = document.createElement("tbody");
+      F.forEach(x => { const tr = document.createElement("tr"); const c = (v, k) => tr.append(Object.assign(document.createElement("td"), { textContent: v == null || v === "" ? "—" : String(v), className: k || "" }));
+        c(x.filed); c(x.traded); c(x.ticker); c(x.type); c(x.amount_range); c(x.lag_days != null ? x.lag_days + " d" : null, "n");
+        const unp = x.status === "unparsed" || x.kind === "unparsed", st = x.kind === "option" ? "option (recorded only)" : unp ? "unparsed" : String(x.status || "—").replace(/_/g, " ");
+        const td = document.createElement("td");
+        if (unp && x.link) { const a = document.createElement("a"); a.href = x.link; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "unparsed: open filing"; td.append(a); } else td.textContent = st;
+        tr.append(td); tb.append(tr); });
+      t.append(th, tb); wrap.append(t); box.append(wrap);
     } else if (f === "qlib" && (A.picks || []).length) {
       const P = A.picks.slice().sort((a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9)).slice(0, 10);
       box.hidden = false; box.append(head("Latest qlib picks", "top " + P.length + " by model score"));
@@ -1173,9 +1191,20 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         box.append(list); }
     }
   }
+  function renderQbt(f) {  // qlib only: the small Backtest box from results/qlib15.json
+    const box = $("qbt"); box.replaceChildren(); box.hidden = f !== "qlib"; if (f !== "qlib") return;
+    const B = D.qlib_backtest; if (!B) { box.hidden = true; return; }
+    const h = document.createElement("div"); h.className = "ph";
+    h.append(Object.assign(document.createElement("span"), { className: "cap", textContent: "Backtest · qlib15, test years, 0.10% cost a side" }), Object.assign(document.createElement("span"), { className: "r", textContent: B.test[0].slice(0, 4) + " to " + B.test[1].slice(0, 7) + " · " + B.days + " days" }));
+    const g = document.createElement("div"); g.className = "rcgrid";
+    g.append(tile("Annual return", spct(B.annual_return), "SPY " + spct(B.spy_annual_return), cls(B.annual_return)), tile("Sharpe", f2(B.sharpe), "SPY " + f2(B.spy_sharpe), cls(B.sharpe)),
+      tile("Max drawdown", spct(B.max_dd), "", "neg"), tile("Coin-flip p", String(B.coin_flip_p), "random swaps, 1,000 trials"));
+    box.append(h, g, Object.assign(document.createElement("p"), { className: "note", textContent: `Honest note: test IC ≈ ${B.test_ic.toFixed(3)} — little stock-picking signal; likely a volatility/style tilt; survivorship-biased universe.` }));
+  }
   const ACCT_NOTE = { intraday: "Noise band: each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed on the hourly checks and the account is flat by 15:56. The panel refreshes every time the run works.",
     qlib: "qlib ranks stocks with Microsoft's qlib model and trades its own Alpaca paper account. Paper money; it does not use the rankings below.",
     ta: "TradingAgents lets AI analysts decide after the close and can hold overnight. Paper money; it has its own account and does not use the rankings below.",
+    pelosi_shadow: "Pelosi (shadow) copies the stock purchases and sales in Nancy Pelosi's public House filings, on a simulated ledger. Filings arrive weeks after the trade (the Lag column). Options are recorded but not copied. Nothing is traded and there is no live Alpaca data for it.",
     dts_shadow: "day-trader-skill scans about 5,900 stocks at 10:15 and is flat by 15:55, but only on a simulated ledger (0.02% slippage and 0.01% fees a side). Nothing is traded and there is no live Alpaca data for it." };
   function renderAcct() {
     const box = $("acct"), f = lfilter;
@@ -1184,12 +1213,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     box.hidden = curTab !== "backtest" || (f === "intraday" && !A);
     $("ac-title").textContent = (AC.shadow ? "Shadow ledger: " : "Live paper trading: ") + AC.nm;
     $("ac-badge").textContent = AC.shadow ? "● simulated, not traded" : "● paper money, not real";
-    $("ac-th2").textContent = f === "ta" ? "Latest call" : f === "dts_shadow" ? "Strategy" : f === "qlib" ? "Signal" : "Which strategies hold it";
+    $("ac-th2").textContent = f === "ta" ? "Latest call" : f === "dts_shadow" ? "Strategy" : f === "pelosi_shadow" ? "Filing" : f === "qlib" ? "Signal" : "Which strategies hold it";
     $("ac-note").textContent = ACCT_NOTE[f];
     const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
     if (!A) {
-      $("ac-upd").textContent = "no snapshot yet"; $("ac-stats").replaceChildren(); $("sysinfo").hidden = true; renderRcard(f);
-      for (const id of ["ac-pos", "ac-ord"]) { const tr = document.createElement("tr"); tr.append(td("No data yet.")); $(id).replaceChildren(tr); }
+      $("ac-upd").textContent = f === "qlib" ? "No data yet — first rebalance tonight at 17:00 New York" : "no snapshot yet"; $("ac-stats").replaceChildren(); $("sysinfo").hidden = true; renderQbt(f); renderRcard(f);
+      for (const id of ["ac-pos", "ac-ord"]) { const tr = document.createElement("tr"); tr.append(td(f === "qlib" ? "No data yet — first rebalance tonight at 17:00 New York" : "No data yet.")); $(id).replaceChildren(tr); }
       return;
     }
     const mins = Math.round((Date.now() - Date.parse(A.generated)) / 60000);
@@ -1205,7 +1234,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       tile("Invested", usd(invested), usd(A.cash) + " in cash"));
     const names = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold fund", IWM: "Small caps", BTCUSD: "Bitcoin" };
     const rows = positions.map(p => { const tr = document.createElement("tr");
-      const by = f === "intraday" ? ((A.strategies_by_symbol || {})[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—" : f === "ta" ? p.rating || "—" : f === "qlib" ? "qlib model" : "day-trader-skill";
+      const by = f === "intraday" ? ((A.strategies_by_symbol || {})[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—" : f === "ta" ? p.rating || "—" : f === "qlib" ? "qlib model" : f === "pelosi_shadow" ? (p.member || "Pelosi") + (p.doc_id ? " · filing " + p.doc_id : "") : "day-trader-skill";
       tr.append(td(p.symbol, "", names[p.symbol] || ""), td(by, "", f === "ta" && p.rationale ? short(p.rationale, 60) : ""), td(p.qty < 1 ? p.qty.toFixed(4) : String(p.qty), "n"),
         td(usd(p.avg_price, 2), "n"), td(usd(p.price, 2), "n"), td(susd(p.pl), "n " + cls(p.pl), pct(p.pl_pct, 2)));
       return tr; });
@@ -1218,6 +1247,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     if (!orows.length) { const tr = document.createElement("tr"); tr.append(td("No orders yet.")); orows.push(tr); }
     $("ac-ord").replaceChildren(...orows);
     renderSysInfo(f, A);
+    renderQbt(f);
     renderRcard(f);
   }
   // ---- report cards (agent_memory/report_cards.json, built by src/report_cards.py with quantstats; only the metrics are embedded)
@@ -1328,7 +1358,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         td.textContent = c ? `${susd(c.pl)} · ${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%` : "—"; tr.append(td); }); return tr; });
     tb.replaceChildren(Object.assign(document.createElement("thead"), {}), Object.assign(document.createElement("tbody"), {}));
     tb.firstChild.append(th); tb.lastChild.append(...body);
-    if (!dates.length) tb.lastChild.append(Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="5">No trading days yet.</td>' }));
+    if (!dates.length) tb.lastChild.append(Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="6">No trading days yet.</td>' }));
     renderCmpRc();
     // account bars
     $("cmp-bars").replaceChildren(...data.map(({ a, A }) => { const d = document.createElement("div"); d.className = "panel tvbar"; d.setAttribute("aria-label", a.nm + " account summary"); d.append(...tvCells(A, a.nm)); return d; }));

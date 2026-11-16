@@ -1,5 +1,5 @@
 """Builds report/lab.html (the Strategy Lab dashboard): the intraday research plus the snapshots of the three live
-accounts (Noise band, qlib, TradingAgents, plus the day-trader-skill shadow ledger). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
+accounts (Noise band, qlib, TradingAgents, plus the day-trader-skill and Pelosi shadow ledgers). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
 defined because briefing_inputs and candidates still use them. Every number on the page is net of costs."""
 from __future__ import annotations
 
@@ -349,6 +349,33 @@ def slim_qlib(d):
     return d
 
 
+def slim_congress(d):
+    """The Pelosi (shadow) snapshot (agent_memory/system_congress.json) with filings capped to the latest 30 and the raw docs/notified lists dropped."""
+    if not d:
+        return None
+    d = dict(d)
+    for k in ("docs", "notified"):
+        d.pop(k, None)
+    keep = ("member", "filed", "traded", "ticker", "type", "amount_range", "lag_days", "link", "status", "kind", "note")
+    fl = [f for f in (d.get("filings") or []) if isinstance(f, dict)]
+    fl.sort(key=lambda f: (str(f.get("filed") or ""), str(f.get("traded") or "")), reverse=True)
+    d["filings"] = [{k: f.get(k) for k in keep} for f in fl[:30]]
+    return d
+
+
+def slim_qlib_backtest(q):
+    """The small 'Backtest' box for qlib: test-years numbers at 0.10%/side from results/qlib15.json (no daily series or weights)."""
+    try:
+        t = q["tables"]["P@0.10%"]["pooled"]
+        spy = q["benchmarks"]["SPY"]["pooled"]
+        cfg = q["config"]["test"]
+        return {"test": cfg, "days": t["days"], "annual_return": t["annual_return"], "sharpe": t["sharpe"], "max_dd": t["max_drawdown"],
+                "spy_annual_return": spy["annual_return"], "spy_sharpe": spy["sharpe"], "coin_flip_p": q["coin_flip"]["p_value"],
+                "test_ic": q["ic"]["P_test"]["rank_ic"]}
+    except (KeyError, TypeError):
+        return None
+
+
 def report_cards():
     """Metrics of agent_memory/report_cards.json (written by report_cards.py) without the tear-sheet paths; None when missing."""
     d = _snapshot("report_cards.json")
@@ -368,10 +395,13 @@ def main():
     portfolios = json.loads(ip.read_text()).get("portfolios", []) if ip.exists() else []
     portfolios = [pf for pf in portfolios if pf["oos"]["total"] > 0]  # money-makers only
     book, hidden = ftmo_lab.keep_positive(book, markets)
+    qp = ROOT / "results" / "qlib15.json"
+    qbt = slim_qlib_backtest(json.loads(qp.read_text())) if qp.exists() else None
     blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, **lab_research.page_data(),
                        "alpaca_intraday": _snapshot("alpaca_intraday.json"),
                        "system_qlib": slim_qlib(_snapshot("system_qlib.json")), "system_dts": slim_dts_shadow(_snapshot("system_dts.json")),
-                       "system_ta": _snapshot("system_ta.json"), "report_cards": report_cards(),
+                       "system_ta": _snapshot("system_ta.json"),
+                       "system_congress": slim_congress(_snapshot("system_congress.json")), "qlib_backtest": qbt, "report_cards": report_cards(),
                        "generated": results_meta["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

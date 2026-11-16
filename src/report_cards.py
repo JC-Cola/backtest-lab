@@ -31,7 +31,8 @@ NY = ZoneInfo("America/New_York")
 ACCOUNTS = [("intraday", "Noise band", "alpaca_intraday.json"),
             ("qlib", "qlib", "system_qlib.json"),
             ("ta", "TradingAgents", "system_ta.json"),
-            ("dts_shadow", "day-trader-skill (shadow)", "system_dts.json")]
+            ("dts_shadow", "day-trader-skill (shadow)", "system_dts.json"),
+            ("pelosi_shadow", "Pelosi (shadow)", "system_congress.json")]
 QLIB_BACKTEST = ("qlib_bt", "qlib backtest", ROOT / "results" / "qlib15.json")
 METRICS = ("cagr", "sharpe", "sortino", "max_dd", "win_days", "best_day", "worst_day", "vol", "beta")
 
