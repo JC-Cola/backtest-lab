@@ -1,25 +1,25 @@
 {
- "generated": "2026-11-16T21:46:08Z",
+ "generated": "2026-11-17T21:46:13Z",
  "benchmark": "SPY",
  "min_days": 5,
  "accounts": {
   "intraday": {
    "name": "Noise band",
-   "days": 9,
+   "days": 10,
    "start": "2026-11-04",
-   "end": "2026-11-16",
+   "end": "2026-11-17",
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": 0.017358040292841492,
-    "sharpe": 0.23466238133420353,
-    "sortino": 0.3580744217121458,
+    "cagr": 0.051173362648998966,
+    "sharpe": 0.6367205682970228,
+    "sortino": 0.9683933585387323,
     "max_dd": -0.010119487767203172,
-    "win_days": 0.42857142857142855,
+    "win_days": 0.5,
     "best_day": 0.008944366611510324,
     "worst_day": -0.010119487767203172,
-    "vol": 0.08801464263599794,
-    "beta": -0.04867589705441136
+    "vol": 0.0832947077701577,
+    "beta": -0.05043758200679725
    },
    "tearsheet": "reports/cards/intraday.html"
   },
@@ -35,21 +35,31 @@
   },
   "ta": {
    "name": "TradingAgents",
-   "days": 4,
+   "days": 5,
    "start": "2026-11-10",
-   "end": "2026-11-13",
-   "ok": false,
-   "note": "not enough history yet (4 days)",
-   "metrics": null,
-   "tearsheet": null
+   "end": "2026-11-16",
+   "ok": true,
+   "note": "",
+   "metrics": {
+    "cagr": -0.44896197864780096,
+    "sharpe": -3.849257904256317,
+    "sortino": -5.176235778870216,
+    "max_dd": -0.02205219916368606,
+    "win_days": 0.4,
+    "best_day": 0.01178948026082094,
+    "worst_day": -0.0121151803821965,
+    "vol": 0.15223194693747807,
+    "beta": 0.2863112180983732
+   },
+   "tearsheet": "reports/cards/ta.html"
   },
   "dts_shadow": {
    "name": "day-trader-skill (shadow)",
-   "days": 0,
-   "start": null,
-   "end": null,
+   "days": 1,
+   "start": "2026-11-17",
+   "end": "2026-11-17",
    "ok": false,
-   "note": "not enough history yet (0 days)",
+   "note": "not enough history yet (1 day)",
    "metrics": null,
    "tearsheet": null
   },
@@ -61,15 +71,15 @@
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": -0.04362217387865497,
-    "sharpe": -0.2553655024307019,
-    "sortino": -0.34373332370021725,
+    "cagr": -0.04188687893837928,
+    "sharpe": -0.24286524072723742,
+    "sortino": -0.3273774147867888,
     "max_dd": -0.14932974972281032,
     "win_days": 0.5166666666666667,
     "best_day": 0.028327356836763462,
     "worst_day": -0.037946886059688656,
-    "vol": 0.13762177162485179,
-    "beta": 0.36130541552452455
+    "vol": 0.13738048082978746,
+    "beta": 0.3595992806140604
    },
    "tearsheet": "reports/cards/pelosi_shadow.html"
   },
@@ -89,7 +99,7 @@
     "best_day": 0.127948,
     "worst_day": -0.083851,
     "vol": 0.23976575714376924,
-    "beta": 1.2217195851438123
+    "beta": 1.2217191499912796
    },
    "tearsheet": "reports/cards/qlib_bt.html"
   }

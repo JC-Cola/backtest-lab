@@ -2,6 +2,7 @@
 
 Newest first. Day P/L of the intraday paper account.
 
+- [2026-11-17](2026-11-17.md): intraday +$35.88
 - [2026-11-16](2026-11-16.md): intraday -$39.84
 - [2026-11-13](2026-11-13.md): intraday +$55.11
 - [2026-11-12](2026-11-12.md): intraday $0.00
