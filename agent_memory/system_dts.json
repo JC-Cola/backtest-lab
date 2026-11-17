@@ -3,7 +3,7 @@
  "mode": "shadow",
  "start_equity": 25000.0,
  "cash": 18855.2065,
- "equity": 25009.38,
+ "equity": 25020.09,
  "last_equity": 25000.0,
  "positions": [
   {
@@ -20,8 +20,8 @@
    "flat_by": "15:55",
    "risk_per_share": 0.26,
    "fees_in": 0.6144,
-   "checked_to": "2026-11-17 10:30",
-   "price": 120.67,
+   "checked_to": "2026-11-17 10:45",
+   "price": 120.88,
    "odds": {
     "p_target": 0.3959,
     "p_stop": 0.6025,
@@ -49,9 +49,9 @@
     "or_high": 120.47,
     "or_low": 119.92
    },
-   "value": 6154.17,
-   "pl": 9.99,
-   "pl_pct": 0.00163
+   "value": 6164.88,
+   "pl": 20.7,
+   "pl_pct": 0.00337
   }
  ],
  "trades": [],
@@ -177,6 +177,10 @@
   [
    1794929433,
    25009.38
+  ],
+  [
+   1794930329,
+   25020.09
   ]
  ],
  "days": {
@@ -2920,13 +2924,13 @@
   }
  },
  "universe_refreshed": "2026-11-12",
- "generated": "2026-11-17T15:30+00:00",
+ "generated": "2026-11-17T15:45+00:00",
  "calendar": [],
  "balance_history": {
   "rows": [],
   "realized": 0,
-  "unrealized": 9.99,
-  "equity": 25009.38,
+  "unrealized": 20.7,
+  "equity": 25020.09,
   "available": 18855.21,
   "margin": 0.0,
   "start_balance": 25000.0
@@ -3044,6 +3048,10 @@
    [
     1794929433,
     25009.38
+   ],
+   [
+    1794930329,
+    25020.09
    ]
   ],
   "ALL": []
