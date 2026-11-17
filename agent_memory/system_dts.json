@@ -2,26 +2,31 @@
  "system": "day-trader-skill (shadow)",
  "mode": "shadow",
  "start_equity": 25000.0,
- "cash": 18855.2065,
- "equity": 25020.09,
+ "cash": 25022.8255,
+ "equity": 25022.83,
  "last_equity": 25000.0,
- "positions": [
+ "positions": [],
+ "trades": [
   {
    "id": "2026-11-17-ED",
    "symbol": "ED",
+   "side": "long",
    "qty": 51,
-   "avg_price": 120.4741,
+   "entry_time": "2026-11-17 10:15",
+   "entry_price": 120.4741,
    "entry_ref": 120.45,
-   "entry_et": "2026-11-17 10:15",
-   "entry_utc": "2026-11-17T15:15+00:00",
-   "date": "2026-11-17",
+   "exit_time": "2026-11-17 10:52",
+   "exit_price": 120.9458,
+   "exit_ref": 120.97,
    "stop": 120.19,
    "target": 120.97,
-   "flat_by": "15:55",
-   "risk_per_share": 0.26,
-   "fees_in": 0.6144,
-   "checked_to": "2026-11-17 10:45",
-   "price": 120.88,
+   "fees": 1.2312,
+   "pnl": 22.83,
+   "pnl_pct": 0.372,
+   "r": 1.722,
+   "reason": "target",
+   "date": "2026-11-17",
+   "exit_utc": "2026-11-17T15:52+00:00",
    "odds": {
     "p_target": 0.3959,
     "p_stop": 0.6025,
@@ -48,13 +53,9 @@
     "pct_over": 0.16,
     "or_high": 120.47,
     "or_low": 119.92
-   },
-   "value": 6164.88,
-   "pl": 20.7,
-   "pl_pct": 0.00337
+   }
   }
  ],
- "trades": [],
  "orders": [
   {
    "date": "2026-11-17T15:15+00:00",
@@ -63,6 +64,14 @@
    "qty": 51.0,
    "status": "filled",
    "price": 120.4741
+  },
+  {
+   "date": "2026-11-17T15:52+00:00",
+   "symbol": "ED",
+   "side": "sell",
+   "qty": 51.0,
+   "status": "filled",
+   "price": 120.9458
   }
  ],
  "curve": [
@@ -181,6 +190,10 @@
   [
    1794930329,
    25020.09
+  ],
+  [
+   1794931235,
+   25022.83
   ]
  ],
  "days": {
@@ -2920,31 +2933,38 @@
      "reason": "time machine: only 2 full session(s) of NSIT before 2026-11-17 in the data; the time machine needs at least 20"
     }
    ],
-   "telegram": 1
+   "telegram": 2
   }
  },
  "universe_refreshed": "2026-11-12",
- "generated": "2026-11-17T15:45+00:00",
- "calendar": [],
+ "generated": "2026-11-17T16:00+00:00",
+ "calendar": [
+  {
+   "date": "2026-11-17",
+   "pl": 22.83,
+   "pct": 0.09,
+   "equity": 25022.83
+  }
+ ],
  "balance_history": {
-  "rows": [],
-  "realized": 0,
-  "unrealized": 20.7,
-  "equity": 25020.09,
-  "available": 18855.21,
+  "rows": [
+   {
+    "time": "2026-11-17 15:52:00",
+    "balance_before": 25000.0,
+    "balance_after": 25022.83,
+    "realized_pnl": 22.83,
+    "action": "Close long position for symbol ED at price 120.95 for 51 units. Position AVG Price was 120.474 (target)"
+   }
+  ],
+  "realized": 22.83,
+  "unrealized": 0,
+  "equity": 25022.83,
+  "available": 25022.83,
   "margin": 0.0,
   "start_balance": 25000.0
  },
  "history": {
   "1D": [
-   [
-    1794843930,
-    25000.0
-   ],
-   [
-    1794844831,
-    25000.0
-   ],
    [
     1794845730,
     25000.0
@@ -3052,8 +3072,17 @@
    [
     1794930329,
     25020.09
+   ],
+   [
+    1794931235,
+    25022.83
    ]
   ],
-  "ALL": []
+  "ALL": [
+   [
+    1794949200,
+    25022.83
+   ]
+  ]
  }
 }
