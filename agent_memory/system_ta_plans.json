@@ -1,5 +1,36 @@
 {
  "plans": {
+  "CRM": {
+   "date": "2026-11-17",
+   "decision_id": "2026-11-17|CRM",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "fundamental value",
+     "structural technical damage",
+     "proof of institutional support"
+    ],
+    "rating": "Hold",
+    "ref_price": 194.6,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
   "CSCO": {
    "date": "2026-11-13",
    "decision_id": "2026-11-13|CSCO",
@@ -118,46 +149,41 @@
    ],
    "status": "closed"
   },
-  "NVDA": {
-   "date": "2026-11-16",
-   "decision_id": "2026-11-16|NVDA",
+  "NKE": {
+   "date": "2026-11-17",
+   "decision_id": "2026-11-17|NKE",
    "exits": [],
    "log": [],
-   "opened": true,
-   "placed": {
-    "at": "2026-11-16T22:41:50+00:00",
-    "ids": [
-     "4c4d6dcf-e063-4852-8da5-f727721fe8e5"
-    ],
-    "qty": 15,
-    "stop": 140.0,
-    "tp": null
-   },
+   "opened": false,
+   "placed": null,
    "plan": {
-    "base": 0.2,
+    "base": 0.1,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [],
-    "notes": [
-     "phased entry strategy to manage high volatility",
-     "capturing the mean reversion potential of an oversold, fundamentally undervalued asset"
+    "not_executed": [
+     "initial size 0.5x unverified: using the default 1x",
+     "no stop in the paragraph"
     ],
-    "rating": "Buy",
-    "ref_price": 156.145,
+    "notes": [
+     "reclaims the 50-day moving average and stabilizes earnings momentum",
+     "multi-year turnaround execution risk"
+    ],
+    "rating": "Underweight",
+    "ref_price": 35.86,
     "scale_in": [],
-    "side": "long",
-    "stop": 140.0,
-    "stop_type": "price",
+    "side": "short",
+    "stop": null,
+    "stop_type": null,
     "tp": null
    },
    "scale": [],
    "status": "active"
   },
-  "QQQ": {
-   "date": "2026-11-16",
-   "decision_id": "2026-11-16|QQQ",
+  "NVDA": {
+   "date": "2026-11-17",
+   "decision_id": "2026-11-17|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
@@ -169,19 +195,17 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "initial size 0.25x unverified: using the default 1x",
-     "stop $630 is on the wrong side of $661.8 for a short: skipped",
-     "exit below $681.41 is not an adverse trigger for a short: skipped"
+     "scale in price 0.0 unverified: dropped",
+     "no stop in the paragraph"
     ],
     "notes": [
-     "Manage downside risk while the index trades below its critical 200-day moving average",
-     "High volatility",
-     "Avoid further capital deployment until a clear reversal or support base is established"
+     "High volatility and bearish momentum",
+     "Mitigate downside risk"
     ],
-    "rating": "Underweight",
-    "ref_price": 661.8,
+    "rating": "Overweight",
+    "ref_price": 155.49,
     "scale_in": [],
-    "side": "short",
+    "side": "long",
     "stop": null,
     "stop_type": null,
     "tp": null
@@ -189,39 +213,91 @@
    "scale": [],
    "status": "active"
   },
-  "SPY": {
-   "date": "2026-11-16",
-   "decision_id": "2026-11-16|SPY",
+  "QQQ": {
+   "date": "2026-11-17",
+   "decision_id": "2026-11-17|QQQ",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-16T22:41:50+00:00",
-    "ids": [
-     "df59206d-b2ef-4d0a-8058-99467c454bcf"
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "size cap 1x unverified: ignored"
     ],
-    "qty": 3,
-    "stop": 718.17,
+    "notes": [
+     "volatility risk",
+     "bearish macro headwinds"
+    ],
+    "rating": "Overweight",
+    "ref_price": 657.06,
+    "scale_in": [
+     {
+      "condition": "above",
+      "price": 681.58,
+      "size_x": 0.5,
+      "valid_days": 10
+     }
+    ],
+    "side": "long",
+    "stop": 630.0,
+    "stop_type": "price",
     "tp": null
    },
+   "scale": [
+    {
+     "condition": "above",
+     "expires": "2026-12-01",
+     "last_bar": null,
+     "price": 681.58,
+     "size_x": 0.5,
+     "state": "pending",
+     "streak": 0,
+     "valid_days": 10
+    }
+   ],
+   "status": "active"
+  },
+  "SPY": {
+   "date": "2026-11-17",
+   "decision_id": "2026-11-17|SPY",
+   "exits": [
+    {
+     "condition": "below",
+     "price": 729.79,
+     "state": "pending"
+    }
+   ],
+   "log": [],
+   "opened": true,
+   "placed": null,
    "plan": {
     "base": null,
-    "exits": [],
+    "exits": [
+     {
+      "condition": "below",
+      "price": 729.79
+     }
+    ],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [],
+    "not_executed": [
+     "no stop in the paragraph"
+    ],
     "notes": [
-     "observing price action near the 200-day SMA and lower Bollinger Band",
-     "avoid adding exposure until the price reclaims the 10-day EMA",
-     "maintain a defensive posture to account for high ATR volatility"
+     "institutional de-leveraging"
     ],
     "rating": "Hold",
-    "ref_price": 740.04,
+    "ref_price": 732.41,
     "scale_in": [],
     "side": "long",
-    "stop": 718.17,
-    "stop_type": "price",
+    "stop": null,
+    "stop_type": null,
     "tp": null
    },
    "scale": [],
