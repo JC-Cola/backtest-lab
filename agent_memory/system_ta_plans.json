@@ -33,7 +33,9 @@
    "date": "2026-11-12",
    "decision_id": "2026-11-12|GPN",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-17: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -58,7 +60,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "NBIS": {
    "date": "2026-11-12",
@@ -158,7 +160,7 @@
    "decision_id": "2026-11-16|QQQ",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
