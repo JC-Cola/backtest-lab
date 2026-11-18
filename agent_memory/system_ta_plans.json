@@ -272,8 +272,9 @@
    "exits": [
     {
      "condition": "below",
+     "order_id": "bcef3882-d169-4e34-bc6d-a4e0650173ae",
      "price": 729.79,
-     "state": "pending"
+     "state": "ordered"
     }
    ],
    "log": [],
@@ -305,7 +306,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "exited"
   },
   "STE": {
    "date": "2026-11-13",
