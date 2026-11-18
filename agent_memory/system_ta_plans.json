@@ -35,7 +35,9 @@
    "date": "2026-11-13",
    "decision_id": "2026-11-13|CSCO",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-18: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -58,7 +60,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "GPN": {
    "date": "2026-11-12",
@@ -154,7 +156,7 @@
    "decision_id": "2026-11-17|NKE",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -217,7 +219,9 @@
    "date": "2026-11-17",
    "decision_id": "2026-11-17|QQQ",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-18: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -260,7 +264,7 @@
      "valid_days": 10
     }
    ],
-   "status": "active"
+   "status": "closed"
   },
   "SPY": {
    "date": "2026-11-17",
@@ -307,7 +311,9 @@
    "date": "2026-11-13",
    "decision_id": "2026-11-13|STE",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-18: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -335,7 +341,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "TSN": {
    "date": "2026-11-16",
