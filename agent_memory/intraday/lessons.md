@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-18. 25412 trials in total: 23075 scored, 2337 rejected, 0 sent to the held-out test, 0 passed it.
+Updated 2026-11-18. 25432 trials in total: 23095 scored, 2337 rejected, 0 sent to the held-out test, 0 passed it.
 
 ## Best ideas on the search years (deflated by every trial run)
 
@@ -45,4 +45,4 @@ Updated 2026-11-18. 25412 trials in total: 23075 scored, 2337 rejected, 0 sent t
 
 ## Last session
 
-1 rounds x 8 ideas with the claude proposer in 412s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0. Claude CLI cost this session: $0.24.
+1 rounds x 10 ideas with the evolution proposer in 494s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0. Strategies passing the held-out test (BH across all 0 shots ever): 0.
