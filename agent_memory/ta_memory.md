@@ -1,4 +1,4 @@
-[2026-11-09 | SPY | Hold | pending]
+[2026-11-09 | SPY | Hold | -2.3% | +0.0% | 5d | resolved:2026-11-17]
 
 DECISION:
 **Rating**: Hold
@@ -11,9 +11,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The flat 0.0% alpha over the five-day window is far too short to judge a three-to-six-month thesis, though it reflects the anticipated near-term stagnation. This immediate outcome supports the decision to withhold new capital given the conflicting technical signals and high volatility. Future analyses should explicitly incorporate short-term hedging strategies to protect capital during anticipated consolidation phases rather than relying solely on sidelined patience.
+
 <!-- ENTRY_END -->
 
-[2026-11-09 | QQQ | Hold | pending]
+[2026-11-09 | QQQ | Hold | -2.6% | -0.3% | 5d | resolved:2026-11-17]
 
 DECISION:
 **Rating**: Hold
@@ -26,9 +29,12 @@ DECISION:
 
 **Time Horizon**: Short-to-medium term
 
+REFLECTION:
+The five-day alpha of minus 0.3 percent alongside a minus 2.6 percent raw return demonstrates mild near-term underperformance, though this window is far too short to judge a multi-week technical thesis. This brief period undercuts the argument that a durable bounce would materialize quickly from the 200-day simple moving average test. Future analyses should incorporate tighter tactical stop-triggers when initiating a hold rating in the face of active institutional distribution.
+
 <!-- ENTRY_END -->
 
-[2026-11-09 | NVDA | Underweight | pending]
+[2026-11-09 | NVDA | Underweight | -8.0% | -5.6% | 5d | resolved:2026-11-17]
 
 DECISION:
 **Rating**: Underweight
@@ -40,6 +46,9 @@ DECISION:
 **Price Target**: 204.35
 
 **Time Horizon**: 3-6 months
+
+REFLECTION:
+The 5-day alpha of -5.6% validates the immediate downside momentum, though this window is too short to fully judge a 3-to-6-month thesis. This rapid decline undercuts the patient wait-for-a-bounce execution plan, as the stock simply sold off without offering the tactical recovery to the 10-day EMA. Future analyses must incorporate stricter stop-loss mechanics when institutional distribution breaches key moving averages, rather than relying on optimal bounce entries in structurally broken trends.
 
 <!-- ENTRY_END -->
 
@@ -381,6 +390,81 @@ DECISION:
 **Executive Summary**: Maintain current exposure to CRM while avoiding new capital deployment until the stock reclaims the 200-day moving average at $197.34. The asset presents compelling fundamental value, but structural technical damage requires proof of institutional support before adding to the position.
 
 **Investment Thesis**: The investment thesis hinges on a balance between Salesforce's strong cash flow generation—evidenced by a forward P/E of 12.15 and a PEG ratio of 0.77—and the current negative momentum characterizing the price action. While the aggressive analyst's point regarding the 'steep discount' on free cash flow is valid, the conservative analyst provides decisive evidence of institutional distribution, specifically the break below the 200-day moving average ($197.34) and the significant gap between spot price and the VWMA ($218.35). Catching a falling knife in a high-volatility environment (ATR $8.85) is unnecessarily risky. We will shift to an active accumulation strategy only upon a confirmed reclaim of the 200-day moving average with volume support, or reassess the thesis entirely should the price break below $190.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-18 | SPY | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an 'Overweight' position in SPY with an initial 50% of the standard target allocation at current levels near $730.20. Manage risk with a firm stop-loss at $715.00 to account for high volatility (ATR $11.29) and plan to deploy the remaining 50% only upon a breakout above the 50-day SMA ($762.28).
+
+**Investment Thesis**: The decision to favor an 'Overweight' stance over a full 'Buy' balances the compelling technical setup—SPY testing the 200-day SMA ($730.02) and the lower Bollinger Band ($727.91)—against valid concerns regarding institutional distribution and negative momentum (MACD -2.18). While the aggressive analyst correctly identifies this as a potential structural floor, the conservative analyst's warning about sticky inflation and a lack of rate-cut catalysts warrants a cautious, incremental approach. By deploying only half the target allocation now, we respect the support level without over-committing to a market currently showing institutional outflows. The thesis will be invalidated if SPY decisively breaches the $723 support level, signaling a structural failure rather than a cyclical dip, at which point the position should be exited to protect capital.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-18 | QQQ | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an 'Overweight' position with an initial 20% target allocation at current levels ($659.51) to capture tactical support while mitigating volatility risk. Stagger the remaining allocation into deeper support tranches near $641.82 to avoid over-exposure during current institutional distribution phases.
+
+**Investment Thesis**: The investment case for QQQ relies on balancing long-term structural quality against clear short-term technical deterioration. The index currently trades below the critical 200-day SMA ($681.80) and exhibits institutional distribution, confirming a macro downtrend. However, the RSI (37.71) and testing of the lower Bollinger Band ($641.82) provide a strong tactical case for an entry, supported by the expectation of upcoming mega-cap inflows. We reject the 'Buy' proposal's aggressive 50% sizing, as the high ATR ($16.08) creates excessive risk for a single entry point; scaling in at 20% preserves capital against intraday noise. A shift to a full 'Buy' rating will only be justified upon a confirmed reclamation of the 200-day SMA, indicating technical stabilization.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-18 | NVDA | Buy | pending]
+
+DECISION:
+**Rating**: Buy
+
+**Executive Summary**: Initiate a long position in NVDA with a split-tranche strategy to manage high volatility. Deploy an initial 0.5x allocation at current levels (~$150.96), while reserving capital for a second 0.5x tranche if the price hits the $144 support zone. Maintain a stop-loss at $139.50, acknowledging the need for wider-than-usual tolerance given the $9.68 ATR.
+
+**Investment Thesis**: The fundamental valuation, evidenced by a Forward P/E of 9.09 and a PEG ratio of 0.19, creates a rare value proposition for a market leader that the current technical breakdown is overshooting. While the Conservative Analyst correctly identifies significant risks—specifically the death cross, the departure of CEO Jensen Huang, and China-related headwinds—these factors are already heavily priced into the extreme RSI of 21.10. The Neutral Analyst provides the necessary calibration: the trade should not be executed with high conviction in a single block due to volatility, but neither should it be ignored. By scaling the entry to account for the $9.68 ATR, we mitigate the risk of being stopped out by standard intraday noise. This thesis is invalidated if the stock breaches the $139.50 support level with sustained volume, signaling that institutional distribution has overwhelmed the fundamental valuation floor.
+
+**Price Target**: 189.0
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-18 | PANW | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a long position in PANW with a 0.5% to 0.75% portfolio allocation, utilizing the current market price near $339.92. Manage risk by placing a tight stop-loss near the recent swing lows around $309-$311 rather than the distant 200 SMA, ensuring disciplined exposure while the stock works to reclaim the 50-day moving average.
+
+**Investment Thesis**: The bull case for PANW, driven by robust $4.2B TTM free cash flow, an earnings beat, and critical strategic positioning in AI-driven cybersecurity, outweighs the conservative bear argument regarding valuation multiples. While the bear analyst correctly identifies technical headwinds (trading below the 50 SMA and negative MACD), the aggressive and neutral analysts provide compelling evidence that the recent pullback to the $311 area represented institutional buying rather than a breakdown of the long-term thesis. The 850x trailing P/E is admittedly rich, but it is mitigated by strong fundamentals and forward-looking growth catalysts. I reject the conservative proposal of full inaction and the aggressive proposal of an overly wide stop-loss; instead, I favor a balanced entry that respects the 19.50 ATR by anchoring stop-losses to recent technical support levels rather than the distant 200-day SMA. If the stock fails to hold the $309 support level or fails to reclaim the $366.70 50-day SMA in the coming weeks, the thesis for a near-term breakout would be invalidated, requiring a re-evaluation of the position.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-18 | UNH | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a staggered long position in UNH to capture fundamental value during this liquidity-driven dislocation. Deploy half of the target 5% allocation at current levels (~$349) and reserve the remainder for accumulation upon signs of price consolidation or if the stock probes support at $325. Maintain a firm stop-loss below $325 to manage exposure to the ongoing technical breakdown and regulatory volatility.
+
+**Investment Thesis**: UNH is currently experiencing an exaggerated downside move driven by headline-sensitive liquidation rather than a permanent loss of earnings power. While the stock has decisively breached its 200-day moving average and faces genuine regulatory headwinds concerning CMS fraud rules and political scrutiny, the current forward P/E of 15.00 and trailing free cash flow of $26.5 billion suggest that the market is pricing in a 'worst-case' structural impairment that is disconnected from the firm's financial reality. The RSI of 28.52 confirms deeply oversold conditions, supporting the Neutral Analyst's recommendation for a disciplined, staggered entry over the more impulsive 'all-in' approach. This thesis would be invalidated if the stock confirms a sustained breakdown below $325, indicating that the institutional distribution is not merely panic-selling but a fundamental repricing of the stock's long-term utility in the healthcare landscape.
 
 **Price Target**: not provided
 

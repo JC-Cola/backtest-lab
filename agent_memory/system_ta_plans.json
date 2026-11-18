@@ -184,11 +184,88 @@
    "status": "active"
   },
   "NVDA": {
-   "date": "2026-11-17",
-   "decision_id": "2026-11-17|NVDA",
+   "date": "2026-11-18",
+   "decision_id": "2026-11-18|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
+   "placed": null,
+   "plan": {
+    "base": 0.2,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "size cap 1x unverified: ignored"
+    ],
+    "notes": [
+     "manage high volatility",
+     "9.68 ATR"
+    ],
+    "rating": "Buy",
+    "ref_price": 150.86,
+    "scale_in": [
+     {
+      "condition": "below",
+      "price": 144.0,
+      "size_x": 0.5,
+      "valid_days": 10
+     }
+    ],
+    "side": "long",
+    "stop": 139.5,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [
+    {
+     "condition": "below",
+     "expires": "2026-12-02",
+     "last_bar": null,
+     "price": 144.0,
+     "size_x": 0.5,
+     "state": "pending",
+     "streak": 0,
+     "valid_days": 10
+    }
+   ],
+   "status": "active"
+  },
+  "PANW": {
+   "date": "2026-11-18",
+   "decision_id": "2026-11-18|PANW",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 0.5,
+    "max_total_x": 0.75,
+    "not_executed": [],
+    "notes": [
+     "reclaim the 50-day moving average"
+    ],
+    "rating": "Overweight",
+    "ref_price": 339.68,
+    "scale_in": [],
+    "side": "long",
+    "stop": 309.0,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "QQQ": {
+   "date": "2026-11-18",
+   "decision_id": "2026-11-18|QQQ",
+   "exits": [],
+   "log": [],
+   "opened": false,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -197,15 +274,16 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "scale in price 0.0 unverified: dropped",
-     "no stop in the paragraph"
+     "initial size 0.2x unverified: using the default 1x",
+     "size cap 1x unverified: ignored",
+     "no stop in the paragraph",
+     "scale-in near $641.82: initial entry already uses the 1x allowed"
     ],
     "notes": [
-     "High volatility and bearish momentum",
-     "Mitigate downside risk"
+     "institutional distribution phases"
     ],
     "rating": "Overweight",
-    "ref_price": 155.49,
+    "ref_price": 659.57,
     "scale_in": [],
     "side": "long",
     "stop": null,
@@ -215,98 +293,38 @@
    "scale": [],
    "status": "active"
   },
-  "QQQ": {
-   "date": "2026-11-17",
-   "decision_id": "2026-11-17|QQQ",
+  "SPY": {
+   "date": "2026-11-18",
+   "decision_id": "2026-11-18|SPY",
    "exits": [],
-   "log": [
-    "2026-11-18: position closed"
-   ],
-   "opened": true,
+   "log": [],
+   "opened": false,
    "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
     "horizon": null,
-    "initial_x": 0.5,
-    "max_total_x": 1.0,
-    "not_executed": [
-     "size cap 1x unverified: ignored"
-    ],
-    "notes": [
-     "volatility risk",
-     "bearish macro headwinds"
-    ],
-    "rating": "Overweight",
-    "ref_price": 657.06,
-    "scale_in": [
-     {
-      "condition": "above",
-      "price": 681.58,
-      "size_x": 0.5,
-      "valid_days": 10
-     }
-    ],
-    "side": "long",
-    "stop": 630.0,
-    "stop_type": "price",
-    "tp": null
-   },
-   "scale": [
-    {
-     "condition": "above",
-     "expires": "2026-12-01",
-     "last_bar": null,
-     "price": 681.58,
-     "size_x": 0.5,
-     "state": "pending",
-     "streak": 0,
-     "valid_days": 10
-    }
-   ],
-   "status": "closed"
-  },
-  "SPY": {
-   "date": "2026-11-17",
-   "decision_id": "2026-11-17|SPY",
-   "exits": [
-    {
-     "condition": "below",
-     "order_id": "bcef3882-d169-4e34-bc6d-a4e0650173ae",
-     "price": 729.79,
-     "state": "ordered"
-    }
-   ],
-   "log": [],
-   "opened": true,
-   "placed": null,
-   "plan": {
-    "base": null,
-    "exits": [
-     {
-      "condition": "below",
-      "price": 729.79
-     }
-    ],
-    "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "no stop in the paragraph"
+     "initial size 0.5x unverified: using the default 1x",
+     "size cap 1x unverified: ignored",
+     "scale-in above $762.28: initial entry already uses the 1x allowed"
     ],
     "notes": [
-     "institutional de-leveraging"
+     "high volatility",
+     "ATR $11.29"
     ],
-    "rating": "Hold",
-    "ref_price": 732.41,
+    "rating": "Overweight",
+    "ref_price": 730.33,
     "scale_in": [],
     "side": "long",
-    "stop": null,
-    "stop_type": null,
+    "stop": 715.0,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],
-   "status": "exited"
+   "status": "active"
   },
   "STE": {
    "date": "2026-11-13",
@@ -399,6 +417,39 @@
     "side": null,
     "stop": null,
     "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "UNH": {
+   "date": "2026-11-18",
+   "decision_id": "2026-11-18|UNH",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "initial size 0.5x unverified: using the default 1x",
+     "size cap 1x unverified: ignored",
+     "scale-in near $325: initial entry already uses the 1x allowed",
+     "scale-in below $325: initial entry already uses the 1x allowed"
+    ],
+    "notes": [
+     "regulatory volatility"
+    ],
+    "rating": "Overweight",
+    "ref_price": 349.9,
+    "scale_in": [],
+    "side": "long",
+    "stop": 325.0,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],
