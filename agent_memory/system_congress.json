@@ -715,8 +715,8 @@
  ],
  "start_equity": 25000.0,
  "cash": 18749.99,
- "equity": 23969.5,
- "last_equity": 24041.09,
+ "equity": 23909.56,
+ "last_equity": 23969.5,
  "positions": [
   {
    "symbol": "BE",
@@ -726,10 +726,10 @@
    "member": "Pelosi",
    "doc_id": "20035143",
    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
-   "price": 170.98,
-   "value": 4450.85,
-   "pl": -549.16,
-   "pl_pct": -0.10983,
+   "price": 168.11,
+   "value": 4376.14,
+   "pl": -623.87,
+   "pl_pct": -0.12477,
    "date": "2026-08-24"
   },
   {
@@ -740,10 +740,10 @@
    "member": "Pelosi",
    "doc_id": "20035143",
    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035143.pdf",
-   "price": 54.67,
-   "value": 768.67,
-   "pl": -481.34,
-   "pl_pct": -0.38507,
+   "price": 55.72,
+   "value": 783.43,
+   "pl": -466.58,
+   "pl_pct": -0.37326,
    "date": "2026-08-24"
   }
  ],
@@ -2012,18 +2012,24 @@
    "pl": -71.59,
    "pct": -0.3,
    "equity": 23969.5
+  },
+  {
+   "date": "2026-11-19",
+   "pl": -59.94,
+   "pct": -0.25,
+   "equity": 23909.56
   }
  ],
- "generated": "2026-11-18T23:15+00:00",
+ "generated": "2026-11-19T23:15+00:00",
  "history": {
   "1D": [
    [
-    1795010400,
-    24041.09
+    1795096800,
+    23969.5
    ],
    [
-    1795035600,
-    23969.5
+    1795122000,
+    23909.56
    ]
   ],
   "ALL": [
@@ -2854,6 +2860,10 @@
    [
     1795035600,
     23969.5
+   ],
+   [
+    1795122000,
+    23909.56
    ]
   ]
  },
@@ -2875,8 +2885,8 @@
    }
   ],
   "realized": 0,
-  "unrealized": -1030.5,
-  "equity": 23969.5,
+  "unrealized": -1090.45,
+  "equity": 23909.56,
   "available": 18749.99,
   "margin": 0.0,
   "start_balance": 25000.0
