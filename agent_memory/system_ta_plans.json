@@ -273,7 +273,7 @@
    "decision_id": "2026-11-18|QQQ",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -306,8 +306,16 @@
    "decision_id": "2026-11-18|SPY",
    "exits": [],
    "log": [],
-   "opened": false,
-   "placed": null,
+   "opened": true,
+   "placed": {
+    "at": "2026-11-19T14:35:25+00:00",
+    "ids": [
+     "44084f0f-5481-4fcb-ac45-00187382091b"
+    ],
+    "qty": 3,
+    "stop": 715.0,
+    "tp": null
+   },
    "plan": {
     "base": 0.1,
     "exits": [],
