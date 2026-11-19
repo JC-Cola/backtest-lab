@@ -189,7 +189,15 @@
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": null,
+   "placed": {
+    "at": "2026-11-19T14:30:26+00:00",
+    "ids": [
+     "f1816e38-4f3d-4db0-9951-799d97a4766c"
+    ],
+    "qty": 16,
+    "stop": 139.5,
+    "tp": null
+   },
    "plan": {
     "base": 0.2,
     "exits": [],
@@ -427,8 +435,16 @@
    "decision_id": "2026-11-18|UNH",
    "exits": [],
    "log": [],
-   "opened": false,
-   "placed": null,
+   "opened": true,
+   "placed": {
+    "at": "2026-11-19T14:30:26+00:00",
+    "ids": [
+     "dab7dede-9799-42fc-8a3d-6c525b7afb80"
+    ],
+    "qty": 6,
+    "stop": 325.0,
+    "tp": null
+   },
    "plan": {
     "base": 0.1,
     "exits": [],
