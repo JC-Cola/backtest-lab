@@ -472,3 +472,78 @@ DECISION:
 
 <!-- ENTRY_END -->
 
+[2026-11-19 | SPY | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce current long exposure by 25-50% to manage risk within this high-volatility regime (ATR $12.21). Do not attempt to catch a mean-reversion bounce; prioritize capital preservation until a structural reclaim of the 200-day moving average at $730.20 is confirmed.
+
+**Investment Thesis**: The bearish case is decisively stronger given the breach of the 200-day moving average ($730.20) and the lower Bollinger Band ($721.17), which signals institutional distribution. While the aggressive analyst suggests a 'rubber band' bounce based on an RSI of 31.62, the accelerating negative MACD momentum and looming macro risks—specifically $3 trillion in potential hidden AI leverage and hawkish Fed policy—make this a high-risk environment for bottom-fishing. Lessons from recent holdings demonstrate that waiting for a technical reversal is safer than anticipating a bounce during a structural breakdown. We will maintain an Underweight stance until price action validates a floor above $730.20, at which point we will re-evaluate for a shift back to a neutral or favorable bias.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-19 | QQQ | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce current QQQ exposure by 15-20% immediately to preserve capital. Utilize any near-term mean-reversion bounces towards the $667.71 level to exit further into strength, while maintaining a firm stop-loss at $684.94.
+
+**Investment Thesis**: The investment case for QQQ has shifted decisively bearish following the structural breach of the 200 SMA ($682.01). The evidence of institutional distribution in key heavyweights like Apple and Microsoft, combined with a 98% probability of no further rate cuts through 2026, outweighs the speculative optimism surrounding isolated IPOs like Anthropic. While the aggressive camp argues for bottom-fishing at the lower Bollinger band ($636.23), the conservative and neutral consensus correctly identifies this as a dangerous environment where the macroeconomic tailwinds for high-multiple tech have evaporated. We are underweighting to manage risk against a high ATR of 17.23, only revisiting a constructive stance if the index can recapture and consolidate above the 200 SMA.
+
+**Price Target**: 667.71
+
+**Time Horizon**: Short-to-medium term
+
+<!-- ENTRY_END -->
+
+[2026-11-19 | NVDA | Buy | pending]
+
+DECISION:
+**Rating**: Buy
+
+**Executive Summary**: Initiate a long position in NVDA using a tiered entry strategy to capture deep fundamental value amid extreme oversold conditions. Deploy an initial 2.5% allocation at current levels, with a secondary 2.5% reserve to average down if the stock consolidates, maintaining a hard stop-loss below 136.10 to manage downside volatility.
+
+**Investment Thesis**: The investment thesis is built on the extreme disconnect between NVDA's fundamental financial health and its technical pricing. While bearish pressure is evident from the breach of key moving averages and institutional distribution, the current forward P/E of 8.79 and PEG ratio of 0.18 represent an overcorrection that ignores the company's $99.24 billion in trailing free cash flow and 66% operating margins. Given the RSI of 19.64 signaling exhaustion, the risk-to-reward asymmetry favors a phased accumulation approach. This strategy mitigates the risk of catching a falling knife by avoiding full allocation at once, while protecting against structural failure via a defined stop-loss. The thesis would be invalidated if the stock fails to find support and breaks significantly below the stop-loss level, indicating a deeper structural impairment than current fundamentals suggest.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-19 | WSM | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a partial long position of 0.5x allocation in WSM to capitalize on a technical mean reversion near the 200 SMA support at $216.50. Given the high volatility (ATR $11.44), we will employ a wider risk threshold than a tight stop-loss to avoid being shaken out by noise, holding for a 3-6 month horizon to allow the fundamental valuation gap to close.
+
+**Investment Thesis**: The investment case for WSM rests on the strength of its operational quality, specifically its 54.9% ROE and massive free cash flow, which contrasts sharply with the current emotional market sell-off. While the conservative and neutral analysts correctly identified heavy institutional distribution and negative MACD momentum, these factors represent a temporary sentiment reset rather than structural deterioration. By opting for a 0.5x position, we mitigate the risk of the 'falling knife' scenario while positioning to capture the inevitable snap-back as the market prices in the company's brand momentum and pricing power. The decision to reject a tight stop-loss at $215 is informed by the elevated $11.44 ATR; holding a narrow stop in such a high-volatility environment would likely lead to premature liquidation due to routine market noise. We will remain Overweight provided WSM maintains its support above the 200 SMA; a definitive break and consolidation below this technical floor would invalidate the thesis and necessitate a reassessment.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-19 | PDD | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a 0.75x position to capture momentum while mitigating downside risk through tactical limit orders. Focus entry in the $81.00–$82.00 range to avoid chasing volatility, and enforce a strict stop-loss at $78.50. This approach balances the strong earnings fundamentals against the identified technical and regulatory headwinds.
+
+**Investment Thesis**: PDD's operational maturity, evidenced by a 25% year-over-year jump in operating profit and a robust cash position, fundamentally offsets the near-term regulatory risks in the EU and the slight decline in transaction services revenue. Valuation remains compelling with a forward P/E under 7, suggesting the market has overreacted to negative headlines. While technical indicators such as the Bollinger Band breakout and MACD support a bullish outlook, we maintain an Overweight rating rather than a full Buy to account for the overhead resistance at the 200-day moving average ($89.36) and the high volatility (3-point ATR). This position size will be monitored for expansion upon successful consolidation at key moving averages, provided the company maintains its current earnings execution trajectory.
+
+**Price Target**: 89.36
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
