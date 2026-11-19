@@ -442,7 +442,9 @@
    "date": "2026-11-18",
    "decision_id": "2026-11-18|UNH",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-19: position closed"
+   ],
    "opened": true,
    "placed": {
     "at": "2026-11-19T14:30:26+00:00",
@@ -477,7 +479,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   }
  }
 }
