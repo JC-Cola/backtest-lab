@@ -250,7 +250,7 @@
    "decision_id": "2026-11-19|PDD",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
