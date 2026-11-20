@@ -189,7 +189,9 @@
    "date": "2026-11-19",
    "decision_id": "2026-11-19|NVDA",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-20: position closed"
+   ],
    "opened": true,
    "placed": {
     "at": "2026-11-19T22:37:24+00:00",
@@ -217,7 +219,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "PANW": {
    "date": "2026-11-18",
