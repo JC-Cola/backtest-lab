@@ -63,37 +63,64 @@
    "status": "closed"
   },
   "GPN": {
-   "date": "2026-11-12",
-   "decision_id": "2026-11-12|GPN",
+   "date": "2026-11-20",
+   "decision_id": "2026-11-20|GPN",
    "exits": [],
-   "log": [
-    "2026-11-17: position closed"
-   ],
-   "opened": true,
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "Thesis deadlocked between speculative M&A catalysts and structural operational risk"
+    ],
+    "rating": "Hold",
+    "ref_price": 91.8,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "INTU": {
+   "date": "2026-11-20",
+   "decision_id": "2026-11-20|INTU",
+   "exits": [],
+   "log": [],
+   "opened": false,
    "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
     "horizon": null,
     "initial_x": 0.5,
-    "max_total_x": 0.5,
+    "max_total_x": 1.0,
     "not_executed": [
-     "scale-in near $87.09: initial entry already uses the 0.5x allowed"
+     "no stop in the paragraph"
     ],
     "notes": [
-     "high volatility",
-     "mispriced forward valuation"
+     "oversold levels",
+     "RSI extremes"
     ],
     "rating": "Overweight",
-    "ref_price": 90.41,
+    "ref_price": 270.29,
     "scale_in": [],
     "side": "long",
-    "stop": 77.63,
-    "stop_type": "sma",
+    "stop": null,
+    "stop_type": null,
     "tp": null
    },
    "scale": [],
-   "status": "closed"
+   "status": "active"
   },
   "NBIS": {
    "date": "2026-11-12",
@@ -186,40 +213,32 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-19",
-   "decision_id": "2026-11-19|NVDA",
+   "date": "2026-11-20",
+   "decision_id": "2026-11-20|NVDA",
    "exits": [],
-   "log": [
-    "2026-11-20: position closed"
-   ],
-   "opened": true,
-   "placed": {
-    "at": "2026-11-19T22:37:24+00:00",
-    "ids": [
-     "943cf6f3-b23d-4f98-9881-020a26563f82"
-    ],
-    "qty": 16,
-    "stop": 136.1,
-    "tp": null
-   },
+   "log": [],
+   "opened": false,
+   "placed": null,
    "plan": {
-    "base": 0.2,
+    "base": null,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
-    "max_total_x": 1.0,
     "not_executed": [],
-    "notes": [],
-    "rating": "Buy",
-    "ref_price": 145.985,
+    "notes": [
+     "Wait for the stock to reclaim the 200-day moving average",
+     "Signal a break in the current institutional distribution phase"
+    ],
+    "rating": "Hold",
+    "ref_price": 125.65,
     "scale_in": [],
-    "side": "long",
-    "stop": 136.1,
-    "stop_type": "price",
+    "side": null,
+    "stop": null,
+    "stop_type": null,
     "tp": null
    },
    "scale": [],
-   "status": "closed"
+   "status": "active"
   },
   "PANW": {
    "date": "2026-11-18",
@@ -287,13 +306,11 @@
    "status": "active"
   },
   "QQQ": {
-   "date": "2026-11-19",
-   "decision_id": "2026-11-19|QQQ",
+   "date": "2026-11-20",
+   "decision_id": "2026-11-20|QQQ",
    "exits": [],
-   "log": [
-    "2026-11-20: position closed"
-   ],
-   "opened": true,
+   "log": [],
+   "opened": false,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -302,49 +319,15 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "initial size 0.15x unverified: using the default 1x",
-     "plan direction 'long' conflicts with the Underweight rating: rating wins",
-     "take-profit $667.71 is on the wrong side of $645.095: skipped"
-    ],
-    "notes": [
-     "Reduce exposure to preserve capital",
-     "Utilize near-term mean-reversion bounces to exit further into strength"
-    ],
-    "rating": "Underweight",
-    "ref_price": 645.095,
-    "scale_in": [],
-    "side": "short",
-    "stop": 684.94,
-    "stop_type": "price",
-    "tp": null
-   },
-   "scale": [],
-   "status": "closed"
-  },
-  "SPY": {
-   "date": "2026-11-19",
-   "decision_id": "2026-11-19|SPY",
-   "exits": [],
-   "log": [
-    "2026-11-20: position closed"
-   ],
-   "opened": true,
-   "placed": null,
-   "plan": {
-    "base": 0.1,
-    "exits": [],
-    "horizon": null,
-    "initial_x": 1.0,
-    "max_total_x": 1.0,
-    "not_executed": [
-     "plan direction 'long' conflicts with the Underweight rating: rating wins",
      "no stop in the paragraph"
     ],
     "notes": [
-     "Manage risk within this high-volatility regime (ATR $12.21)"
+     "institutional distribution",
+     "structural technical damage",
+     "liquidity-driven volatility"
     ],
     "rating": "Underweight",
-    "ref_price": 715.84,
+    "ref_price": 609.75,
     "scale_in": [],
     "side": "short",
     "stop": null,
@@ -352,7 +335,38 @@
     "tp": null
    },
    "scale": [],
-   "status": "closed"
+   "status": "active"
+  },
+  "SPY": {
+   "date": "2026-11-20",
+   "decision_id": "2026-11-20|SPY",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "initial size 0.15x unverified: using the default 1x"
+    ],
+    "notes": [
+     "extreme oversold conditions",
+     "manage volatility risks"
+    ],
+    "rating": "Overweight",
+    "ref_price": 690.68,
+    "scale_in": [],
+    "side": "long",
+    "stop": 620.83,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
   },
   "STE": {
    "date": "2026-11-13",

@@ -52,7 +52,7 @@ The 5-day alpha of -5.6% validates the immediate downside momentum, though this 
 
 <!-- ENTRY_END -->
 
-[2026-11-11 | SPY | Overweight | pending]
+[2026-11-11 | SPY | Overweight | -5.4% | +0.0% | 5d | resolved:2026-11-19]
 
 DECISION:
 **Rating**: Overweight
@@ -65,9 +65,12 @@ DECISION:
 
 **Time Horizon**: not provided
 
+REFLECTION:
+The 5-day alpha of 0.0% on a -5.4% raw return shows the broader market fell alongside our position, making this 5-day window too short to judge the structural thesis. This sharp drawdown undercuts the initial accumulation strategy by proving that institutional inflows could not insulate the asset from immediate macroeconomic volatility. Future analyses must incorporate stricter short-term volatility filters to avoid entering positions right before sharp index-wide corrections.
+
 <!-- ENTRY_END -->
 
-[2026-11-11 | QQQ | Overweight | pending]
+[2026-11-11 | QQQ | Overweight | -6.3% | -0.8% | 5d | resolved:2026-11-19]
 
 DECISION:
 **Rating**: Overweight
@@ -80,9 +83,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of -0.8% and raw return of -6.3% show an immediate downside breach, though this 5-day window is far too short to judge a 3-to-6-month thesis. This early weakness directly undercuts the reliance on near-term institutional accumulation and the immediate defense of the 200-day simple moving average. Future analyses must incorporate tighter volatility filters to prevent entering positions just ahead of momentum-driven flush-outs.
+
 <!-- ENTRY_END -->
 
-[2026-11-11 | NVDA | Buy | pending]
+[2026-11-11 | NVDA | Buy | -12.2% | -6.7% | 5d | resolved:2026-11-19]
 
 DECISION:
 **Rating**: Buy
@@ -94,6 +100,9 @@ DECISION:
 **Price Target**: not provided
 
 **Time Horizon**: 3-6 months
+
+REFLECTION:
+The 5-day alpha of -6.7 percent confirms an immediate sharp drawdown on the long recommendation, though this five-day window is far too short to properly judge a three-to-six-month thesis. This rapid decline directly undercuts the premise of an immediate oversold mean-reversion bounce, proving that persistent institutional selling and technical headwinds outweighed the depressed RSI. Future analyses should strictly wait for a confirmed technical reversal above the 200-day moving average rather than attempting to scale into falling knives during active downtrends.
 
 <!-- ENTRY_END -->
 
@@ -542,6 +551,81 @@ DECISION:
 **Investment Thesis**: PDD's operational maturity, evidenced by a 25% year-over-year jump in operating profit and a robust cash position, fundamentally offsets the near-term regulatory risks in the EU and the slight decline in transaction services revenue. Valuation remains compelling with a forward P/E under 7, suggesting the market has overreacted to negative headlines. While technical indicators such as the Bollinger Band breakout and MACD support a bullish outlook, we maintain an Overweight rating rather than a full Buy to account for the overhead resistance at the 200-day moving average ($89.36) and the high volatility (3-point ATR). This position size will be monitored for expansion upon successful consolidation at key moving averages, provided the company maintains its current earnings execution trajectory.
 
 **Price Target**: 89.36
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-20 | SPY | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a long position in SPY with a conservative, tiered entry strategy. Purchase an initial 15% allocation now to capitalize on extreme oversold conditions, with limit orders for the remainder placed at 3% and 6% lower to manage volatility risks. Maintain a strict stop-loss at $620.83 to defend against structural breakdown.
+
+**Investment Thesis**: The investment thesis is built on the historical reliability of extreme RSI levels (24.94) as a signal for capitulation rather than a fundamental break in corporate health, supported by a reasonable 21.95 P/E ratio. While the Conservative analyst rightly identifies severe headwinds—including a negative MACD of -12.70 and the lack of Fed rate cut support—the sheer volume of 149 million shares traded at this price level suggests significant exhaustion of sellers. We adopt the Neutral analyst's wisdom to scale in smaller (15%) than the Aggressive recommendation to mitigate the risk of a 'falling knife' scenario caused by the high $13.59 ATR. This thesis is invalidated if SPY fails to hold the $620.83 support level, signaling a structural failure rather than a temporary liquidation event.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-20 | QQQ | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: We are reducing exposure to QQQ by 25% to mitigate downside risk amid institutional distribution and structural technical damage. Do not attempt to bottom-fish or 'buy the dip' until the price confirms a reversal by holding above the $608.45 support level on sustained daily volume. Maintain tight risk controls on remaining positions to protect against further liquidity-driven volatility.
+
+**Investment Thesis**: The bearish case is compelling due to decisive violations of critical support, specifically trading significantly below both the 50-day (710.88) and 200-day (682.08) SMAs, combined with high institutional distribution evidenced by the 133M volume spike. While the aggressive analyst correctly identifies the RSI of 26.64 as technically oversold, the conservative analyst correctly notes that in severe bear impulses, indicators can remain depressed for extended periods, especially given the macroeconomic headwind of a 98% probability of zero Fed rate cuts through 2026. Prior lessons in NVDA and SPY demonstrate that attempting to catch falling knives during institutional distribution often leads to immediate drawdown, reinforcing the necessity of favoring risk management over speculative mean-reversion. This thesis will be invalidated only upon a confirmed reclamation of the 200-day SMA, signaling that the technical trend has stabilized.
+
+**Price Target**: not provided
+
+**Time Horizon**: 1-3 months
+
+<!-- ENTRY_END -->
+
+[2026-11-20 | NVDA | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Do not initiate new long exposure at this time; maintain existing positions but avoid adding until a clear technical trend reversal is established. Wait for the stock to reclaim the 200-day moving average, signaling a break in the current institutional distribution phase, rather than attempting to catch the falling knife.
+
+**Investment Thesis**: While the fundamental valuation is historically compelling with a forward P/E of 7.56x and massive free cash flow, the technical reality is defined by a 'death cross' and the loss of critical moving averages, which signal ongoing institutional distribution. Recent portfolio performance confirms that entering positions during oversold conditions (RSI ~15.05) before a confirmed technical bottom leads to immediate, sharp drawdowns. Lessons from prior trades dictate that the risk of a 'falling knife' scenario currently outweighs the valuation argument. A shift to 'Buy' or 'Overweight' will only be warranted once the price action proves that the downtrend has been invalidated by a sustained reclaim of the 200-day moving average, prioritizing capital preservation over premature accumulation.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-20 | INTU | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a long position in INTU at current oversold levels, scaling in cautiously rather than entering full size immediately. Deploy an initial 0.5x tranche at the current price of $270.44 to capitalize on the RSI extremes, reserving additional liquidity to layer in only if the technicals stabilize, while maintaining a strict stop-loss 10% below entry to mitigate momentum decay.
+
+**Investment Thesis**: The debate confirms that while structural headwinds regarding AI disruption and the Mailchimp divestiture are significant, the market reaction has triggered a capitulation event that ignores fundamental strengths. With a forward P/E of 10.05x, an RSI of 26.83, and strong core growth in QuickBooks and TurboTax, the valuation has decoupled from the company's $7.07 billion free cash flow capacity. While the conservative analyst correctly highlights the risks of catching falling knives, the aggressive view on valuation disconnect is more compelling given the extreme technical oversold condition (RSI and Bollinger band breach). Drawing on recent lessons from NVDA and QQQ, we will avoid immediate full-size allocation to prevent being crushed by short-term momentum; instead, we will use a disciplined, phased approach to accumulate, acknowledging that downside risk persists until a confirmed trend reversal occurs above major moving averages.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-20 | GPN | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain current exposure to GPN while avoiding additional capital deployment. The thesis remains deadlocked between speculative M&A catalysts and significant structural operational risk. Use the current range to monitor for a clean break of the $104 resistance or a breakdown below the $83.33 support level.
+
+**Investment Thesis**: The investment case is currently too polarized to justify a change in position size. The bull case rests on the potential for a $50 billion buyout and strong trailing free cash flow of $7.47 billion, which could support a move toward $104. However, the bear case highlights severe operational friction, evidenced by a $1.8 billion net loss in Q1 2026 and historical price sensitivity to failed M&A rumors, as demonstrated by a prior 12% plunge. Given the high volatility (ATR of 4.66) and the conflict between technical support at the 50-day moving average and active distribution signals via VWMA, a neutral stance is most prudent. We will re-evaluate if the company proves its fundamental execution without relying on headline-driven volatility.
+
+**Price Target**: 104.0
 
 **Time Horizon**: 3-6 months
 
