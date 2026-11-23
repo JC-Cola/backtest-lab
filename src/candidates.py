@@ -37,10 +37,11 @@ def benchmarks(results_dir: Path | None = None, live: list[tuple[str, str]] | No
 def _from(mem, account: str, bench: float | None, old: dict) -> list[dict]:
     out = []
     for v in mem.holdout_verdicts():
-        if not v["pass"]:
+        if not v.get("stat_pass", v["pass"]):   # intraday: BH-significant but maybe not beating the band -> NOT_BETTER
             continue
         h = mem.trials[v["n"] - 1]["holdout"]
-        better = bench is not None and h["sharpe_2x_cost"] > bench
+        bench = v.get("bench", bench)   # intraday single-stock ideas are judged against SPY buy-and-hold
+        better = bench is not None and h["sharpe_2x_cost"] > bench and v.get("lockbox_ok", True)
         status = "approved" if old.get(v["hash"]) == "approved" else ("awaiting approval" if better else NOT_BETTER)
         out.append({"account": account, "hash": v["hash"], "description": mem.S.describe(v["spec"]),
                     "sharpe": h["sharpe"], "sharpe_2x_cost": h["sharpe_2x_cost"], "p_value": h["p_value"],

@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[2] / "agent_memory"
 class Memory:
     S = S  # spec module; subclasses swap in another grammar
     TITLE = "What the agent has learned so far"
+    BEST_TITLE = "Best ideas on the search years (deflated by every trial run)"
 
     def __init__(self, root: Path = ROOT):
         self.root = root
@@ -68,15 +69,21 @@ class Memory:
         self._sr_cache = {}
         return sorted(self.scored(market), key=lambda t: -self.current_reward(t))[:k]
 
+    def signal(self, t: dict) -> float:
+        """The per-trial number feature_weights learns from (higher = better). Default: the deflated reward;
+        subclasses whose reward has collapsed to a constant (the intraday agent) override it."""
+        return t["reward"]
+
     def feature_weights(self) -> dict:
         """Learned preference: features that appear in well-scoring trials get proposed more."""
         acc = defaultdict(list)
-        for t in self.trials:
-            if t.get("status") in ("scored", "promoted"):
-                for f in self.S.features_used(t["spec"]):
-                    acc[f].append(t["reward"])
-        base = np.mean([t["reward"] for t in self.scored()]) if self.scored() else 0.0  # relative weights
-        return {f: float(np.exp(4 * (np.mean(v) - base))) for f, v in acc.items()}
+        sc = self.scored()
+        for t in sc:
+            sg = self.signal(t)
+            for f in self.S.features_used(t["spec"]):
+                acc[f].append(sg)
+        base = np.mean([self.signal(t) for t in sc]) if sc else 0.0  # relative weights
+        return {f: float(np.clip(np.exp(4 * (np.mean(v) - base)), 0.2, 5.0)) for f, v in acc.items()}
 
     def holdout_tests(self):
         return [t for t in self.trials if t.get("holdout")]
@@ -88,6 +95,13 @@ class Memory:
             return []
         res = json.loads(f.read_text())["results"]
         return [r["coin_flip"]["p_value"] for r in res if r.get("coin_flip")]
+
+    def update_many(self, upd: dict):
+        """upd = {trial n: fields}; one journal rewrite for all of them."""
+        if upd:
+            for n, f in upd.items():
+                self.trials[n - 1].update(f)
+            self.path.write_text("".join(json.dumps(t, default=float) + "\n" for t in self.trials))
 
     def holdout_verdicts(self) -> list[dict]:
         """Benjamini-Hochberg across EVERY test ever run on the held-out years: the agent's shots
@@ -105,6 +119,10 @@ class Memory:
         return out
 
     # ---------------------------------------------------------------- lessons
+    def lesson_line(self, t: dict) -> str:
+        return (f"- reward now {self.current_reward(t):.3f} (when found {t['reward']:.3f}) | folds {t['fold_sharpes']} "
+                f"| {self.S.describe(t['spec'])}")
+
     def write_lessons(self, session_note: str = ""):
         sc = self.scored()
         rej = [t for t in self.trials if t.get("status") == "rejected"]
@@ -118,10 +136,10 @@ class Memory:
             f"Updated {datetime.now(timezone.utc).date()}. {len(self.trials)} trials in total: "
             f"{len(sc)} scored, {len(rej)} rejected, {len(hv)} sent to the held-out test, "
             f"{sum(v['pass'] for v in hv)} passed it.", "",
-            "## Best ideas on the search years (deflated by every trial run)", "",
+            f"## {self.BEST_TITLE}", "",
         ]
         for t in self.top(10):
-            lines.append(f"- reward now {self.current_reward(t):.3f} (when found {t['reward']:.3f}) | folds {t['fold_sharpes']} | {self.S.describe(t['spec'])}")
+            lines.append(self.lesson_line(t))
         lines += ["", "## Features that tend to help (learned weights, 1 = average)", ""]
         lines += [f"- {f}: {v:.2f}" for f, v in w[:8]]
         lines += ["", "## Features that tend to hurt", ""]

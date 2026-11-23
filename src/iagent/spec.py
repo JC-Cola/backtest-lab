@@ -1,7 +1,7 @@
 """Intraday strategy specs: a small rule grammar the agent writes and the platform can compile.
 
 spec = {
-  "market": "SPY" | "QQQ",
+  "market": a ticker of the research universe (SPY, QQQ, or one of the liquid names in agent_memory/intraday/universe.json),
   "time":   30 | 60 | 90 | ... | 330 | 360 (every 30),          # minutes after 09:30; decide on the close of bar m-1, fill at P[m]
   "side":   "long" | "short",
   "entry":  [{"feature": "vwap_dist", "op": ">", "q": 90}, ...],  # 1-3 conditions, all must hold
@@ -24,7 +24,8 @@ import numpy as np
 import intraday as I
 from iagent.features import DECISIONS, FEATURES
 
-MARKETS = ["SPY", "QQQ"]
+MARKETS = ["SPY", "QQQ"]      # the core markets; more names come from the research universe (register_markets)
+EXTRA_MARKETS: set = set()    # universe names (search + lockbox) that validate() also accepts
 OPS = ("<", ">")
 SIDES = ("long", "short")
 HOLDS = (5, 15, 30, 60, 120, 240)
@@ -34,6 +35,13 @@ TARGETS = (None, 1.5, 2, 3, 4)
 
 class SpecError(ValueError):
     pass
+
+
+def register_markets(names) -> None:
+    """Tell validate() which universe tickers are legal markets (search and lockbox names; the loop decides which of
+    them may actually be searched)."""
+    EXTRA_MARKETS.clear()
+    EXTRA_MARKETS.update(n for n in names if n not in MARKETS)
 
 
 def _cond_ok(c):
@@ -53,8 +61,8 @@ def validate(s: dict) -> dict:
     extra = set(s) - {"market", "time", "side", "entry", "exit", "stop_bp", "target_r"}
     if extra:
         raise SpecError(f"unknown keys {sorted(extra)}")
-    if s.get("market") not in MARKETS:
-        raise SpecError(f"market must be one of {MARKETS}")
+    if s.get("market") not in MARKETS and s.get("market") not in EXTRA_MARKETS:
+        raise SpecError(f"market must be one of {MARKETS + sorted(EXTRA_MARKETS)}")
     if s.get("time") not in DECISIONS:
         raise SpecError(f"time must be one of {DECISIONS}")
     if s.get("side") not in SIDES:

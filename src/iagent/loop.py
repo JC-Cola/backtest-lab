@@ -7,26 +7,31 @@ from __future__ import annotations
 
 import argparse
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from agent import claude_cli
 from agent.loop import emitter, holdout_outcome, make_proposer, pre_screen, score_detail
 from iagent import platform as P
+from iagent import shots as H
+from iagent import universe as U
 from iagent import spec as S
 from iagent.memory import IMemory
 from iagent.proposer import IClaudeProposer, IEvolutionProposer, IWebResearchProposer
 
-PROMOTE_DSR = 0.95          # deflated-Sharpe probability needed before the held-out test
-MAX_HOLDOUT_PER_SESSION = 3  # the held-out window is precious: few shots per session
+PROMOTE_DSR = 0.95          # kept for the live page's "needed" hover only; it no longer gates the held-out test
 
 
 def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=None, days=None, proposer="evolution",
-        on_event=None, cache=None, deadline=None):
+        on_event=None, cache=None, deadline=None, spend=True, universe=None):
     """days: optional {symbol: Days} (tests inject synthetic minute data). on_event(spec, stage, status, why, detail),
-    cache ({symbol: Market} reused between calls) and deadline (epoch seconds) work as in agent.loop.run;
+    spend=False skips the held-out shots (dry runs); cache ({symbol: Market} reused between calls) and deadline (epoch seconds) work as in agent.loop.run;
     proposer: "evolution"/"claude"/"web", an object with .propose, or a factory(mem)."""
-    markets = markets or S.MARKETS
     mem = IMemory(Path(mem_root)) if mem_root else IMemory()
+    # research universe: SPY/QQQ + liquid names; a rotating subset per run; lockbox names are never searched
+    uni = universe or (U.ensure(mem.root) if days is None else (U.read(mem.root) or U.default()))
+    S.register_markets(uni["search"] + uni["lockbox"])
+    markets = markets or U.run_names(uni, 6, int(time.time() // 1800) + seed)
     log = (lambda *a: None) if quiet else print
     log(f"memory: {len(mem.trials)} past trials, {len(mem.scored())} scored, "
         f"{len(mem.holdout_tests())} held-out tests already used")
@@ -41,7 +46,6 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
     evo.screen = lambda s: P.precheck(market(s), s)   # resample specs that cannot pass the trade-count rules
     prop, proposer = make_proposer(proposer, mem, evo, {"claude": IClaudeProposer, "web": IWebResearchProposer})
     spent0 = claude_cli.spent()
-    shots = 0
     start_best = max([mem.current_reward(t) for t in mem.top(1)], default=0.0)
     t0 = time.time()
     for rnd in range(1, rounds + 1):
@@ -54,6 +58,11 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
         info = lambda s: {"source": used, "round": rnd, "market": s["market"]} | meta.get(S.spec_hash(s), {})
         for s, why, det in getattr(prop, "skipped", []):
             emit(s, 0, "dead", why, {"source": proposer, "round": rnd, "market": s["market"]} | det)
+        ok_names = set(markets)
+        for s in [x for x in specs if x["market"] not in ok_names]:
+            emit(s, 0, "dead", "lockbox name" if s["market"] in uni["lockbox"] else "not a search name of this run",
+                 {"source": used, "round": rnd, "market": s["market"]})
+        specs = [x for x in specs if x["market"] in ok_names]
         specs = pre_screen(specs, market, P.precheck, mem, used, rnd, emit, S.spec_hash)
         for s in specs:
             emit(s, 0, "busy", "proposed", info(s))
@@ -68,26 +77,26 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
             if res["status"] == "rejected":
                 emit(s, 1, "dead", res["reason"], det)
             else:
-                passed = res["dsr"] >= PROMOTE_DSR and res["consistent"]
-                emit(s, 1, "ok" if passed else "dead",
-                     f"score {res['reward']:.2f}" + ("" if passed else f", needs {PROMOTE_DSR}"), det)
-            if (res["status"] == "scored" and res["dsr"] >= PROMOTE_DSR and res["consistent"]
-                    and shots < MAX_HOLDOUT_PER_SESSION):
-                shots += 1
-                emit(s, 2, "busy", "one-shot held-out test", det)
-                ho = P.holdout_test(m, s, h)
-                mem.update(rec["n"], status="promoted", holdout=ho)
-                log(f"  promoted #{rec['n']} to the held-out test: {S.describe(s)}")
-                st, why = holdout_outcome(ho)
-                emit(s, 2, st, why, det | {k: ho[k] for k in ("p_value", "sharpe", "sharpe_2x_cost", "trades")})
+                rb = H.robustness(rec)
+                emit(s, 1, "ok" if rb > 0 else "dead",
+                     f"robustness {rb:.2f}" if rb > 0 else "not robust (a fold or 2x costs is not positive)", det)
         best = mem.top(1)
         log(f"round {rnd} ({time.time() - tr:.1f}s): {len(specs)} new ideas | trials {len(mem.trials)} | best reward now "
             f"{mem.current_reward(best[0]):.3f} ({S.describe(best[0]['spec'])})" if best else f"round {rnd}: nothing scored yet")
+    spent = [] if not spend else H.spend(mem, market, lambda sp: P.robust_eval(market(sp), sp), P.holdout_test, log=log,
+                    extra=lambda mk, sp: {"spy_bh_sharpe": P.spy_buy_hold_sharpe(market({"market": "SPY"})),
+                                          "lockbox": P.lockbox_check(lambda nm: market({"market": nm}), sp, uni["lockbox"])},
+                    emit=lambda sp, st, status, why, det: emit(sp, st, status, why, det))
+    for n in spent:
+        ho = mem.trials[n - 1]["holdout"]
+        st, why = holdout_outcome(ho)
+        emit(mem.trials[n - 1]["spec"], 2, st, why, {"source": mem.trials[n - 1].get("proposer"), "market": mem.trials[n - 1]["spec"]["market"]}
+             | {k: ho[k] for k in ("p_value", "sharpe", "sharpe_2x_cost", "trades")})
     verdicts = mem.holdout_verdicts()
     end_best = max([mem.current_reward(t) for t in mem.top(1)], default=0.0)
     note = (f"{rounds} rounds x {per_round} ideas with the {proposer} proposer in {time.time() - t0:.0f}s. "
             f"Best deflated reward went from {start_best:.3f} to {end_best:.3f}. "
-            f"Held-out shots this session: {shots}. Strategies passing the held-out test (BH across all "
+            f"Held-out shots this session: {len(spent)} ({H.shots_this_month(mem, datetime.now(timezone.utc))} of {H.K_PER_MONTH} this month). Strategies passing the held-out test (BH across all "
             f"{len(verdicts)} shots ever): {sum(v['pass'] for v in verdicts)}.")
     if proposer in ("claude", "web"):
         note += f" Claude CLI cost this session: ${claude_cli.spent() - spent0:.2f}."
