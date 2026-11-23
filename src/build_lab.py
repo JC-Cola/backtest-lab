@@ -1,5 +1,5 @@
 """Builds report/lab.html (the Strategy Lab dashboard): the intraday research plus the snapshots of the three live
-accounts (Noise band, qlib, TradingAgents, plus the day-trader-skill and Pelosi shadow ledgers). Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
+accounts (Noise band, qlib, TradingAgents) plus the News trader shadow test. Long-term data is no longer built or embedded. BOOK/LAB_DAILY/build_market stay
 defined because briefing_inputs and candidates still use them. Every number on the page is net of costs."""
 from __future__ import annotations
 
@@ -322,24 +322,6 @@ def _snapshot(name):
         return None
 
 
-def slim_dts_shadow(d):
-    """The day-trader-skill (shadow) snapshot with its per-day scan log cut to the latest day's summary (the page shows only that)."""
-    if not d:
-        return None
-    d = dict(d)
-    days = d.pop("days", None) or {}
-    if days:
-        day = max(days)
-        scan = (days[day] or {}).get("scan") or {}
-        decs = scan.get("decisions") or []
-        d["latest_scan"] = {"date": day, "status": scan.get("status"), "at": scan.get("at"), "universe": scan.get("universe"),
-                            "counts": scan.get("counts"), "hits": len(scan.get("hits") or []), "evaluated": scan.get("evaluated"),
-                            "taken": scan.get("taken"),
-                            "decisions": [{"symbol": x.get("symbol"), "status": x.get("status"), "gate": x.get("gate"),
-                                           "reason": str(x.get("reason") or "")[:160]} for x in decs[:20]]}
-    return d
-
-
 def slim_qlib(d):
     """qlib's snapshot (agent_memory/system_qlib.json) with the picks list capped; None when it does not exist yet."""
     if not d:
@@ -349,18 +331,45 @@ def slim_qlib(d):
     return d
 
 
-def slim_congress(d):
-    """The Pelosi (shadow) snapshot (agent_memory/system_congress.json) with filings capped to the latest 30 and the raw docs/notified lists dropped."""
-    if not d:
+def _conf_bucket(rv):  # same buckets as news_shadow.conf_bucket (not imported: that module pulls in the news feeds and Telegram)
+    if not rv or rv.get("status") != "ok":
+        return "no review"
+    c = rv["confidence"]
+    return "conf <0.5" if c < 0.5 else "conf 0.5-0.7" if c < 0.7 else "conf >=0.7"
+
+
+def _agg(xs):
+    return {"n": len(xs), "avg": round(sum(xs) / len(xs), 3), "win": round(sum(1 for x in xs if x > 0) / len(xs), 3)}
+
+
+def slim_news(d):
+    """The News trader (shadow) test (agent_memory/news_shadow.json) cut to what the page shows: results by rule x hold, by catalyst and by LLM
+    confidence (closed trades, computed here because the shocks are capped), the latest 40 shocks, open trades, and the closed trades as
+    [exit_date, rule, hold, pnl %] for the running-average chart. None when the file does not exist."""
+    if not isinstance(d, dict):
         return None
-    d = dict(d)
-    for k in ("docs", "notified"):
-        d.pop(k, None)
-    keep = ("member", "filed", "traded", "ticker", "type", "amount_range", "lag_days", "link", "status", "kind", "note")
-    fl = [f for f in (d.get("filings") or []) if isinstance(f, dict)]
-    fl.sort(key=lambda f: (str(f.get("filed") or ""), str(f.get("traded") or "")), reverse=True)
-    d["filings"] = [{k: f.get(k) for k in keep} for f in fl[:30]]
-    return d
+    shocks = {s.get("id"): s for s in d.get("shocks") or [] if isinstance(s, dict)}
+    trades = [t for t in d.get("trades") or [] if isinstance(t, dict)]
+    closed = sorted((t for t in trades if t.get("status") == "closed" and t.get("pnl_pct") is not None), key=lambda t: (t["exit_date"], t["id"]))
+    groups = {"rule": {}, "catalyst": {}, "confidence": {}}
+    for t in closed:
+        rv = (shocks.get(f"{t['symbol']}|{t['signal_date']}") or {}).get("review") or {}
+        keys = [("rule", "all shocks"), ("confidence", _conf_bucket(rv))] + ([("catalyst", rv["catalyst"])] if rv.get("status") == "ok" else [])
+        for kind, g in keys:
+            groups[kind].setdefault(g, {}).setdefault(f"{t['rule']} {t['hold']}d", []).append(t["pnl_pct"])
+    by = {k: {g: {lab: _agg(v) for lab, v in sorted(dd.items())} for g, dd in sorted(gs.items())} for k, gs in groups.items()}
+    latest = sorted(shocks.values(), key=lambda s: (s.get("date") or "", s.get("score") or 0), reverse=True)[:40]
+    def shock(s):
+        rv = s.get("review") or {}
+        return {"date": s.get("date"), "symbol": s.get("symbol"), "ret": s.get("ret"), "mult": s.get("mult"), "relvol": s.get("relvol"),
+                "headline": ((s.get("headlines") or [""])[0] or "")[:140],
+                "catalyst": rv.get("catalyst") if rv.get("status") == "ok" else None, "direction": rv.get("direction") if rv.get("status") == "ok" else None,
+                "confidence": rv.get("confidence") if rv.get("status") == "ok" else None}
+    keep = ("symbol", "rule", "hold", "side", "signal_date", "entry_date", "entry_px")
+    return {"started": d.get("started"), "n_shocks": len(shocks), "n_closed": len(closed),
+            "n_pending": sum(1 for t in trades if t.get("status") == "pending"), "by": by, "shocks": [shock(s) for s in latest],
+            "open": [{k: t.get(k) for k in keep} for t in trades if t.get("status") == "open"],
+            "closed": [[t["exit_date"], t["rule"], t["hold"], t["pnl_pct"]] for t in closed], "cost_per_side": 0.0005}
 
 
 def slim_qlib_backtest(q):
@@ -399,9 +408,9 @@ def main():
     qbt = slim_qlib_backtest(json.loads(qp.read_text())) if qp.exists() else None
     blob = json.dumps({"portfolios": portfolios, "hidden": hidden, "book": book, "markets": markets, **lab_research.page_data(),
                        "alpaca_intraday": _snapshot("alpaca_intraday.json"),
-                       "system_qlib": slim_qlib(_snapshot("system_qlib.json")), "system_dts": slim_dts_shadow(_snapshot("system_dts.json")),
+                       "system_qlib": slim_qlib(_snapshot("system_qlib.json")),
                        "system_ta": _snapshot("system_ta.json"),
-                       "system_congress": slim_congress(_snapshot("system_congress.json")), "qlib_backtest": qbt, "report_cards": report_cards(),
+                       "news_shadow": slim_news(_snapshot("news_shadow.json")), "qlib_backtest": qbt, "report_cards": report_cards(),
                        "generated": results_meta["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)

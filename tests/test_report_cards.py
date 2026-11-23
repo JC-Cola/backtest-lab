@@ -72,15 +72,14 @@ def test_build_and_briefing_lines(tmp_path):
     qb[2].write_text(json.dumps({"daily_returns": {str(d.date()): 0.001 * (1 if i % 2 else -1) for i, d in enumerate(pd.bdate_range("2026-01-05", periods=30))}}))
     out = rc.build(mem, tmp_path / "cards", benchmark=None, qlib_bt=qb)
     a = out["accounts"]
-    assert list(a) == ["intraday", "qlib", "ta", "dts_shadow", "pelosi_shadow", "qlib_bt"]
+    assert list(a) == ["intraday", "qlib", "ta", "qlib_bt"]
     assert a["intraday"]["ok"] and a["qlib_bt"]["ok"] and not a["ta"]["ok"] and a["qlib"]["note"].startswith("not enough history")
-    assert a["dts_shadow"]["name"] == "day-trader-skill (shadow)" and a["ta"]["name"] == "TradingAgents"
+    assert a["ta"]["name"] == "TradingAgents" and "dts_shadow" not in a and "pelosi_shadow" not in a
     p = tmp_path / "report_cards.json"
     p.write_text(json.dumps(out))
     lines = rc.briefing_lines(p)
-    assert len(lines) == 5 and lines[0].startswith("Noise band: Sharpe ") and " · max DD " in lines[0] and lines[0].endswith("10 days")
+    assert len(lines) == 3 and lines[0].startswith("Noise band: Sharpe ") and " · max DD " in lines[0] and lines[0].endswith("10 days")
     assert lines[1] == "qlib: not enough history yet (0 days)" and lines[2] == "TradingAgents: not enough history yet (3 days)"
-    assert lines[3].startswith("day-trader-skill (shadow): not enough history")
     assert rc.briefing_lines(tmp_path / "missing.json") == []
 
 

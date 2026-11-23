@@ -228,6 +228,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .bh-plot text { font: 10px var(--f-mono); fill: var(--faint); }
 .bh-tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font: 0.68rem/1.4 var(--f-mono); padding: 4px 7px; border-radius: 3px; white-space: nowrap; z-index: 2; top: 4px; }
 .bh-empty { color: var(--muted); padding: 24px 0; font-size: 0.85rem; }
+.pcal-recon { font: 0.74rem var(--f-mono); margin-top: 4px; } .pcal-recon.ok { color: var(--muted); } .pcal-recon.bad { color: var(--neg); font-weight: 600; }
+.pcal-src { font: 0.66rem var(--f-mono); color: var(--faint); margin-top: 2px; }
 .pcal-tip { font: 0.74rem var(--f-mono); color: var(--muted); min-height: 1.3em; margin-top: 6px; }
 @media (max-width: 600px) { .pcal-c { min-height: 44px; padding: 2px 3px; } .pcal-c .p { display: none; } .pcal-c .v { font-size: 0.6rem; } .pcal-grid { gap: 2px; } }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; min-width: 0; }
@@ -360,9 +362,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <button data-f="intraday" aria-pressed="true"><b>Noise band</b><small>ours · SPY+QQQ intraday</small></button>
   <button data-f="qlib" aria-pressed="false"><b>qlib</b><small>Microsoft qlib model, daily stock picks</small></button>
   <button data-f="ta" aria-pressed="false"><b>TradingAgents</b><small>AI analysts decide after the close, holds overnight</small></button>
-  <button data-f="dts_shadow" aria-pressed="false"><b>day-trader-skill (shadow)</b><small>simulated ledger, not traded</small></button>
-  <button data-f="pelosi_shadow" aria-pressed="false"><b>Pelosi (shadow)</b><small>copies public House filings, simulated ledger</small></button>
-  <button data-f="compare" aria-pressed="false"><b>Compare</b><small>all five side by side</small></button>
+  <button data-f="news_shadow" aria-pressed="false"><b>News trader (shadow)</b><small>trades big news moves on paper, not traded</small></button>
+  <button data-f="compare" aria-pressed="false"><b>Compare</b><small>all four side by side</small></button>
 </nav>
 <div class="livebar" id="livebar"><span id="live-badge" role="status"></span></div>
 
@@ -469,6 +470,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     <div class="pcal-top"><div class="pcal-nav"><button id="pcal-prev" aria-label="Previous month">&lsaquo;</button><b id="pcal-month"></b><button id="pcal-next" aria-label="Next month">&rsaquo;</button></div><div class="pcal-sum" id="pcal-sum"></div></div>
     <div class="pcal-grid" id="pcal-grid"></div>
     <div class="pcal-tip" id="pcal-tip" aria-live="polite"></div>
+    <div class="pcal-recon" id="pcal-recon" aria-live="polite"></div><div class="pcal-src" id="pcal-src"></div>
   </div>
   <div class="cal-sum" id="cal-sum"></div>
 </main>
@@ -479,8 +481,19 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   <div class="panel tvwrap"><table class="tvtab" id="tv-tab"><thead><tr><th>Time</th><th class="r">Balance before</th><th class="r">Balance after</th><th class="r">Realized PnL</th><th>Action</th></tr></thead><tbody id="tv-body"></tbody></table><div class="bh-empty" id="tv-empty" hidden>No closed trades yet.</div></div>
 </main>
 
+<main id="view-news" class="calview" hidden>
+  <h2>News trader (shadow)</h2>
+  <div class="cal-sum" id="news-sum"></div>
+  <p class="note" id="news-note"></p>
+  <div class="panel bh"><div class="bh-head"><div><span class="cap">Running average return per trade, by rule and holding time</span></div><div class="cmp-key" id="news-key"></div></div><div class="bh-plot" id="news-plot"></div></div>
+  <div class="panel"><div class="ph"><span class="cap">Results by rule and holding time (closed trades)</span></div><div class="tvwrap"><table class="tvtab" id="news-rules"></table></div></div>
+  <div class="panel"><div class="ph"><span class="cap">By catalyst and by AI confidence</span></div><div class="tvwrap"><table class="tvtab" id="news-by"></table></div></div>
+  <div class="panel"><div class="ph"><span class="cap">Latest shocks</span><span class="r" id="news-shocks-r"></span></div><div class="tvwrap"><table class="tvtab" id="news-shocks"></table></div></div>
+  <div class="panel"><div class="ph"><span class="cap">Open shadow trades</span><span class="r" id="news-open-r"></span></div><div class="tvwrap"><table class="tvtab" id="news-open"></table></div></div>
+</main>
+
 <main id="view-compare" class="calview" hidden>
-  <h2>Compare · all five accounts</h2>
+  <h2>Compare · all four accounts</h2>
   <section id="cmp-a" class="calview" style="padding:0" hidden>
     <div class="cmp-cards" id="cmp-cards"></div>
     <div class="panel bh" aria-label="Balance since each account started">
@@ -491,8 +504,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       <div class="tvwrap"><table class="tvtab" id="cmp-rc"></table></div><p class="note" id="cmp-rc-note"></p></div>
   </section>
   <section id="cmp-b" class="calview" style="padding:0" hidden>
-    <div class="panel tvwrap"><table class="tvtab" id="cmp-days"></table></div>
-    <p class="note">Each account's profit or loss per trading day (equity change since the previous close). Noise band started 2026-11-03; qlib, TradingAgents and the day-trader-skill shadow ledger later. The shadow ledger is simulated, not traded.</p>
+    <div class="panel tvwrap"><table class="tvtab" id="cmp-days"></table></div><p class="note" id="cmp-days-note"></p>
+    <p class="note">Each account's profit or loss per trading day (equity change since the previous close). Noise band started 2026-11-03; qlib and TradingAgents later. The News trader is a shadow test with no account balance, so it is not in this table.</p>
   </section>
   <section id="cmp-c" class="calview" style="padding:0" hidden><div class="cmp-bars" id="cmp-bars"></div></section>
 </main>
@@ -913,18 +926,19 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   function showTab(k) { curTab = k; applyViews(); }
   // One place decides what is on screen from the tab (Research / Backtest / P&L calendar / Balance history) and the account switch.
   function applyViews() {
-    const k = curTab, cmp = lfilter === "compare", ours = lfilter === "intraday";
+    const k = curTab, cmp = lfilter === "compare", ours = lfilter === "intraday", nw = lfilter === "news_shadow";
     Object.entries(tabs).forEach(([k2, t2]) => t2.setAttribute("aria-selected", String(k2 === k)));
     $("view-research").hidden = k !== "research"; $("view-backtest").hidden = k !== "backtest" || !ours;
-    $("view-calendar").hidden = k !== "calendar" || cmp; $("view-balance").hidden = k !== "balance" || cmp;
+    $("view-calendar").hidden = k !== "calendar" || cmp || nw; $("view-balance").hidden = k !== "balance" || cmp || nw; $("view-news").hidden = !nw || k === "research";
     $("view-compare").hidden = !cmp || k === "research";
     $("cmp-a").hidden = k !== "backtest"; $("cmp-b").hidden = k !== "calendar"; $("cmp-c").hidden = k !== "balance";
     $("leader").hidden = k !== "backtest" || !ours; $("window").hidden = k !== "backtest" || !ours;
     $("lfilter").hidden = k === "research"; $("livebar").hidden = k === "research";
     renderAcct();
     if (k === "backtest" && ours) { renderParams(); renderAll(); }
-    if (k === "calendar" && !cmp) renderCal(acctData());
-    if (k === "balance" && !cmp) renderBalance(acctData());
+    if (nw && k !== "research") renderNews();
+    if (k === "calendar" && !cmp && !nw) renderCal(acctData());
+    if (k === "balance" && !cmp && !nw) renderBalance(acctData());
     if (cmp && k !== "research") renderCompare();
   }
   Object.entries(tabs).forEach(([k, t]) => t.addEventListener("click", () => showTab(k)));
@@ -942,18 +956,16 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     return [stats(c.r.slice(a).map(v => v ?? 0), mk.ann), stats(mk.bench.slice(a).map(v => v ?? 0), mk.ann)];
   }
   const mname = { "SPY-1m": "S&P 500 fund · intraday", "QQQ-1m": "Nasdaq 100 fund · intraday" };
-  // The accounts. `f` is the switch value (and the localStorage value), `key` the server account id (none for the shadow ledger: no live Alpaca data).
-  // The server's 'dts' account now belongs to qlib; day-trader-skill keeps only its simulated ledger (agent_memory/system_dts.json).
+  // The accounts. `f` is the switch value (and the localStorage value), `key` the server account id. The server's 'dts' account belongs to qlib.
+  // The News trader (shadow) is not an equity account: it has its own view (renderNews) and is never in ACC.
   const ACC = [
     { f: "intraday", key: "id", nm: "Noise band", short: "Noise band", sub: "ours · SPY+QQQ intraday", color: "--accent", snap: "alpaca_intraday" },
     { f: "qlib", key: "dts", nm: "qlib", short: "qlib", sub: "Microsoft qlib model, daily stock picks", color: "--amber", snap: "system_qlib" },
-    { f: "ta", key: "ta", nm: "TradingAgents", short: "TradingAgents", sub: "AI analysts decide after the close, holds overnight", color: "--agent", snap: "system_ta" },
-    { f: "dts_shadow", key: null, nm: "day-trader-skill (shadow)", short: "Shadow", sub: "simulated ledger, not traded", color: "--muted", snap: "system_dts", shadow: true },
-    { f: "pelosi_shadow", key: null, nm: "Pelosi (shadow)", short: "Pelosi", sub: "copies public House filings, simulated ledger", color: "--pos", snap: "system_congress", shadow: true }];
+    { f: "ta", key: "ta", nm: "TradingAgents", short: "TradingAgents", sub: "AI analysts decide after the close, holds overnight", color: "--agent", snap: "system_ta" }];
   const ACCF = Object.fromEntries(ACC.map(a => [a.f, a]));
-  let lfilter = "intraday";  // "intraday" | "qlib" | "ta" | "dts_shadow" | "pelosi_shadow" | "compare". The old "dts" value now means qlib; "longterm" and anything unknown open on Noise band
-  try { let f = localStorage.getItem("lab-lfilter"); if (f === "dts") f = "qlib"; if (f === "compare" || ACCF[f]) lfilter = f; } catch (e) {}
-  const acctData = () => lfilter === "compare" ? null : D[ACCF[lfilter].snap];
+  let lfilter = "intraday";  // "intraday" | "qlib" | "ta" | "news_shadow" | "compare". The old "dts" value now means qlib; "longterm", the retired shadows and anything unknown open on Noise band
+  try { let f = localStorage.getItem("lab-lfilter"); if (f === "dts") f = "qlib"; if (f === "compare" || f === "news_shadow" || ACCF[f]) lfilter = f; } catch (e) {}
+  const acctData = () => lfilter === "compare" || lfilter === "news_shadow" ? null : D[ACCF[lfilter].snap];
   function renderPorts() {
     const H = D.hidden || [];
     $("hidden-note").textContent = H.length ? `Only strategies that made money in their test years are shown; ${H.length} that lost money are hidden: ${H.join(", ")}.` : "";
@@ -1099,13 +1111,26 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       body.append(tr);
     }
   }
+  function canonOf(a) {  // the canonical daily series of one ACC entry: live Alpaca daily closes when fetched, else the embedded snapshot (offline fallback)
+    const A = D[a.snap]; if (!A) return null;
+    const dl = a.key && DAILY[a.key];
+    if (dl) { const S = canonSeries(barsFromHistory(dl.h), { equityNow: A.live ? A.equity : dl.eq, nowMs: Date.now(), start: dl.base || A.start_equity });
+      S.source = "live"; S.asOf = dl.at; S.fetched = dl.fetched; return S; }
+    const B = a.key ? (EMB[a.key] || A) : A, cal = barsFromCalendar(B.calendar);
+    const hist = ((B.history || {}).ALL || []).map(([ts, eq]) => ({ date: nyDate(ts * 1000), eq }));
+    const S = canonSeries(cal.length ? cal : hist, { equityNow: B.equity, nowMs: Date.parse(B.generated), start: B.start_equity });
+    S.source = "snapshot"; S.asOf = B.generated; return S;
+  }
+  const canonMonths = S => [...new Set(S.days.map(c => c.date.slice(0, 7)))];
+  const srcNote = S => S.source === "live" ? "Daily closes from Alpaca (New York trading dates), fetched " + new Date(S.fetched).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
+    : "snapshot as of " + String(S.asOf || "").replace("T", " ").slice(0, 16) + " UTC";
   function renderCal(A) {
     renderHistory(A);
     $("cal-title").textContent = "P&L calendar · " + ACCF[lfilter].nm;
-    if (!A) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
+    if (!A) { $("cal-sum").replaceChildren(); $("pcal-recon").textContent = ""; $("pcal-src").textContent = ""; $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true; $("pcal-tip").textContent = "";
       $("pcal-grid").replaceChildren(Object.assign(document.createElement("div"), { textContent: "No account data yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
-    const cal = (A.calendar || []).slice().sort((a, b) => a.date < b.date ? -1 : 1), box = $("pcal-grid"), tip = $("pcal-tip");
-    tip.textContent = "";
+    const S = canonOf(ACCF[lfilter]), cal = S.days, box = $("pcal-grid"), tip = $("pcal-tip");
+    tip.textContent = ""; $("pcal-recon").textContent = ""; $("pcal-src").textContent = "";
     if (!cal.length) { $("cal-sum").replaceChildren(); $("pcal-month").textContent = ""; $("pcal-sum").textContent = ""; $("pcal-prev").disabled = $("pcal-next").disabled = true;
       box.replaceChildren(Object.assign(document.createElement("div"), { textContent: "No trading days yet.", style: "grid-column:1/-1;color:var(--muted);padding:8px 0" })); return; }
     const months = [...new Set(cal.map(c => c.date.slice(0, 7)))], key = lfilter;
@@ -1113,7 +1138,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const mi = months.indexOf(calMonth); $("pcal-prev").disabled = mi <= 0; $("pcal-next").disabled = mi >= months.length - 1;
     const [y, m] = calMonth.split("-").map(Number), byDate = Object.fromEntries(cal.map(c => [c.date, c]));
     $("pcal-month").textContent = new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en-US", { month: "long", year: "numeric", timeZone: "UTC" });
-    const mine = cal.filter(c => c.date.startsWith(calMonth)), total = mine.reduce((s, c) => s + c.pl, 0);
+    const mine = cal.filter(c => c.date.startsWith(calMonth)), R = monthRecon(S, calMonth), total = R.total;
     const wins = mine.filter(c => c.pl > 0).length, loss = mine.filter(c => c.pl < 0).length;
     $("pcal-sum").innerHTML = `<span class="${cls(total)}">Month ${susd(total)}</span><span class="pos">${wins} win day${wins === 1 ? "" : "s"}</span><span class="neg">${loss} loss day${loss === 1 ? "" : "s"}</span>`;
     const els = ["S", "M", "T", "W", "T", "F", "S"].map(d => Object.assign(document.createElement("div"), { className: "pcal-dow", textContent: d }));
@@ -1133,18 +1158,21 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       els.push(b);
     }
     box.replaceChildren(...els);
-    const best = cal.reduce((a, c) => c.pl > a.pl ? c : a), worst = cal.reduce((a, c) => c.pl < a.pl ? c : a), tot = A.equity - A.start_equity;
+    const rc = $("pcal-recon"), rcl = `Month: ${susd(R.total)} = balance ${usd(R.from, 2)} → ${usd(R.to, 2)}`;
+    rc.className = "pcal-recon " + (R.ok ? "ok" : "bad"); rc.textContent = R.ok ? rcl + " ✓" : `⚠ doesn't reconcile: days sum ${susd(R.total)} but balance went ${usd(R.from, 2)} → ${usd(R.to, 2)} (${susd(R.to - R.from)})`;
+    $("pcal-src").textContent = srcNote(S);
+    const best = cal.reduce((a, c) => c.pl > a.pl ? c : a), worst = cal.reduce((a, c) => c.pl < a.pl ? c : a), tot = S.total;
     const cell = (l, v, s, c) => { const d = document.createElement("div"); d.append(Object.assign(document.createElement("span"), { className: "cap", textContent: l }),
       Object.assign(document.createElement("span"), { className: "v " + (c || ""), textContent: v }), Object.assign(document.createElement("small"), { textContent: s })); return d; };
-    $("cal-sum").replaceChildren(cell("Account value", usd(A.equity), "started with " + usd(A.start_equity)), cell("Total since start", susd(tot), pct(tot / A.start_equity, 2), cls(tot)),
+    $("cal-sum").replaceChildren(cell("Account value", usd(S.eqNow), "started with " + usd(S.start)), cell("Total since start", susd(tot), pct(tot / S.start, 2), cls(tot)),
       cell("Best day", susd(best.pl), best.date, cls(best.pl)), cell("Worst day", susd(worst.pl), worst.date, cls(worst.pl)));
   }
-  $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
-  $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = [...new Set((A.calendar || []).map(c => c.date.slice(0, 7)))].sort(); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
+  $("pcal-prev").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = canonMonths(canonOf(ACCF[lfilter])); const i = ms.indexOf(calMonth); if (i > 0) { calMonth = ms[i - 1]; renderCal(A); } });
+  $("pcal-next").addEventListener("click", () => { const A = acctData(); if (!A) return; const ms = canonMonths(canonOf(ACCF[lfilter])); const i = ms.indexOf(calMonth); if (i >= 0 && i < ms.length - 1) { calMonth = ms[i + 1]; renderCal(A); } });
   const short = (t, n) => { t = String(t || ""); return t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t; };
   const spct = v => (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v * 100).toFixed(2) + "%";
   const ratingCls = r => /^(buy|overweight)/i.test(r || "") ? "buy" : /^(sell|underweight)/i.test(r || "") ? "sell" : "";
-  function renderSysInfo(f, A) {  // what is specific to qlib / TradingAgents / the shadow ledger, under the holdings tables
+  function renderSysInfo(f, A) {  // what is specific to qlib / TradingAgents, under the holdings tables
     const box = $("sysinfo"); box.replaceChildren(); box.hidden = true;
     const head = (t, r) => { const h = document.createElement("div"); h.className = "ph"; h.append(Object.assign(document.createElement("span"), { className: "cap", textContent: t }), Object.assign(document.createElement("span"), { className: "r", textContent: r || "" })); return h; };
     const line = t => Object.assign(document.createElement("p"), { className: "sline", textContent: t });
@@ -1162,33 +1190,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       const list = document.createElement("div"); list.className = "dec";
       rows.forEach(d => list.append(rowOf(d.symbol, d.rating || "—", "“" + short(d.rationale, 150) + "”", d.date + (d.horizon ? " · horizon " + d.horizon : ""))));
       box.append(list);
-    } else if (f === "pelosi_shadow") {
-      const F = A.filings || [];
-      if (!F.length) return;
-      box.hidden = false; box.append(head("Latest filings", F.length + " most recent · " + (A.stats ? `${A.stats.copied ?? 0} copied, ${A.stats.options_recorded ?? 0} options recorded only, avg lag ${A.stats.avg_lag_days ?? "—"} days` : "")));
-      const wrap = document.createElement("div"); wrap.className = "tw"; const t = document.createElement("table"); t.className = "fil";
-      const hr = document.createElement("tr"); ["Filed", "Traded", "Ticker", "Type", "Amount range", "Lag", "Status"].forEach((h, i) => hr.append(Object.assign(document.createElement("th"), { textContent: h, className: i === 5 ? "n" : "" })));
-      const th = document.createElement("thead"); th.append(hr); const tb = document.createElement("tbody");
-      F.forEach(x => { const tr = document.createElement("tr"); const c = (v, k) => tr.append(Object.assign(document.createElement("td"), { textContent: v == null || v === "" ? "—" : String(v), className: k || "" }));
-        c(x.filed); c(x.traded); c(x.ticker); c(x.type); c(x.amount_range); c(x.lag_days != null ? x.lag_days + " d" : null, "n");
-        const unp = x.status === "unparsed" || x.kind === "unparsed", st = x.kind === "option" ? "option (recorded only)" : unp ? "unparsed" : String(x.status || "—").replace(/_/g, " ");
-        const td = document.createElement("td");
-        if (unp && x.link) { const a = document.createElement("a"); a.href = x.link; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "unparsed: open filing"; td.append(a); } else td.textContent = st;
-        tr.append(td); tb.append(tr); });
-      t.append(th, tb); wrap.append(t); box.append(wrap);
     } else if (f === "qlib" && (A.picks || []).length) {
       const P = A.picks.slice().sort((a, b) => (a.rank ?? 1e9) - (b.rank ?? 1e9)).slice(0, 10);
       box.hidden = false; box.append(head("Latest qlib picks", "top " + P.length + " by model score"));
       const list = document.createElement("div"); list.className = "dec";
       P.forEach(q => list.append(rowOf(q.symbol, q.rank != null ? "#" + q.rank : "—", q.score != null ? "score " + Number(q.score).toFixed(4) : "")));
       box.append(list);
-    } else if (f === "dts_shadow" && A.latest_scan) {
-      const L = A.latest_scan, c = L.counts || {};
-      box.hidden = false; box.append(head("Latest scan", L.date + (L.at ? " at " + L.at : "")));
-      box.append(line(`${(L.universe || 0).toLocaleString("en-US")} stocks looked at → ${c.hits ?? L.hits ?? 0} breakout hits → ${L.evaluated ?? 0} checked closely → ${L.taken ?? 0} taken`));
-      if ((L.decisions || []).length) { const list = document.createElement("div"); list.className = "dec";
-        L.decisions.slice(0, 8).forEach(d => list.append(rowOf(d.symbol, (d.status || "—"), short(d.reason, 150), d.gate ? "gate: " + d.gate : "")));
-        box.append(list); }
     }
   }
   function renderQbt(f) {  // qlib only: the small Backtest box from results/qlib15.json
@@ -1203,17 +1210,15 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   const ACCT_NOTE = { intraday: "Noise band: each strategy in the ranking gets an equal share of the account; strategies on the same fund are combined. Orders are placed on the hourly checks and the account is flat by 15:56. The panel refreshes every time the run works.",
     qlib: "qlib ranks stocks with Microsoft's qlib model and trades its own Alpaca paper account. Paper money; it does not use the rankings below.",
-    ta: "TradingAgents lets AI analysts decide after the close and can hold overnight. Paper money; it has its own account and does not use the rankings below.",
-    pelosi_shadow: "Pelosi (shadow) copies the stock purchases and sales in Nancy Pelosi's public House filings, on a simulated ledger. Filings arrive weeks after the trade (the Lag column). Options are recorded but not copied. Nothing is traded and there is no live Alpaca data for it.",
-    dts_shadow: "day-trader-skill scans about 5,900 stocks at 10:15 and is flat by 15:55, but only on a simulated ledger (0.02% slippage and 0.01% fees a side). Nothing is traded and there is no live Alpaca data for it." };
+    ta: "TradingAgents lets AI analysts decide after the close and can hold overnight. Paper money; it has its own account and does not use the rankings below." };
   function renderAcct() {
     const box = $("acct"), f = lfilter;
-    if (f === "compare") { box.hidden = true; return; }
+    if (f === "compare" || f === "news_shadow") { box.hidden = true; return; }
     const AC = ACCF[f], A = acctData();
     box.hidden = curTab !== "backtest" || (f === "intraday" && !A);
     $("ac-title").textContent = (AC.shadow ? "Shadow ledger: " : "Live paper trading: ") + AC.nm;
     $("ac-badge").textContent = AC.shadow ? "● simulated, not traded" : "● paper money, not real";
-    $("ac-th2").textContent = f === "ta" ? "Latest call" : f === "dts_shadow" ? "Strategy" : f === "pelosi_shadow" ? "Filing" : f === "qlib" ? "Signal" : "Which strategies hold it";
+    $("ac-th2").textContent = f === "ta" ? "Latest call" : f === "qlib" ? "Signal" : "Which strategies hold it";
     $("ac-note").textContent = ACCT_NOTE[f];
     const td = (t, c, sub) => { const e = document.createElement("td"); e.className = c || ""; e.append(t); if (sub) e.appendChild(Object.assign(document.createElement("small"), { textContent: sub })); return e; };
     if (!A) {
@@ -1234,7 +1239,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       tile("Invested", usd(invested), usd(A.cash) + " in cash"));
     const names = { SPY: "S&P 500 fund", QQQ: "Nasdaq 100 fund", GLD: "Gold fund", IWM: "Small caps", BTCUSD: "Bitcoin" };
     const rows = positions.map(p => { const tr = document.createElement("tr");
-      const by = f === "intraday" ? ((A.strategies_by_symbol || {})[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—" : f === "ta" ? p.rating || "—" : f === "qlib" ? "qlib model" : f === "pelosi_shadow" ? (p.member || "Pelosi") + (p.doc_id ? " · filing " + p.doc_id : "") : "day-trader-skill";
+      const by = f === "intraday" ? ((A.strategies_by_symbol || {})[p.symbol] || []).filter(x => x.position > 0).map(x => x.name).join(", ") || "—" : f === "ta" ? p.rating || "—" : f === "qlib" ? "qlib model" : "—";
       tr.append(td(p.symbol, "", names[p.symbol] || ""), td(by, "", f === "ta" && p.rationale ? short(p.rationale, 60) : ""), td(p.qty < 1 ? p.qty.toFixed(4) : String(p.qty), "n"),
         td(usd(p.avg_price, 2), "n"), td(usd(p.price, 2), "n"), td(susd(p.pl), "n " + cls(p.pl), pct(p.pl_pct, 2)));
       return tr; });
@@ -1297,17 +1302,75 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
 
   // ---- Compare: all accounts side by side
   const dayMs = d => Date.parse(d + "T00:00:00Z");
-  function cmpSeries(A) {  // [[YYYY-MM-DD, equity]] from the account's start through its latest figure
-    const cal = ((A && A.calendar) || []).slice().sort((a, b) => a.date < b.date ? -1 : 1);
-    if (!cal.length) return [];
-    const d0 = A.started || new Date(dayMs(cal[0].date) - 864e5).toISOString().slice(0, 10);
-    const pts = [[d0, A.start_equity || 25000]].concat(cal.filter(c => c.date > d0).map(c => [c.date, c.equity]));
-    const last = pts[pts.length - 1], gd = (A.live || A.generated || "").slice(0, 10);
-    if (gd > last[0] && A.equity != null && Math.abs(A.equity - last[1]) > 0.005) pts.push([gd, A.equity]);
-    return pts;
+  function cmpSeries(S) {  // [[YYYY-MM-DD, equity]] from the account's start through its latest figure (the canonical series)
+    if (!S || !S.days.length) return [];
+    const d0 = new Date(dayMs(S.days[0].date) - 864e5).toISOString().slice(0, 10);
+    return [[d0, S.start]].concat(S.days.map(c => [c.date, c.equity]));
+  }
+  // ---- News trader (shadow): hypothetical trades on big news moves (agent_memory/news_shadow.json, embedded slim by build_lab.slim_news). Never traded.
+  const NEWS_COL = { momentum: "--accent", reversal: "--amber", llm: "--agent" };
+  const npct = v => v == null || !isFinite(v) ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(1) + "%";
+  function ntable(id, head, rows, rightFrom) {  // head: [text]; rows: [[text|{t,c}]]; columns from rightFrom on are right-aligned numbers
+    const th = document.createElement("tr"); head.forEach((h, i) => th.append(Object.assign(document.createElement("th"), { textContent: h, className: i >= rightFrom ? "r" : "" })));
+    const tb = document.createElement("tbody");
+    rows.forEach(r => { const tr = document.createElement("tr"); r.forEach((c, i) => { const o = typeof c === "object" && c ? c : { t: c };
+      tr.append(Object.assign(document.createElement("td"), { textContent: o.t == null ? "—" : String(o.t), className: (i >= rightFrom ? "r " : "") + (o.c || "") })); }); tb.append(tr); });
+    if (!rows.length) { const tr = document.createElement("tr"); tr.append(Object.assign(document.createElement("td"), { textContent: "Nothing yet.", colSpan: head.length })); tb.append(tr); }
+    const th0 = document.createElement("thead"); th0.append(th); $(id).replaceChildren(th0, tb);
+  }
+  function newsRunning(closed) {  // {"rule Nd": [[exit date, average pnl % of every closed trade up to then, n]]}, one point per exit date
+    const out = {}, acc = {};
+    for (const [d, rule, hold, p] of closed) { const k = rule + " " + hold + "d", a = acc[k] || (acc[k] = { s: 0, n: 0 }); a.s += p; a.n++; const L = out[k] || (out[k] = []);
+      if (L.length && L[L.length - 1][0] === d) L.pop(); L.push([d, a.s / a.n, a.n]); }
+    return out;
+  }
+  function renderNews() {
+    const N = D.news_shadow, sum = $("news-sum");
+    if (!N) { sum.replaceChildren(); $("news-note").textContent = "No news-trader data yet."; for (const id of ["news-plot"]) $(id).replaceChildren(); return; }
+    const all = N.by.rule["all shocks"] || {}, tot = N.closed.length, avg = tot ? N.closed.reduce((s, c) => s + c[3], 0) / tot : null, wins = N.closed.filter(c => c[3] > 0).length;
+    const cell = (l, v, s, c) => { const d = document.createElement("div"); d.append(Object.assign(document.createElement("span"), { className: "cap", textContent: l }),
+      Object.assign(document.createElement("span"), { className: "v " + (c || ""), textContent: v }), Object.assign(document.createElement("small"), { textContent: s })); return d; };
+    sum.replaceChildren(cell("Closed trades", String(tot), `${N.open.length} open · ${N.n_pending} waiting to enter`), cell("Average per trade", avg == null ? "—" : npct(avg), "after 0.05% a side", avg == null ? "" : cls(avg)),
+      cell("Win rate", tot ? pct(wins / tot, 0) : "—", `${wins} of ${tot} closed trades`), cell("Shocks seen", String(N.n_shocks), "since " + (N.started || "—")));
+    $("news-note").textContent = "Shadow test, nothing is traded. A shock is a stock that moves at least 2x its usual daily swing on a day with news. Each shock opens hypothetical trades at the next open: momentum follows the move, reversal fades it, llm follows the AI reviewer (skips when unclear), each held 1 or 5 days, 0.05% cost a side. "
+      + "There is no account balance or P&L calendar here on purpose: trades overlap and are not sized, so a dollar equity curve would be made up. The chart shows the running average return per trade instead (each trade counts the same).";
+    // chart
+    const run = newsRunning(N.closed), labs = Object.keys(run).sort(), plot = $("news-plot");
+    $("news-key").replaceChildren(...labs.map(k => { const sp = document.createElement("span"), i = document.createElement("i"); i.style.background = `var(${NEWS_COL[k.split(" ")[0]] || "--muted"})`; sp.append(i, `${k} ${npct(run[k][run[k].length - 1][1])} (n=${run[k][run[k].length - 1][2]})`); return sp; }));
+    const pts = labs.flatMap(k => run[k]);
+    if (!pts.length) plot.replaceChildren(Object.assign(document.createElement("div"), { className: "bh-empty", textContent: "No closed shadow trades yet." }));
+    else {
+      const NS = "http://www.w3.org/2000/svg", W = Math.max(280, plot.clientWidth || 600), Ht = 220, L = 6, R = 52, T = 10, B = 22;
+      let t0 = Math.min(...pts.map(p => dayMs(p[0]))), t1 = Math.max(...pts.map(p => dayMs(p[0]))), lo = Math.min(0, ...pts.map(p => p[1])), hi = Math.max(0, ...pts.map(p => p[1]));
+      if (t1 === t0) { t0 -= 864e5; t1 += 864e5; } if (lo === hi) { lo -= 1; hi += 1; } const pad = (hi - lo) * 0.1; lo -= pad; hi += pad;
+      const x = t => L + (W - L - R) * (t - t0) / (t1 - t0), y = v => T + (Ht - T - B) * (1 - (v - lo) / (hi - lo));
+      const el = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+      const svg = el("svg", { viewBox: `0 0 ${W} ${Ht}`, role: "img", "aria-label": "Running average return per trade for each news rule" });
+      niceTicks(lo, hi, 4).forEach(v => svg.append(el("line", { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: css(v === 0 ? "--muted" : "--line"), "stroke-width": 1 }), el("text", { x: W - R + 6, y: y(v) + 3 }, npct(v))));
+      const fmtD = t => new Date(t).toLocaleString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
+      svg.append(el("text", { x: L, y: Ht - 6 }, fmtD(t0)), el("text", { x: W - R, y: Ht - 6, "text-anchor": "end" }, fmtD(t1)));
+      labs.forEach(k => { const col = css(NEWS_COL[k.split(" ")[0]] || "--muted"), P = run[k].map(([d, v]) => x(dayMs(d)).toFixed(1) + "," + y(v).toFixed(1));
+        const a = { d: "M" + P.join("L"), fill: "none", stroke: col, "stroke-width": 2, "stroke-linejoin": "round" }; if (k.endsWith("5d")) a["stroke-dasharray"] = "5 3";
+        svg.append(P.length > 1 ? el("path", a) : el("circle", { cx: P[0].split(",")[0], cy: P[0].split(",")[1], r: 3, fill: col }));
+        const e = run[k][run[k].length - 1]; svg.append(el("circle", { cx: x(dayMs(e[0])), cy: y(e[1]), r: 3, fill: col })); });
+      plot.replaceChildren(svg);
+    }
+    // results by rule x hold
+    const rows = Object.entries(all).map(([lab, g]) => [lab, g.n, { t: npct(g.avg), c: cls(g.avg) }, pct(g.win, 0)]);
+    ntable("news-rules", ["Rule · hold", "Trades", "Average", "Win rate"], rows, 1);
+    // by catalyst / confidence
+    const labsAll = [...new Set(Object.values(N.by).flatMap(g => Object.values(g).flatMap(d => Object.keys(d))))].sort(), br = [];
+    for (const kind of ["catalyst", "confidence"]) for (const [g, d] of Object.entries(N.by[kind] || {})) br.push([kind === "catalyst" ? g.replace(/_/g, " ") : g, ...labsAll.map(l => d[l] ? { t: `${npct(d[l].avg)} (n=${d[l].n})`, c: cls(d[l].avg) } : "—")]);
+    ntable("news-by", ["Group", ...labsAll], br, 1);
+    // shocks
+    $("news-shocks-r").textContent = `latest ${N.shocks.length} of ${N.n_shocks}`;
+    ntable("news-shocks", ["Date", "Symbol", "Move", "Volume", "Catalyst", "AI verdict", "Top headline"], N.shocks.map(s => [s.date, s.symbol, { t: npct(s.ret * 100), c: cls(s.ret) },
+      s.relvol != null ? s.relvol.toFixed(1) + "x" : "—", s.catalyst ? s.catalyst.replace(/_/g, " ") : "—", s.direction ? `${s.direction} (${(s.confidence ?? 0).toFixed(2)})` : "no review", short(s.headline, 90)]), 99);
+    $("news-open-r").textContent = N.open.length + " open";
+    ntable("news-open", ["Symbol", "Rule", "Hold", "Side", "Signal", "Entered", "Entry price"], N.open.map(o => [o.symbol, o.rule, o.hold + "d", o.side, o.signal_date, o.entry_date, o.entry_px != null ? usd(o.entry_px, 2) : "—"]), 99);
   }
   function renderCompare() {
-    const data = ACC.map(a => ({ a, A: D[a.snap] }));
+    const data = ACC.map(a => ({ a, A: D[a.snap], S: canonOf(a) }));
     $("cmp-cards").replaceChildren(...data.map(({ a, A }) => {
       const c = document.createElement("div"); c.className = "cmp-card"; c.style.setProperty("--c", `var(${a.color})`);
       c.append(Object.assign(document.createElement("h3"), { textContent: a.nm }), Object.assign(document.createElement("span"), { className: "sub", textContent: a.sub }));
@@ -1318,8 +1381,15 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
         ["Open positions", String((A.positions || []).length)], ["Trades (closed)", String(B && B.rows ? B.rows.length : (A.trades || []).length)]]);
       c.append(Object.assign(document.createElement("span"), { className: "big", textContent: usd(A.equity, 2) }), kvb);
       return c; }));
+    { const N = D.news_shadow, c = document.createElement("div"); c.className = "cmp-card"; c.style.setProperty("--c", "var(--muted)");
+      c.append(Object.assign(document.createElement("h3"), { textContent: "News trader (shadow)" }), Object.assign(document.createElement("span"), { className: "sub", textContent: "shadow · hypothetical trades on news shocks, not traded" }));
+      if (!N) c.append(Object.assign(document.createElement("p"), { className: "note", textContent: "No data yet." }));
+      else { const n = N.closed.length, avg = n ? N.closed.reduce((s, x) => s + x[3], 0) / n : null, w = N.closed.filter(x => x[3] > 0).length, kvb = document.createElement("div"); kvb.className = "kv";
+        kv(kvb, [["Closed trades", String(n)], ["Open trades", String(N.open.length)], ["Average per trade", avg == null ? "—" : npct(avg), avg > 0 ? "ok" : avg < 0 ? "bad" : ""], ["Win rate", n ? pct(w / n, 0) : "—"]]);
+        c.append(Object.assign(document.createElement("span"), { className: "big", textContent: n ? npct(avg) : "—" }), kvb); }
+      $("cmp-cards").append(c); }
     // combined balance chart, each line from its own start
-    const series = data.map(({ a, A }) => ({ a, A, pts: cmpSeries(A) })), live = series.filter(x => x.pts.length);
+    const series = data.map(({ a, A, S }) => ({ a, A, pts: cmpSeries(S) })), live = series.filter(x => x.pts.length);
     const plot = $("cmp-plot"), key = $("cmp-key");
     key.replaceChildren(...series.map(x => { const sp = document.createElement("span"), i = document.createElement("i"); i.style.background = `var(${x.a.color})`;
       const A = x.A; sp.append(i, A ? `${x.a.short} ${usd(A.equity)} (${spct(A.equity / A.start_equity - 1)})` : x.a.short + " · no data"); return sp; }));
@@ -1351,21 +1421,19 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       plot.replaceChildren(svg, tip);
     }
     // P&L per day, one column per account
-    const dates = [...new Set(data.flatMap(({ A }) => ((A && A.calendar) || []).map(c => c.date)))].sort().reverse(), tb = $("cmp-days");
+    const dates = [...new Set(data.flatMap(({ S }) => S ? S.days.map(c => c.date) : []))].sort().reverse(), tb = $("cmp-days");
     const th = document.createElement("tr"); [["Date", ""], ...ACC.map(a => [a.nm, "r"])].forEach(([t, c]) => th.append(Object.assign(document.createElement("th"), { textContent: t, className: c })));
     const body = dates.map(d => { const tr = document.createElement("tr"); tr.append(Object.assign(document.createElement("td"), { className: "t", textContent: d }));
-      data.forEach(({ A }) => { const c = ((A && A.calendar) || []).find(z => z.date === d), td = document.createElement("td"); td.className = "r " + (c ? cls(c.pl) : "");
+      data.forEach(({ S }) => { const c = S && S.days.find(z => z.date === d), td = document.createElement("td"); td.className = "r " + (c ? cls(c.pl) : "");
         td.textContent = c ? `${susd(c.pl)} · ${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%` : "—"; tr.append(td); }); return tr; });
     tb.replaceChildren(Object.assign(document.createElement("thead"), {}), Object.assign(document.createElement("tbody"), {}));
     tb.firstChild.append(th); tb.lastChild.append(...body);
     if (!dates.length) tb.lastChild.append(Object.assign(document.createElement("tr"), { innerHTML: '<td colspan="6">No trading days yet.</td>' }));
+    $("cmp-days-note").textContent = "Same rule for every account: a day's P&L is that day's closing balance minus the previous trading day's. " + data.map(({ a, S }) => S ? `${a.short}: ${S.source === "live" ? "live" : "snapshot as of " + String(S.asOf || "").slice(0, 10)}` : "").filter(Boolean).join(" · ");
     renderCmpRc();
     // account bars
     $("cmp-bars").replaceChildren(...data.map(({ a, A }) => { const d = document.createElement("div"); d.className = "panel tvbar"; d.setAttribute("aria-label", a.nm + " account summary"); d.append(...tvCells(A, a.nm)); return d; }));
   }
-  renderResearch(); applyViews();
-  // ---------------------------------------------------------------- live account data (Supabase execute_sql via the mcp capability)
-  // Read-only: the only statement ever sent is `select private.alpaca_live('<account>')` for the accounts 'id' (Noise band), 'dts' (qlib's account) and 'ta' (TradingAgents); the shadow ledger has none; the server holds the Alpaca keys, the page holds none.
   // LIVE-PURE-BEGIN (no DOM access in here: unit-checked in node against src/alpaca_paper.py)
   const fmtNum = x => x.toFixed(8).replace(/0+$/, "").replace(/\.$/, "") || "0";
   const r2 = x => Number(x.toFixed(2));
@@ -1410,13 +1478,6 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     const h = d.history_1d; let pts = [];
     if (isObj(h) && Array.isArray(h.timestamp)) h.timestamp.forEach((ts, i) => { const eq = num((h.equity || [])[i]); if (ts != null && eq && eq > 0) pts.push([Math.trunc(ts), r2(eq)]); }); else partial.push("history");
     if (pts.length >= 2) A.history = Object.assign({}, base.history, { "1D": pts });
-    // today's calendar cell = equity - last_equity, only on a weekday that has history points today (a trading day), as the Python snapshot does
-    const today = nyStamp(nowMs).slice(0, 10), wd = new Date(today + "T12:00:00Z").getUTCDay();
-    const hasToday = pts.length > 0 && nyStamp(pts[pts.length - 1][0] * 1000).slice(0, 10) === today;
-    if (A.last_equity > 0 && wd >= 1 && wd <= 5 && (hasToday || (base.calendar || []).some(c => c.date === today))) {
-      const row = { date: today, pl: r2(A.equity - A.last_equity), pct: Number(((A.equity - A.last_equity) / A.last_equity * 100).toFixed(3)), equity: r2(A.equity) };
-      A.calendar = (base.calendar || []).filter(c => c.date !== today).concat([row]);
-    }
     // balance history ledger
     const bh0 = base.balance_history, bh = { rows: [], realized: 0, start_balance: (bh0 && bh0.start_balance) ?? base.start_equity ?? 25000 };
     if (bh0) Object.assign(bh, bh0);
@@ -1440,7 +1501,50 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     A.live = new Date(Date.parse(d.at) || nowMs).toISOString();
     return { A, partial };
   }
+
+  // ---- Canonical daily series (one per account). Trading date = NEW YORK date of each Alpaca 1D bar (stamped 20:00 NY); equity = that day's close.
+  // Daily P&L = equity[d] - equity[previous trading day]; so a month's total is exactly (last equity in the month) - (last equity before it).
+  const nyDate = ms => nyStamp(ms).slice(0, 10);
+  function barsFromHistory(h) {  // Alpaca portfolio history {timestamp[], equity[]} -> [{date, eq}] (null / 0 equity = before funding, dropped later)
+    const out = []; if (!h || !Array.isArray(h.timestamp)) return out;
+    h.timestamp.forEach((ts, i) => { const eq = num((h.equity || [])[i]); if (ts != null && isFinite(ts)) out.push({ date: nyDate(Number(ts) * 1000), eq }); });
+    return out;
+  }
+  function barsFromCalendar(cal) { return (cal || []).map(c => ({ date: c.date, eq: num(c.equity) })); }  // snapshot rows already carry NY dates
+  function canonSeries(bars, o) {
+    o = o || {};
+    const m = new Map();
+    for (const b of bars || []) { const eq = num(b.eq); if (b.date && eq != null && eq > 0) m.set(b.date, eq); }  // leading 0/null = before funding; a repeated date keeps the latest
+    const dates = [...m.keys()].sort(), startIn = num(o.start) > 0 ? num(o.start) : 25000, nowEq = num(o.equityNow);
+    let todayCell = false;
+    if (dates.length && nowEq > 0 && isFinite(o.nowMs)) {
+      const today = nyDate(o.nowMs), last = dates[dates.length - 1];
+      if (m.has(today)) m.set(today, nowEq);  // today already has a bar: it is replaced by the live equity, never added twice
+      else if (today > last && Math.abs(nowEq - m.get(last)) >= 0.005) { m.set(today, nowEq); dates.push(today); todayCell = true; }  // live equity - last close
+    }
+    const days = []; let prev = null, start = startIn;
+    for (const d of dates) {
+      const eq = m.get(d);
+      if (prev == null) { start = Math.abs(eq - startIn) / startIn > 0.05 ? eq : startIn; prev = start; }  // first funded day vs the deposit; a different funding amount counts as 0
+      const pl = r2(eq - prev);
+      days.push({ date: d, pl, pct: prev > 0 ? Number((pl / prev * 100).toFixed(3)) : 0, equity: r2(eq), prev: r2(prev), today: todayCell && d === dates[dates.length - 1] });
+      prev = eq;
+    }
+    const eqNow = days.length ? days[days.length - 1].equity : null;
+    return { days, start: r2(start), eqNow, total: eqNow == null ? null : r2(eqNow - start) };
+  }
+  function monthRecon(S, ym) {  // {total, from, to, n, ok}: the month's day sum vs the balance change it should equal
+    const ds = S.days.filter(c => c.date.startsWith(ym));
+    if (!ds.length) return { total: 0, from: null, to: null, n: 0, ok: true };
+    const total = r2(ds.reduce((s, c) => s + c.pl, 0)), from = ds[0].prev, to = ds[ds.length - 1].equity;
+    return { total, from, to, n: ds.length, ok: Math.abs(total - (to - from)) <= 1 };
+  }
   // LIVE-PURE-END
+  const EMB = Object.fromEntries(ACC.filter(a => a.key).map(a => [a.key, D[a.snap]]));  // the snapshot embedded at publish time (offline fallback only)
+  const DAILY = {}, DAILY_Q = { id: "select private.alpaca_daily('id') as d", dts: "select private.alpaca_daily('dts') as d", ta: "select private.alpaca_daily('ta') as d" };  // cache per account (filled once on load, then every 5 min)
+  renderResearch(); applyViews();
+  // ---------------------------------------------------------------- live account data (Supabase execute_sql via the mcp capability)
+  // Read-only: the only statement ever sent is `select private.alpaca_live('<account>')` for the accounts 'id' (Noise band), 'dts' (qlib's account) and 'ta' (TradingAgents); the News trader shadow has none; the server holds the Alpaca keys, the page holds none.
 
   const LIVE_SERVER = "Supabase", LIVE_TOOL = "execute_sql", LIVE_PROJECT = "tumnfmmnelsfswyowdqh";
   const LIVE_Q = { id: "select private.alpaca_live('id') as d", dts: "select private.alpaca_live('dts') as d", ta: "select private.alpaca_live('ta') as d" };
@@ -1449,7 +1553,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const SNAP = Object.fromEntries(LIVEACC.map(a => [a.key, D[a.snap]])), LIVE = Object.fromEntries(LIVEACC.map(a => [a.key, null])), SIG = {}, liveBusy = {};
   const DENIED = ["needs_reauth", "server_not_connected", "selection_required", "server_not_found", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted", "capability_disabled", "capability_removed", "consent_required"];
   let liveMcp = null, liveKeys = [], liveUnsubs = [], liveTimer = null;
-  const liveAcctKeys = () => lfilter === "compare" ? LIVEACC.map(a => a.key) : [ACCF[lfilter].key].filter(Boolean);  // the account on screen (all live ones in Compare; none for the shadow ledger)
+  const liveAcctKeys = () => lfilter === "compare" ? LIVEACC.map(a => a.key) : [(ACCF[lfilter] || {}).key].filter(Boolean);  // the account on screen (all live ones in Compare; none for the News trader)
   const liveEvery = () => lfilter === "compare" ? 15000 : 5000;
   const setAcct = (key, A) => { D[BYKEY[key].snap] = A; };
   function liveRows(res) {  // execute_sql result: {"result": "<text with <untrusted-data-...> [json rows] </untrusted-data-...>"}; the rows are data only
@@ -1471,6 +1575,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   function liveRerender() {
     if (lfilter === "compare") { if (curTab !== "research") renderCompare(); return; }
+    if (lfilter === "news_shadow") return;
     renderAcct();
     if (curTab === "calendar") renderCal(acctData());
     if (curTab === "balance") renderBalance(acctData());
@@ -1505,11 +1610,27 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     catch (e) { onLiveErr(key, e); }
     finally { liveBusy[key] = false; }
   }
+  const dailyBusy = {};
+  async function dailyPoll(key, force) {  // Alpaca's 1-year daily history through the server: once on load per account, then every 5 minutes (not with the 5 s account poll)
+    if (!key || !liveMcp || !DAILY_Q[key] || dailyBusy[key] || document.hidden) return;
+    if (!force && DAILY[key] && Date.now() - DAILY[key].fetched < 270000) return;
+    dailyBusy[key] = true;
+    try {
+      let d = (liveRows(await liveMcp.callTool(LIVE_SERVER, LIVE_TOOL, { project_id: LIVE_PROJECT, query: DAILY_Q[key] }, { cache: false }))[0] || {}).d;
+      if (typeof d === "string") { try { d = JSON.parse(d); } catch (e) { d = null; } }
+      const h = d && d.history_1a;
+      if (isObj(h) && Array.isArray(h.timestamp) && barsFromHistory(h).some(b => b.eq > 0)) {
+        DAILY[key] = { fetched: Date.now(), at: d.at, h, base: num(h.base_value), eq: d.account ? num(d.account.equity) : null }; liveRerender();
+      }
+    } catch (e) {} finally { dailyBusy[key] = false; }  // on any failure the previous daily data (or the snapshot) stays on screen
+  }
+  let dailyTimer = null;
   function liveStart() {  // watch only the account(s) on screen; called again whenever the account switch changes
     liveUnsubs.forEach(u => { try { u(); } catch (e) {} }); liveUnsubs = [];
     clearInterval(liveTimer); liveTimer = null;
-    liveKeys = liveAcctKeys();
+    liveKeys = liveAcctKeys(); clearInterval(dailyTimer); dailyTimer = null;
     if (!liveMcp) return;
+    liveKeys.forEach(k => dailyPoll(k)); dailyTimer = setInterval(() => liveKeys.forEach(k => dailyPoll(k, true)), 300000);
     const every = liveEvery();
     liveKeys.forEach(key => {
       try {
@@ -1522,7 +1643,7 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   }
   function liveBadge() {
     const b = $("live-badge"), keys = liveAcctKeys(), multi = keys.length > 1;
-    if (!keys.length) { b.textContent = "Shadow ledger · simulated fills from the last run, no live Alpaca data"; b.className = ""; return; }
+    if (!keys.length) { b.textContent = "News trader · hypothetical trades from the nightly run, nothing is traded"; b.className = ""; return; }
     const ago = ms => { const sec = Math.max(0, Math.round((Date.now() - ms) / 1000)); return sec < 60 ? sec + "s ago" : sec < 3600 ? Math.round(sec / 60) + "m ago" : Math.round(sec / 3600) + "h ago"; };
     const one = key => {  // [long text, class, short text] for one account
       const s = LIVE[key], A = SNAP[key], snap = A ? "snapshot from " + A.generated.replace("T", " ").slice(0, 16) + " UTC" : "no snapshot yet";
@@ -1534,10 +1655,10 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     };
     if (!multi) { const [t, c] = one(keys[0]); b.textContent = t; b.className = c; return; }
     const parts = keys.map(k => [BYKEY[k].short, one(k)]);
-    b.textContent = parts.map(([n, o]) => n + ": " + o[2]).join("  |  ") + "  |  Shadow: ledger";
+    b.textContent = parts.map(([n, o]) => n + ": " + o[2]).join("  |  ");
     b.className = parts.some(([, o]) => o[1] === "bad") ? "bad" : parts.every(([, o]) => o[1] === "ok") ? "ok" : "";
   }
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) liveKeys.forEach(livePoll); });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { liveKeys.forEach(livePoll); liveKeys.forEach(k => dailyPoll(k)); } });
   liveBadge(); setInterval(liveBadge, 1000);
   (async () => {  // never blocks first paint; no mcp (or no claude runtime) = the snapshot page exactly as before
     try { if (typeof claude !== "undefined" && claude && claude.use) liveMcp = await claude.use("mcp"); } catch (e) { liveMcp = null; }

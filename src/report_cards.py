@@ -1,4 +1,4 @@
-"""Report cards (quantstats) for every account: Noise band, qlib, TradingAgents, day-trader-skill (shadow).
+"""Report cards (quantstats) for every account: Noise band, qlib, TradingAgents.
 
     python report_cards.py            # all accounts: agent_memory/report_cards.json + reports/cards/<account>.html
 
@@ -30,9 +30,7 @@ NY = ZoneInfo("America/New_York")
 # (key, label, snapshot file). Keys match the Strategy Lab's switch values.
 ACCOUNTS = [("intraday", "Noise band", "alpaca_intraday.json"),
             ("qlib", "qlib", "system_qlib.json"),
-            ("ta", "TradingAgents", "system_ta.json"),
-            ("dts_shadow", "day-trader-skill (shadow)", "system_dts.json"),
-            ("pelosi_shadow", "Pelosi (shadow)", "system_congress.json")]
+            ("ta", "TradingAgents", "system_ta.json")]
 QLIB_BACKTEST = ("qlib_bt", "qlib backtest", ROOT / "results" / "qlib15.json")
 METRICS = ("cagr", "sharpe", "sortino", "max_dd", "win_days", "best_day", "worst_day", "vol", "beta")
 
@@ -193,7 +191,7 @@ def line(card):
 
 
 def briefing_lines(path=OUT_JSON):
-    """One line per account (the live-trading accounts and the shadow ledger) from report_cards.json; [] when missing."""
+    """One line per account (the live-trading accounts) from report_cards.json; [] when missing."""
     d = _read(path)
     if not isinstance(d, dict):
         return []
