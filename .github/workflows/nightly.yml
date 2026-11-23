@@ -43,16 +43,22 @@ jobs:
       - run: pip install -r requirements.txt
       - id: today
         run: echo "d=$(date -u +%F)" >> "$GITHUB_OUTPUT"
+      # The key carries the run id so EVERY nightly run saves a fresh cache (a same-day re-run would otherwise hit the exact key
+      # and skip the save, losing new bars). research.yml restores the newest `data-` cache (restore-keys prefix = most recent).
       - uses: actions/cache@v4
         with:
           path: data
-          key: data-${{ steps.today.outputs.d }}
+          key: data-${{ steps.today.outputs.d }}-${{ github.run_id }}
           restore-keys: |
             data-
       - name: Drop restored Yahoo daily files (stale by a few minutes; they re-download in seconds)
         run: find data -maxdepth 1 -name '*.csv' ! -name fomc_dates.csv -delete
       - name: Refresh minute data (the data/ cache saved by this job is what research.yml restores)
         run: cd src && python intraday_data.py SPY QQQ
+      - name: Intraday universe + 5-minute bars (refresh universe.json if due, add new days for every name; saved with the cache, research.yml only reads)
+        continue-on-error: true
+        timeout-minutes: 60
+        run: cd src && python -m iagent.bars5
       - name: Report cards (quantstats metrics + tear sheets per account; alert-only, read-only)
         run: pip install -q quantstats==0.0.86 && cd src && python report_cards.py || true
       - name: Strategy Lab build (candidates + page; no orders are placed)

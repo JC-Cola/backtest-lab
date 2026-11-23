@@ -41,12 +41,13 @@ def has_2x(t: dict) -> bool:
 
 
 def similar(a: dict, b: dict) -> bool:
-    """Near-duplicate rule: same hash, or identical in market/side/time/exit/stop/target with the same (feature, op)
-    conditions whose percentiles each differ by at most SIM_Q (a mere threshold tweak)."""
+    """Near-duplicate rule: same hash, or identical in market/side/time with the same (feature, op) conditions whose
+    percentiles each differ by at most SIM_Q (a mere threshold tweak). The exit hold, stop_bp and target_r are ignored: the
+    same idea with and without a stop (or another hold/target) is one idea and must not spend a second held-out shot."""
     if S.spec_hash(a) == S.spec_hash(b):
         return True
     a, b = S.canonical(a), S.canonical(b)
-    if any(a.get(k) != b.get(k) for k in ("market", "side", "time", "exit", "stop_bp", "target_r")):
+    if any(a.get(k) != b.get(k) for k in ("market", "side", "time")):
         return False
     ca, cb = sorted(a["entry"], key=lambda c: (c["feature"], c["op"])), sorted(b["entry"], key=lambda c: (c["feature"], c["op"]))
     if [(c["feature"], c["op"]) for c in ca] != [(c["feature"], c["op"]) for c in cb]:

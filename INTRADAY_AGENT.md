@@ -22,8 +22,9 @@ The learned feature weights were also stuck at 1.00: `feature_weights()` average
   excess Sharpe at 1x costs and at 2x costs and there are at least 150 trades; else min(median fold Sharpe at 1x, median fold
   Sharpe at 2x). Old journal records have no 2x folds, so the best ones are re-scored on the search years first (`robust_eval`,
   written back to the journal).
-* **Similarity rule** (no near-duplicate shots): same hash, or same market/side/time/exit/stop/target and the same
-  (feature, op) conditions with every percentile within +-5 of a tested idea.
+* **Similarity rule** (no near-duplicate shots): same hash, or same market/side/time and the same (feature, op)
+  conditions with every percentile within +-5 of a tested idea. Exit hold, stop and target are ignored (the same idea with and
+  without a stop is one idea).
 * A pass needs all of: Benjamini-Hochberg q < 0.10 across **all shots ever spent plus the earlier hunt tests on the same
   years**, Sharpe > 0 at 1x and 2x costs, beating the live noise band at 2x costs (SPY/QQQ ideas) or SPY buy-and-hold on the
   same window (single-stock ideas), and the **lockbox confirmation** below. The deflated Sharpe is shown, not used.
@@ -43,7 +44,9 @@ Multiple testing counts every scored trial on every name (`IMemory.trial_sharpes
 Data: SPY/QQQ keep 1-minute bars. Other names use 5-minute SIP bars (Alpaca, `data/intraday/5m/<SYM>.pkl.gz`, about 2.7 MB per
 name, ~110 MB for 40) expanded onto the 390-minute grid (fills, close-of-bar features and cumulative highs/lows are exact at 5-minute
 boundaries; stops see each 5-minute bar's full range). Each 30-minute run searches SPY, QQQ and a rotating 6 other names to bound
-memory (~0.3 GB each) and download time (first use of a name downloads ~10 years, roughly 30 s, then loads in ~4 s).
+memory (~0.3 GB each) and download time (the nightly job runs `python -m iagent.bars5`: refreshes universe.json if due and adds the new days for every universe name,
+and its `data` cache, saved under a per-run key, is what research.yml restores; research runs only read and skip a name whose file
+is missing; loads in ~4 s).
 
 ## New setup features (scanner families, appended after the old 11 so old spec hashes hold)
 `orb5/orb15/orb30` (opening-range breakout distance), `run_10d`, `range_5d`, `consol_30`, `hi20_dist` (bull flag / 20-day

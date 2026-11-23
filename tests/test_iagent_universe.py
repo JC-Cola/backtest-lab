@@ -231,3 +231,47 @@ def test_verdict_needs_lockbox_and_single_stock_uses_spy_buy_hold(tmp_path, monk
         assert not v[4]["pass"]                                              # no SPY benchmark recorded: fail closed
     finally:
         S.register_markets([])
+
+
+# ---------------------------------------------------------------- 5-minute data: nightly prefetch, research only reads
+def test_load_days_only_reads_unless_asked(tmp_path, monkeypatch):
+    monkeypatch.setattr(bars5, "DIR5", tmp_path)
+    monkeypatch.setattr(bars5.intraday_data, "DIR", tmp_path / "none")
+    with pytest.raises(FileNotFoundError):
+        bars5.load_days("ZZZ")
+    got = []
+    monkeypatch.setattr(bars5, "download5", lambda s: got.append(s) or (_ for _ in ()).throw(RuntimeError("no keys")))
+    with pytest.raises(RuntimeError):
+        bars5.load_days("ZZZ", download=True)
+    assert got == ["ZZZ"]
+
+
+def test_prefetch_isolates_failures_and_skips_minute_names(monkeypatch):
+    idx = pd.date_range("2024-03-04 09:30", periods=3, freq="5min", tz=bars5.NY)
+    df = pd.DataFrame({"open": 1.0, "high": 1.0, "low": 1.0, "close": 1.0, "volume": 1.0}, index=idx)
+    monkeypatch.setattr(bars5, "has_minute", lambda s: s == "SPY")
+
+    def dl(s):
+        if s == "BAD":
+            raise RuntimeError("boom")
+        return df
+    monkeypatch.setattr(bars5, "download5", dl)
+    assert bars5.prefetch(["SPY", "AAA", "BAD", "BBB"], log=lambda *a: None) == {
+        "SPY": "skipped", "AAA": "ok", "BAD": "RuntimeError: boom", "BBB": "ok"}
+
+
+def test_research_run_skips_a_name_without_cached_bars(tmp_path, monkeypatch):
+    uni = {"search": ["SPY", "QQQ", "AAA", "MISS"], "lockbox": [], "ever_lockbox": [], "ranked": []}
+    S.register_markets(uni["search"])
+    try:
+        have = {s: I.Days.from_arrays(*synth(60, seed=i)) for i, s in enumerate(["SPY", "QQQ", "AAA"])}
+
+        def load(sym, download=False):
+            if sym not in have:
+                raise FileNotFoundError(sym)
+            return have[sym]
+        monkeypatch.setattr(bars5, "load_days", load)
+        mem = run(rounds=2, per_round=10, quiet=True, mem_root=tmp_path, universe=uni, spend=False, markets=["SPY", "QQQ", "AAA", "MISS"])
+        assert "MISS" not in {t["spec"]["market"] for t in mem.trials} and mem.trials
+    finally:
+        S.register_markets([])

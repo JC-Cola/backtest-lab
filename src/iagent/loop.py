@@ -42,6 +42,18 @@ def run(rounds=10, per_round=10, markets=None, seed=0, quiet=False, mem_root=Non
             mk[s["market"]] = P.Market(s["market"], (days or {}).get(s["market"]))
         return mk[s["market"]]
 
+    if days is None:    # a name whose 5-minute bars are not cached (the nightly prefetch has not reached it) is skipped this run
+        keep = []
+        for nm in markets:
+            try:
+                market({"market": nm})
+                keep.append(nm)
+            except Exception as ex:
+                if nm in U.CORE:
+                    raise
+                log(f"skipping {nm} this run: {type(ex).__name__}")
+        markets = keep
+
     evo = IEvolutionProposer(mem, seed)
     evo.screen = lambda s: P.precheck(market(s), s)   # resample specs that cannot pass the trade-count rules
     prop, proposer = make_proposer(proposer, mem, evo, {"claude": IClaudeProposer, "web": IWebResearchProposer})

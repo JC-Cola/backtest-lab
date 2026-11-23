@@ -48,8 +48,14 @@ def test_similarity_rule():
     assert not H.similar(a, b)
     c = spec(); c["entry"].reverse(); c["entry"][1]["q"] = 46  # order-insensitive, within 5
     assert H.similar(a, c)
-    for kw in ({"time": 150}, {"side": "short"}, {"stop_bp": 100}, {"market": "QQQ"}, {"exit": {"type": "close"}}, {"target_r": 2}):
+    for kw in ({"time": 150}, {"side": "short"}, {"market": "QQQ"}):
         assert not H.similar(a, spec(**kw)), kw
+    # same idea, only the stop / target / exit hold differ -> near-duplicate (do not spend two shots on it)
+    for kw in ({"stop_bp": 100}, {"stop_bp": None}, {"exit": {"type": "close"}}, {"exit": {"type": "hold", "n": 120}},
+               {"target_r": 2}, {"stop_bp": None, "exit": {"type": "close"}, "target_r": 3}):
+        assert H.similar(a, spec(**kw)) and H.similar(spec(**kw), a), kw
+    g = spec(stop_bp=None); g["entry"][0]["q"] = 56            # exit variant AND a threshold beyond 5 -> still distinct
+    assert not H.similar(a, g)
     d = spec(); d["entry"][0]["op"] = "<"                      # different operator
     assert not H.similar(a, d)
     e = spec(); e["entry"][0]["feature"] = "ret_open"

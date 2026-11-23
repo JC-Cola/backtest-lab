@@ -41,13 +41,20 @@ def expand(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
-def load_days(symbol: str) -> "I.Days":
-    """Days for any universe name: 1-minute cache when there is one (SPY, QQQ), else the 5-minute file (downloaded on
-    first use when Alpaca keys are available)."""
-    if (intraday_data.DIR / f"{symbol.replace('/', '')}.pkl").exists():
+def has_minute(symbol: str) -> bool:
+    return (intraday_data.DIR / f"{symbol.replace('/', '')}.pkl").exists()
+
+
+def load_days(symbol: str, download: bool = False) -> "I.Days":
+    """Days for any universe name: 1-minute cache when there is one (SPY, QQQ), else the 5-minute file. Research runs only
+    READ (the nightly job prefetches, see prefetch()), so a missing file raises FileNotFoundError and the caller skips the
+    name; download=True fetches it on the spot (needs Alpaca keys)."""
+    if has_minute(symbol):
         return I.Days(symbol)
     p = path5(symbol)
     if not p.exists():
+        if not download:
+            raise FileNotFoundError(f"no 5-minute bars cached for {symbol} (the nightly prefetch fetches them)")
         download5(symbol)
     df = pd.read_pickle(p)
     return I.Days.from_frame(expand(df))
@@ -85,3 +92,39 @@ def download5(symbol: str, start: str = "2016-01-01") -> pd.DataFrame:
     DIR5.mkdir(parents=True, exist_ok=True)
     out.to_pickle(p, compression="gzip")
     return out
+
+
+def prefetch(symbols, log=print) -> dict:
+    """Create or extend (new days only) the 5-minute file of every symbol without a 1-minute cache. One failing name never
+    stops the others. Returns {symbol: "ok" | "skipped" | error text}."""
+    out = {}
+    for sym in symbols:
+        if has_minute(sym):
+            out[sym] = "skipped"
+            continue
+        try:
+            df = download5(sym)
+            out[sym] = "ok"
+            log(f"  {sym}: {len(df):,} bars to {df.index[-1]:%Y-%m-%d}")
+        except Exception as ex:
+            out[sym] = f"{type(ex).__name__}: {str(ex)[:100]}"
+            log(f"  {sym}: FAILED {out[sym]}")
+    return out
+
+
+def main(root=None) -> dict:
+    """Nightly: refresh the universe file when it is due, then prefetch 5-minute bars for every search and lockbox name."""
+    from iagent import universe as U
+    from iagent.memory import IMemory
+    root = root or IMemory().root
+    uni = U.ensure(root)
+    names = sorted(set(uni["search"]) | set(uni["lockbox"]))
+    print(f"universe refreshed {uni.get('refreshed')}: {len(names)} names", flush=True)
+    res = prefetch(names)
+    bad = {k: v for k, v in res.items() if v not in ("ok", "skipped")}
+    print(f"prefetch: {len(res) - len(bad)} ok, {len(bad)} failed", flush=True)
+    return res
+
+
+if __name__ == "__main__":
+    main()
