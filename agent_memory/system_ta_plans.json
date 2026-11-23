@@ -96,7 +96,7 @@
    "decision_id": "2026-11-20|INTU",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -310,7 +310,7 @@
    "decision_id": "2026-11-20|QQQ",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -342,8 +342,16 @@
    "decision_id": "2026-11-20|SPY",
    "exits": [],
    "log": [],
-   "opened": false,
-   "placed": null,
+   "opened": true,
+   "placed": {
+    "at": "2026-11-23T14:35:27+00:00",
+    "ids": [
+     "ece1d0dc-1c74-4949-989b-8b2e66a4076a"
+    ],
+    "qty": 3,
+    "stop": 620.83,
+    "tp": null
+   },
    "plan": {
     "base": 0.1,
     "exits": [],
