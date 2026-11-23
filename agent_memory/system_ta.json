@@ -491,6 +491,56 @@
    "rationale": "dropped off tonight's watchlist: position closed at the next open",
    "horizon": null,
    "source": "rotation"
+  },
+  {
+   "id": "2026-11-23|SPY",
+   "date": "2026-11-23",
+   "symbol": "SPY",
+   "rating": "Underweight",
+   "target": -0.1,
+   "rationale": "Reduce exposure to `SPY` by 25% to 30%. The current technical breakdown below critical moving averages, combined with a volatile macroeconomic landscape, necessitates immediate capital preservation. Cease all new capital deployment and \"buy-the-dip\" strategies until the index demonstrates a technical reversal, specifically reclaiming the 200-day SMA.",
+   "horizon": null,
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-23|QQQ",
+   "date": "2026-11-23",
+   "symbol": "QQQ",
+   "rating": "Hold",
+   "target": null,
+   "rationale": "Maintain existing exposure to `QQQ` but strictly prohibit any new capital deployment. The market is currently caught in a volatile tug-of-war where headline-driven relief rallies are being immediately met with structural distribution. Continue to hold current positions to avoid locking in losses during periods of extreme volatility (ATR of 20.94), but enforce a hard stop-loss just below the 606.23 swing low. Do not increase size until `QQQ` proves it has regained structural integrity by reclaiming the 200-day SMA at 682.29 and the 10-day EMA at 655.86.",
+   "horizon": null,
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-23|NVDA",
+   "date": "2026-11-23",
+   "symbol": "NVDA",
+   "rating": "Overweight",
+   "target": 0.1,
+   "rationale": "Initiate an Overweight position in NVDA using a tiered entry strategy to capture extreme fundamental value while managing technical volatility. Execute an initial 0.5x standard allocation at current levels (~$165), planning to scale to a full 1.5x position only upon a confirmed close above the $170-$180 resistance zone. Maintain a strict stop-loss below the $125 structural support to mitigate downside risk.",
+   "horizon": "3-6 months",
+   "source": "ta"
+  },
+  {
+   "id": "2026-11-23|PDD",
+   "date": "2026-11-23",
+   "symbol": "PDD",
+   "rating": "Exit",
+   "target": 0.0,
+   "rationale": "dropped off tonight's watchlist: position closed at the next open",
+   "horizon": null,
+   "source": "rotation"
+  },
+  {
+   "id": "2026-11-23|WSM",
+   "date": "2026-11-23",
+   "symbol": "WSM",
+   "rating": "Exit",
+   "target": 0.0,
+   "rationale": "dropped off tonight's watchlist: position closed at the next open",
+   "horizon": null,
+   "source": "rotation"
   }
  ],
  "runs": [
@@ -607,24 +657,47 @@
    },
    "calls": 97,
    "seconds": 458
+  },
+  {
+   "date": "2026-11-23",
+   "tickers": {
+    "SPY": "Underweight",
+    "QQQ": "Hold",
+    "NVDA": "Overweight"
+   },
+   "calls": 61,
+   "seconds": 1357
   }
  ],
  "health": {
   "status": "ok",
-  "last_ok": "2026-11-20"
+  "last_ok": "2026-11-23"
  },
  "shadow": {
-  "equity": 23584.4,
+  "equity": 25110.97,
   "positions": [
+   {
+    "symbol": "INTU",
+    "side": "long",
+    "qty": 8.5902,
+    "avg_price": 274.6049,
+    "price": 275.475,
+    "value": 2366.39,
+    "pl": 7.47,
+    "pl_pct": 0.00317,
+    "entry_date": "2026-11-23",
+    "rating": "Overweight",
+    "rationale": "Initiate a long position in INTU at current oversold levels, scaling in cautiously rather than entering full size immediately. Deploy an initial 0.5x tranche at the current price of $270.44 to capitalize on the RSI extremes, reserving additional liquidity to layer in only if the technicals stabilize, while maintaining a strict stop-loss 10% below entry to mitigate momentum decay."
+   },
    {
     "symbol": "NBIS",
     "side": "long",
     "qty": 20.951,
     "avg_price": 123.4797,
-    "price": 81.35,
-    "value": 1704.36,
-    "pl": -882.66,
-    "pl_pct": -0.34119,
+    "price": 97.65,
+    "value": 2045.87,
+    "pl": -541.16,
+    "pl_pct": -0.20918,
     "entry_date": "2026-11-13",
     "rating": "Overweight",
     "rationale": "Initiate a 0.5x position in NBIS at current levels near $128.64 to capture the oversold bounce. Limit downside with a stop-loss at $110.00, acknowledging the high Average True Range, and look to scale to a full 1.0x position only if the stock sustains support above $118.94. Monitor quarterly CapEx efficiency as the primary indicator for long-term thesis viability."
@@ -634,10 +707,10 @@
     "side": "long",
     "qty": 32.8899,
     "avg_price": 152.9256,
-    "price": 125.65,
-    "value": 4132.62,
-    "pl": -897.09,
-    "pl_pct": -0.17836,
+    "price": 165.185,
+    "value": 5432.92,
+    "pl": 403.21,
+    "pl_pct": 0.08017,
     "entry_date": "2026-11-19",
     "rating": "Buy",
     "rationale": "Initiate a long position in NVDA with a split-tranche strategy to manage high volatility. Deploy an initial 0.5x allocation at current levels (~$150.96), while reserving capital for a second 0.5x tranche if the price hits the $144 support zone. Maintain a stop-loss at $139.50, acknowledging the need for wider-than-usual tolerance given the $9.68 ATR."
@@ -647,10 +720,10 @@
     "side": "long",
     "qty": 7.0696,
     "avg_price": 355.7261,
-    "price": 343.51,
-    "value": 2428.48,
-    "pl": -86.36,
-    "pl_pct": -0.03434,
+    "price": 353.49,
+    "value": 2499.03,
+    "pl": -15.81,
+    "pl_pct": -0.00629,
     "entry_date": "2026-11-19",
     "rating": "Overweight",
     "rationale": "Initiate a long position in PANW with a 0.5% to 0.75% portfolio allocation, utilizing the current market price near $339.92. Manage risk by placing a tight stop-loss near the recent swing lows around $309-$311 rather than the distant 200 SMA, ensuring disciplined exposure while the stock works to reclaim the 50-day moving average."
@@ -660,10 +733,10 @@
     "side": "long",
     "qty": 28.3056,
     "avg_price": 87.1024,
-    "price": 83.64,
-    "value": 2367.48,
-    "pl": -98.01,
-    "pl_pct": -0.03975,
+    "price": 87.15,
+    "value": 2466.83,
+    "pl": 1.35,
+    "pl_pct": 0.00055,
     "entry_date": "2026-11-20",
     "rating": "Overweight",
     "rationale": "Initiate a 0.75x position to capture momentum while mitigating downside risk through tactical limit orders. Focus entry in the $81.00–$82.00 range to avoid chasing volatility, and enforce a strict stop-loss at $78.50. This approach balances the strong earnings fundamentals against the identified technical and regulatory headwinds."
@@ -673,36 +746,36 @@
     "side": "short",
     "qty": -3.8607,
     "avg_price": 638.3523,
-    "price": 609.75,
-    "value": -2354.06,
-    "pl": 110.42,
-    "pl_pct": 0.04481,
+    "price": 651.18,
+    "value": -2514.01,
+    "pl": -49.52,
+    "pl_pct": -0.0201,
     "entry_date": "2026-11-20",
     "rating": "Underweight",
     "rationale": "Reduce current QQQ exposure by 15-20% immediately to preserve capital. Utilize any near-term mean-reversion bounces towards the $667.71 level to exit further into strength, while maintaining a firm stop-loss at $684.94."
    },
    {
     "symbol": "SPY",
-    "side": "short",
-    "qty": -3.4545,
-    "avg_price": 713.4173,
-    "price": 690.68,
-    "value": -2385.95,
-    "pl": 78.55,
-    "pl_pct": 0.03187,
-    "entry_date": "2026-11-20",
-    "rating": "Underweight",
-    "rationale": "Reduce current long exposure by 25-50% to manage risk within this high-volatility regime (ATR $12.21). Do not attempt to catch a mean-reversion bounce; prioritize capital preservation until a structural reclaim of the 200-day moving average at $730.20 is confirmed."
+    "side": "long",
+    "qty": 3.2562,
+    "avg_price": 724.4399,
+    "price": 722.56,
+    "value": 2352.8,
+    "pl": -6.12,
+    "pl_pct": -0.00259,
+    "entry_date": "2026-11-23",
+    "rating": "Overweight",
+    "rationale": "Initiate a long position in SPY with a conservative, tiered entry strategy. Purchase an initial 15% allocation now to capitalize on extreme oversold conditions, with limit orders for the remainder placed at 3% and 6% lower to manage volatility risks. Maintain a strict stop-loss at $620.83 to defend against structural breakdown."
    },
    {
     "symbol": "UNH",
     "side": "long",
     "qty": 7.1163,
     "avg_price": 353.3907,
-    "price": 340.03,
-    "value": 2419.76,
-    "pl": -95.08,
-    "pl_pct": -0.03781,
+    "price": 336.2,
+    "value": 2392.5,
+    "pl": -122.33,
+    "pl_pct": -0.04864,
     "entry_date": "2026-11-19",
     "rating": "Overweight",
     "rationale": "Initiate a staggered long position in UNH to capture fundamental value during this liquidity-driven dislocation. Deploy half of the target 5% allocation at current levels (~$349) and reserve the remainder for accumulation upon signs of price consolidation or if the stock probes support at $325. Maintain a firm stop-loss below $325 to manage exposure to the ongoing technical breakdown and regulatory volatility."
@@ -712,10 +785,10 @@
     "side": "long",
     "qty": 11.2882,
     "avg_price": 218.4137,
-    "price": 210.69,
-    "value": 2378.31,
-    "pl": -87.19,
-    "pl_pct": -0.03536,
+    "price": 212.29,
+    "value": 2396.37,
+    "pl": -69.13,
+    "pl_pct": -0.02804,
     "entry_date": "2026-11-20",
     "rating": "Overweight",
     "rationale": "Initiate a partial long position of 0.5x allocation in WSM to capitalize on a technical mean reversion near the 200 SMA support at $216.50. Given the high volatility (ATR $11.44), we will employ a wider risk threshold than a tight stop-loss to avoid being shaken out by noise, holding for a 3-6 month horizon to allow the fundamental valuation gap to close."
@@ -723,28 +796,28 @@
   ],
   "pending": [
    {
-    "symbol": "INTU",
-    "signal_date": "2026-11-20",
+    "symbol": "NVDA",
+    "signal_date": "2026-11-23",
     "rating": "Overweight",
     "target": 0.1
    },
    {
-    "symbol": "NKE",
-    "signal_date": "2026-11-20",
+    "symbol": "PDD",
+    "signal_date": "2026-11-23",
     "rating": "Exit",
     "target": 0.0
    },
    {
-    "symbol": "QQQ",
-    "signal_date": "2026-11-20",
+    "symbol": "SPY",
+    "signal_date": "2026-11-23",
     "rating": "Underweight",
     "target": -0.1
    },
    {
-    "symbol": "SPY",
-    "signal_date": "2026-11-20",
-    "rating": "Overweight",
-    "target": 0.1
+    "symbol": "WSM",
+    "signal_date": "2026-11-23",
+    "rating": "Exit",
+    "target": 0.0
    }
   ],
   "trades": [
@@ -942,6 +1015,21 @@
     "rationale": "Initiate an initial 50% position in SPY at current levels near $760 to capture strong institutional accumulation, with the remainder of the allocation deployed upon a confirmed daily close above the $764.55 50-day SMA. Maintain a firm stop-loss at $730.00 to protect against a structural breakdown below the 200-day moving average.",
     "exit_reason": "re-decided",
     "exit_rationale": "Reduce current long exposure by 25-50% to manage risk within this high-volatility regime (ATR $12.21). Do not attempt to catch a mean-reversion bounce; prioritize capital preservation until a structural reclaim of the 200-day moving average at $730.20 is confirmed."
+   },
+   {
+    "symbol": "SPY",
+    "side": "short",
+    "qty": 3.4545,
+    "entry_date": "2026-11-20",
+    "entry_px": 713.4173,
+    "exit_date": "2026-11-23",
+    "exit_px": 724.4399,
+    "pnl": -38.57,
+    "pnl_pct": -1.565,
+    "rating": "Underweight",
+    "rationale": "Reduce current long exposure by 25-50% to manage risk within this high-volatility regime (ATR $12.21). Do not attempt to catch a mean-reversion bounce; prioritize capital preservation until a structural reclaim of the 200-day moving average at $730.20 is confirmed.",
+    "exit_reason": "re-decided",
+    "exit_rationale": "Initiate a long position in SPY with a conservative, tiered entry strategy. Purchase an initial 15% allocation now to capitalize on extreme oversold conditions, with limit orders for the remainder placed at 3% and 6% lower to manage volatility risks. Maintain a strict stop-loss at $620.83 to defend against structural breakdown."
    }
   ],
   "calendar": [
@@ -998,16 +1086,22 @@
     "pl": -1065.58,
     "pct": -4.323,
     "equity": 23584.4
+   },
+   {
+    "date": "2026-11-23",
+    "pl": 1526.58,
+    "pct": 6.473,
+    "equity": 25110.97
    }
   ],
   "stats": {
-   "total_pct": -5.662,
+   "total_pct": 0.444,
    "max_dd_pct": -8.818,
-   "sharpe": -4.762,
-   "trades": 13,
-   "win_rate": 0.538,
-   "days": 9,
-   "equity": 23584.4
+   "sharpe": 0.444,
+   "trades": 14,
+   "win_rate": 0.5,
+   "days": 10,
+   "equity": 25110.97
   }
  },
  "orders_log": [
@@ -1258,68 +1352,173 @@
    "qty": 3.0,
    "note": "open",
    "status": "accepted"
+  },
+  {
+   "date": "2026-11-23",
+   "symbol": "NVDA",
+   "side": "buy",
+   "qty": 14.0,
+   "note": "open",
+   "status": "accepted"
+  },
+  {
+   "date": "2026-11-23",
+   "symbol": "PDD",
+   "side": "sell",
+   "qty": 21.0,
+   "note": "exit",
+   "status": "accepted"
+  },
+  {
+   "date": "2026-11-23",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 3.0,
+   "note": "flip: close first, open next night",
+   "status": "accepted"
+  },
+  {
+   "date": "2026-11-23",
+   "symbol": "WSM",
+   "side": "sell",
+   "qty": 5.0,
+   "note": "exit",
+   "status": "accepted"
   }
  ],
- "generated": "2026-11-20T22:38:32+00:00",
+ "generated": "2026-11-23T22:53:29+00:00",
  "start_equity": 25000.0,
- "equity": 23903.84,
- "cash": 21096.84,
- "last_equity": 24199.4,
+ "equity": 24019.94,
+ "cash": 19786.95,
+ "last_equity": 23907.48,
  "positions": [
+  {
+   "symbol": "INTU",
+   "qty": 4.0,
+   "avg_price": 275.005,
+   "price": 276.7808,
+   "value": 1107.1232,
+   "pl": 7.1032,
+   "pl_pct": 0.00646,
+   "rating": "Overweight",
+   "rationale": "Initiate a long position in INTU at current oversold levels, scaling in cautiously rather than entering full size immediately. Deploy an initial 0.5x tranche at the current price of $270.44 to capitalize on the RSI extremes, reserving additional liquidity to layer in only if the technicals stabilize, while maintaining a strict stop-loss 10% below entry to mitigate momentum decay."
+  },
   {
    "symbol": "PDD",
    "qty": 21.0,
    "avg_price": 86.591429,
-   "price": 83.5,
-   "value": 1753.5,
-   "pl": -64.920009,
-   "pl_pct": -0.0357,
+   "price": 87.07,
+   "value": 1828.47,
+   "pl": 10.049991,
+   "pl_pct": 0.00553,
    "rating": "Overweight",
    "rationale": "Initiate a 0.75x position to capture momentum while mitigating downside risk through tactical limit orders. Focus entry in the $81.00–$82.00 range to avoid chasing volatility, and enforce a strict stop-loss at $78.50. This approach balances the strong earnings fundamentals against the identified technical and regulatory headwinds."
+  },
+  {
+   "symbol": "QQQ",
+   "qty": -3.0,
+   "avg_price": 651.29,
+   "price": 652.25,
+   "value": -1956.75,
+   "pl": -2.88,
+   "pl_pct": -0.00147,
+   "rating": "Hold",
+   "rationale": "Maintain existing exposure to `QQQ` but strictly prohibit any new capital deployment. The market is currently caught in a volatile tug-of-war where headline-driven relief rallies are being immediately met with structural distribution. Continue to hold current positions to avoid locking in losses during periods of extreme volatility (ATR of 20.94), but enforce a hard stop-loss just below the 606.23 swing low. Do not increase size until `QQQ` proves it has regained structural integrity by reclaiming the 200-day SMA at 682.29 and the 10-day EMA at 655.86."
+  },
+  {
+   "symbol": "SPY",
+   "qty": 3.0,
+   "avg_price": 721.2,
+   "price": 724.0988,
+   "value": 2172.2964,
+   "pl": 8.6964,
+   "pl_pct": 0.00402,
+   "rating": "Underweight",
+   "rationale": "Reduce exposure to `SPY` by 25% to 30%. The current technical breakdown below critical moving averages, combined with a volatile macroeconomic landscape, necessitates immediate capital preservation. Cease all new capital deployment and \"buy-the-dip\" strategies until the index demonstrates a technical reversal, specifically reclaiming the 200-day SMA."
   },
   {
    "symbol": "WSM",
    "qty": 5.0,
    "avg_price": 220.4,
-   "price": 210.7,
-   "value": 1053.5,
-   "pl": -48.5,
-   "pl_pct": -0.04401,
+   "price": 216.37,
+   "value": 1081.85,
+   "pl": -20.15,
+   "pl_pct": -0.01828,
    "rating": "Overweight",
    "rationale": "Initiate a partial long position of 0.5x allocation in WSM to capitalize on a technical mean reversion near the 200 SMA support at $216.50. Given the high volatility (ATR $11.44), we will employ a wider risk threshold than a tight stop-loss to avoid being shaken out by noise, holding for a 3-6 month horizon to allow the fundamental valuation gap to close."
   }
  ],
  "orders": [
   {
-   "date": "2026-11-20T22:38+00:00",
-   "symbol": "SPY",
-   "side": "buy",
-   "qty": 3.0,
+   "date": "2026-11-23T22:53+00:00",
+   "symbol": "WSM",
+   "side": "sell",
+   "qty": 5.0,
    "status": "accepted",
    "price": null
   },
   {
-   "date": "2026-11-20T22:38+00:00",
-   "symbol": "QQQ",
+   "date": "2026-11-23T22:53+00:00",
+   "symbol": "SPY",
    "side": "sell",
    "qty": 3.0,
    "status": "accepted",
    "price": null
   },
   {
-   "date": "2026-11-20T22:38+00:00",
+   "date": "2026-11-23T22:53+00:00",
+   "symbol": "PDD",
+   "side": "sell",
+   "qty": 21.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-23T22:53+00:00",
+   "symbol": "NVDA",
+   "side": "buy",
+   "qty": 14.0,
+   "status": "accepted",
+   "price": null
+  },
+  {
+   "date": "2026-11-23T14:35+00:00",
+   "symbol": "SPY",
+   "side": "sell",
+   "qty": 3.0,
+   "status": "canceled",
+   "price": null
+  },
+  {
+   "date": "2026-11-23T09:01+00:00",
+   "symbol": "SPY",
+   "side": "buy",
+   "qty": 3.0,
+   "status": "filled",
+   "price": 721.2
+  },
+  {
+   "date": "2026-11-23T09:01+00:00",
    "symbol": "INTU",
    "side": "buy",
    "qty": 4.0,
-   "status": "accepted",
-   "price": null
+   "status": "filled",
+   "price": 275.005
+  },
+  {
+   "date": "2026-11-23T09:01+00:00",
+   "symbol": "QQQ",
+   "side": "sell",
+   "qty": 3.0,
+   "status": "filled",
+   "price": 651.29
   },
   {
    "date": "2026-11-20T14:35+00:00",
    "symbol": "PDD",
    "side": "sell",
    "qty": 21.0,
-   "status": "new",
+   "status": "canceled",
    "price": null
   },
   {
@@ -1369,46 +1568,6 @@
    "qty": 5.0,
    "status": "filled",
    "price": 220.4
-  },
-  {
-   "date": "2026-11-19T14:35+00:00",
-   "symbol": "SPY",
-   "side": "sell",
-   "qty": 3.0,
-   "status": "canceled",
-   "price": null
-  },
-  {
-   "date": "2026-11-19T14:30+00:00",
-   "symbol": "UNH",
-   "side": "sell",
-   "qty": 6.0,
-   "status": "filled",
-   "price": 324.87
-  },
-  {
-   "date": "2026-11-19T14:30+00:00",
-   "symbol": "NVDA",
-   "side": "sell",
-   "qty": 16.0,
-   "status": "canceled",
-   "price": null
-  },
-  {
-   "date": "2026-11-19T09:00+00:00",
-   "symbol": "UNH",
-   "side": "buy",
-   "qty": 6.0,
-   "status": "filled",
-   "price": 350.62
-  },
-  {
-   "date": "2026-11-19T09:00+00:00",
-   "symbol": "SPY",
-   "side": "buy",
-   "qty": 3.0,
-   "status": "filled",
-   "price": 738.916667
   }
  ],
  "calendar": [
@@ -1462,887 +1621,689 @@
   },
   {
    "date": "2026-11-20",
-   "pl": -295.56,
-   "pct": -1.221,
-   "equity": 23903.84
+   "pl": -291.92,
+   "pct": -1.21,
+   "equity": 23907.48
+  },
+  {
+   "date": "2026-11-23",
+   "pl": 112.46,
+   "pct": 0.47,
+   "equity": 24019.94
   }
  ],
  "history": {
   "1D": [
    [
-    1795165200,
-    24134.45
+    1795424400,
+    23953.69
    ],
    [
-    1795165500,
-    24134.45
+    1795424700,
+    23953.69
    ],
    [
-    1795165800,
-    24136.55
+    1795425000,
+    23953.69
    ],
    [
-    1795166100,
-    24125.99
+    1795425300,
+    23962.51
    ],
    [
-    1795166400,
-    24128.42
+    1795425600,
+    23959.78
    ],
    [
-    1795166700,
-    24128.96
+    1795425900,
+    23957.89
    ],
    [
-    1795167000,
-    24108.33
+    1795426200,
+    23957.77
    ],
    [
-    1795167300,
-    24111.66
+    1795426500,
+    23963.77
    ],
    [
-    1795167600,
-    24094.02
+    1795426800,
+    23955.37
    ],
    [
-    1795167900,
-    24094.91
+    1795427100,
+    23957.89
    ],
    [
-    1795168200,
-    24095.98
+    1795427400,
+    23957.89
    ],
    [
-    1795168500,
-    24088.62
+    1795427700,
+    23957.89
    ],
    [
-    1795168800,
-    24092.74
+    1795428000,
+    23957.89
    ],
    [
-    1795169100,
-    24103.33
+    1795428300,
+    23957.89
    ],
    [
-    1795169400,
-    24104.05
+    1795428600,
+    23958.52
    ],
    [
-    1795169700,
-    24108.09
+    1795428900,
+    23958.52
    ],
    [
-    1795170000,
-    24102.8
+    1795429200,
+    23958.52
    ],
    [
-    1795170300,
-    24116.77
+    1795429500,
+    23957.26
    ],
    [
-    1795170600,
-    24118.65
+    1795429800,
+    23960.2
    ],
    [
-    1795170900,
-    24126.75
+    1795430100,
+    23959.78
    ],
    [
-    1795171200,
-    24130.89
+    1795430400,
+    23959.15
    ],
    [
-    1795171500,
-    24133.69
+    1795430700,
+    23959.78
    ],
    [
-    1795171800,
-    24118.07
+    1795431000,
+    23963.35
    ],
    [
-    1795172100,
-    24121.25
+    1795431300,
+    23960.41
    ],
    [
-    1795172400,
-    24123.68
+    1795431600,
+    23960.41
    ],
    [
-    1795172700,
-    24118.42
+    1795431900,
+    23960.41
    ],
    [
-    1795173000,
-    24118.46
+    1795432200,
+    23961.68
    ],
    [
-    1795173300,
-    24109.92
+    1795432500,
+    23965.24
    ],
    [
-    1795173600,
-    24110.64
+    1795432800,
+    23965.24
    ],
    [
-    1795173900,
-    24106.73
+    1795433100,
+    23965.24
    ],
    [
-    1795174200,
-    24114.3
+    1795433400,
+    23972.8
    ],
    [
-    1795174500,
-    24104.04
+    1795433700,
+    23971.12
    ],
    [
-    1795174800,
-    24104.88
+    1795434000,
+    23970.91
    ],
    [
-    1795175100,
-    24105.67
+    1795434300,
+    23970.07
    ],
    [
-    1795175400,
-    24106.15
+    1795434600,
+    23970.7
    ],
    [
-    1795175700,
-    24117.28
+    1795434900,
+    23970.7
    ],
    [
-    1795176000,
-    24111.79
+    1795435200,
+    23970.49
    ],
    [
-    1795176300,
-    24103.82
+    1795435500,
+    23970.07
    ],
    [
-    1795176600,
-    24102.77
+    1795435800,
+    23966.8
    ],
    [
-    1795176900,
-    24103.24
+    1795436100,
+    23965.45
    ],
    [
-    1795177200,
-    24090.91
+    1795436400,
+    23967.13
    ],
    [
-    1795177500,
-    24095.73
+    1795436700,
+    23967.13
    ],
    [
-    1795177800,
-    24098.55
+    1795437000,
+    23967.13
    ],
    [
-    1795178100,
-    24098.54
+    1795437300,
+    23967.55
    ],
    [
-    1795178400,
-    24091.36
+    1795437600,
+    23965.45
    ],
    [
-    1795178700,
-    24085.32
+    1795437900,
+    23965.45
    ],
    [
-    1795179000,
-    24089.49
+    1795438200,
+    23967.55
    ],
    [
-    1795179300,
-    24090.88
+    1795438500,
+    23970.7
    ],
    [
-    1795179600,
-    24077.11
+    1795438800,
+    23965.66
    ],
    [
-    1795179900,
-    24073.41
+    1795439100,
+    23972.8
    ],
    [
-    1795180200,
-    24076.43
+    1795439400,
+    23971.23
    ],
    [
-    1795180500,
-    24072.15
+    1795439700,
+    23973.01
    ],
    [
-    1795180800,
-    24076.05
+    1795440000,
+    23973.01
    ],
    [
-    1795181100,
-    24063.99
+    1795440300,
+    23975.32
    ],
    [
-    1795181400,
-    24064.68
+    1795440600,
+    23972.38
    ],
    [
-    1795181700,
-    24049.21
+    1795440900,
+    23969.65
    ],
    [
-    1795182000,
-    24058.86
+    1795441200,
+    23967.55
    ],
    [
-    1795182300,
-    24070.93
+    1795441500,
+    23967.55
    ],
    [
-    1795182600,
-    24092.64
+    1795441800,
+    23967.76
    ],
    [
-    1795182900,
-    24090.68
+    1795442100,
+    23967.76
    ],
    [
-    1795183200,
-    24108.54
+    1795442400,
+    23978.26
    ],
    [
-    1795183500,
-    24120.37
+    1795442700,
+    23982.04
    ],
    [
-    1795183800,
-    24134.63
+    1795443000,
+    23970.91
    ],
    [
-    1795184100,
-    24123.5
+    1795443300,
+    23975.95
    ],
    [
-    1795184400,
-    24125.01
+    1795443600,
+    23968.6
    ],
    [
-    1795184700,
-    24138.21
+    1795443900,
+    23975.95
    ],
    [
-    1795185000,
-    24152.08
+    1795444200,
+    23971.75
    ],
    [
-    1795185300,
-    24111.55
+    1795444500,
+    23936.06
    ],
    [
-    1795185600,
-    24079.81
+    1795444800,
+    23920.88
    ],
    [
-    1795185900,
-    24050.27
+    1795445100,
+    23927.67
    ],
    [
-    1795186200,
-    24075.46
+    1795445400,
+    23953.67
    ],
    [
-    1795186500,
-    24079.14
+    1795445700,
+    23954.0
    ],
    [
-    1795186800,
-    24092.61
+    1795446000,
+    23947.81
    ],
    [
-    1795187100,
-    24107.08
+    1795446300,
+    23962.18
    ],
    [
-    1795187400,
-    24096.4
-   ],
-   [
-    1795187700,
-    24075.17
-   ],
-   [
-    1795188000,
-    24049.56
-   ],
-   [
-    1795188300,
-    24033.83
-   ],
-   [
-    1795188600,
-    24043.61
-   ],
-   [
-    1795188900,
-    24023.95
-   ],
-   [
-    1795189200,
-    24023.25
-   ],
-   [
-    1795189500,
-    23996.39
-   ],
-   [
-    1795189800,
-    23989.7
-   ],
-   [
-    1795190100,
-    23991.71
-   ],
-   [
-    1795190400,
-    23977.6
-   ],
-   [
-    1795190700,
-    23970.71
-   ],
-   [
-    1795191000,
-    23978.62
-   ],
-   [
-    1795191300,
-    23982.43
-   ],
-   [
-    1795191600,
-    23982.47
-   ],
-   [
-    1795191900,
-    23981.69
-   ],
-   [
-    1795192200,
-    23981.56
-   ],
-   [
-    1795192500,
-    23975.51
-   ],
-   [
-    1795192800,
-    23971.5
-   ],
-   [
-    1795193100,
-    23967.86
-   ],
-   [
-    1795193400,
-    23964.35
-   ],
-   [
-    1795193700,
-    23967.44
-   ],
-   [
-    1795194000,
-    23973.76
-   ],
-   [
-    1795194300,
-    23967.49
-   ],
-   [
-    1795194600,
-    23970.6
-   ],
-   [
-    1795194900,
-    23964.03
-   ],
-   [
-    1795195200,
-    23959.38
-   ],
-   [
-    1795195500,
-    23966.02
-   ],
-   [
-    1795195800,
-    23964.35
-   ],
-   [
-    1795196100,
-    23959.33
-   ],
-   [
-    1795196400,
-    23959.11
-   ],
-   [
-    1795196700,
-    23954.97
-   ],
-   [
-    1795197000,
-    23954.08
-   ],
-   [
-    1795197300,
-    23954.5
-   ],
-   [
-    1795197600,
-    23960.69
-   ],
-   [
-    1795197900,
-    23956.02
-   ],
-   [
-    1795198200,
-    23955.62
-   ],
-   [
-    1795198500,
-    23957.85
-   ],
-   [
-    1795198800,
+    1795446600,
     23962.82
    ],
    [
-    1795199100,
-    23961.39
+    1795446900,
+    23961.87
    ],
    [
-    1795199400,
-    23956.47
+    1795447200,
+    23967.2
    ],
    [
-    1795199700,
-    23961.18
+    1795447500,
+    23973.46
    ],
    [
-    1795200000,
-    23962.22
+    1795447800,
+    23993.92
    ],
    [
-    1795200300,
-    23956.97
+    1795448100,
+    24004.05
    ],
    [
-    1795200600,
-    23963.48
+    1795448400,
+    24008.19
    ],
    [
-    1795200900,
-    23968.3
+    1795448700,
+    23998.69
    ],
    [
-    1795201200,
-    23970.93
+    1795449000,
+    23996.88
    ],
    [
-    1795201500,
-    23966.66
+    1795449300,
+    24006.78
    ],
    [
-    1795201800,
-    23963.66
+    1795449600,
+    24005.24
    ],
    [
-    1795202100,
-    23953.62
+    1795449900,
+    24003.78
    ],
    [
-    1795202400,
-    23953.15
+    1795450200,
+    24004.6
    ],
    [
-    1795202700,
-    23946.39
+    1795450500,
+    24019.24
    ],
    [
-    1795203000,
-    23937.55
+    1795450800,
+    24013.99
    ],
    [
-    1795203300,
-    23934.06
+    1795451100,
+    24018.16
    ],
    [
-    1795203600,
-    23947.58
+    1795451400,
+    24005.9
    ],
    [
-    1795203900,
-    23947.18
+    1795451700,
+    23997.87
    ],
    [
-    1795204200,
-    23941.68
+    1795452000,
+    23995.16
    ],
    [
-    1795204500,
-    23938.31
+    1795452300,
+    24009.68
    ],
    [
-    1795204800,
-    23929.64
+    1795452600,
+    24012.8
    ],
    [
-    1795205100,
-    23923.11
+    1795452900,
+    24014.35
    ],
    [
-    1795205400,
-    23925.55
+    1795453200,
+    24016.45
    ],
    [
-    1795205700,
-    23927.21
+    1795453500,
+    24005.61
    ],
    [
-    1795206000,
-    23927.56
+    1795453800,
+    24006.67
    ],
    [
-    1795206300,
-    23923.85
+    1795454100,
+    24013.91
    ],
    [
-    1795206600,
-    23918.63
+    1795454400,
+    24014.92
    ],
    [
-    1795206900,
-    23910.46
+    1795454700,
+    24015.13
    ],
    [
-    1795207200,
-    23913.07
+    1795455000,
+    24017.64
    ],
    [
-    1795207500,
-    23907.17
+    1795455300,
+    24023.2
    ],
    [
-    1795207800,
-    23918.71
+    1795455600,
+    24017.72
    ],
    [
-    1795208100,
-    23912.29
+    1795455900,
+    24012.14
    ],
    [
-    1795208400,
-    23907.5
+    1795456200,
+    24009.77
    ],
    [
-    1795208700,
-    23908.25
+    1795456500,
+    24020.67
    ],
    [
-    1795209000,
-    23911.82
+    1795456800,
+    24019.93
    ],
    [
-    1795209300,
-    23903.75
+    1795457100,
+    24027.04
    ],
    [
-    1795209600,
-    23906.57
+    1795457400,
+    24029.1
    ],
    [
-    1795209900,
-    23913.71
+    1795457700,
+    24030.7
    ],
    [
-    1795210200,
-    23911.82
+    1795458000,
+    24029.12
    ],
    [
-    1795210500,
-    23911.82
+    1795458300,
+    24029.36
    ],
    [
-    1795210800,
-    23913.29
+    1795458600,
+    24034.16
    ],
    [
-    1795211100,
-    23912.87
+    1795458900,
+    24040.83
    ],
    [
-    1795211400,
-    23912.66
+    1795459200,
+    24039.55
    ],
    [
-    1795211700,
-    23913.71
+    1795459500,
+    24035.55
    ],
    [
-    1795212000,
-    23911.82
+    1795459800,
+    24034.3
    ],
    [
-    1795212300,
-    23912.8
+    1795460100,
+    24033.43
    ],
    [
-    1795212600,
-    23906.78
+    1795460400,
+    24032.95
    ],
    [
-    1795212900,
-    23906.57
+    1795460700,
+    24040.42
    ],
    [
-    1795213200,
-    23905.1
+    1795461000,
+    24043.83
    ],
    [
-    1795213500,
-    23905.73
+    1795461300,
+    24047.18
    ],
    [
-    1795213800,
-    23905.1
+    1795461600,
+    24048.15
    ],
    [
-    1795214100,
-    23903.42
+    1795461900,
+    24045.83
+   ],
+   [
+    1795462200,
+    24045.01
+   ],
+   [
+    1795462500,
+    24032.91
+   ],
+   [
+    1795462800,
+    24023.45
+   ],
+   [
+    1795463100,
+    24019.83
+   ],
+   [
+    1795463400,
+    24013.84
+   ],
+   [
+    1795463700,
+    24012.71
+   ],
+   [
+    1795464000,
+    24017.97
+   ],
+   [
+    1795464300,
+    24017.73
+   ],
+   [
+    1795464600,
+    24010.44
+   ],
+   [
+    1795464900,
+    24017.85
+   ],
+   [
+    1795465200,
+    24011.74
+   ],
+   [
+    1795465500,
+    24015.14
+   ],
+   [
+    1795465800,
+    24010.65
+   ],
+   [
+    1795466100,
+    24001.81
+   ],
+   [
+    1795466400,
+    24000.97
+   ],
+   [
+    1795466700,
+    24003.06
+   ],
+   [
+    1795467000,
+    24005.9
+   ],
+   [
+    1795467300,
+    23997.3
+   ],
+   [
+    1795467600,
+    23995.97
+   ],
+   [
+    1795467900,
+    23991.4
+   ],
+   [
+    1795468200,
+    24013.19
+   ],
+   [
+    1795468500,
+    24017.11
+   ],
+   [
+    1795468800,
+    24017.93
+   ],
+   [
+    1795469100,
+    24020.11
+   ],
+   [
+    1795469400,
+    24020.12
+   ],
+   [
+    1795469700,
+    24019.69
+   ],
+   [
+    1795470000,
+    24014.26
+   ],
+   [
+    1795470300,
+    23994.05
+   ],
+   [
+    1795470600,
+    23995.46
+   ],
+   [
+    1795470900,
+    23995.92
+   ],
+   [
+    1795471200,
+    23993.19
+   ],
+   [
+    1795471500,
+    23995.29
+   ],
+   [
+    1795471800,
+    23995.95
+   ],
+   [
+    1795472100,
+    23995.68
+   ],
+   [
+    1795472400,
+    23993.84
+   ],
+   [
+    1795472700,
+    23993.91
+   ],
+   [
+    1795473000,
+    23993.85
+   ],
+   [
+    1795473300,
+    23994.42
+   ],
+   [
+    1795473600,
+    23994.24
+   ],
+   [
+    1795473900,
+    23993.79
+   ],
+   [
+    1795474200,
+    23995.14
    ]
   ],
   "1W": [
-   [
-    1794580200,
-    25273.41
-   ],
-   [
-    1794581100,
-    25047.9
-   ],
-   [
-    1794582000,
-    25051.1
-   ],
-   [
-    1794582900,
-    24900.97
-   ],
-   [
-    1794583800,
-    24884.65
-   ],
-   [
-    1794584700,
-    24906.32
-   ],
-   [
-    1794585600,
-    24916.12
-   ],
-   [
-    1794586500,
-    24905.11
-   ],
-   [
-    1794587400,
-    24941.36
-   ],
-   [
-    1794588300,
-    24921.9
-   ],
-   [
-    1794589200,
-    24931.52
-   ],
-   [
-    1794590100,
-    24945.7
-   ],
-   [
-    1794591000,
-    24963.68
-   ],
-   [
-    1794591900,
-    24964.27
-   ],
-   [
-    1794592800,
-    24968.91
-   ],
-   [
-    1794593700,
-    24967.84
-   ],
-   [
-    1794594600,
-    24980.68
-   ],
-   [
-    1794595500,
-    24995.67
-   ],
-   [
-    1794596400,
-    25011.92
-   ],
-   [
-    1794597300,
-    25005.66
-   ],
-   [
-    1794598200,
-    25019.05
-   ],
-   [
-    1794599100,
-    24997.99
-   ],
-   [
-    1794600000,
-    25016.68
-   ],
-   [
-    1794600900,
-    25007.05
-   ],
-   [
-    1794601800,
-    24990.25
-   ],
-   [
-    1794602700,
-    24974.03
-   ],
-   [
-    1794603600,
-    25008.4
-   ],
-   [
-    1794839400,
-    24910.33
-   ],
-   [
-    1794840300,
-    24960.95
-   ],
-   [
-    1794841200,
-    24921.07
-   ],
-   [
-    1794842100,
-    24901.41
-   ],
-   [
-    1794843000,
-    24854.01
-   ],
-   [
-    1794843900,
-    24848.47
-   ],
-   [
-    1794844800,
-    24847.41
-   ],
-   [
-    1794845700,
-    24816.4
-   ],
-   [
-    1794846600,
-    24848.11
-   ],
-   [
-    1794847500,
-    24837.46
-   ],
-   [
-    1794848400,
-    24823.99
-   ],
-   [
-    1794849300,
-    24811.14
-   ],
-   [
-    1794850200,
-    24796.71
-   ],
-   [
-    1794851100,
-    24787.96
-   ],
-   [
-    1794852000,
-    24788.99
-   ],
-   [
-    1794852900,
-    24764.52
-   ],
-   [
-    1794853800,
-    24729.06
-   ],
-   [
-    1794854700,
-    24729.14
-   ],
-   [
-    1794855600,
-    24768.16
-   ],
-   [
-    1794856500,
-    24731.92
-   ],
-   [
-    1794857400,
-    24726.54
-   ],
-   [
-    1794858300,
-    24687.36
-   ],
-   [
-    1794859200,
-    24719.29
-   ],
-   [
-    1794860100,
-    24684.79
-   ],
-   [
-    1794861000,
-    24681.45
-   ],
-   [
-    1794861900,
-    24673.95
-   ],
-   [
-    1794862800,
-    24706.33
-   ],
    [
     1794925800,
     24701.55
@@ -2774,6 +2735,114 @@
    [
     1795208400,
     23907.5
+   ],
+   [
+    1795444200,
+    23964.13
+   ],
+   [
+    1795445100,
+    23927.67
+   ],
+   [
+    1795446000,
+    23947.81
+   ],
+   [
+    1795446900,
+    23961.87
+   ],
+   [
+    1795447800,
+    23993.92
+   ],
+   [
+    1795448700,
+    23998.69
+   ],
+   [
+    1795449600,
+    24005.24
+   ],
+   [
+    1795450500,
+    24019.24
+   ],
+   [
+    1795451400,
+    24005.9
+   ],
+   [
+    1795452300,
+    24009.68
+   ],
+   [
+    1795453200,
+    24016.45
+   ],
+   [
+    1795454100,
+    24013.91
+   ],
+   [
+    1795455000,
+    24017.64
+   ],
+   [
+    1795455900,
+    24012.14
+   ],
+   [
+    1795456800,
+    24019.93
+   ],
+   [
+    1795457700,
+    24030.7
+   ],
+   [
+    1795458600,
+    24034.16
+   ],
+   [
+    1795459500,
+    24035.55
+   ],
+   [
+    1795460400,
+    24032.95
+   ],
+   [
+    1795461300,
+    24047.18
+   ],
+   [
+    1795462200,
+    24045.01
+   ],
+   [
+    1795463100,
+    24019.83
+   ],
+   [
+    1795464000,
+    24017.97
+   ],
+   [
+    1795464900,
+    24017.85
+   ],
+   [
+    1795465800,
+    24010.65
+   ],
+   [
+    1795466700,
+    24003.06
+   ],
+   [
+    1795467600,
+    23995.97
    ]
   ],
   "1M": [
@@ -3052,6 +3121,34 @@
    [
     1795206600,
     23918.63
+   ],
+   [
+    1795444200,
+    23964.13
+   ],
+   [
+    1795447800,
+    23993.92
+   ],
+   [
+    1795451400,
+    24005.9
+   ],
+   [
+    1795455000,
+    24017.64
+   ],
+   [
+    1795458600,
+    24034.16
+   ],
+   [
+    1795462200,
+    24045.01
+   ],
+   [
+    1795465800,
+    24010.65
    ]
   ],
   "ALL": [
@@ -3096,8 +3193,12 @@
     24199.4
    ],
    [
-    1795214312,
-    23903.84
+    1795222800,
+    23907.48
+   ],
+   [
+    1795474409,
+    24019.94
    ]
   ]
  },
@@ -3301,10 +3402,10 @@
    }
   ],
   "realized": -982.17,
-  "unrealized": -113.42,
-  "equity": 23903.84,
-  "available": 18305.7,
-  "margin": 3945.49,
+  "unrealized": 2.82,
+  "equity": 24019.94,
+  "available": 18783.81,
+  "margin": 5236.12,
   "start_balance": 25000.0
  },
  "mode": "paper",
@@ -3620,24 +3721,31 @@
  ],
  "pending": [
   {
-   "symbol": "INTU",
+   "symbol": "NVDA",
    "side": "buy",
-   "qty": 4.0,
+   "qty": 14.0,
    "note": "open",
    "status": "accepted"
   },
   {
-   "symbol": "QQQ",
+   "symbol": "PDD",
    "side": "sell",
-   "qty": 3.0,
-   "note": "open",
+   "qty": 21.0,
+   "note": "exit",
    "status": "accepted"
   },
   {
    "symbol": "SPY",
-   "side": "buy",
+   "side": "sell",
    "qty": 3.0,
-   "note": "open",
+   "note": "flip: close first, open next night",
+   "status": "accepted"
+  },
+  {
+   "symbol": "WSM",
+   "side": "sell",
+   "qty": 5.0,
+   "note": "exit",
    "status": "accepted"
   }
  ],
@@ -3683,23 +3791,44 @@
    "tp": null
   },
   "GPN": {
-   "rating": "Hold",
-   "side": null,
-   "ref_price": 91.8,
-   "initial_x": 1.0,
-   "stop": null,
-   "stop_type": null,
-   "tp": null,
-   "scale_in": [],
+   "base": null,
    "exits": [],
    "horizon": null,
-   "notes": [
-    "Thesis deadlocked between speculative M&A catalysts and structural operational risk"
-   ],
+   "initial_x": 1.0,
    "not_executed": [
     "no open position or no price to validate against: levels not executed"
    ],
-   "base": null
+   "notes": [
+    "Thesis deadlocked between speculative M&A catalysts and structural operational risk"
+   ],
+   "rating": "Hold",
+   "ref_price": 91.8,
+   "scale_in": [],
+   "side": null,
+   "stop": null,
+   "stop_type": null,
+   "tp": null
+  },
+  "INTU": {
+   "base": 0.1,
+   "exits": [],
+   "horizon": null,
+   "initial_x": 0.5,
+   "max_total_x": 1.0,
+   "not_executed": [
+    "no stop in the paragraph"
+   ],
+   "notes": [
+    "oversold levels",
+    "RSI extremes"
+   ],
+   "rating": "Overweight",
+   "ref_price": 270.29,
+   "scale_in": [],
+   "side": "long",
+   "stop": null,
+   "stop_type": null,
+   "tp": null
   },
   "NBIS": {
    "base": 0.1,
@@ -3749,9 +3878,9 @@
    "tp": null
   },
   "NVDA": {
-   "rating": "Hold",
-   "side": null,
-   "ref_price": 125.65,
+   "rating": "Overweight",
+   "side": "long",
+   "ref_price": 165.185,
    "initial_x": 1.0,
    "stop": null,
    "stop_type": null,
@@ -3759,12 +3888,10 @@
    "scale_in": [],
    "exits": [],
    "horizon": null,
-   "notes": [
-    "Wait for the stock to reclaim the 200-day moving average",
-    "Signal a break in the current institutional distribution phase"
-   ],
-   "not_executed": [],
-   "base": null
+   "notes": [],
+   "not_executed": [
+    "plan extraction failed (HTTPError): rating only"
+   ]
   },
   "PANW": {
    "base": 0.1,
@@ -3804,9 +3931,9 @@
    "tp": null
   },
   "QQQ": {
-   "rating": "Underweight",
+   "rating": "Hold",
    "side": "short",
-   "ref_price": 609.75,
+   "ref_price": 651.18,
    "initial_x": 1.0,
    "stop": null,
    "stop_type": null,
@@ -3815,33 +3942,33 @@
    "exits": [],
    "horizon": null,
    "notes": [
-    "institutional distribution",
-    "structural technical damage",
-    "liquidity-driven volatility"
+    "ATR of 20.94",
+    "structural distribution"
    ],
    "not_executed": [
-    "no stop in the paragraph"
+    "stop $606.23 is on the wrong side of $651.18 for a short: skipped"
    ],
-   "base": 0.1,
+   "base": null,
    "max_total_x": 1.0
   },
   "SPY": {
-   "rating": "Overweight",
-   "side": "long",
-   "ref_price": 690.68,
+   "rating": "Underweight",
+   "side": "short",
+   "ref_price": 722.56,
    "initial_x": 1.0,
-   "stop": 620.83,
-   "stop_type": "price",
+   "stop": null,
+   "stop_type": null,
    "tp": null,
    "scale_in": [],
    "exits": [],
    "horizon": null,
    "notes": [
-    "extreme oversold conditions",
-    "manage volatility risks"
+    "volatile macroeconomic landscape",
+    "cease all new capital deployment and buy-the-dip strategies until technical reversal",
+    "reclaiming the 200-day SMA"
    ],
    "not_executed": [
-    "initial size 0.15x unverified: using the default 1x"
+    "no stop in the paragraph"
    ],
    "base": 0.1,
    "max_total_x": 1.0
@@ -3954,27 +4081,6 @@
    "stop": null,
    "stop_type": null,
    "tp": null
-  },
-  "INTU": {
-   "rating": "Overweight",
-   "side": "long",
-   "ref_price": 270.29,
-   "initial_x": 0.5,
-   "stop": null,
-   "stop_type": null,
-   "tp": null,
-   "scale_in": [],
-   "exits": [],
-   "horizon": null,
-   "notes": [
-    "oversold levels",
-    "RSI extremes"
-   ],
-   "not_executed": [
-    "no stop in the paragraph"
-   ],
-   "base": 0.1,
-   "max_total_x": 1.0
   }
  },
  "plan_events": [],

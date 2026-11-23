@@ -106,7 +106,7 @@ The 5-day alpha of -6.7 percent confirms an immediate sharp drawdown on the long
 
 <!-- ENTRY_END -->
 
-[2026-11-12 | SPY | Hold | pending]
+[2026-11-12 | SPY | Hold | -8.6% | +0.0% | 5d | resolved:2026-11-20]
 
 DECISION:
 **Rating**: Hold
@@ -119,9 +119,13 @@ DECISION:
 
 **Time Horizon**: 1-3 months
 
+REFLECTION:
+The five-day return of minus 8.6 percent with flat alpha is too short to judge a one-to-three-month thesis, though it vindicates the call to avoid new capital deployment amidst high volatility. This sharp drawdown
+ undercuts the initial comfort derived from institutional support near the 200-day moving average by testing its resilience much faster than anticipated. Future analyses should incorporate broader market breadth indicators alongside ATR to better gauge the immediate risk of such rapid support tests.
+
 <!-- ENTRY_END -->
 
-[2026-11-12 | QQQ | Hold | pending]
+[2026-11-12 | QQQ | Hold | -10.5% | -1.9% | 5d | resolved:2026-11-20]
 
 DECISION:
 **Rating**: Hold
@@ -134,9 +138,12 @@ DECISION:
 
 **Time Horizon**: 1-3 months
 
+REFLECTION:
+The negative 1.9 percent alpha over the five-day window reflects immediate downward pressure, though this brief timeframe is ultimately too short to validate a multi-month thesis. This sharp price compression directly supports the conservative thesis regarding elevated volatility and macroeconomic anchors weighing on valuation multiples. Future analyses should treat high Average True Range readings as an active trigger for defensive risk reduction rather than grounds for passive holding.
+
 <!-- ENTRY_END -->
 
-[2026-11-12 | NVDA | Overweight | pending]
+[2026-11-12 | NVDA | Overweight | -22.9% | -14.4% | 5d | resolved:2026-11-20]
 
 DECISION:
 **Rating**: Overweight
@@ -149,9 +156,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of -14.4% (raw return -22.9%) demonstrates an immediate and severe continuation of the downtrend, though this 1-week window is far too short to judge a 3-to-6-month thesis. This sharp drawdown directly undercuts the mean-reversion assumption, proving that the oversold RSI of 25.99 and low forward P/E offered no immediate price floor against intense institutional distribution. A concrete lesson for future analyses is to strictly enforce waiting for price stabilization or a confirmed moving average reclaim rather than attempting to catch falling knives based solely on fundamental valuation disconnects.
+
 <!-- ENTRY_END -->
 
-[2026-11-12 | GPN | Overweight | pending]
+[2026-11-12 | GPN | Overweight | -0.1% | +8.5% | 5d | resolved:2026-11-20]
 
 DECISION:
 **Rating**: Overweight
@@ -164,9 +174,13 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The five-day alpha of plus 8.5 percent shows outperformance in a flat market, though this short window remains insufficient to judge the multi-month thesis. This initial relative strength supports the view that the market is beginning to close the valuation disconnect driven by the failed buyout. Future analyses of high-volatility names should incorporate shorter-term momentum indicators to better time entries around these discounted valuation
+ vacuums.
+
 <!-- ENTRY_END -->
 
-[2026-11-12 | NBIS | Overweight | pending]
+[2026-11-12 | NBIS | Overweight | -29.8% | -21.3% | 5d | resolved:2026-11-20]
 
 DECISION:
 **Rating**: Overweight
@@ -178,6 +192,9 @@ DECISION:
 **Price Target**: not provided
 
 **Time Horizon**: 6-12 months
+
+REFLECTION:
+The 5-day alpha of -21.3% and raw drop of -29.8% completely invalidated the immediate directional call, though this 5-day window is far too short to judge a 6-12 month thesis. This sharp decline undercuts the claim of seller exhaustion indicated by the low RSI, while triggering the strict stop-loss discipline required for high-volatility names. Future analyses of high-beta tech setups must incorporate wider volatility buffers into initial sizing to prevent immediate stop-outs during ongoing distribution phases.
 
 <!-- ENTRY_END -->
 
@@ -626,6 +643,57 @@ DECISION:
 **Investment Thesis**: The investment case is currently too polarized to justify a change in position size. The bull case rests on the potential for a $50 billion buyout and strong trailing free cash flow of $7.47 billion, which could support a move toward $104. However, the bear case highlights severe operational friction, evidenced by a $1.8 billion net loss in Q1 2026 and historical price sensitivity to failed M&A rumors, as demonstrated by a prior 12% plunge. Given the high volatility (ATR of 4.66) and the conflict between technical support at the 50-day moving average and active distribution signals via VWMA, a neutral stance is most prudent. We will re-evaluate if the company proves its fundamental execution without relying on headline-driven volatility.
 
 **Price Target**: 104.0
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-23 | SPY | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce exposure to `SPY` by 25% to 30%. The current technical breakdown below critical moving averages, combined with a volatile macroeconomic landscape, necessitates immediate capital preservation. Cease all new capital deployment and "buy-the-dip" strategies until the index demonstrates a technical reversal, specifically reclaiming the 200-day SMA.
+
+**Investment Thesis**: The decision to move to Underweight is driven by the consensus across all analysts regarding the deteriorating technical structure of `SPY`. The index's failure to maintain both the 50-day SMA (759.30) and, more critically, the 200-day SMA (730.47), confirms a shift in institutional sentiment from accumulation to distribution. With the price currently at 722.29—well below the 30-day VWMA (734.74)—the bearish momentum is backed by quantifiable selling pressure rather than mere sentiment.
+
+While the Aggressive analyst focuses on tactical re-entry near the lower Bollinger bands (705.0), the Neutral and Conservative analysts provide the more prudent risk framework. The Neutral analyst correctly identifies the peril of assuming a "tech-fueled relief rally" in a macro environment where there is a 98% probability of no Fed rate cuts through the end of 2026. The high ATR of 15.35 creates a wide margin of error that makes aggressive, high-leverage re-entry strategies premature and dangerous. 
+
+My conviction for an Underweight stance is supported by the index's hyper-sensitivity to single-stock volatility, which leaves it vulnerable to further rapid downside should the "higher-for-longer" rate environment continue to compress valuations. This thesis would be invalidated, and a transition back to a neutral or overweight stance would be considered, only upon a confirmed daily close above the 200-day SMA (730.47) and a positive shift in the MACD momentum (currently -12.69). Until these objective technical milestones are met, prioritize liquidity preservation over speculative re-accumulation.
+
+<!-- ENTRY_END -->
+
+[2026-11-23 | QQQ | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**
+Maintain existing exposure to `QQQ` but strictly prohibit any new capital deployment. The market is currently caught in a volatile tug-of-war where headline-driven relief rallies are being immediately met with structural distribution. Continue to hold current positions to avoid locking in losses during periods of extreme volatility (ATR of 20.94), but enforce a hard stop-loss just below the 606.23 swing low. Do not increase size until `QQQ` proves it has regained structural integrity by reclaiming the 200-day SMA at 682.29 and the 10-day EMA at 655.86.
+
+**Investment Thesis**
+The decision to hold is dictated by the disconnect between the aggressive "bounce" narrative and the reality of the current technical regime. The aggressive analyst correctly identifies that the recent relief rally to 651.03 was violent, but our internal history of recent failed trades—specifically in `NVDA` and other high-beta names—demonstrates that attempting to front-run these bounces in the face of negative technical momentum is a high-probability path to capital loss.
+
+We are weighing the evidence as follows:
+*   **The Case Against Aggression:** The aggressive argument rests on a single-day news spike. Our prior lessons teach us that "catching falling knives" based on intraday RSI or headline surges without confirmed moving average support is imprudent. The macroeconomic headwind—specifically the 98% probability of zero rate cuts through 2026—serves as a structural anchor that prevents a sustainable valuation expansion, rendering the "aggressive bounce" narrative a potential trap.
+*   **The Case for Caution:** The technical reality cited by the conservative analyst is irrefutable: `QQQ` remains trapped below both the 50-day (709.74) and 200-day (682.29) moving averages. Institutional distribution remains an active threat. However, selling the entire position at these levels is equally unwise, as the underlying constituent companies remain cash-flow engines, and the elevated ATR suggests we are in a regime where selling into the low of a range could result in being "shaken out" before any genuine recovery.
+
+**What changes this position:**
+*   **To Buy/Overweight:** We require a decisive daily close above the 200-day SMA (682.29) and the 10-day EMA (655.86), signaling that the technical correction has stabilized and institutional accumulation has overtaken distribution.
+*   **To Underweight/Sell:** If the price breaks below the 606.23 swing low, the technical "washout" thesis is invalidated, and we must move to protect capital by reducing exposure by 10-15%, acknowledging that the index has entered a deeper distributive phase.
+
+<!-- ENTRY_END -->
+
+[2026-11-23 | NVDA | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an Overweight position in NVDA using a tiered entry strategy to capture extreme fundamental value while managing technical volatility. Execute an initial 0.5x standard allocation at current levels (~$165), planning to scale to a full 1.5x position only upon a confirmed close above the $170-$180 resistance zone. Maintain a strict stop-loss below the $125 structural support to mitigate downside risk.
+
+**Investment Thesis**: The investment thesis is driven by a massive fundamental disconnect: a forward P/E under 10 and operating margins above 66% demonstrate an unassailable economic moat that the market has ignored due to short-term regulatory and 'key-man' headline noise. While the Conservative analyst accurately highlights technical weakness—specifically trading below the 50-day and 200-day SMAs—these lagging indicators are being overwhelmed by the fundamental valuation floor and the positive resolution of leadership uncertainty with the CEO's reinstatement. The Neutral analyst's call for a tiered approach is the most prudent strategy to address the high ATR of $13.22, allowing for participation in the recovery without succumbing to 'falling knife' risk. This thesis is invalidated if the price decisively closes below the $125 support level, signaling a failure of the structural bottom.
+
+**Price Target**: not provided
 
 **Time Horizon**: 3-6 months
 

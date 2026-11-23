@@ -213,26 +213,24 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-20",
-   "decision_id": "2026-11-20|NVDA",
+   "date": "2026-11-23",
+   "decision_id": "2026-11-23|NVDA",
    "exits": [],
    "log": [],
    "opened": false,
    "placed": null,
    "plan": {
-    "base": null,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
-    "not_executed": [],
-    "notes": [
-     "Wait for the stock to reclaim the 200-day moving average",
-     "Signal a break in the current institutional distribution phase"
+    "not_executed": [
+     "plan extraction failed (HTTPError): rating only"
     ],
-    "rating": "Hold",
-    "ref_price": 125.65,
+    "notes": [],
+    "rating": "Overweight",
+    "ref_price": 165.185,
     "scale_in": [],
-    "side": null,
+    "side": "long",
     "stop": null,
     "stop_type": null,
     "tp": null
@@ -274,15 +272,7 @@
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-20T14:35:29+00:00",
-    "ids": [
-     "c0a26453-d51c-427d-ac99-5c2f9c58f88b"
-    ],
-    "qty": 21,
-    "stop": 78.5,
-    "tp": null
-   },
+   "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
@@ -306,8 +296,39 @@
    "status": "active"
   },
   "QQQ": {
-   "date": "2026-11-20",
-   "decision_id": "2026-11-20|QQQ",
+   "date": "2026-11-23",
+   "decision_id": "2026-11-23|QQQ",
+   "exits": [],
+   "log": [],
+   "opened": true,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "stop $606.23 is on the wrong side of $651.18 for a short: skipped"
+    ],
+    "notes": [
+     "ATR of 20.94",
+     "structural distribution"
+    ],
+    "rating": "Hold",
+    "ref_price": 651.18,
+    "scale_in": [],
+    "side": "short",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "SPY": {
+   "date": "2026-11-23",
+   "decision_id": "2026-11-23|SPY",
    "exits": [],
    "log": [],
    "opened": true,
@@ -322,55 +343,16 @@
      "no stop in the paragraph"
     ],
     "notes": [
-     "institutional distribution",
-     "structural technical damage",
-     "liquidity-driven volatility"
+     "volatile macroeconomic landscape",
+     "cease all new capital deployment and buy-the-dip strategies until technical reversal",
+     "reclaiming the 200-day SMA"
     ],
     "rating": "Underweight",
-    "ref_price": 609.75,
+    "ref_price": 722.56,
     "scale_in": [],
     "side": "short",
     "stop": null,
     "stop_type": null,
-    "tp": null
-   },
-   "scale": [],
-   "status": "active"
-  },
-  "SPY": {
-   "date": "2026-11-20",
-   "decision_id": "2026-11-20|SPY",
-   "exits": [],
-   "log": [],
-   "opened": true,
-   "placed": {
-    "at": "2026-11-23T14:35:27+00:00",
-    "ids": [
-     "ece1d0dc-1c74-4949-989b-8b2e66a4076a"
-    ],
-    "qty": 3,
-    "stop": 620.83,
-    "tp": null
-   },
-   "plan": {
-    "base": 0.1,
-    "exits": [],
-    "horizon": null,
-    "initial_x": 1.0,
-    "max_total_x": 1.0,
-    "not_executed": [
-     "initial size 0.15x unverified: using the default 1x"
-    ],
-    "notes": [
-     "extreme oversold conditions",
-     "manage volatility risks"
-    ],
-    "rating": "Overweight",
-    "ref_price": 690.68,
-    "scale_in": [],
-    "side": "long",
-    "stop": 620.83,
-    "stop_type": "price",
     "tp": null
    },
    "scale": [],
