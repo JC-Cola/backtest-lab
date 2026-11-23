@@ -244,7 +244,7 @@ def test_workflows_wiring():
     assert "secrets.ALPACA_API_KEY" not in m          # the retired long-term account is not a dependency
     assert "cd src && python briefing.py morning" in m
     n = (wf / "nightly.yml").read_text()
-    assert n.rstrip().endswith("if: always()\n        run: cd src && python briefing.py evening")
+    assert "if: always()\n        run: cd src && python briefing.py evening" in n and n.index("briefing.py evening") > n.index("gh issue create")
     assert "TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}" in n and "TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}" in n
 
 

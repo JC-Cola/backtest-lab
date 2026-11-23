@@ -1,4 +1,5 @@
-"""Daily trading report (markdown) for the intraday Alpaca paper account (the long-term account was retired 2026-11-09): reports/YYYY-MM-DD.md plus reports/README.md.
+"""Daily trading report (markdown) for EVERY system: Noise band, qlib, TradingAgents (live Alpaca paper accounts), day-trader-skill and Pelosi (shadow).
+Writes reports/YYYY-MM-DD.md, reports/latest.md (copy of the newest) and reports/README.md.
 
     python src/report.py [YYYY-MM-DD]     # default: today, New York date
 
@@ -25,7 +26,11 @@ START = 25_000.0
 CHECK_HOURS = [10, 11, 12, 13, 14, 15]
 OPEN_STATUSES = {"new", "accepted", "pending_new", "held", "partially_filled", "pending_replace", "accepted_for_bidding", "calculated"}
 BAD_STATUSES = {"rejected", "canceled", "expired", "suspended"}
-ACCOUNTS = [("intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", MEM / "alpaca_intraday.json")]
+ACCOUNTS = [("intraday", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", MEM / "alpaca_intraday.json")]   # what briefing.py reads
+# Report order: (key, title, live Alpaca key env, secret env, snapshot/state file, report_cards.json key). No env = shadow (simulated) system.
+SYSTEMS = [("intraday", "Noise band", "ALPACA_INTRADAY_API_KEY", "ALPACA_INTRADAY_SECRET_KEY", MEM / "alpaca_intraday.json", "intraday"),
+           ("qlib", "qlib", "ALPACA_DTS_API_KEY", "ALPACA_DTS_SECRET_KEY", MEM / "system_qlib.json", "qlib"),
+           ("ta", "TradingAgents", "ALPACA_TA_API_KEY", "ALPACA_TA_SECRET_KEY", MEM / "system_ta.json", "ta")]   # day-trader-skill and Pelosi were retired 2026-11-23: not reported
 
 
 # ---------- formatting ----------
@@ -123,21 +128,43 @@ def day_pl(acct):
     return None if e is None or not le else e - le
 
 
-def summary(name, acct):
+def qty_text(x):
+    return num(x, 4).rstrip("0").rstrip(".") if x not in (None, "") else ""
+
+
+def summary(title, acct):
+    """Value now, change today, since start, cash and the open-positions table for one account."""
     e, le = acct.get("equity"), acct.get("last_equity")
     d = day_pl(acct)
-    t = f"### {name.capitalize()} account\n\n"
+    t = ""
     if acct.get("note"):
         t += f"_{acct['note']}_\n\n"
     if e is None:
-        return t + "No account numbers available.\n"
+        return t + "no data\n"
     t += (f"- Value now: **{usd(e)}**\n- Change today: {usd(d, True)} ({pct(d / le if le else None)})\n"
-          f"- Since the {usd(START)} start: {usd(e - START, True)} ({pct((e - START) / START)})\n- Cash: {usd(acct.get('cash'))}\n")
+          f"- Since the {usd(START)} start: {usd(e - START, True)} ({pct((e - START) / START)})\n")
+    if acct.get("cash") is not None:
+        t += f"- Cash: {usd(acct.get('cash'))}\n"
     pos = acct.get("positions", [])
     if not pos:
         return t + "- Open positions: none\n"
-    rows = [[p["symbol"], num(p["qty"], 4).rstrip("0").rstrip("."), usd(p["avg_price"]), usd(p["price"]), usd(p["pl"], True)] for p in pos]
-    return t + "\n" + table(["Symbol", "Qty", "Avg price", "Now", "P/L"], rows)
+    rows = [[p.get("symbol", "?"), qty_text(p.get("qty")), usd(p.get("avg_price", p.get("entry_price"))), usd(p.get("price")), usd(p.get("pl"), True)] for p in pos]
+    return t + "\n" + table(["Symbol", "Qty", "Entry", "Now", "P/L"], rows)
+
+
+def card_line(cards, key):
+    """One line from report_cards.json for an account."""
+    c = ((cards or {}).get("accounts") or {}).get(key)
+    if not c:
+        return "- Report card: not available yet\n"
+    m = c.get("metrics")
+    if not (c.get("ok") and m):
+        return f"- Report card: {c.get('note') or 'not available yet'}\n"
+    f = lambda k, fmt: "n/a" if m.get(k) is None else fmt(m[k])
+    p1 = lambda v: f"{v * 100:+.1f}%"
+    return (f"- Report card ({c.get('days')} days to {c.get('end')}): CAGR {f('cagr', p1)}, Sharpe {f('sharpe', lambda v: f'{v:.2f}')}, "
+            f"Sortino {f('sortino', lambda v: f'{v:.2f}')}, max drawdown {f('max_dd', p1)}, win days {f('win_days', lambda v: f'{v * 100:.0f}%')}, "
+            f"vol {f('vol', lambda v: f'{v * 100:.1f}%')}, beta {f('beta', lambda v: f'{v:.2f}')}\n")
 
 
 def filled_on(orders, day):
@@ -217,41 +244,151 @@ def research(intra_text, cands):
     return t
 
 
-def build(day, accts, noise_rows, intra_lessons, cands):
-    it = accts["intraday"]
+def first_line(text, n=140):
+    t = re.split(r"(?<=[.!?])\s", (text or "").strip())[0]
+    return t if len(t) <= n else t[:n - 1].rstrip() + "..."
+
+
+def trade_rows(acct, day, why):
+    fl = filled_on(acct.get("orders", []), day)
+    return table(["Time (NY)", "Symbol", "Side", "Qty", "Avg fill", "Why"],
+                 [[hhmm(o["filled"]), o["symbol"], o["side"], qty_text(o["filled_qty"]), usd(o["price"]), why(o)] for o in fl]) if fl else "None.\n"
+
+
+def qlib_extra(state, day, acct):
+    state = state or {}
+    reb = state.get("rebalances") or []
+    t = f"- Holding {len(state.get('picks') or [])} picks"
+    t += (f"; last rebalance on {reb[-1].get('data_date')} data ({len(reb[-1].get('orders') or [])} orders queued)\n" if reb else "; no rebalance yet\n")
+    return t + "\n### Trades today\n\n" + trade_rows(acct, day, lambda o: "rebalance: in" if o["side"] == "buy" else "rebalance: out")
+
+
+def ta_extra(state, plans, day, acct):
+    state = state or {}
+    dec = [d for d in state.get("decisions", []) if d.get("date") == str(day)]
+    latest = {d.get("symbol"): d for d in state.get("decisions", []) if str(d.get("date")) <= str(day)}
+    why = lambda o: (lambda d: f"{d.get('rating')}: {first_line(d.get('rationale'))}" if d else "no matching decision")(latest.get(o["symbol"]))
+    t = "\n### Decisions today\n\n" + (table(["Symbol", "Rating", "Rationale"], [[d.get("symbol"), d.get("rating"), first_line(d.get("rationale"))] for d in dec]) or "None.\n")
+    t += "\n### Trades today\n\n" + trade_rows(acct, day, why)
+    pl = (plans or {}).get("plans") or {}
+    events = [f"{s}: {str(l)[12:]}" for s, p in sorted(pl.items()) for l in p.get("log", []) if str(l).startswith(str(day))]
+    live = []
+    for s, p in sorted(pl.items()):
+        pp = p.get("plan") or {}
+        if p.get("status") == "active" and p.get("opened"):
+            live.append([s, pp.get("side", ""), usd(pp["stop"]) if pp.get("stop") else "none", usd(pp["tp"]) if pp.get("tp") else "none",
+                         ", ".join(f"{x.get('size_x')}x {x.get('condition')} {usd(x.get('price'))}" for x in p.get("scale", []) if x.get("state") == "pending") or "none"])
+    t += "\n### Plans, stops and scale-ins\n\n" + ("".join(f"- {e}\n" for e in events) or "- No stop, target or scale-in events today.\n")
+    return t + ("\n" + table(["Symbol", "Side", "Stop", "Target", "Pending scale-ins"], live) if live else "")
+
+
+def all_table(rows):
+    out = []
+    for name, e, d, le in rows:
+        if e is None:
+            out.append([name, "no data", "no data", "no data"])
+        else:
+            out.append([name, usd(e), f"{usd(d, True)} ({pct(d / le if le else None)})" if d is not None else "n/a",
+                        f"{usd(e - START, True)} ({pct((e - START) / START)})"])
+    have = [r for r in rows if r[1] is not None]
+    if len(have) > 1:
+        e = sum(r[1] for r in have)
+        out.append(["**Total**", f"**{usd(e)}**", usd(sum(r[2] or 0 for r in have), True), usd(e - START * len(have), True)])
+    return table(["Account", "Value now", "Today", "Since start"], out)
+
+
+def news_section(state, day, n):
+    """Shadow news-rule test: shocks flagged today, closed shadow trades by rule (n, average % per trade)."""
+    t = f"\n## {n}. News shadow test\n\n"
+    if not state:
+        return t + "no data\n"
+    try:
+        shocks = [x for x in state.get("shocks", []) if x.get("date") == str(day)]
+        t += f"- Shocks today: {len(shocks)}" + (": " + ", ".join(f"{x['symbol']} {x['ret'] * 100:+.1f}%" for x in shocks[:10]) if shocks else "") + "\n"
+        by = {}
+        for x in state.get("trades", []):
+            if x.get("status") == "closed" and x.get("pnl_pct") is not None:
+                by.setdefault(x.get("rule", "?"), []).append(x["pnl_pct"])
+        if not by:
+            return t + "- Closed shadow trades: none yet\n"
+        return t + "\n" + table(["Rule", "Closed trades", "Avg % per trade"], [[r, len(v), f"{sum(v) / len(v):+.2f}%"] for r, v in sorted(by.items())])
+    except Exception as e:
+        return t + f"_could not read the news shadow data ({type(e).__name__})_\n"
+
+
+def pl_header(vals):
+    return "<!-- pl: " + " ".join(f"{k}={'' if v is None else round(v, 2)}" for k, v in vals.items()) + " -->\n"
+
+
+def build(day, accts, noise_rows, intra_lessons, cands, extras=None):
+    """accts: {key: account dict} (a missing key reads 'no data'); extras: {'cards': report_cards.json, 'plans': system_ta_plans.json, 'states': {key: state json}}."""
+    ex = extras or {}
+    states, cards = ex.get("states", {}), ex.get("cards")
     day_noise = [r for r in noise_rows if r["time_ny"].startswith(str(day))]
-    pl = day_pl(it)
-    head = f"<!-- pl: intraday={'' if pl is None else round(pl, 2)} -->\n"
+    nodata = {"equity": None, "last_equity": None, "positions": [], "orders": [], "note": ""}
+    body, rows, pls = "", [], {}
+    for n, (key, title, _ke, _se, _p, card) in enumerate(SYSTEMS, 1):
+        a = accts.get(key) or nodata
+        d = day_pl(a)
+        rows.append((title, a.get("equity"), d, a.get("last_equity")))
+        pls[key] = d
+        sec = f"\n## {n}. {title}\n\n"
+        try:
+            sec += summary(title, a)
+            if a.get("equity") is not None or key == "intraday":
+                sec += card_line(cards, card)
+                if key == "intraday":
+                    sec += ("\n### Trades today\n\n" + trades(a, day, lambda o: intraday_why(o, day_noise)) +
+                            "\n### Intraday checks today\n\n" + checks_table(day_noise))
+                elif key == "qlib":
+                    sec += qlib_extra(states.get(key), day, a)
+                else:
+                    sec += ta_extra(states.get(key), ex.get("plans"), day, a)
+        except Exception as e:   # one broken section must never sink the report
+            sec += f"_could not build the detail for this account ({type(e).__name__}: {str(e)[:80]})_\n"
+        body += sec
     prob = problems(day, accts, noise_rows)
-    return (head + f"# Trading report {day} ({day:%A})\n\nAll times are New York time. Paper money only. "
-            "The long-term account was retired 2026-11-09; only the intraday account is traded.\n\n"
-            "## 1. Summary\n\n" + summary("intraday", it) +
-            "\n## 2. Trades today\n\n" + trades(it, day, lambda o: intraday_why(o, day_noise)) +
-            "\n## 3. Intraday checks today\n\n" + checks_table(day_noise) +
-            "\n## 4. Problems\n\n" + ("".join(f"- {p}\n" for p in prob) if prob else "None.\n") +
-            "\n## 5. Research\n\n" + research(intra_lessons, cands))
+    return (pl_header(pls) + f"# Trading report {day} ({day:%A})\n\nAll times are New York time. Paper money only. "
+            "Live paper accounts: Noise band, qlib, TradingAgents; the news shadow test is simulated (no orders). "
+            "The long-term account was retired 2026-11-09; day-trader-skill and Pelosi were retired 2026-11-23.\n\n## All accounts\n\n" + all_table(rows) + body + news_section(ex.get("news"), day, len(SYSTEMS) + 1) +
+            "\n## Problems\n\n" + ("".join(f"- {p}\n" for p in prob) if prob else "None.\n") +
+            "\n## Research\n\n" + research(intra_lessons, cands))
 
 
 def index(out_dir):
-    """Rewrite README.md: one line per report, newest first, with the intraday day P/L."""
+    """Rewrite README.md: one line per report, newest first, each account's day P/L (old '<!-- pl: long-term=.. intraday=.. -->' headers still read)."""
+    keys = [k for k, *_ in SYSTEMS]
     lines = []
     for f in sorted(Path(out_dir).glob("????-??-??.md"), reverse=True):
-        m = re.search(r"<!-- pl: (?:long-term=\S* )?intraday=(\S*) -->", f.read_text())
+        m = re.search(r"<!-- pl: (.*?) -->", f.read_text())
+        kv = dict(re.findall(r"([\w-]+)=(\S*)", m.group(1))) if m else {}
         s = lambda v: "n/a" if not v else usd(float(v), True)
-        lines.append(f"- [{f.stem}]({f.name}): intraday {s(m and m.group(1))}")
-    (Path(out_dir) / "README.md").write_text("# Daily trading reports\n\nNewest first. Day P/L of the intraday paper account.\n\n" + "\n".join(lines) + "\n")
+        lines.append(f"- [{f.stem}]({f.name}): " + ", ".join(f"{k} {s(kv.get(k))}" for k in keys if k == "intraday" or k in kv))
+    (Path(out_dir) / "README.md").write_text("# Daily trading reports\n\nNewest first. Day P/L of each paper account (intraday = Noise band). The newest report is also latest.md.\n\n" + "\n".join(lines) + "\n")
+
+
+def get_system_account(key, kenv, senv, path, day):
+    """Live Alpaca account for a traded system (snapshot fallback). Never raises."""
+    try:
+        return get_account(key, kenv, senv, path, day)
+    except Exception as e:
+        return {"ok": False, "equity": None, "cash": None, "last_equity": None, "positions": [], "orders": [],
+                "note": f"{key}: could not read ({type(e).__name__})"}
 
 
 def main(date_str=None):
     day = date.fromisoformat(date_str) if date_str else datetime.now(NY).date()
-    accts = {n: get_account(n, k, s, p, day) for n, k, s, p in ACCOUNTS}
+    accts = {k: get_system_account(k, ke, se, p, day) for k, _t, ke, se, p, _c in SYSTEMS}
+    extras = {"cards": read_json(MEM / "report_cards.json"), "plans": read_json(MEM / "system_ta_plans.json"), "news": read_json(MEM / "news_shadow.json"),
+              "states": {k: read_json(p) for k, _t, _ke, _se, p, _c in SYSTEMS}}
     text = build(day, accts, read_csv(MEM / "noise_live.csv"),
                  (MEM / "intraday" / "lessons.md").read_text() if (MEM / "intraday" / "lessons.md").exists() else "",
-                 read_json(MEM / "candidates.json"))
+                 read_json(MEM / "candidates.json"), extras)
     OUT.mkdir(exist_ok=True)
     (OUT / f"{day}.md").write_text(text)
+    (OUT / "latest.md").write_text(text)
     index(OUT)
-    print(f"wrote reports/{day}.md")
+    print(f"wrote reports/{day}.md (and reports/latest.md)")
     return text
 
 

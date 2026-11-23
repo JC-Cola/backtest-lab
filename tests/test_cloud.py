@@ -225,9 +225,9 @@ def test_report_trades_and_why():
 def test_report_checks_and_none_cases():
     md = build()
     assert "| 10:00 | SPY | flat |" in md          # flat decisions are visible
-    sec = lambda n: md.split(f"## {n}.")[1].split("\n## ")[0]
-    assert sec(4).strip().endswith("None.") and sec(2).count("None.") == 1
-    assert "None yet." in sec(5) and "Claude CLI cost this session: $0.42" in sec(5) and "Daily agent" not in md
+    sec = lambda n: md.split(f"## {n}")[1].split("\n## ")[0]
+    assert sec("Problems").strip().endswith("None.") and sec("2. qlib").count("None.") == 0
+    assert "None yet." in sec("Research") and "Claude CLI cost this session: $0.42" in sec("Research") and "Daily agent" not in md
     md = build(cands=CAND)
     assert "rule X" in md and "rule Y" not in md
 
@@ -237,7 +237,7 @@ def test_report_problems():
     it = acct(positions=[{"symbol": "SPY", "qty": 3.0, "avg_price": 1, "price": 1, "pl": 0}],
               orders=[order(status="rejected", filled_qty=0, filled=None)], note="ALPACA_INTRADAY_API_KEY not set; using the snapshot")
     md = build({"intraday": it}, rows)
-    p = md.split("## 4. Problems")[1].split("## 5.")[0]
+    p = md.split("## Problems")[1].split("## Research")[0]
     assert "no 12:00 check logged for QQQ" in p and "was rejected" in p and "still holding 3 SPY" in p and "not set" in p
     assert "None." not in p
     assert "no log rows today" in rp.problems(DAY, {"intraday": acct()}, [])[0]
@@ -263,11 +263,12 @@ def test_main_without_keys_uses_snapshots(tmp_path, monkeypatch):
     (mem / "s.json").write_text(json.dumps(snap))
     monkeypatch.setattr(rp, "MEM", mem)
     monkeypatch.setattr(rp, "OUT", tmp_path / "reports")
-    monkeypatch.setattr(rp, "ACCOUNTS", [("intraday", "NOPE_K", "NOPE_S", mem / "s.json")])
+    sysx = lambda f: [("intraday", "Noise band", "NOPE_K", "NOPE_S", mem / f, "intraday")]
+    monkeypatch.setattr(rp, "SYSTEMS", sysx("s.json"))
     md = rp.main("2026-11-03")
     assert (tmp_path / "reports" / "2026-11-03.md").exists() and (tmp_path / "reports" / "README.md").exists()
     assert "using the snapshot saved" in md and "| SPY | buy | 2 |" in md
-    monkeypatch.setattr(rp, "ACCOUNTS", [("intraday", "NOPE_K", "NOPE_S", mem / "missing.json")])
+    monkeypatch.setattr(rp, "SYSTEMS", sysx("missing.json"))
     assert "no snapshot file either" in rp.main("2026-11-03")
     assert [a[0] for a in __import__("report").ACCOUNTS] == ["intraday"]
 
@@ -311,6 +312,8 @@ def test_nightly_workflow():
         assert s in text
     assert "python flat_guard.py" in text and "if: failure()" in text and "secrets.TELEGRAM_CHAT_ID" in text and "github.run_id" in text
     assert text.index("daily.py") < text.index("report.py") < text.index("gh issue create")
+    assert text.index("gh issue create") < text.index("briefing.py evening") < text.index("Full report:")   # link goes out after the briefing
+    assert "steps.issue.outputs.url" in text
     if d:
         assert "rounds" not in d[True]["workflow_dispatch"]["inputs"]
 

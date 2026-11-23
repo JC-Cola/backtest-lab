@@ -106,6 +106,7 @@ jobs:
           done
           exit 1
       - name: Open the report issue
+        id: issue
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -113,11 +114,13 @@ jobs:
           D=$(TZ=America/New_York date +%F)
           gh label create daily-report --color 0E8A16 --description "Daily trading report" 2>/dev/null || true
           if [ -f "reports/$D.md" ]; then
-            gh issue create --title "Trading report $D" --label daily-report --body-file "reports/$D.md"
+            URL=$(gh issue create --title "Trading report $D" --label daily-report --body-file "reports/$D.md")
           else
-            gh issue create --title "Trading report $D" --label daily-report \
-              --body "The report could not be built. See the run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            URL=$(gh issue create --title "Trading report $D" --label daily-report \
+              --body "The report could not be built. See the run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID")
           fi
+          echo "$URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
       - name: Telegram alert on failure
         if: failure()
         env:
@@ -130,3 +133,8 @@ jobs:
       - name: Evening Telegram briefing
         if: always()
         run: cd src && python briefing.py evening
+      - name: Telegram link to the full report (one line; the report itself is not sent)
+        if: always() && steps.issue.outputs.url != ''
+        env:
+          REPORT_URL: ${{ steps.issue.outputs.url }}
+        run: cd src && python -c "import os, telegram; telegram.send('📄 Full report: ' + os.environ['REPORT_URL'])" || true
