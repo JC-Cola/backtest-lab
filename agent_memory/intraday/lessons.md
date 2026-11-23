@@ -1,38 +1,38 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-23. 28141 trials in total: 25641 scored, 2500 rejected, 3 sent to the held-out test, 0 passed it.
+Updated 2026-11-23. 28098 trials in total: 25595 scored, 2503 rejected, 3 sent to the held-out test, 0 passed it.
 
 ## Most robust ideas on the search years (all 3 folds positive, median fold Sharpe, 2x costs; deflated reward is shown for information only)
 
 - robustness 1.58 | folds [1.717, 1.176, 1.847] | 2x costs [1.576, 0.996, 1.695] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min
 - robustness 1.58 | folds [1.717, 0.646, 2.542] | 2x costs [1.576, 0.485, 2.368] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 200 bp
+- robustness 1.58 | folds [1.717, 0.92, 2.422] | 2x costs [1.576, 0.74, 2.241] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 100 bp
+- robustness 1.58 | folds [1.717, 0.92, 2.329] | 2x costs [1.576, 0.74, 2.169] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 100 bp, target 4R
 - robustness 1.58 | folds [1.717, 0.646, 2.542] | 2x costs [1.576, 0.485, 2.368] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 200 bp, target 4R
 - robustness 1.58 | folds [1.717, 0.646, 2.542] | 2x costs [1.576, 0.485, 2.368] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 200 bp, target 3R
+- robustness 1.58 | folds [1.717, 0.929, 2.907] | 2x costs [1.576, 0.751, 2.703] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 100 bp, target 1.5R
 - robustness 1.58 | folds [1.717, 0.646, 2.568] | 2x costs [1.576, 0.485, 2.392] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 200 bp, target 1.5R
-- robustness 1.57 | folds [1.218, 1.779, 1.732] | 2x costs [1.064, 1.641, 1.57] | 167 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and rv_5d > p25 and vol_ratio < p95; hold 240 min
-- robustness 1.57 | folds [1.242, 1.749, 1.732] | 2x costs [1.1, 1.617, 1.57] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and rv_5d > p30 and vol_ratio < p95; hold 240 min
-- robustness 1.56 | folds [1.3, 1.694, 1.714] | 2x costs [1.167, 1.57, 1.559] | 155 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and rv_5d > p35 and vol_ratio < p95; hold 240 min
-- robustness 1.56 | folds [1.3, 1.692, 1.714] | 2x costs [1.167, 1.57, 1.559] | 154 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and rv_5d > p40 and vol_ratio < p95; hold 240 min
-- robustness 1.51 | folds [1.658, 1.562, 1.682] | 2x costs [1.511, 1.408, 1.514] | 175 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and vol_ratio < p95; hold 240 min
+- robustness 1.58 | folds [1.717, 0.92, 2.829] | 2x costs [1.576, 0.74, 2.634] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 100 bp, target 2R
+- robustness 1.58 | folds [1.717, 0.92, 2.449] | 2x costs [1.576, 0.74, 2.265] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p85 and prev_day_ibs < p99 and range_pos > p20; hold 240 min; stop 100 bp, target 3R
 
 ## Features that tend to help (learned weights, 1 = average)
 
-- gap: 2.27
-- ret_30: 1.66
-- rv_5d: 1.47
-- vol_ratio: 1.39
-- gap_fill: 1.37
-- range_pos: 1.37
-- prev_day_ret: 1.30
-- consol_30: 1.24
+- gap: 2.25
+- orb30: 1.78
+- gap_fill: 1.69
+- ret_30: 1.65
+- consol_30: 1.62
+- rvol_30: 1.47
+- rv_5d: 1.44
+- range_pos: 1.40
 
 ## Features that tend to hurt
 
-- orb30: 0.84
-- vwap_dist: 0.78
-- orb5: 0.74
-- range_5d: 0.67
-- z_20d: 0.53
+- prev_day_ibs: 0.89
+- vwap_dist: 0.79
+- run_10d: 0.63
+- orb5: 0.56
+- z_20d: 0.42
 
 ## Why ideas were rejected
 
