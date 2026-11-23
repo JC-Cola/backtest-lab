@@ -217,7 +217,7 @@ def save(state: dict, path=STATE_PATH) -> None:
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(p.suffix + ".tmp")
-    tmp.write_text(json.dumps(state, indent=1) + "\n")
+    tmp.write_text(json.dumps(state, indent=1, default=str) + "\n")  # pandas Timestamps -> ISO text
     os.replace(tmp, p)
 
 

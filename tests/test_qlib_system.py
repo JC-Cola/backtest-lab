@@ -244,3 +244,12 @@ def test_order_errors_are_counted_in_the_message(snap, tmp_path):
     sent = []
     Q.run_once(Q.new_state(), c, NIGHT, scorer_for(), notify=sent.append, path=tmp_path / "s.json")
     assert sent[0].endswith("50 order errors")
+
+
+def test_save_handles_pandas_timestamps(tmp_path):
+    import json
+    import pandas as pd
+    import system_qlib
+    p = tmp_path / "s.json"
+    system_qlib.save({"generated": pd.Timestamp("2026-11-20 22:03"), "picks": [{"date": pd.Timestamp("2026-11-20")}]}, p)
+    assert json.loads(p.read_text())["generated"].startswith("2026-11-20")
