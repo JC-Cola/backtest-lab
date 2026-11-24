@@ -270,7 +270,9 @@
    "date": "2026-11-19",
    "decision_id": "2026-11-19|PDD",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-24: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -293,7 +295,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "QQQ": {
    "date": "2026-11-23",
