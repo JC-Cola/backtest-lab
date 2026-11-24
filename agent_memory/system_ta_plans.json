@@ -1,5 +1,36 @@
 {
  "plans": {
+  "ADI": {
+   "date": "2026-11-24",
+   "decision_id": "2026-11-24|ADI",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "no stop in the paragraph"
+    ],
+    "notes": [
+     "disconnect between elite fundamentals and the current technical washout",
+     "manage the high ATR of 24.94"
+    ],
+    "rating": "Overweight",
+    "ref_price": 312.93,
+    "scale_in": [],
+    "side": "long",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
   "CRM": {
    "date": "2026-11-17",
    "decision_id": "2026-11-17|CRM",
@@ -61,6 +92,35 @@
    },
    "scale": [],
    "status": "closed"
+  },
+  "DLTR": {
+   "date": "2026-11-24",
+   "decision_id": "2026-11-24|DLTR",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "Stock is currently overextended following a 12% jump"
+    ],
+    "rating": "Hold",
+    "ref_price": 154.38,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
   },
   "GPN": {
    "date": "2026-11-20",
@@ -213,26 +273,37 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-23",
-   "decision_id": "2026-11-23|NVDA",
+   "date": "2026-11-24",
+   "decision_id": "2026-11-24|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": null,
+   "placed": {
+    "at": "2026-11-24T22:39:39+00:00",
+    "ids": [
+     "1e334988-4583-44c6-8973-2772e7fb4853"
+    ],
+    "qty": 14,
+    "stop": 125.0,
+    "tp": null
+   },
    "plan": {
+    "base": 0.1,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
-    "not_executed": [
-     "plan extraction failed (HTTPError): rating only"
+    "max_total_x": 1.0,
+    "not_executed": [],
+    "notes": [
+     "Manage volatility",
+     "Ongoing technical downtrend"
     ],
-    "notes": [],
     "rating": "Overweight",
-    "ref_price": 165.185,
+    "ref_price": 155.48,
     "scale_in": [],
     "side": "long",
-    "stop": null,
-    "stop_type": null,
+    "stop": 125.0,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],
@@ -298,43 +369,10 @@
    "status": "closed"
   },
   "QQQ": {
-   "date": "2026-11-23",
-   "decision_id": "2026-11-23|QQQ",
+   "date": "2026-11-24",
+   "decision_id": "2026-11-24|QQQ",
    "exits": [],
    "log": [],
-   "opened": true,
-   "placed": null,
-   "plan": {
-    "base": null,
-    "exits": [],
-    "horizon": null,
-    "initial_x": 1.0,
-    "max_total_x": 1.0,
-    "not_executed": [
-     "stop $606.23 is on the wrong side of $651.18 for a short: skipped"
-    ],
-    "notes": [
-     "ATR of 20.94",
-     "structural distribution"
-    ],
-    "rating": "Hold",
-    "ref_price": 651.18,
-    "scale_in": [],
-    "side": "short",
-    "stop": null,
-    "stop_type": null,
-    "tp": null
-   },
-   "scale": [],
-   "status": "active"
-  },
-  "SPY": {
-   "date": "2026-11-23",
-   "decision_id": "2026-11-23|SPY",
-   "exits": [],
-   "log": [
-    "2026-11-24: position closed"
-   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -347,12 +385,13 @@
      "no stop in the paragraph"
     ],
     "notes": [
-     "volatile macroeconomic landscape",
-     "cease all new capital deployment and buy-the-dip strategies until technical reversal",
-     "reclaiming the 200-day SMA"
+     "Align with technical breakdown below the 200-day SMA",
+     "Capital preservation against elevated market volatility",
+     "Institutional distribution",
+     "Avoid new long additions until the index reclaims the 50-day SMA on significant volume"
     ],
     "rating": "Underweight",
-    "ref_price": 722.56,
+    "ref_price": 638.12,
     "scale_in": [],
     "side": "short",
     "stop": null,
@@ -360,7 +399,38 @@
     "tp": null
    },
    "scale": [],
-   "status": "closed"
+   "status": "active"
+  },
+  "SPY": {
+   "date": "2026-11-24",
+   "decision_id": "2026-11-24|SPY",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "stop $686.75 is on the wrong side of $718.91 for a short: skipped"
+    ],
+    "notes": [
+     "elevated ATR",
+     "persistent technical weakness"
+    ],
+    "rating": "Underweight",
+    "ref_price": 718.91,
+    "scale_in": [],
+    "side": "short",
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
   },
   "STE": {
    "date": "2026-11-13",

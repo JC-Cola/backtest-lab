@@ -198,7 +198,7 @@ The 5-day alpha of -21.3% and raw drop of -29.8% completely invalidated the imme
 
 <!-- ENTRY_END -->
 
-[2026-11-13 | SPY | Hold | pending]
+[2026-11-13 | SPY | Hold | -2.4% | +0.0% | 5d | resolved:2026-11-23]
 
 DECISION:
 **Rating**: Hold
@@ -211,9 +211,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day return of -2.4% with flat alpha reflects short-term market drift within a multi-month range, making this 5-day window far too short to judge the broader thesis. This small pullback supports the decision to avoid new directional exposure while trapped between moving averages, though elevated volatility warrants tighter stop-loss thresholds. Future analyses in high-ATR consolidation regimes should incorporate dynamic trailing stops rather than relying solely on static hold ratings.
+
 <!-- ENTRY_END -->
 
-[2026-11-13 | QQQ | Underweight | pending]
+[2026-11-13 | QQQ | Underweight | -1.6% | +0.8% | 5d | resolved:2026-11-23]
 
 DECISION:
 **Rating**: Underweight
@@ -226,9 +229,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The five-day alpha of plus 0.8 percent validates the short-term defensive positioning, though this window is far too brief to judge the multi-month thesis. This initial outperformance supports the technical concern regarding institutional distribution below the 200-day moving average and the vulnerability of a 28x valuation multiple amid macroeconomic headwinds. A concrete lesson for future analyses is to explicitly model short-term volatility expectations alongside the primary technical breakdown to better time partial risk reductions.
+
 <!-- ENTRY_END -->
 
-[2026-11-13 | NVDA | Buy | pending]
+[2026-11-13 | NVDA | Buy | +5.7% | +8.1% | 5d | resolved:2026-11-23]
 
 DECISION:
 **Rating**: Buy
@@ -241,9 +247,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of plus 8.1 percent validates the immediate directional call on the oversold mean-reversion, though this window is far too short to judge the broader 3-to-6-month valuation thesis. This rapid bounce strongly supports the thesis that extreme valuation compression and an RSI under 25 created a temporary anomaly rather than a fundamental erosion. A concrete lesson for the next analysis is to better leverage tiered entry strategies during high volatility, as waiting for the full secondary confirmation risked missing the sharpest part of the rebound.
+
 <!-- ENTRY_END -->
 
-[2026-11-13 | CSCO | Overweight | pending]
+[2026-11-13 | CSCO | Overweight | +2.4% | +4.8% | 5d | resolved:2026-11-23]
 
 DECISION:
 **Rating**: Overweight
@@ -256,9 +265,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of plus 4.8 percent validates the near-term directional call, though this 5-day window is far too short to judge the multi-month thesis. This initial bounce supports the valuation-based margin of safety argument by showing that buyers step in near technical support levels. Future analyses of tech infrastructure plays should incorporate tighter entry triggers to better capture immediate momentum alongside long-term fundamental value.
+
 <!-- ENTRY_END -->
 
-[2026-11-13 | STE | Overweight | pending]
+[2026-11-13 | STE | Overweight | -1.6% | +0.7% | 5d | resolved:2026-11-23]
 
 DECISION:
 **Rating**: Overweight
@@ -270,6 +282,9 @@ DECISION:
 **Price Target**: not provided
 
 **Time Horizon**: 3-6 months
+
+REFLECTION:
+The 5-day alpha of plus 0.7 percent against a negative 1.6 percent raw return demonstrates modest relative outperformance, though this five-day window is far too short to judge a three-to-six-month thesis. This brief period validates our technical caution regarding near-term overextension and the wisdom of holding half our liquidity for a pullback rather than deploying a full allocation immediately. Future analyses of overextended equities with strong fundamentals should incorporate tighter tactical entry triggers to better capture the initial mean-reversion dip before scaling in.
 
 <!-- ENTRY_END -->
 
@@ -692,6 +707,81 @@ DECISION:
 **Executive Summary**: Initiate an Overweight position in NVDA using a tiered entry strategy to capture extreme fundamental value while managing technical volatility. Execute an initial 0.5x standard allocation at current levels (~$165), planning to scale to a full 1.5x position only upon a confirmed close above the $170-$180 resistance zone. Maintain a strict stop-loss below the $125 structural support to mitigate downside risk.
 
 **Investment Thesis**: The investment thesis is driven by a massive fundamental disconnect: a forward P/E under 10 and operating margins above 66% demonstrate an unassailable economic moat that the market has ignored due to short-term regulatory and 'key-man' headline noise. While the Conservative analyst accurately highlights technical weakness—specifically trading below the 50-day and 200-day SMAs—these lagging indicators are being overwhelmed by the fundamental valuation floor and the positive resolution of leadership uncertainty with the CEO's reinstatement. The Neutral analyst's call for a tiered approach is the most prudent strategy to address the high ATR of $13.22, allowing for participation in the recovery without succumbing to 'falling knife' risk. This thesis is invalidated if the price decisively closes below the $125 support level, signaling a failure of the structural bottom.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-24 | SPY | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce SPY exposure by 25-30% to mitigate risks stemming from an elevated $14.98 ATR and persistent technical weakness. Maintain a firm stop-loss at $686.75 to protect against a structural breakdown while allowing for potential volatility. This tactical reduction prioritizes capital preservation over speculative mean-reversion until the index reclaims key moving averages.
+
+**Investment Thesis**: The bearish technical profile—specifically the position below the 10 EMA ($727.25) and 200 SMA ($730.62), coupled with a negative MACD of -12.81—supersedes the aggressive argument for a rapid snapback. Past SPY analyses demonstrate that holding through high-volatility consolidation regimes with negative momentum consistently leads to alpha erosion; thus, we act on the conservative warning to trim exposure. This thesis is supported by macroeconomic headwinds, including the high probability of sustained tight monetary policy through 2026. We will pivot back to a more constructive stance only if the index clears the 50 SMA ($758.56), confirming a shift in momentum.
+
+**Price Target**: not provided
+
+**Time Horizon**: 1-3 months
+
+<!-- ENTRY_END -->
+
+[2026-11-24 | QQQ | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce current core exposure to QQQ by 20-30% to align with the technical breakdown below the 200-day SMA. This defensive pivot prioritizes capital preservation against elevated market volatility and institutional distribution, while retaining exposure for potential mean-reversion. Avoid new long additions until the index reclaims the 50-day SMA on significant volume.
+
+**Investment Thesis**: The case for an Underweight rating rests on the confirmation of a structural trend shift, evidenced by QQQ trading decisively below both the 200-day ($682.42) and 50-day ($708.42) moving averages. Current data, including a deeply negative MACD (-19.83) and a VWMA ($655.96) exceeding the spot price, confirms institutional distribution rather than a temporary correction. While aggressive arguments highlight potential mean-reversion, the macroeconomic headwind of high interest rates and minimal likelihood of near-term rate cuts creates a valuation environment that struggles to support current multiples. This thesis would shift to neutral or positive only upon a confirmed reclamation of the 50-day moving average on high volume, which would serve as a proxy for renewed institutional accumulation.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-24 | NVDA | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an Overweight position in NVDA using a staggered, scale-in approach to manage volatility rather than a lump-sum entry. Deploy an initial tranche at current levels, with a strict stop-loss set below the critical $125 support level to mitigate downside risk from the ongoing technical downtrend.
+
+**Investment Thesis**: The investment thesis relies on the extreme disconnect between NVDA's fundamental financial health—specifically a forward P/E of 9.36, a PEG ratio of 0.19, and significant free cash flow—and the current technical distribution. While the Conservative analyst correctly identifies the risks associated with the stock trading well below its 50-day and 200-day SMAs and a negative MACD, these metrics often reflect lagging sentiment rather than the forward earnings power of the business. The Neutral analyst provides the necessary framework to balance these views: rather than waiting for full technical reclamation (as the Conservative suggests) or plunging into a high-volatility environment (as the Aggressive suggests), we adopt a volatility-adjusted scale-in strategy. This approach captures the deep value identified by the Aggressive analyst while protecting capital against the 'falling knife' risk identified by the Conservative analyst. The thesis remains intact as long as fundamental earnings power persists, but a decisive breach of the $125 support level would trigger an immediate review.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-24 | ADI | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an Overweight position to exploit the disconnect between elite fundamentals and the current technical washout. Scale into the position by deploying an initial tranche at current levels (312.95), while keeping dry powder to add on evidence of price stabilization or further support tests to manage the high ATR of 24.94.
+
+**Investment Thesis**: The decision to go Overweight is driven by the severe valuation compression, where a PEG ratio of 0.56 and a Forward P/E of 15.89x create a significant margin of safety for a firm generating over $4 billion in free cash flow. While the Conservative analyst rightly highlights technical damage, including the breach of the 50 and 200-period moving averages, these indicators are rear-looking and often signal exhaustion during extreme selling events rather than structural decay. The Neutral analyst's approach of scaling in effectively mitigates the execution risk posed by high volatility (24.94 ATR) without ignoring the rare value opportunity. We will exit or reduce the position if the fundamental thesis is invalidated by a sustained decline in free cash flow or if the technical breakdown leads to a breach of the 275.54 support level, suggesting more than just a short-term guidance-driven correction.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-24 | DLTR | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain current position size in DLTR. The stock is currently overextended following a 12% jump, making new capital deployment at these levels inefficient. We will wait for an orderly consolidation or a pullback toward the 10 EMA near $141.50 before increasing exposure, while keeping a stop loss near $126.35 to protect against structural downside.
+
+**Investment Thesis**: The investment case for DLTR is balanced between significant fundamental tailwinds and technical overextension. Bullish factors, including a 4.6% increase in comparable sales, a 3.8% surge in traffic, and substantial institutional accumulation (notably the Gates Foundation stake), suggest a structural rerating is underway rather than a mere momentum spike. However, these positives are tempered by valid technical and fundamental constraints: the stock is currently trading above its upper Bollinger Band, reflecting exhaustion, and carries a high debt-to-equity ratio of over 223%. Given the recent 12% vertical spike, adding capital now offers a poor risk-reward ratio. We are opting for a Hold to allow the stock to consolidate its gains; a move back to the 10 EMA ($141.50) would provide a more attractive entry, while a breakdown below the 50 SMA ($126.35) would invalidate the current bullish narrative and necessitate a shift to an Underweight position.
 
 **Price Target**: not provided
 
