@@ -217,7 +217,7 @@
    "decision_id": "2026-11-23|NVDA",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "exits": [],
@@ -332,7 +332,9 @@
    "date": "2026-11-23",
    "decision_id": "2026-11-23|SPY",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-24: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -358,7 +360,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "STE": {
    "date": "2026-11-13",
@@ -503,7 +505,9 @@
    "date": "2026-11-19",
    "decision_id": "2026-11-19|WSM",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-24: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -529,7 +533,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   }
  }
 }
