@@ -143,4 +143,5 @@ jobs:
         if: always() && steps.issue.outputs.url != ''
         env:
           REPORT_URL: ${{ steps.issue.outputs.url }}
-        run: cd src && python -c "import os, telegram; telegram.send('📄 Full report: ' + os.environ['REPORT_URL'])" || true
+        run: |
+          cd src && python -c "import os, telegram; telegram.send('📄 Full report: ' + os.environ['REPORT_URL'])" || true
