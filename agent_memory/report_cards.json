@@ -1,87 +1,67 @@
 {
- "generated": "2026-11-20T21:45:57Z",
+ "generated": "2026-11-24T21:46:28Z",
  "benchmark": "SPY",
  "min_days": 5,
  "accounts": {
   "intraday": {
    "name": "Noise band",
-   "days": 13,
+   "days": 15,
    "start": "2026-11-04",
-   "end": "2026-11-20",
+   "end": "2026-11-24",
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": 1.1524029501307385,
-    "sharpe": 5.19566948340696,
-    "sortino": 16.196411251116523,
+    "cagr": 0.9284017037991603,
+    "sharpe": 4.825971443777614,
+    "sortino": 14.901216922418852,
     "max_dd": -0.010119487767203172,
     "win_days": 0.6,
-    "best_day": 0.029501863385998917,
+    "best_day": 0.029031217405588672,
     "worst_day": -0.010119487767203172,
-    "vol": 0.14973388371602978,
-    "beta": -0.24962715982749473
+    "vol": 0.1380720730557942,
+    "beta": -0.17589419508629436
    },
    "tearsheet": "reports/cards/intraday.html"
   },
   "qlib": {
    "name": "qlib",
-   "days": 0,
-   "start": null,
-   "end": null,
-   "ok": false,
-   "note": "not enough history yet (0 days)",
-   "metrics": null,
-   "tearsheet": null
+   "days": 6,
+   "start": "2026-11-16",
+   "end": "2026-11-23",
+   "ok": true,
+   "note": "",
+   "metrics": {
+    "cagr": -0.9369065546638979,
+    "sharpe": -3.192966377261009,
+    "sortino": -4.424391684715163,
+    "max_dd": -0.1262211999999998,
+    "win_days": 0.16666666666666666,
+    "best_day": 0.07158516549039629,
+    "worst_day": -0.08149322676798443,
+    "vol": 0.7808621896173881,
+    "beta": 1.6051363969815848
+   },
+   "tearsheet": "reports/cards/qlib.html"
   },
   "ta": {
    "name": "TradingAgents",
-   "days": 8,
+   "days": 10,
    "start": "2026-11-10",
-   "end": "2026-11-19",
+   "end": "2026-11-23",
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": -0.6313899758744488,
-    "sharpe": -7.9905374540406875,
-    "sortino": -8.721278889798363,
-    "max_dd": -0.041281324169029854,
-    "win_days": 0.25,
+    "cagr": -0.6349737297400585,
+    "sharpe": -7.855189727903877,
+    "sortino": -8.321573302424742,
+    "max_dd": -0.05366532558769188,
+    "win_days": 0.3,
     "best_day": 0.01178948026082094,
     "worst_day": -0.012283119118145613,
-    "vol": 0.12381399533451663,
-    "beta": 0.3107820877600183
+    "vol": 0.12711330326922138,
+    "beta": 0.21419524880782354
    },
    "tearsheet": "reports/cards/ta.html"
-  },
-  "dts_shadow": {
-   "name": "day-trader-skill (shadow)",
-   "days": 1,
-   "start": "2026-11-17",
-   "end": "2026-11-17",
-   "ok": false,
-   "note": "not enough history yet (1 day)",
-   "metrics": null,
-   "tearsheet": null
-  },
-  "pelosi_shadow": {
-   "name": "Pelosi (shadow)",
-   "days": 208,
-   "start": "2026-01-26",
-   "end": "2026-11-19",
-   "ok": true,
-   "note": "",
-   "metrics": {
-    "cagr": -0.05259775704029768,
-    "sharpe": -0.3275952691940513,
-    "sortino": -0.4411430649587098,
-    "max_dd": -0.14932974972281032,
-    "win_days": 0.49206349206349204,
-    "best_day": 0.028327356836763462,
-    "worst_day": -0.037946886059688656,
-    "vol": 0.13651782193735623,
-    "beta": 0.35449566559131085
-   },
-   "tearsheet": "reports/cards/pelosi_shadow.html"
   },
   "qlib_bt": {
    "name": "qlib backtest",
@@ -99,7 +79,7 @@
     "best_day": 0.127948,
     "worst_day": -0.083851,
     "vol": 0.23976575714376924,
-    "beta": 1.2217187990719613
+    "beta": 1.2217186569950813
    },
    "tearsheet": "reports/cards/qlib_bt.html"
   }
