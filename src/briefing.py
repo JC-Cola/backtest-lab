@@ -26,6 +26,7 @@ from pathlib import Path
 
 import numpy as np
 
+import adjustments
 import report as R
 import telegram
 from agent import proposer_health
@@ -62,7 +63,7 @@ def _client(kenv, senv):
     return TradingClient(key, secret, paper=True) if key and secret else None
 
 
-def snapshot_account(path):
+def snapshot_account(path, name=None):
     """Plain account dict from a qlib / TradingAgents snapshot json, or None when the file is missing/unusable.
     Positions are normalised to symbol/qty/pl; day figures need last_equity (else the change shows n/a)."""
     snap = R.read_json(path)
@@ -70,16 +71,22 @@ def snapshot_account(path):
         return None
     pos = [{"symbol": str(p.get("symbol", "?")), "qty": float(p.get("qty") or 0), "pl": float(p.get("pl", p.get("unrealized_pl")) or 0),
             "avg_price": p.get("avg_price"), "price": p.get("price")} for p in snap.get("positions") or [] if isinstance(p, dict)]
-    cal = [c["equity"] for c in snap.get("calendar") or [] if isinstance(c, dict) and c.get("equity")]
-    return {"ok": True, "equity": float(snap["equity"]), "cash": snap.get("cash"), "last_equity": snap.get("last_equity"),
-            "positions": pos, "orders": [], "note": "", "calendar_equity": cal, "history": snap.get("history")}
+    ak, today = R.ADJ_KEY.get(name, name), datetime.now(NY).date()   # manual corrections (config/adjustments.json), cumulative by date
+    adj = lambda d: adjustments.cum_on(ak, str(d)) if ak else 0
+    cal = [c["equity"] + adj(c.get("date")) for c in snap.get("calendar") or [] if isinstance(c, dict) and c.get("equity")]
+    hist = snap.get("history")
+    if adj(today) and isinstance(hist, dict):
+        hist = {k: [[t, e + adj(datetime.fromtimestamp(t, NY).date())] for t, e in v] if isinstance(v, list) else v for k, v in hist.items()}
+    le = snap.get("last_equity")
+    return {"ok": True, "equity": float(snap["equity"]) + adj(today), "cash": snap.get("cash"), "last_equity": le + adj(today - timedelta(days=1)) if le else le,
+            "positions": pos, "orders": [], "note": "", "calendar_equity": cal, "history": hist}
 
 
 def extra_accounts(extras=None):
     """{name: account dict} for the shadow systems whose snapshot file exists."""
     out = {}
     for name, path in extras or EXTRAS:
-        a = snapshot_account(path)
+        a = snapshot_account(path, name)
         if a:
             out[name] = a
     return out

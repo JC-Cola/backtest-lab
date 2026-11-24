@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 
+import adjustments
 import data
 import ftmo_lab
 import lab_research
@@ -411,7 +412,7 @@ def main():
                        "system_qlib": slim_qlib(_snapshot("system_qlib.json")),
                        "system_ta": _snapshot("system_ta.json"),
                        "news_shadow": slim_news(_snapshot("news_shadow.json")), "qlib_backtest": qbt, "report_cards": report_cards(),
-                       "generated": results_meta["generated"]},
+                       "adjustments": adjustments.load(), "generated": results_meta["generated"]},
                       separators=(",", ":")).replace("</", "<\\/")
     html = (ROOT / "report" / "lab_template.html").read_text().replace("/*LAB*/", blob)
     out = ROOT / "report" / "lab.html"

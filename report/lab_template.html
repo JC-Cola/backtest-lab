@@ -1114,7 +1114,9 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   function canonOf(a) {  // the canonical daily series of one ACC entry: live Alpaca daily closes when fetched, else the embedded snapshot (offline fallback)
     const A = D[a.snap]; if (!A) return null;
     const dl = a.key && DAILY[a.key];
-    if (dl) { const S = canonSeries(barsFromHistory(dl.h), { equityNow: A.live ? A.equity : dl.eq, nowMs: Date.now(), start: dl.base || A.start_equity });
+    if (dl) { const bars = barsFromHistory(dl.h).map(b => b.eq > 0 ? Object.assign(b, { eq: r2(b.eq + adjCum(a.key, b.date)) }) : b);  // raw Alpaca closes + corrections
+      const eqNow = A.live ? A.equity : (dl.eq > 0 ? r2(dl.eq + adjCum(a.key, nyDate(Date.now()))) : dl.eq);  // A.equity is already adjusted
+      const S = canonSeries(bars, { equityNow: eqNow, nowMs: Date.now(), start: dl.base || A.start_equity });
       S.source = "live"; S.asOf = dl.at; S.fetched = dl.fetched; return S; }
     const B = a.key ? (EMB[a.key] || A) : A, cal = barsFromCalendar(B.calendar);
     const hist = ((B.history || {}).ALL || []).map(([ts, eq]) => ({ date: nyDate(ts * 1000), eq }));
@@ -1149,7 +1151,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
       const b = document.createElement("button"); b.type = "button"; b.dataset.date = ds;
       b.className = "pcal-c" + (wd === 0 || wd === 6 ? " we" : "") + (c ? (c.pl > 0 ? " up" : c.pl < 0 ? " dn" : "") : "");
       const dd = Object.assign(document.createElement("span"), { className: "d", textContent: String(d) }); b.append(dd);
-      const label = c ? `${ds}: ${susd(c.pl)} (${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%), account ${usd(c.equity)}` : `${ds}: no trading data`;
+      const label0 = c ? `${ds}: ${susd(c.pl)} (${c.pct >= 0 ? "+" : "−"}${Math.abs(c.pct).toFixed(2)}%), account ${usd(c.equity)}` : `${ds}: no trading data`;
+      const corr = adjFor(ACCF[lfilter].key).filter(x => x.date === ds), label = label0 + corr.map(x => ` · incl. split correction ${adjFmt(x.usd)} (${x.symbol || "?"}, Alpaca paper bug)`).join("");
       b.title = label; b.setAttribute("aria-label", label);
       if (c) { b.append(Object.assign(document.createElement("span"), { className: "v", textContent: kfmt(c.pl) }),
         Object.assign(document.createElement("span"), { className: "p", textContent: (c.pct >= 0 ? "+" : "−") + Math.abs(c.pct).toFixed(2) + "%" })); }
@@ -1159,7 +1162,8 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     }
     box.replaceChildren(...els);
     const rc = $("pcal-recon"), rcl = `Month: ${susd(R.total)} = balance ${usd(R.from, 2)} → ${usd(R.to, 2)}`;
-    rc.className = "pcal-recon " + (R.ok ? "ok" : "bad"); rc.textContent = R.ok ? rcl + " ✓" : `⚠ doesn't reconcile: days sum ${susd(R.total)} but balance went ${usd(R.from, 2)} → ${usd(R.to, 2)} (${susd(R.to - R.from)})`;
+    rc.className = "pcal-recon " + (R.ok ? "ok" : "bad"); const mc = adjFor(ACCF[lfilter].key).filter(x => String(x.date).startsWith(calMonth)), mcn = mc.length ? ` (incl. split correction ${adjFmt(mc.reduce((s, x) => s + x.usd, 0))})` : "";
+    rc.textContent = R.ok ? rcl + mcn + " ✓" : `⚠ doesn't reconcile: days sum ${susd(R.total)} but balance went ${usd(R.from, 2)} → ${usd(R.to, 2)} (${susd(R.to - R.from)})`;
     $("pcal-src").textContent = srcNote(S);
     const best = cal.reduce((a, c) => c.pl > a.pl ? c : a), worst = cal.reduce((a, c) => c.pl < a.pl ? c : a), tot = S.total;
     const cell = (l, v, s, c) => { const d = document.createElement("div"); d.append(Object.assign(document.createElement("span"), { className: "cap", textContent: l }),
@@ -1540,6 +1544,30 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
     return { total, from, to, n: ds.length, ok: Math.abs(total - (to - from)) <= 1 };
   }
   // LIVE-PURE-END
+  const RAWSNAP = Object.fromEntries(ACC.map(a => [a.snap, D[a.snap]]));  // untouched snapshots: live mapping always starts from these
+  // ---- Manual corrections (config/adjustments.json, embedded as D.adjustments): Alpaca paper bookkeeping errors, fixed in OUR displays only.
+  // A correction adds usd to its date's P&L and to every balance/equity on or after that date. adjAcct() is the ONE place an account object is adjusted:
+  // it returns a copy flagged _adj (so it can never apply twice); the RAW snapshot stays in SNAP and every live/mapped account is adjusted on its way into D.
+  const ADJS = Array.isArray(D.adjustments) ? D.adjustments : [];
+  const adjFor = key => ADJS.filter(a => a.account === key);
+  const adjCum = (key, ds) => r2(adjFor(key).reduce((s, a) => String(a.date) <= ds ? s + a.usd : s, 0));
+  const adjDay = (key, ds) => r2(adjFor(key).filter(a => a.date === ds).reduce((s, a) => s + a.usd, 0));
+  const adjDayBefore = ds => new Date(Date.parse(ds + "T00:00:00Z") - 864e5).toISOString().slice(0, 10);
+  const adjFmt = v => (v < 0 ? "−" : "+") + "$" + Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  function adjAcct(key, A) {
+    if (!A || A._adj || !adjFor(key).length) return A;
+    const ts = Date.parse(A.live || A.generated), today = nyDate(isFinite(ts) ? ts : Date.now()), c = adjCum(key, today), pc = adjCum(key, adjDayBefore(today));
+    const B = Object.assign({}, A, { _adj: true });
+    if (num(A.equity) != null) B.equity = r2(A.equity + c);
+    if (A.last_equity) B.last_equity = r2(A.last_equity + pc);  // day P&L = equity - last_equity: today's correction stays out of it unless today is the correction day
+    const { calendar: cal0 } = A;  // the embedded daily rows; the calendar itself still reads only via canonOf()
+    if (Array.isArray(cal0)) B.calendar = cal0.map(r => { const q = Object.assign({}, r), e = num(r.equity);
+      if (e != null) q.equity = r2(e + adjCum(key, r.date)); if (num(r.pl) != null) q.pl = r2(r.pl + adjDay(key, r.date)); return q; });
+    if (A.history) { B.history = {}; for (const k of Object.keys(A.history)) B.history[k] = (A.history[k] || []).map(([t, e]) => [t, r2(e + adjCum(key, nyDate(t * 1000)))]); }
+    if (A.balance_history) { const bh = Object.assign({}, A.balance_history); if (num(bh.equity) != null) bh.equity = r2(bh.equity + c); if (num(bh.realized) != null) bh.realized = r2(bh.realized + c); B.balance_history = bh; }
+    return B;
+  }
+  for (const a of ACC) if (a.key && D[a.snap]) D[a.snap] = adjAcct(a.key, D[a.snap]);  // the embedded snapshot, adjusted once
   const EMB = Object.fromEntries(ACC.filter(a => a.key).map(a => [a.key, D[a.snap]]));  // the snapshot embedded at publish time (offline fallback only)
   const DAILY = {}, DAILY_Q = { id: "select private.alpaca_daily('id') as d", dts: "select private.alpaca_daily('dts') as d", ta: "select private.alpaca_daily('ta') as d" };  // cache per account (filled once on load, then every 5 min)
   renderResearch(); applyViews();
@@ -1550,12 +1578,12 @@ table.yy { width: 100%; min-width: 520px; border-collapse: collapse; font: 0.74r
   const LIVE_Q = { id: "select private.alpaca_live('id') as d", dts: "select private.alpaca_live('dts') as d", ta: "select private.alpaca_live('ta') as d" };
   const BLANK = { start_equity: 25000, equity: 0, cash: 0, last_equity: 0, generated: "1970-01-01T00:00:00+00:00", positions: [], orders: [], calendar: [], history: {}, strategies_by_symbol: {} };
   const LIVEACC = ACC.filter(a => a.key), BYKEY = Object.fromEntries(LIVEACC.map(a => [a.key, a]));
-  const SNAP = Object.fromEntries(LIVEACC.map(a => [a.key, D[a.snap]])), LIVE = Object.fromEntries(LIVEACC.map(a => [a.key, null])), SIG = {}, liveBusy = {};
+  const SNAP = Object.fromEntries(LIVEACC.map(a => [a.key, RAWSNAP[a.snap]])), LIVE = Object.fromEntries(LIVEACC.map(a => [a.key, null])), SIG = {}, liveBusy = {};
   const DENIED = ["needs_reauth", "server_not_connected", "selection_required", "server_not_found", "not_in_manifest", "blocked_by_policy", "approval_required", "not_granted", "capability_disabled", "capability_removed", "consent_required"];
   let liveMcp = null, liveKeys = [], liveUnsubs = [], liveTimer = null;
   const liveAcctKeys = () => lfilter === "compare" ? LIVEACC.map(a => a.key) : [(ACCF[lfilter] || {}).key].filter(Boolean);  // the account on screen (all live ones in Compare; none for the News trader)
   const liveEvery = () => lfilter === "compare" ? 15000 : 5000;
-  const setAcct = (key, A) => { D[BYKEY[key].snap] = A; };
+  const setAcct = (key, A) => { D[BYKEY[key].snap] = adjAcct(key, A); };
   function liveRows(res) {  // execute_sql result: {"result": "<text with <untrusted-data-...> [json rows] </untrusted-data-...>"}; the rows are data only
     try {
       let t = res && res.payload;

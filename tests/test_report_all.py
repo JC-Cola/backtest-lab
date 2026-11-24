@@ -1,5 +1,7 @@
 """The nightly report covers every system (Noise band, qlib, TradingAgents, day-trader-skill, Pelosi) and never fails on missing data."""
 import json
+
+import pytest
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -9,6 +11,11 @@ import report as rp  # noqa: E402
 
 DAY = date(2026, 11, 20)
 FILL = datetime(2026, 11, 20, 15, 0, tzinfo=timezone.utc)   # 10:00 NY
+
+
+@pytest.fixture(autouse=True)
+def no_real_adjustments(tmp_path, monkeypatch):
+    monkeypatch.setattr(rp.adjustments, "PATH", tmp_path / "none.json")   # the real corrections must not shift these fixtures
 
 
 def acct(eq, last, pos=(), orders=()):
@@ -94,3 +101,15 @@ def test_main_writes_latest_without_keys(tmp_path, monkeypatch):
     md = rp.main("2026-11-20")
     assert (tmp_path / "reports" / "latest.md").read_text() == md == (tmp_path / "reports" / "2026-11-20.md").read_text()
     assert "| qlib | no data | no data | no data |" in md and "Shocks today: 0" in md
+
+
+def test_qlib_adjustment_applied_to_section_and_total(tmp_path, monkeypatch):
+    a = tmp_path / "adj.json"
+    a.write_text('[{"account": "dts", "date": "2026-11-20", "symbol": "SNDK", "usd": 628.67, "why": "t"}]')
+    monkeypatch.setattr(rp.adjustments, "PATH", a)
+    accts = {"intraday": acct(25000.0, 25000.0), "qlib": acct(24400.0, 24500.0), "ta": acct(25000.0, 25000.0)}
+    md = rp.build(DAY, accts, [], "", None, EXTRAS)
+    assert "$25,028.67" in md and "Includes split correction +$628.67 (SNDK, Alpaca paper bug)" in md
+    assert rp.adjusted("qlib", accts["qlib"], date(2026, 11, 20))[0]["equity"] == pytest.approx(25028.67)
+    assert rp.day_pl(rp.adjusted("qlib", accts["qlib"], date(2026, 11, 20))[0]) == pytest.approx(528.67)
+    assert rp.day_pl(rp.adjusted("qlib", accts["qlib"], date(2026, 11, 24))[0]) == pytest.approx(-100.0)

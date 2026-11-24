@@ -136,6 +136,7 @@ def test_morning_clean_day_has_no_flags():
 
 
 def test_snapshot_accounts_graceful_and_shown(tmp_path, monkeypatch):
+    monkeypatch.setattr(bf.adjustments, "PATH", tmp_path / "no_adjustments.json")   # the real corrections must not shift these fixtures
     missing = tmp_path / "nope.json"
     b, c = tmp_path / "b.json", tmp_path / "c.json"
     b.write_text('{"equity": 25200.0, "last_equity": 25000.0, "positions": [{"symbol": "NVDA", "qty": 3, "unrealized_pl": 12.5}], '
@@ -255,3 +256,14 @@ def test_evening_report_card_lines_text_and_message():
     d["report_lines"] = ["Noise band: Sharpe 1.2 · max DD −1.1% · 6 days", "TradingAgents: not enough history yet (3 days)"]
     assert "<b>Report cards</b>" in bf.text_evening(d) and "Noise band: Sharpe 1.2" in bf.text_evening(d)
     assert bf.report_cards_message(d) == "<b>Report cards</b>\n" + "\n".join(d["report_lines"])
+
+
+def test_snapshot_account_applies_corrections(tmp_path, monkeypatch):
+    a = tmp_path / "adj.json"
+    a.write_text('[{"account": "dts", "date": "2026-11-20", "symbol": "X", "usd": 100.0, "why": "t"}]')
+    monkeypatch.setattr(bf.adjustments, "PATH", a)
+    b = tmp_path / "b.json"
+    b.write_text('{"equity": 25200.0, "last_equity": 25100.0, "calendar": [{"date": "2026-11-19", "equity": 25000.0}, {"date": "2026-11-20", "equity": 25050.0}]}')
+    q = bf.snapshot_account(b, "qlib")
+    assert q["equity"] == 25300.0 and q["last_equity"] == 25200.0 and q["calendar_equity"] == [25000.0, 25150.0]
+    assert bf.snapshot_account(b, "ta")["equity"] == 25200.0

@@ -18,6 +18,8 @@ from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import adjustments
+
 ROOT = Path(__file__).resolve().parent.parent
 MEM = ROOT / "agent_memory"
 OUT = ROOT / "reports"
@@ -320,6 +322,21 @@ def pl_header(vals):
     return "<!-- pl: " + " ".join(f"{k}={'' if v is None else round(v, 2)}" for k, v in vals.items()) + " -->\n"
 
 
+ADJ_KEY = {"qlib": "dts"}   # report key -> Alpaca account key used in config/adjustments.json
+
+
+def adjusted(key, a, day):
+    """Copy of the account with manual corrections applied: equity += cumulative to day, day P/L += that day's corrections."""
+    ak = ADJ_KEY.get(key, key)
+    cum, prev = adjustments.cum_on(ak, str(day)), adjustments.cum_on(ak, str(day - timedelta(days=1)))
+    if a.get("equity") is None or not (cum or prev):
+        return a, []
+    b = dict(a, equity=a["equity"] + cum)
+    if b.get("last_equity"):
+        b["last_equity"] = a["last_equity"] + prev
+    return b, [x for x in adjustments.for_account(ak) if str(x.get("date")) <= str(day)]
+
+
 def build(day, accts, noise_rows, intra_lessons, cands, extras=None):
     """accts: {key: account dict} (a missing key reads 'no data'); extras: {'cards': report_cards.json, 'plans': system_ta_plans.json, 'states': {key: state json}}."""
     ex = extras or {}
@@ -328,13 +345,15 @@ def build(day, accts, noise_rows, intra_lessons, cands, extras=None):
     nodata = {"equity": None, "last_equity": None, "positions": [], "orders": [], "note": ""}
     body, rows, pls = "", [], {}
     for n, (key, title, _ke, _se, _p, card) in enumerate(SYSTEMS, 1):
-        a = accts.get(key) or nodata
+        a, adjs = adjusted(key, accts.get(key) or nodata, day)
         d = day_pl(a)
         rows.append((title, a.get("equity"), d, a.get("last_equity")))
         pls[key] = d
         sec = f"\n## {n}. {title}\n\n"
         try:
             sec += summary(title, a)
+            for x in adjs:
+                sec += f"- Includes split correction {usd(x['usd'], True)} ({x.get('symbol', '?')}, Alpaca paper bug)\n"
             if a.get("equity") is not None or key == "intraday":
                 sec += card_line(cards, card)
                 if key == "intraday":
