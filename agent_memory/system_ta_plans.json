@@ -5,7 +5,7 @@
    "decision_id": "2026-11-24|ADI",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
@@ -155,7 +155,9 @@
    "date": "2026-11-20",
    "decision_id": "2026-11-20|INTU",
    "exits": [],
-   "log": [],
+   "log": [
+    "2026-11-25: position closed"
+   ],
    "opened": true,
    "placed": null,
    "plan": {
@@ -180,7 +182,7 @@
     "tp": null
    },
    "scale": [],
-   "status": "active"
+   "status": "closed"
   },
   "NBIS": {
    "date": "2026-11-12",
@@ -406,7 +408,7 @@
    "decision_id": "2026-11-24|SPY",
    "exits": [],
    "log": [],
-   "opened": false,
+   "opened": true,
    "placed": null,
    "plan": {
     "base": 0.1,
