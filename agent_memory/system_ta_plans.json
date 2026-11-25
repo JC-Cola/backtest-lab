@@ -122,6 +122,37 @@
    "scale": [],
    "status": "active"
   },
+  "EXE": {
+   "date": "2026-11-25",
+   "decision_id": "2026-11-25|EXE",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "awaiting technical confirmation of a bottom",
+     "strong fundamentals",
+     "current negative momentum and technical damage"
+    ],
+    "rating": "Hold",
+    "ref_price": 86.79,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
   "GPN": {
    "date": "2026-11-20",
    "decision_id": "2026-11-20|GPN",
@@ -142,6 +173,37 @@
     ],
     "rating": "Hold",
     "ref_price": 91.8,
+    "scale_in": [],
+    "side": null,
+    "stop": null,
+    "stop_type": null,
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "HPQ": {
+   "date": "2026-11-25",
+   "decision_id": "2026-11-25|HPQ",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": null,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "not_executed": [
+     "no open position or no price to validate against: levels not executed"
+    ],
+    "notes": [
+     "post-earnings surge",
+     "technically overextended after piercing the upper Bollinger Band",
+     "strong fundamental backdrop"
+    ],
+    "rating": "Hold",
+    "ref_price": 31.12,
     "scale_in": [],
     "side": null,
     "stop": null,
@@ -275,33 +337,25 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-24",
-   "decision_id": "2026-11-24|NVDA",
+   "date": "2026-11-25",
+   "decision_id": "2026-11-25|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-24T22:39:39+00:00",
-    "ids": [
-     "1e334988-4583-44c6-8973-2772e7fb4853"
-    ],
-    "qty": 14,
-    "stop": 125.0,
-    "tp": null
-   },
+   "placed": null,
    "plan": {
     "base": 0.1,
     "exits": [],
     "horizon": null,
-    "initial_x": 1.0,
+    "initial_x": 0.5,
     "max_total_x": 1.0,
     "not_executed": [],
     "notes": [
-     "Manage volatility",
-     "Ongoing technical downtrend"
+     "extreme valuation compression",
+     "high technical volatility"
     ],
     "rating": "Overweight",
-    "ref_price": 155.48,
+    "ref_price": 149.32,
     "scale_in": [],
     "side": "long",
     "stop": 125.0,
@@ -371,8 +425,8 @@
    "status": "closed"
   },
   "QQQ": {
-   "date": "2026-11-24",
-   "decision_id": "2026-11-24|QQQ",
+   "date": "2026-11-25",
+   "decision_id": "2026-11-25|QQQ",
    "exits": [],
    "log": [],
    "opened": true,
@@ -384,13 +438,13 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "no stop in the paragraph"
+     "initial size 0.25x unverified: using the default 1x",
+     "size cap 0.3x unverified: ignored",
+     "stop $649.23 is not worded as a stop in the paragraph: skipped",
+     "exit below $617.31 is not an adverse trigger for a short: skipped"
     ],
     "notes": [
-     "Align with technical breakdown below the 200-day SMA",
-     "Capital preservation against elevated market volatility",
-     "Institutional distribution",
-     "Avoid new long additions until the index reclaims the 50-day SMA on significant volume"
+     "mitigate downside risk from ongoing structural breakdown"
     ],
     "rating": "Underweight",
     "ref_price": 638.12,
@@ -404,31 +458,37 @@
    "status": "active"
   },
   "SPY": {
-   "date": "2026-11-24",
-   "decision_id": "2026-11-24|SPY",
+   "date": "2026-11-25",
+   "decision_id": "2026-11-25|SPY",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": null,
+   "placed": {
+    "at": "2026-11-25T22:39:24+00:00",
+    "ids": [
+     "1699f19f-7593-473a-b40a-96494954c7fe"
+    ],
+    "qty": 3,
+    "stop": 732.27,
+    "tp": null
+   },
    "plan": {
     "base": 0.1,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [
-     "stop $686.75 is on the wrong side of $718.91 for a short: skipped"
-    ],
+    "not_executed": [],
     "notes": [
-     "elevated ATR",
-     "persistent technical weakness"
+     "Confirmed technical breakdown below the 200-day SMA",
+     "Avoid new long positions until a structural reclaim of key moving averages confirms a trend reversal"
     ],
     "rating": "Underweight",
-    "ref_price": 718.91,
+    "ref_price": 716.735,
     "scale_in": [],
     "side": "short",
-    "stop": null,
-    "stop_type": null,
+    "stop": 732.27,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],

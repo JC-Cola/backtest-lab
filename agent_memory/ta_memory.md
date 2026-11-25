@@ -288,7 +288,7 @@ The 5-day alpha of plus 0.7 percent against a negative 1.6 percent raw return de
 
 <!-- ENTRY_END -->
 
-[2026-11-16 | SPY | Hold | pending]
+[2026-11-16 | SPY | Hold | -1.9% | +0.0% | 5d | resolved:2026-11-24]
 
 DECISION:
 **Rating**: Hold
@@ -301,9 +301,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The flat zero alpha versus SPY over the five-day window is too short to judge a three-to-six-month thesis, though the 1.9 percent raw pullback validates the initial caution against adding exposure. This brief snapshot supports the defensive hold rating by confirming that macro headwinds continue to prevent an immediate oversold bounce from the 200-day moving average. Future analyses of high-volatility standoffs should incorporate tighter tactical entry triggers to avoid capital stagnation during consolidation phases.
+
 <!-- ENTRY_END -->
 
-[2026-11-16 | QQQ | Underweight | pending]
+[2026-11-16 | QQQ | Underweight | -2.9% | -1.0% | 5d | resolved:2026-11-24]
 
 DECISION:
 **Rating**: Underweight
@@ -316,9 +319,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of minus 1.0 percent aligns with the defensive stance, though this short window is premature for judging the three-to-six-month horizon. This immediate downward drift supports the thesis that breaking below the 200-day moving average signals acute technical vulnerability rather than a superficial dip. Future analyses of moving average breakdowns should incorporate near-term options positioning to better gauge the velocity of institutional distribution before trimming exposure.
+
 <!-- ENTRY_END -->
 
-[2026-11-16 | NVDA | Buy | pending]
+[2026-11-16 | NVDA | Buy | -0.1% | +1.8% | 5d | resolved:2026-11-24]
 
 DECISION:
 **Rating**: Buy
@@ -331,9 +337,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of plus 1.8 percent on a flat absolute return of minus 0.1 percent shows modest relative outperformance, though this window is far too short to judge a multi-month fundamental mean-reversion thesis. This initial resilience undercuts the immediate fear of a continued freefall and lends early support to the idea that extreme oversold levels create a short-term valuation floor. A concrete lesson for future analyses is to explicitly model near-term volatility expectations alongside valuation extremes to better time phased entries during capitulation phases.
+
 <!-- ENTRY_END -->
 
-[2026-11-16 | TSN | Hold | pending]
+[2026-11-16 | TSN | Hold | -0.4% | +1.5% | 5d | resolved:2026-11-24]
 
 DECISION:
 **Rating**: Hold
@@ -346,9 +355,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The five-day alpha of plus 1.5 percent shows modest relative outperformance, though this window is far too short to judge the broader three-to-six-month mean-reversion thesis. This initial price resilience slightly undercuts the urgency of the call to avoid overextended momentum, as the stock held its ground rather than pulling back immediately. Future analyses of overbought technicals must weigh broader market relative strength more heavily when evaluating the timing of near-term pullbacks.
+
 <!-- ENTRY_END -->
 
-[2026-11-16 | TTWO | Hold | pending]
+[2026-11-16 | TTWO | Hold | +8.1% | +9.9% | 5d | resolved:2026-11-24]
 
 DECISION:
 **Rating**: Hold
@@ -360,6 +372,9 @@ DECISION:
 **Price Target**: not provided
 
 **Time Horizon**: Post-launch, 3-6 months
+
+REFLECTION:
+The five-day alpha of plus 9.9 percent demonstrates strong near-term outperformance that bypassed our anticipated pullback, though this five-day window is far too short to judge our multi-month horizon. This unexpected strength directly undercuts our sell-the-news correction warning, proving that aggressive pre-launch accumulation completely overwhelmed overhead technical resistance. Future binary event reviews must place less emphasis on overbought indicators and assign a higher probability to persistent momentum overriding short-term mean reversion.
 
 <!-- ENTRY_END -->
 
@@ -782,6 +797,81 @@ DECISION:
 **Executive Summary**: Maintain current position size in DLTR. The stock is currently overextended following a 12% jump, making new capital deployment at these levels inefficient. We will wait for an orderly consolidation or a pullback toward the 10 EMA near $141.50 before increasing exposure, while keeping a stop loss near $126.35 to protect against structural downside.
 
 **Investment Thesis**: The investment case for DLTR is balanced between significant fundamental tailwinds and technical overextension. Bullish factors, including a 4.6% increase in comparable sales, a 3.8% surge in traffic, and substantial institutional accumulation (notably the Gates Foundation stake), suggest a structural rerating is underway rather than a mere momentum spike. However, these positives are tempered by valid technical and fundamental constraints: the stock is currently trading above its upper Bollinger Band, reflecting exhaustion, and carries a high debt-to-equity ratio of over 223%. Given the recent 12% vertical spike, adding capital now offers a poor risk-reward ratio. We are opting for a Hold to allow the stock to consolidate its gains; a move back to the 10 EMA ($141.50) would provide a more attractive entry, while a breakdown below the 50 SMA ($126.35) would invalidate the current bullish narrative and necessitate a shift to an Underweight position.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-25 | SPY | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce current SPY exposure by 25-30% to mitigate capital loss following the confirmed technical breakdown below the 200-day SMA ($730.77). Maintain a defensive posture with a stop-loss at $732.27 and avoid new long positions until a structural reclaim of key moving averages confirms a trend reversal.
+
+**Investment Thesis**: The bearish case is now decisive, as SPY has breached both the 50-day SMA ($757.85) and the 200-day SMA ($730.77), rendering previous 'Hold' strategies ineffective. Persistent macroeconomic headwinds, including high core PCE and zero probability of rate cuts, are currently overwhelming market sentiment, as evidenced by the negative MACD (-12.93) and the high ATR ($15.57). While the RSI of 39.85 approaches oversold levels, the lack of institutional support invalidates the 'bottom-fishing' thesis; therefore, reducing exposure is the only prudent way to preserve capital against further downside toward the $700 support zone. This position will be reconsidered only upon a sustained reclaim of the 200-day SMA on high volume.
+
+**Price Target**: not provided
+
+**Time Horizon**: not provided
+
+<!-- ENTRY_END -->
+
+[2026-11-25 | QQQ | Underweight | pending]
+
+DECISION:
+**Rating**: Underweight
+
+**Executive Summary**: Reduce current QQQ exposure by 25-30% to mitigate downside risk from the ongoing structural breakdown. Do not initiate new short positions at current levels; instead, wait for a relief rally toward the 10-day EMA at $649.23 for a favorable risk-reward entry. Maintain a strict stop-loss on remaining long positions below the $617.31 lower Bollinger band.
+
+**Investment Thesis**: The decisive breach of both the 50-day ($707.02) and 200-day ($682.54) moving averages, coupled with persistent institutional outflows and a 'higher-for-longer' interest rate environment, confirms a structural downtrend. While the aggressive bear case highlights valid technical deterioration, the extreme volatility represented by an ATR of $21.54 warns against chasing the market downward near the lower Bollinger band. A moderate, defensive approach of trimming long positions while awaiting a tactical relief bounce to the 10-day EMA ($649.23) provides the best balance between capital preservation and potential short-side participation. The thesis for this defensive posture remains active until the index confirms a reclamation of the $649.23 resistance level, signaling a stabilization of short-term momentum.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-25 | NVDA | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a long position at 0.5x standard allocation to capitalize on extreme valuation compression while respecting high technical volatility. Employ a disciplined, risk-managed approach with a hard stop-loss at 125.00, prepared to scale up only upon technical confirmation of trend stabilization above the 10 EMA.
+
+**Investment Thesis**: The investment thesis is predicated on a significant dislocation between NVDA's fundamental financial health and its current market price. The company's Forward P/E of 8.99x and PEG ratio of 0.19 on nearly $100B in free cash flow present a compelling value opportunity that outweighs temporary macro-driven sentiment. While the conservative and neutral analysts correctly identify valid structural risks—including the death cross, institutional distribution, and upcoming regulatory hearings—these factors are effectively mitigated by the moderate 0.5x position sizing and the strict stop-loss at 125.00. The decision to favor the aggressive bull case is supported by the oversold RSI (37.45), which suggests the current price levels have priced in a 'worst-case' scenario, providing an attractive risk-reward profile for long-term holders. This thesis will be invalidated if the stock decisively breaks the 125.00 support level, which would signal that macro-economic pressures and regulatory headwinds have superseded the fundamental valuation floor.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-25 | HPQ | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain existing exposure to HPQ following the recent post-earnings surge. The stock is currently technically overextended after piercing the upper Bollinger Band, making new capital deployment unfavorable despite the strong fundamental backdrop. Wait for a constructive mean-reversion toward the $29.00-$30.70 range before considering an increase in position size.
+
+**Investment Thesis**: The debate highlights a dichotomy between strong short-term momentum and structural risk. Evidence favoring the 'Hold' stance is decisive: while the Q4 earnings beat ($16B revenue, EPS $0.83) and 39 million shares traded confirm strong institutional interest and valid fundamental strength (forward P/E 9.24, $3.39B FCF), the technical reality cannot be ignored. The stock has violently detached from its moving averages, with a 10-15% single-session spike punching through the upper Bollinger Band at $30.93. Attempting to add capital here ignores the $1.44 ATR and risks immediate mean-reversion. Furthermore, legitimate fundamental headwinds, such as memory costs rising to 40% of PC parts and a fragile balance sheet with negative equity, warrant caution until the new leadership transition in January provides better visibility on margin management. A 'Hold' is prudent to allow technicals to normalize while respecting the 200-day moving average as the ultimate support floor.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-25 | EXE | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain current exposure while awaiting technical confirmation of a bottom. The investment thesis remains intact due to strong fundamentals, but current negative momentum and technical damage demand a patient approach. Close monitoring of the $80.46 support level is required to avoid capitulation on a break of the primary trend floor.
+
+**Investment Thesis**: The decision to hold rests on the unresolved tension between compelling long-term fundamental value and significant technical deterioration. The aggressive bull case, while compelling, relies on catalysts (winter demand, regulatory tailwinds) and valuation metrics (7.49 P/E, strong cash flow, insider buying) that are currently disconnected from the price action. The conservative case correctly highlights that the stock's failure to reclaim the 50-day and 200-day moving averages, coupled with a negative MACD, suggests that catching a falling knife remains premature. Because the stock is testing critical support at $80.46, neither an aggressive accumulation (Buy) nor a panic exit (Sell) is justified until the price exhibits either stabilization above technical resistance or a breakdown of the structural support. We maintain our current position to capture the fundamental upside while respecting the risk of further near-term volatility.
 
 **Price Target**: not provided
 
