@@ -2,6 +2,7 @@
 
 Newest first. Day P/L of each paper account (intraday = Noise band). The newest report is also latest.md.
 
+- [2026-11-25](2026-11-25.md): intraday $0.00, qlib +$7.79, ta +$85.54
 - [2026-11-24](2026-11-24.md): intraday $0.00, qlib -$747.02, ta -$76.89
 - [2026-11-20](2026-11-20.md): intraday +$733.96
 - [2026-11-19](2026-11-19.md): intraday +$214.52
