@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-25. 68074 trials in total: 65517 scored, 2557 rejected, 3 sent to the held-out test, 0 passed it.
+Updated 2026-11-25. 68534 trials in total: 65977 scored, 2557 rejected, 3 sent to the held-out test, 0 passed it.
 
 ## Most robust ideas on the search years (all 3 folds positive, median fold Sharpe, 2x costs; deflated reward is shown for information only)
 
@@ -18,10 +18,10 @@ Updated 2026-11-25. 68074 trials in total: 65517 scored, 2557 rejected, 3 sent t
 ## Features that tend to help (learned weights, 1 = average)
 
 - gap: 2.31
-- ret_30: 1.58
+- ret_30: 1.57
 - prev_day_ibs: 1.44
-- range_pos: 1.44
-- rvol_30: 1.29
+- range_pos: 1.43
+- rvol_30: 1.30
 - rv_5d: 1.21
 - vol_ratio: 1.17
 - prev_day_ret: 1.11
@@ -30,7 +30,7 @@ Updated 2026-11-25. 68074 trials in total: 65517 scored, 2557 rejected, 3 sent t
 
 - z_20d: 0.77
 - range_5d: 0.76
-- consol_30: 0.75
+- consol_30: 0.76
 - run_10d: 0.74
 - hi20_dist: 0.68
 
@@ -48,7 +48,7 @@ Updated 2026-11-25. 68074 trials in total: 65517 scored, 2557 rejected, 3 sent t
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 7s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0 (3 of 3 this month). Strategies passing the held-out test (BH across all 3 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 8s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0 (3 of 3 this month). Strategies passing the held-out test (BH across all 3 shots ever): 0.
 
 ## Held-out budget
 
