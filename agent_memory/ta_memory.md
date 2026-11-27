@@ -378,7 +378,7 @@ The five-day alpha of plus 9.9 percent demonstrates strong near-term outperforma
 
 <!-- ENTRY_END -->
 
-[2026-11-17 | SPY | Hold | pending]
+[2026-11-17 | SPY | Hold | -1.8% | +0.0% | 5d | resolved:2026-11-25]
 
 DECISION:
 **Rating**: Hold
@@ -391,9 +391,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The five-day alpha of plus zero percent on a negative one point eight percent raw return reflects flat relative performance that is far too short to judge a three to six month horizon. This brief window neither validates nor invalidates the caution regarding fragile supports and institutional de-leveraging. A concrete lesson for the next analysis is to explicitly incorporate shorter-term tactical hedges when recommending a hold in high ATR environments.
+
 <!-- ENTRY_END -->
 
-[2026-11-17 | QQQ | Overweight | pending]
+[2026-11-17 | QQQ | Overweight | -3.9% | -2.0% | 5d | resolved:2026-11-25]
 
 DECISION:
 **Rating**: Overweight
@@ -406,9 +409,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of -2.0% and raw return of -3.9% show immediate downside momentum, though this window is far too short to judge a 3-6 month thesis. This initial drop validates the bearish macro headwinds and the risk of catching a falling knife below the 200-day moving average. Future analyses must wait for confirmed price action above key moving averages rather than scaling in preemptively at Bollinger Band supports during high-volatility regimes.
+
 <!-- ENTRY_END -->
 
-[2026-11-17 | NVDA | Overweight | pending]
+[2026-11-17 | NVDA | Overweight | -1.1% | +0.7% | 5d | resolved:2026-11-25]
 
 DECISION:
 **Rating**: Overweight
@@ -421,9 +427,12 @@ DECISION:
 
 **Time Horizon**: 3-6 months
 
+REFLECTION:
+The 5-day alpha of plus 0.7 percent against a negative raw return of 1.1 percent shows modest relative outperformance, though this window is far too short to judge a three-to-six-month thesis. This brief price action neither validates nor invalidates the core valuation premise, but it does support the wisdom of scaling in near support rather than deploying full-size market orders amidst high volatility. Future analyses involving high-ATR stocks should explicitly calculate the expected daily noise band to better calibrate the pacing of staged entry points.
+
 <!-- ENTRY_END -->
 
-[2026-11-17 | NKE | Underweight | pending]
+[2026-11-17 | NKE | Underweight | +1.0% | +2.8% | 5d | resolved:2026-11-25]
 
 DECISION:
 **Rating**: Underweight
@@ -436,9 +445,12 @@ DECISION:
 
 **Time Horizon**: 12-24 months
 
+REFLECTION:
+The 5-day alpha of plus 2.8 percent shows a mild positive divergence during a short window that is ultimately too brief to judge a 12-to-24-month turnaround thesis. This bounce directly tests the bear case's concern over technical exhaustion and oversold conditions rather than any structural fundamental repair. Future analyses of distressed turnarounds must better quantify the magnitude of potential counter-trend relief rallies before trimming fundamentally broken momentum names.
+
 <!-- ENTRY_END -->
 
-[2026-11-17 | CRM | Hold | pending]
+[2026-11-17 | CRM | Hold | +3.6% | +5.4% | 5d | resolved:2026-11-25]
 
 DECISION:
 **Rating**: Hold
@@ -450,6 +462,9 @@ DECISION:
 **Price Target**: not provided
 
 **Time Horizon**: 3-6 months
+
+REFLECTION:
+The five-day alpha of plus 5.4 percent shows a sharp near-term rebound, though this brief window is far too short to judge a three-to-six-month thesis. This sudden bounce undercuts the conservative technical warning about ongoing institutional distribution, proving that oversold conditions and strong free cash flow can trigger rapid mean reversion even below the 200-day moving average. Future analyses of high-volatility assets should incorporate a dynamic scaling mechanism to capture aggressive mean-reversion bounces rather than strictly waiting for a complete moving average reclaim.
 
 <!-- ENTRY_END -->
 
@@ -872,6 +887,81 @@ DECISION:
 **Executive Summary**: Maintain current exposure while awaiting technical confirmation of a bottom. The investment thesis remains intact due to strong fundamentals, but current negative momentum and technical damage demand a patient approach. Close monitoring of the $80.46 support level is required to avoid capitulation on a break of the primary trend floor.
 
 **Investment Thesis**: The decision to hold rests on the unresolved tension between compelling long-term fundamental value and significant technical deterioration. The aggressive bull case, while compelling, relies on catalysts (winter demand, regulatory tailwinds) and valuation metrics (7.49 P/E, strong cash flow, insider buying) that are currently disconnected from the price action. The conservative case correctly highlights that the stock's failure to reclaim the 50-day and 200-day moving averages, coupled with a negative MACD, suggests that catching a falling knife remains premature. Because the stock is testing critical support at $80.46, neither an aggressive accumulation (Buy) nor a panic exit (Sell) is justified until the price exhibits either stabilization above technical resistance or a breakdown of the structural support. We maintain our current position to capture the fundamental upside while respecting the risk of further near-term volatility.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-27 | SPY | Hold | pending]
+
+DECISION:
+**Rating**: Hold
+
+**Executive Summary**: Maintain a neutral stance. Do not initiate new positions until SPY achieves a confirmed daily close above the 200-day SMA at $730.98. Use this consolidation phase to preserve capital, avoiding aggressive entry attempts until the technical structure aligns with the macro resilience.
+
+**Investment Thesis**: The market remains in a high-conviction standoff, validating a 'Hold' strategy. While the Aggressive Analyst highlights strong macro data (4.3% GDP growth) and a potential bottoming process, the Conservative Analyst provides a critical counterpoint: SPY is currently trading below both the 200-day SMA ($730.98) and the 50-day SMA ($757.20), accompanied by a high $15.35 ATR and negative MACD momentum. This combination suggests that entering now involves significant 'whipsaw' risk without clear directional confirmation. The Neutral Analyst's balanced view correctly identifies that relying on macro data alone while ignoring the technical damage is speculative. Consequently, the thesis hinges on waiting for the 200-day SMA reclaim as the definitive technical trigger. If SPY closes above this level, the risk-reward shifts favorably toward a mean-reversion move to the Bollinger middle band at $738.28; conversely, a failure to hold current support risks further downside.
+
+**Price Target**: 738.28
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-27 | QQQ | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an Overweight position at the current $650.99 level using a measured, incremental entry to account for high volatility. We will allocate half of the intended position now to capture institutional stabilization, while maintaining a strict stop-loss at $605.00 to mitigate drawdown risks. Further capital deployment is contingent upon the index reclaiming the 200-day moving average ($682.74).
+
+**Investment Thesis**: The decision to favor an Overweight stance balances confirmed technical weakness against strong evidence of institutional sponsorship. While the Conservative Analyst rightly flags the macro headwinds of 'higher-for-longer' rates and the breach of the 200-day SMA ($682.74), the evidence of $2.88 billion in institutional inflows into anchor mega-caps and the exhaustion of panic selling (RSI stabilizing at 44.02) provides a foundation for a rebound. We reject the 'Hold' stance because waiting for a full technical breakout above the 50-day SMA ($705.72) risks missing a significant recovery move given the current oversold conditions. Our thesis rests on the active defense of the $650 support area by smart money; this thesis will be invalidated if the price violates our $605.00 stop-loss, which would signal that the institutional floor has failed and the structural downtrend remains dominant.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-27 | NVDA | Buy | pending]
+
+DECISION:
+**Rating**: Buy
+
+**Executive Summary**: Initiate a 0.5x standard allocation in NVDA at current levels near $150.49. This phased approach balances the compelling valuation discount against ongoing technical volatility. Maintain a strict stop-loss at $125.53 to manage the risk of continued downside momentum.
+
+**Investment Thesis**: The investment thesis is anchored in the extreme valuation disconnect, where NVDA trades at a forward P/E of 9.06x and a PEG ratio of 0.19 despite generating nearly $100 billion in free cash flow. While the conservative analyst correctly flags technical weakness below the 10-day EMA and 50-day SMA, the neutral and aggressive perspectives highlight that waiting for 'technical perfection' in a stock with a 2.25 beta often results in missing the asymmetric risk-reward setup following a washout. The return of Jensen Huang provides a tangible catalyst for institutional sentiment that outweighs short-term regulatory noise. This position is tactical and will be invalidated by a sustained breach of the $125.53 support level, which would signal that the market's fundamental valuation floor has been structurally rejected.
+
+**Price Target**: not provided
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-27 | VRTX | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate an Overweight position by scaling into VRTX at current levels (~$534). Utilize a phased entry strategy: establish an initial tranche now, with specific instructions to double the allocation upon a successful test of the 50-day SMA support near $525. Protect capital with a stop-loss anchored below the 200-day SMA at $486.52.
+
+**Investment Thesis**: The investment thesis is built on VRTX's fundamental strength as a commercial powerhouse with nearly $13 billion in trailing revenue, consistent 30% profit margins, and a fortress balance sheet. While the Conservative analyst correctly identifies regulatory uncertainty regarding the povetacicept delay as a risk, the Aggressive and Neutral analysts provide a more compelling argument that this delay is a procedural noise rather than a structural fundamental impairment. The current valuation reset provides a tactical entry point above the structural macro bull trendline (200-day SMA at $486.52). By adopting the Neutral analyst's scaling methodology, we mitigate the risk of near-term volatility cited by the conservative faction while capturing the upside potential defined by institutional price targets (e.g., $585). This rating will be reconsidered if the $517 level breaks, signaling a breakdown of technical support.
+
+**Price Target**: 585.0
+
+**Time Horizon**: 3-6 months
+
+<!-- ENTRY_END -->
+
+[2026-11-27 | SNDK | Overweight | pending]
+
+DECISION:
+**Rating**: Overweight
+
+**Executive Summary**: Initiate a staged, scaled-in long position at current price levels of $85.36 to capture extreme valuation disconnects, while reserving capital to add exposure only upon a confirmed break above the 10 EMA ($104.14). Limit initial position size to minimize downside risk from current bearish momentum, and maintain a strict hard stop below the $77.10 structural support level. The time horizon for this recovery is 3-6 months.
+
+**Investment Thesis**: The investment case is driven by an extreme asymmetry between the stock's fundamental valuation—highlighted by a 2.38 forward P/E and $11.24B in free cash flow—and the significant long-term catalyst of AI demand via the NVDA and Kioxia memory partnership. While the conservative analysts correctly identify the technical breakdown (price significantly below the 50 SMA and 10 EMA), the neutral analyst's balanced proposal of a scaled-in approach addresses the lesson that waiting for a full structural trend reversal often results in missing the initial relief rally in oversold, high-quality assets. We are betting that the fundamental floor established by current AI demand will support a reversal before the technical indicators fully align, but we mitigate the risk of a 'falling knife' by employing a two-tranche entry strategy rather than committing full capital immediately. The thesis will be invalidated if the $77.10 support level is breached, indicating a further deterioration in the structural integrity of the business.
 
 **Price Target**: not provided
 

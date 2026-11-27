@@ -337,28 +337,28 @@
    "status": "closed"
   },
   "NVDA": {
-   "date": "2026-11-25",
-   "decision_id": "2026-11-25|NVDA",
+   "date": "2026-11-27",
+   "decision_id": "2026-11-27|NVDA",
    "exits": [],
    "log": [],
    "opened": true,
    "placed": null,
    "plan": {
-    "base": 0.1,
+    "base": 0.2,
     "exits": [],
     "horizon": null,
     "initial_x": 0.5,
     "max_total_x": 1.0,
     "not_executed": [],
     "notes": [
-     "extreme valuation compression",
-     "high technical volatility"
+     "compelling valuation discount",
+     "ongoing technical volatility"
     ],
-    "rating": "Overweight",
-    "ref_price": 149.32,
+    "rating": "Buy",
+    "ref_price": 150.6,
     "scale_in": [],
     "side": "long",
-    "stop": 125.0,
+    "stop": 125.53,
     "stop_type": "price",
     "tp": null
    },
@@ -425,8 +425,8 @@
    "status": "closed"
   },
   "QQQ": {
-   "date": "2026-11-25",
-   "decision_id": "2026-11-25|QQQ",
+   "date": "2026-11-27",
+   "decision_id": "2026-11-27|QQQ",
    "exits": [],
    "log": [],
    "opened": true,
@@ -438,57 +438,83 @@
     "initial_x": 1.0,
     "max_total_x": 1.0,
     "not_executed": [
-     "initial size 0.25x unverified: using the default 1x",
-     "size cap 0.3x unverified: ignored",
-     "stop $649.23 is not worded as a stop in the paragraph: skipped",
-     "exit below $617.31 is not an adverse trigger for a short: skipped"
+     "initial size 0.5x unverified: using the default 1x",
+     "size cap 1x unverified: ignored",
+     "plan direction 'short' conflicts with the Overweight rating: rating wins",
+     "scale-in above $682.74: initial entry already uses the 1x allowed"
     ],
     "notes": [
-     "mitigate downside risk from ongoing structural breakdown"
+     "High volatility",
+     "Capture institutional stabilization"
     ],
-    "rating": "Underweight",
-    "ref_price": 638.12,
+    "rating": "Overweight",
+    "ref_price": 650.805,
     "scale_in": [],
-    "side": "short",
-    "stop": null,
-    "stop_type": null,
+    "side": "long",
+    "stop": 605.0,
+    "stop_type": "price",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
+  },
+  "SNDK": {
+   "date": "2026-11-27",
+   "decision_id": "2026-11-27|SNDK",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": "3-6 months",
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "scale-in above $104.14: initial entry already uses the 1x allowed"
+    ],
+    "notes": [
+     "Initiate to capture extreme valuation disconnects",
+     "Minimize downside risk from current bearish momentum"
+    ],
+    "rating": "Overweight",
+    "ref_price": 85.0,
+    "scale_in": [],
+    "side": "long",
+    "stop": 77.1,
+    "stop_type": "price",
     "tp": null
    },
    "scale": [],
    "status": "active"
   },
   "SPY": {
-   "date": "2026-11-25",
-   "decision_id": "2026-11-25|SPY",
+   "date": "2026-11-27",
+   "decision_id": "2026-11-27|SPY",
    "exits": [],
    "log": [],
    "opened": true,
-   "placed": {
-    "at": "2026-11-25T22:39:24+00:00",
-    "ids": [
-     "1699f19f-7593-473a-b40a-96494954c7fe"
-    ],
-    "qty": 3,
-    "stop": 732.27,
-    "tp": null
-   },
+   "placed": null,
    "plan": {
-    "base": 0.1,
+    "base": null,
     "exits": [],
     "horizon": null,
     "initial_x": 1.0,
     "max_total_x": 1.0,
-    "not_executed": [],
-    "notes": [
-     "Confirmed technical breakdown below the 200-day SMA",
-     "Avoid new long positions until a structural reclaim of key moving averages confirms a trend reversal"
+    "not_executed": [
+     "plan direction 'flat' conflicts with the Hold rating: rating wins",
+     "no stop in the paragraph"
     ],
-    "rating": "Underweight",
-    "ref_price": 716.735,
+    "notes": [
+     "Macro resilience"
+    ],
+    "rating": "Hold",
+    "ref_price": 728.86,
     "scale_in": [],
     "side": "short",
-    "stop": 732.27,
-    "stop_type": "price",
+    "stop": null,
+    "stop_type": null,
     "tp": null
    },
    "scale": [],
@@ -632,6 +658,34 @@
    },
    "scale": [],
    "status": "closed"
+  },
+  "VRTX": {
+   "date": "2026-11-27",
+   "decision_id": "2026-11-27|VRTX",
+   "exits": [],
+   "log": [],
+   "opened": false,
+   "placed": null,
+   "plan": {
+    "base": 0.1,
+    "exits": [],
+    "horizon": null,
+    "initial_x": 1.0,
+    "max_total_x": 1.0,
+    "not_executed": [
+     "scale-in near $525: initial entry already uses the 1x allowed"
+    ],
+    "notes": [],
+    "rating": "Overweight",
+    "ref_price": 534.52,
+    "scale_in": [],
+    "side": "long",
+    "stop": 486.52,
+    "stop_type": "sma",
+    "tp": null
+   },
+   "scale": [],
+   "status": "active"
   },
   "WSM": {
    "date": "2026-11-19",
