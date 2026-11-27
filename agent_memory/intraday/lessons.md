@@ -1,6 +1,6 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-27. 106667 trials in total: 104029 scored, 2638 rejected, 3 sent to the held-out test, 0 passed it.
+Updated 2026-11-27. 107037 trials in total: 104399 scored, 2638 rejected, 3 sent to the held-out test, 0 passed it.
 
 ## Most robust ideas on the search years (all 3 folds positive, median fold Sharpe, 2x costs; deflated reward is shown for information only)
 
