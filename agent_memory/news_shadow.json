@@ -3962,6 +3962,108 @@
     "confidence": 0.52,
     "rationale": "A sizeable company-specific move with no identifiable new catalyst and only modest relative volume is classic default-to-doubt territory — the headline doesn't explain it, the earnings surprise is stale, and consensus momentum is flat-to-sl"
    }
+  },
+  {
+   "id": "VRTX|2026-11-27",
+   "symbol": "VRTX",
+   "date": "2026-11-27",
+   "ret": -0.052463,
+   "vol": 0.018582,
+   "mult": 2.823,
+   "headlines": [
+    "Vertex Pharmaceuticals Announces FDA Extension for Povetacicept BLA Review"
+   ],
+   "relvol": 1.39,
+   "gap": -0.080179,
+   "spy_ret": 0.016917,
+   "beta": 0.462,
+   "abn": -0.060277,
+   "abn_mult": 3.24,
+   "score": 0.08379,
+   "rec_delta": 0.0,
+   "rec_score": 1.077,
+   "surprise_pct": -2.52,
+   "surprise_period": "2026-09-30",
+   "review": {
+    "status": "ok",
+    "catalyst": "legal_regulatory",
+    "company_specific": true,
+    "is_new": true,
+    "sentiment": -1,
+    "bull": "The FDA action is an extension, not a rejection or CRL — regulatory timelines get pushed for administrative reasons as often as for substantive ones, fundamentals (EPS only -2.5% vs. estimate) are intact, and analyst consensus stayed exactly flat at 1.077, meaning the sell-side doesn't see a thesis-",
+    "bear": "A review extension for a single-product BLA (povetacicept) is a classic sign the FDA wants more information or time to resolve an issue, and the -6% move beyond what beta/market explains confirms this is a real, company-specific repricing of approval-timeline risk, not noise — that kind of regulator",
+    "direction": "unclear",
+    "confidence": 0.52,
+    "rationale": "The catalyst is genuine, company-specific, and large enough (2.8x normal vol, -6% beta-adjusted) to be a real information event, but intraday recovery off the gap low and an unchanged positive analyst consensus cut against a clean continuat"
+   }
+  },
+  {
+   "id": "SNDK|2026-11-27",
+   "symbol": "SNDK",
+   "date": "2026-11-27",
+   "ret": 0.155519,
+   "vol": 0.063991,
+   "mult": 2.43,
+   "headlines": [
+    "Tradr ETFs Announces Launch of Triple Threat Series Including Memory ETF Featuring SanDisk"
+   ],
+   "relvol": 0.627,
+   "gap": 0.085916,
+   "spy_ret": 0.016917,
+   "beta": 3.46,
+   "abn": 0.104768,
+   "abn_mult": 1.64,
+   "score": 0.06569,
+   "rec_delta": 0.024,
+   "rec_score": 1.2,
+   "surprise_pct": 5.01,
+   "surprise_period": "2026-09-30",
+   "review": {
+    "status": "ok",
+    "catalyst": "unrelated_headline",
+    "company_specific": false,
+    "is_new": false,
+    "sentiment": 0,
+    "bull": "EPS beat (+5.0%), a constructive analyst consensus (1.2, ticking up), and a +10.5% move beyond what beta/market explains suggest some idiosyncratic buying interest (e.g., sector momentum in memory/NAND or short covering) that could extend if that flow continues.",
+    "bear": "A 2.4x-normal-vol, 15.6% move on only 0.627x average volume is a red flag — big price dislocation without broad participation is fragile, and with no genuine company-specific news (the only headline is a third-party ETF product launch \"featuring\" the stock, not real news about it), the gap looks vul",
+    "direction": "unclear",
+    "confidence": 0.45,
+    "rationale": "The only headline in the window is an unrelated ETF-launch mention, not genuine company news, and the move came on below-average volume despite its size — exactly the \"headline doesn't explain the move\" case that should default to unclear r"
+   }
+  },
+  {
+   "id": "COHR|2026-11-27",
+   "symbol": "COHR",
+   "date": "2026-11-27",
+   "ret": 0.142777,
+   "vol": 0.067741,
+   "mult": 2.108,
+   "headlines": [
+    "Coherent Director Stephen G. Pagliuca Purchases $15.22 Million in Common Stock"
+   ],
+   "relvol": 0.692,
+   "gap": 0.073403,
+   "spy_ret": 0.016917,
+   "beta": 3.481,
+   "abn": 0.092026,
+   "abn_mult": 1.36,
+   "score": 0.06368,
+   "rec_delta": -0.002,
+   "rec_score": 1.062,
+   "surprise_pct": 3.8,
+   "surprise_period": "2026-09-30",
+   "review": {
+    "status": "ok",
+    "catalyst": "other",
+    "company_specific": true,
+    "is_new": true,
+    "sentiment": 1,
+    "bull": "A sitting director putting $15.2M of personal capital into the stock is a genuine, costly signal of insider confidence, and it arrives alongside a buy-leaning analyst consensus (1.06) and a positive EPS surprise (+3.8%); the +9.2% of the move that beta can't explain suggests real idiosyncratic deman",
+    "bear": "Relative volume is only 0.69x the 20-day average — well below normal — which is a strange fingerprint for a 14.3% move (2.1x normal volatility); a single $15M insider purchase is small next to the size of this move and doesn't obviously justify it, so thin, low-volume gains like this are prone to fa",
+    "direction": "unclear",
+    "confidence": 0.4,
+    "rationale": "The headline is genuinely company-specific and new, but a modest insider purchase doesn't proportionally explain a move this large, and the below-average volume undercuts confidence that this is a broadly-confirmed repricing rather than a t"
+   }
   }
  ],
  "trades": [
@@ -6170,12 +6272,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 355.655,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 346.31,
+   "pnl_pct": -2.7275
   },
   {
    "id": "PANW|2026-11-18|reversal|1d",
@@ -6198,12 +6300,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 355.655,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 346.31,
+   "pnl_pct": 2.5275
   },
   {
    "id": "UNH|2026-11-18|momentum|1d",
@@ -6226,12 +6328,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 353.32,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 349.745,
+   "pnl_pct": 0.9118
   },
   {
    "id": "UNH|2026-11-18|reversal|1d",
@@ -6254,12 +6356,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 353.32,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 349.745,
+   "pnl_pct": -1.1118
   },
   {
    "id": "HUM|2026-11-18|momentum|1d",
@@ -6282,12 +6384,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 392.36,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 411.305,
+   "pnl_pct": -4.9285
   },
   {
    "id": "HUM|2026-11-18|reversal|1d",
@@ -6310,12 +6412,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 392.36,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 411.305,
+   "pnl_pct": 4.7285
   },
   {
    "id": "TJX|2026-11-18|momentum|1d",
@@ -6338,12 +6440,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 137.0,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 145.48,
+   "pnl_pct": 6.0898
   },
   {
    "id": "TJX|2026-11-18|reversal|1d",
@@ -6366,12 +6468,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 137.0,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 145.48,
+   "pnl_pct": -6.2898
   },
   {
    "id": "TJX|2026-11-18|llm|1d",
@@ -6394,12 +6496,12 @@
    "rule": "llm",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 137.0,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 145.48,
+   "pnl_pct": 6.0898
   },
   {
    "id": "TTWO|2026-11-18|momentum|1d",
@@ -6422,12 +6524,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 214.72,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 226.985,
+   "pnl_pct": 5.6121
   },
   {
    "id": "TTWO|2026-11-18|reversal|1d",
@@ -6450,12 +6552,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 214.72,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 226.985,
+   "pnl_pct": -5.8121
   },
   {
    "id": "AKAM|2026-11-18|momentum|1d",
@@ -6478,12 +6580,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 92.755,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 89.0,
+   "pnl_pct": -4.1483
   },
   {
    "id": "AKAM|2026-11-18|reversal|1d",
@@ -6506,12 +6608,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 92.755,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 89.0,
+   "pnl_pct": 3.9483
   },
   {
    "id": "ELV|2026-11-18|momentum|1d",
@@ -6534,12 +6636,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 404.01,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 392.36,
+   "pnl_pct": 2.7836
   },
   {
    "id": "ELV|2026-11-18|reversal|1d",
@@ -6562,12 +6664,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 404.01,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 392.36,
+   "pnl_pct": -2.9836
   },
   {
    "id": "FCX|2026-11-18|momentum|1d",
@@ -6590,12 +6692,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 52.13,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 50.305,
+   "pnl_pct": 3.4009
   },
   {
    "id": "FCX|2026-11-18|reversal|1d",
@@ -6618,12 +6720,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 52.13,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 50.305,
+   "pnl_pct": -3.6009
   },
   {
    "id": "TGT|2026-11-18|momentum|1d",
@@ -6646,12 +6748,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 167.335,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 172.39,
+   "pnl_pct": 2.9209
   },
   {
    "id": "TGT|2026-11-18|reversal|1d",
@@ -6674,12 +6776,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 167.335,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 172.39,
+   "pnl_pct": -3.1209
   },
   {
    "id": "CVS|2026-11-18|momentum|1d",
@@ -6702,12 +6804,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 82.025,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 81.55,
+   "pnl_pct": 0.4791
   },
   {
    "id": "CVS|2026-11-18|reversal|1d",
@@ -6730,12 +6832,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 82.025,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 81.55,
+   "pnl_pct": -0.6791
   },
   {
    "id": "DIS|2026-11-18|momentum|1d",
@@ -6758,12 +6860,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 121.965,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 126.18,
+   "pnl_pct": 3.3559
   },
   {
    "id": "DIS|2026-11-18|reversal|1d",
@@ -6786,12 +6888,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 121.965,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 126.18,
+   "pnl_pct": -3.5559
   },
   {
    "id": "HCA|2026-11-18|momentum|1d",
@@ -6814,12 +6916,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 471.975,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 498.09,
+   "pnl_pct": -5.6331
   },
   {
    "id": "HCA|2026-11-18|reversal|1d",
@@ -6842,12 +6944,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 471.975,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 498.09,
+   "pnl_pct": 5.4331
   },
   {
    "id": "NEM|2026-11-18|momentum|1d",
@@ -6870,12 +6972,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 103.84,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 105.44,
+   "pnl_pct": -1.6408
   },
   {
    "id": "NEM|2026-11-18|reversal|1d",
@@ -6898,12 +7000,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 103.84,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 105.44,
+   "pnl_pct": 1.4408
   },
   {
    "id": "CF|2026-11-18|momentum|1d",
@@ -6926,12 +7028,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 113.69,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 119.39,
+   "pnl_pct": -5.1136
   },
   {
    "id": "CF|2026-11-18|reversal|1d",
@@ -6954,12 +7056,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 113.69,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 119.39,
+   "pnl_pct": 4.9136
   },
   {
    "id": "OXY|2026-11-18|momentum|1d",
@@ -6982,12 +7084,12 @@
    "rule": "momentum",
    "hold": 5,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 54.28,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 54.41,
+   "pnl_pct": -0.3395
   },
   {
    "id": "OXY|2026-11-18|reversal|1d",
@@ -7010,12 +7112,12 @@
    "rule": "reversal",
    "hold": 5,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-19",
    "entry_px": 54.28,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 54.41,
+   "pnl_pct": 0.1395
   },
   {
    "id": "WSM|2026-11-19|momentum|1d",
@@ -8816,12 +8918,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 302.32,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 342.225,
+   "pnl_pct": -13.2996
   },
   {
    "id": "ADI|2026-11-24|momentum|5d",
@@ -8844,12 +8946,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 302.32,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 342.225,
+   "pnl_pct": 13.0996
   },
   {
    "id": "ADI|2026-11-24|reversal|5d",
@@ -8872,12 +8974,12 @@
    "rule": "llm",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 302.32,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 342.225,
+   "pnl_pct": -13.2996
   },
   {
    "id": "ADI|2026-11-24|llm|5d",
@@ -8900,12 +9002,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 155.2,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 152.815,
+   "pnl_pct": -1.6367
   },
   {
    "id": "DLTR|2026-11-24|momentum|5d",
@@ -8928,12 +9030,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 155.2,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 152.815,
+   "pnl_pct": 1.4367
   },
   {
    "id": "DLTR|2026-11-24|reversal|5d",
@@ -8956,12 +9058,12 @@
    "rule": "llm",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 155.2,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 152.815,
+   "pnl_pct": -1.6367
   },
   {
    "id": "DLTR|2026-11-24|llm|5d",
@@ -8984,12 +9086,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 37.645,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 42.29,
+   "pnl_pct": -12.439
   },
   {
    "id": "HPE|2026-11-24|momentum|5d",
@@ -9012,12 +9114,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 37.645,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 42.29,
+   "pnl_pct": 12.239
   },
   {
    "id": "HPE|2026-11-24|reversal|5d",
@@ -9040,12 +9142,12 @@
    "rule": "llm",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 37.645,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 42.29,
+   "pnl_pct": -12.439
   },
   {
    "id": "HPE|2026-11-24|llm|5d",
@@ -9068,12 +9170,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 96.37,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 96.72,
+   "pnl_pct": -0.4632
   },
   {
    "id": "MDT|2026-11-24|momentum|5d",
@@ -9096,12 +9198,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 96.37,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 96.72,
+   "pnl_pct": 0.2632
   },
   {
    "id": "MDT|2026-11-24|reversal|5d",
@@ -9124,12 +9226,12 @@
    "rule": "llm",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 96.37,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 96.72,
+   "pnl_pct": -0.4632
   },
   {
    "id": "MDT|2026-11-24|llm|5d",
@@ -9152,12 +9254,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 249.53,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 273.49,
+   "pnl_pct": -9.7021
   },
   {
    "id": "TXN|2026-11-24|momentum|5d",
@@ -9180,12 +9282,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 249.53,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 273.49,
+   "pnl_pct": 9.5021
   },
   {
    "id": "TXN|2026-11-24|reversal|5d",
@@ -9208,12 +9310,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 575.73,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 630.5,
+   "pnl_pct": -9.6131
   },
   {
    "id": "MU|2026-11-24|momentum|5d",
@@ -9236,12 +9338,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 575.73,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 630.5,
+   "pnl_pct": 9.4131
   },
   {
    "id": "MU|2026-11-24|reversal|5d",
@@ -9264,12 +9366,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 180.75,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 179.11,
+   "pnl_pct": -1.0073
   },
   {
    "id": "A|2026-11-24|momentum|5d",
@@ -9292,12 +9394,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 180.75,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 179.11,
+   "pnl_pct": 0.8073
   },
   {
    "id": "A|2026-11-24|reversal|5d",
@@ -9320,12 +9422,12 @@
    "rule": "llm",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 180.75,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 179.11,
+   "pnl_pct": -1.0073
   },
   {
    "id": "A|2026-11-24|llm|5d",
@@ -9348,12 +9450,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 471.34,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 469.13,
+   "pnl_pct": -0.5689
   },
   {
    "id": "AMGN|2026-11-24|momentum|5d",
@@ -9376,12 +9478,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 471.34,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 469.13,
+   "pnl_pct": 0.3689
   },
   {
    "id": "AMGN|2026-11-24|reversal|5d",
@@ -9404,12 +9506,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 54.56,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 59.1,
+   "pnl_pct": -8.4211
   },
   {
    "id": "MCHP|2026-11-24|momentum|5d",
@@ -9432,12 +9534,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 54.56,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 59.1,
+   "pnl_pct": 8.2211
   },
   {
    "id": "MCHP|2026-11-24|reversal|5d",
@@ -9460,12 +9562,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 140.88,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 143.14,
+   "pnl_pct": 1.5042
   },
   {
    "id": "PODD|2026-11-24|momentum|5d",
@@ -9488,12 +9590,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 140.88,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 143.14,
+   "pnl_pct": -1.7042
   },
   {
    "id": "PODD|2026-11-24|reversal|5d",
@@ -9516,12 +9618,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 141.895,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 140.765,
+   "pnl_pct": -0.8964
   },
   {
    "id": "MRK|2026-11-24|momentum|5d",
@@ -9544,12 +9646,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 141.895,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 140.765,
+   "pnl_pct": 0.6964
   },
   {
    "id": "MRK|2026-11-24|reversal|5d",
@@ -9572,12 +9674,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 35.61,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 36.81,
+   "pnl_pct": 3.2698
   },
   {
    "id": "NKE|2026-11-24|momentum|5d",
@@ -9600,12 +9702,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 35.61,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 36.81,
+   "pnl_pct": -3.4698
   },
   {
    "id": "NKE|2026-11-24|reversal|5d",
@@ -9628,12 +9730,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 39.62,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 39.92,
+   "pnl_pct": 0.6572
   },
   {
    "id": "TSCO|2026-11-24|momentum|5d",
@@ -9656,12 +9758,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 39.62,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 39.92,
+   "pnl_pct": -0.8572
   },
   {
    "id": "TSCO|2026-11-24|reversal|5d",
@@ -9684,12 +9786,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 301.75,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 292.8,
+   "pnl_pct": -3.066
   },
   {
    "id": "ABBV|2026-11-24|momentum|5d",
@@ -9712,12 +9814,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 301.75,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 292.8,
+   "pnl_pct": 2.866
   },
   {
    "id": "ABBV|2026-11-24|reversal|5d",
@@ -9740,12 +9842,12 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 178.33,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 174.705,
+   "pnl_pct": -2.1327
   },
   {
    "id": "GILD|2026-11-24|momentum|5d",
@@ -9768,12 +9870,12 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "open",
+   "status": "closed",
    "entry_date": "2026-11-25",
    "entry_px": 178.33,
-   "exit_date": null,
-   "exit_px": null,
-   "pnl_pct": null
+   "exit_date": "2026-11-27",
+   "exit_px": 174.705,
+   "pnl_pct": 1.9327
   },
   {
    "id": "GILD|2026-11-24|reversal|5d",
@@ -10692,9 +10794,9 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10706,9 +10808,9 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10720,9 +10822,9 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10734,9 +10836,9 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10748,9 +10850,9 @@
    "rule": "llm",
    "hold": 1,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10762,9 +10864,9 @@
    "rule": "llm",
    "hold": 5,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 31.14,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10776,9 +10878,9 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 86.7,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10790,9 +10892,9 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 86.7,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10804,9 +10906,9 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 86.7,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10818,9 +10920,9 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 86.7,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10832,9 +10934,9 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 650.2,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10846,9 +10948,9 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 650.2,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10860,9 +10962,9 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 650.2,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10874,9 +10976,9 @@
    "rule": "reversal",
    "hold": 5,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 650.2,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10888,9 +10990,9 @@
    "rule": "momentum",
    "hold": 1,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 182.65,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10902,9 +11004,9 @@
    "rule": "momentum",
    "hold": 5,
    "side": "long",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 182.65,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10916,9 +11018,9 @@
    "rule": "reversal",
    "hold": 1,
    "side": "short",
-   "status": "pending",
-   "entry_date": null,
-   "entry_px": null,
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 182.65,
    "exit_date": null,
    "exit_px": null,
    "pnl_pct": null
@@ -10927,6 +11029,174 @@
    "id": "HSY|2026-11-25|reversal|5d",
    "symbol": "HSY",
    "signal_date": "2026-11-25",
+   "rule": "reversal",
+   "hold": 5,
+   "side": "short",
+   "status": "open",
+   "entry_date": "2026-11-27",
+   "entry_px": 182.65,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "VRTX|2026-11-27|momentum|1d",
+   "symbol": "VRTX",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 1,
+   "side": "short",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "VRTX|2026-11-27|momentum|5d",
+   "symbol": "VRTX",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 5,
+   "side": "short",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "VRTX|2026-11-27|reversal|1d",
+   "symbol": "VRTX",
+   "signal_date": "2026-11-27",
+   "rule": "reversal",
+   "hold": 1,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "VRTX|2026-11-27|reversal|5d",
+   "symbol": "VRTX",
+   "signal_date": "2026-11-27",
+   "rule": "reversal",
+   "hold": 5,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "SNDK|2026-11-27|momentum|1d",
+   "symbol": "SNDK",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 1,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "SNDK|2026-11-27|momentum|5d",
+   "symbol": "SNDK",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 5,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "SNDK|2026-11-27|reversal|1d",
+   "symbol": "SNDK",
+   "signal_date": "2026-11-27",
+   "rule": "reversal",
+   "hold": 1,
+   "side": "short",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "SNDK|2026-11-27|reversal|5d",
+   "symbol": "SNDK",
+   "signal_date": "2026-11-27",
+   "rule": "reversal",
+   "hold": 5,
+   "side": "short",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "COHR|2026-11-27|momentum|1d",
+   "symbol": "COHR",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 1,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "COHR|2026-11-27|momentum|5d",
+   "symbol": "COHR",
+   "signal_date": "2026-11-27",
+   "rule": "momentum",
+   "hold": 5,
+   "side": "long",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "COHR|2026-11-27|reversal|1d",
+   "symbol": "COHR",
+   "signal_date": "2026-11-27",
+   "rule": "reversal",
+   "hold": 1,
+   "side": "short",
+   "status": "pending",
+   "entry_date": null,
+   "entry_px": null,
+   "exit_date": null,
+   "exit_px": null,
+   "pnl_pct": null
+  },
+  {
+   "id": "COHR|2026-11-27|reversal|5d",
+   "symbol": "COHR",
+   "signal_date": "2026-11-27",
    "rule": "reversal",
    "hold": 5,
    "side": "short",

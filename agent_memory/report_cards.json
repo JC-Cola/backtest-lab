@@ -1,25 +1,25 @@
 {
- "generated": "2026-11-26T21:45:59Z",
+ "generated": "2026-11-27T21:46:17Z",
  "benchmark": "SPY",
  "min_days": 5,
  "accounts": {
   "intraday": {
    "name": "Noise band",
-   "days": 16,
+   "days": 17,
    "start": "2026-11-04",
-   "end": "2026-11-25",
+   "end": "2026-11-27",
    "ok": true,
    "note": "",
    "metrics": {
-    "cagr": 0.8508561329977264,
-    "sharpe": 4.668720540366625,
-    "sortino": 14.428041244688089,
+    "cagr": 0.7850272841693655,
+    "sharpe": 4.52593162879429,
+    "sortino": 13.997256005321669,
     "max_dd": -0.010119487767203172,
     "win_days": 0.6,
     "best_day": 0.029031217405588672,
     "worst_day": -0.010119487767203172,
-    "vol": 0.1338024269689917,
-    "beta": -0.1759205197159259
+    "vol": 0.1299047232445223,
+    "beta": -0.17380588741804195
    },
    "tearsheet": "reports/cards/intraday.html"
   },
@@ -79,7 +79,7 @@
     "best_day": 0.127948,
     "worst_day": -0.083851,
     "vol": 0.23976575714376924,
-    "beta": 1.2217188282825167
+    "beta": 1.2217185871046803
    },
    "tearsheet": "reports/cards/qlib_bt.html"
   }
