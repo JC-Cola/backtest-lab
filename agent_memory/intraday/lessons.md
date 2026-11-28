@@ -1,38 +1,38 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-28. 126167 trials in total: 123489 scored, 2678 rejected, 3 sent to the held-out test, 0 passed it.
+Updated 2026-11-28. 126487 trials in total: 123809 scored, 2678 rejected, 3 sent to the held-out test, 0 passed it.
 
 ## Most robust ideas on the search years (all 3 folds positive, median fold Sharpe, 2x costs; deflated reward is shown for information only)
 
+- robustness 2.21 | folds [2.317, 0.738, 2.456] | 2x costs [2.227, 0.566, 2.212] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p55 and rvol_30 < p99; hold 120 min; stop 200 bp
+- robustness 2.21 | folds [2.317, 0.738, 2.456] | 2x costs [2.227, 0.566, 2.212] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p55 and rvol_30 < p99; hold 120 min; stop 200 bp, target 4R
+- robustness 2.20 | folds [2.317, 0.738, 2.427] | 2x costs [2.227, 0.566, 2.203] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p55 and rvol_30 < p99; hold 120 min; stop 200 bp, target 1.5R
+- robustness 2.15 | folds [2.317, 0.738, 2.355] | 2x costs [2.227, 0.566, 2.148] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p55 and rvol_30 < p99; hold 120 min; stop 200 bp, target 2R
+- robustness 2.06 | folds [2.317, 0.738, 2.302] | 2x costs [2.227, 0.566, 2.06] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and noise_z < p99 and range_5d > p55; hold 120 min; stop 200 bp, target 3R
 - robustness 2.05 | folds [2.307, 0.316, 2.252] | 2x costs [2.19, 0.121, 2.053] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp, target 1.5R
 - robustness 2.05 | folds [2.307, 0.316, 2.265] | 2x costs [2.19, 0.121, 2.047] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp
 - robustness 2.05 | folds [2.307, 0.316, 2.265] | 2x costs [2.19, 0.121, 2.047] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp, target 3R
 - robustness 2.05 | folds [2.307, 0.316, 2.265] | 2x costs [2.19, 0.121, 2.047] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp, target 4R
-- robustness 2.01 | folds [2.307, 0.316, 2.195] | 2x costs [2.19, 0.121, 2.01] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp, target 2R
-- robustness 1.95 | folds [2.061, 0.638, 2.247] | 2x costs [1.952, 0.477, 2.055] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p60 and rvol_30 < p99; hold 120 min; stop 200 bp, target 2R
-- robustness 1.95 | folds [2.061, 0.638, 2.331] | 2x costs [1.952, 0.477, 2.106] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p60 and rvol_30 < p99; hold 120 min; stop 200 bp, target 3R
-- robustness 1.95 | folds [2.061, 0.638, 2.311] | 2x costs [1.952, 0.477, 2.104] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p60 and rvol_30 < p99; hold 120 min; stop 200 bp, target 1.5R
-- robustness 1.95 | folds [2.061, 0.638, 2.331] | 2x costs [1.952, 0.477, 2.106] | 150 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and range_5d > p60 and rvol_30 < p99; hold 120 min; stop 200 bp
-- robustness 1.95 | folds [2.223, 0.246, 2.133] | 2x costs [2.119, 0.054, 1.951] | 151 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p55 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp, target 1.5R
+- robustness 2.02 | folds [2.317, 0.738, 2.229] | 2x costs [2.227, 0.566, 2.022] | 163 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and noise_z < p99 and range_5d > p55; hold 120 min; stop 200 bp, target 2R
 
 ## Features that tend to help (learned weights, 1 = average)
 
-- gap: 2.20
-- rvol_30: 1.50
+- gap: 2.22
+- rvol_30: 1.52
 - consol_30: 1.48
-- ret_30: 1.47
-- prev_day_ibs: 1.36
-- range_pos: 1.29
+- ret_30: 1.46
+- prev_day_ibs: 1.35
+- range_pos: 1.28
 - vol_ratio: 1.11
-- rv_5d: 1.10
+- rv_5d: 1.09
 
 ## Features that tend to hurt
 
-- range_5d: 0.84
+- orb5: 0.87
 - rsi_14d: 0.81
 - z_20d: 0.79
 - run_10d: 0.78
-- hi20_dist: 0.73
+- hi20_dist: 0.72
 
 ## Why ideas were rejected
 
@@ -48,7 +48,7 @@ Updated 2026-11-28. 126167 trials in total: 123489 scored, 2678 rejected, 3 sent
 
 ## Last session
 
-1 rounds x 10 ideas with the evolution proposer in 9s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0 (3 of 3 this month). Strategies passing the held-out test (BH across all 3 shots ever): 0.
+1 rounds x 10 ideas with the evolution proposer in 12s. Best deflated reward went from 0.000 to 0.000. Held-out shots this session: 0 (3 of 3 this month). Strategies passing the held-out test (BH across all 3 shots ever): 0.
 
 ## Held-out budget
 
