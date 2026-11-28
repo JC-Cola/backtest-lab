@@ -1,30 +1,30 @@
 # What the intraday agent has learned so far
 
-Updated 2026-11-28. 123399 trials in total: 120727 scored, 2672 rejected, 3 sent to the held-out test, 0 passed it.
+Updated 2026-11-28. 123697 trials in total: 121023 scored, 2674 rejected, 3 sent to the held-out test, 0 passed it.
 
 ## Most robust ideas on the search years (all 3 folds positive, median fold Sharpe, 2x costs; deflated reward is shown for information only)
 
+- robustness 2.05 | folds [2.307, 0.316, 2.265] | 2x costs [2.19, 0.121, 2.047] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 120 min; stop 200 bp
 - robustness 1.82 | folds [2.054, 0.528, 1.995] | 2x costs [1.964, 0.385, 1.823] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp, target 1.5R
+- robustness 1.81 | folds [2.054, 0.539, 1.98] | 2x costs [1.964, 0.396, 1.81] | 162 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p50 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp
 - robustness 1.75 | folds [1.98, 1.938, 1.224] | 2x costs [1.814, 1.753, 1.063] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min; stop 200 bp, target 2R
 - robustness 1.75 | folds [1.98, 1.938, 1.162] | 2x costs [1.814, 1.753, 0.979] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min; stop 200 bp
 - robustness 1.75 | folds [1.98, 1.938, 1.172] | 2x costs [1.814, 1.753, 0.986] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min; stop 200 bp, target 1.5R
 - robustness 1.75 | folds [1.98, 1.938, 0.708] | 2x costs [1.814, 1.753, 0.554] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min
 - robustness 1.75 | folds [1.98, 1.938, 1.162] | 2x costs [1.814, 1.753, 0.979] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min; stop 200 bp, target 3R
 - robustness 1.75 | folds [1.98, 1.938, 1.162] | 2x costs [1.814, 1.753, 0.979] | 157 trades | deflated reward now 0.000 | SPY at 11:00: long when gap > p80 and prev_day_ibs < p99 and ret_30 > p30; hold 240 min; stop 200 bp, target 4R
-- robustness 1.69 | folds [1.872, 0.874, 1.919] | 2x costs [1.688, 0.699, 1.689] | 223 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p20 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp, target 1.5R
-- robustness 1.69 | folds [1.872, 0.88, 1.909] | 2x costs [1.688, 0.707, 1.702] | 223 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p20 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp, target 2R
-- robustness 1.68 | folds [1.872, 0.88, 1.905] | 2x costs [1.688, 0.707, 1.678] | 223 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p20 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp
+- robustness 1.74 | folds [1.877, 0.735, 1.926] | 2x costs [1.764, 0.588, 1.744] | 173 trades | deflated reward now 0.000 | SPY at 11:00: long when consol_30 > p45 and gap > p80 and rvol_30 < p99; hold 240 min; stop 200 bp, target 1.5R
 
 ## Features that tend to help (learned weights, 1 = average)
 
-- gap: 2.11
-- ret_30: 1.50
+- gap: 2.12
+- ret_30: 1.49
 - prev_day_ibs: 1.38
-- rvol_30: 1.36
+- rvol_30: 1.37
 - range_pos: 1.31
-- consol_30: 1.28
+- consol_30: 1.29
 - vol_ratio: 1.13
-- rv_5d: 1.12
+- rv_5d: 1.11
 
 ## Features that tend to hurt
 
@@ -36,7 +36,7 @@ Updated 2026-11-28. 123399 trials in total: 120727 scored, 2672 rejected, 3 sent
 
 ## Why ideas were rejected
 
-- too few trades: 2424
+- too few trades: 2426
 - risk review: 229
 - invalid spec: 19
 
